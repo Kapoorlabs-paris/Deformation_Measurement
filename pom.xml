@@ -57,12 +57,8 @@
 	
 	<issueManagement>
 		<system>GitHub Issues</system>
-		<url>https://github.com/kapoorlab/Bubbleator/issues</url>
+		<url>https://github.com/kapoorlab/Bubbleator</url>
 	</issueManagement>
-	<ciManagement>
-		<system>Travis CI</system>
-		<url>https://travis-ci.org/kapoorlab/Bubbleator</url>
-	</ciManagement>
 
 	<properties>
 		<license.licenseName>gpl_v3</license.licenseName>

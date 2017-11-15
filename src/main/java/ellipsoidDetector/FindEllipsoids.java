@@ -30,14 +30,14 @@ public class FindEllipsoids {
 
 		new ImageJ();
 
-		ImagePlus impA = new Opener().openImage("/home/varun/sampleimages/smallCircles.tif");
-		impA.show();
+		ImagePlus impA = new Opener().openImage("/home/varun/Downloads/MaitreData/PreExample.tif");
+		
 		RandomAccessibleInterval<FloatType> inputimage = ImageJFunctions.convertFloat(impA);
 		new Normalize();
 		FloatType minval = new FloatType(0);
 		FloatType maxval = new FloatType(1);
 		Normalize.normalize(Views.iterable(inputimage), minval, maxval);
-
+        impA = ImageJFunctions.show(inputimage);
 		int nsamples = 0;
 
 		final List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
@@ -46,13 +46,19 @@ public class FindEllipsoids {
 
 		Cursor<FloatType> cursor = Views.iterable(inputimage).localizingCursor();
 		final double[] posf = new double[inputimage.numDimensions() + 1];
+		
+		
+		float threshold = OtsuEllipsoid.AutomaticThresholding(inputimage);
+		
+		System.out.println("Threshold Value " + threshold);
+		
 		while (cursor.hasNext()) {
 
 			cursor.fwd();
 			cursor.localize(posf);
 			final RealPoint rpos = new RealPoint(posf);
 
-			if (cursor.get().get() > 0) {
+			if (cursor.get().get() > 2 * threshold) {
 				truths.add(rpos);
 				nsamples++;
 			}
@@ -62,26 +68,57 @@ public class FindEllipsoids {
 		Overlay ov = new Overlay();
         impA.setOverlay(ov);
 		
-		int outsideCutoffDistance = 3;
-		int insideCutoffDistance = 3;
-
+		double outsideCutoffDistance = 2.5;
+		double insideCutoffDistance = 2.5;
+		double minSize = 0;
+		double maxSize = 5500;
+		double maxdist = 1;
+		double minpoints = 50;
+    
 		// Using the ellipse model to do the fitting
-
-	RoiManager roim = 	new RoiManager();
+		ArrayList<Pair<Ellipsoid, List<RealLocalizable>>> Reducedsamples = new ArrayList<Pair<Ellipsoid, List<RealLocalizable>>>(); 
 		if (nsamples > 0) {
 			final ArrayList<Pair<Ellipsoid, List<RealLocalizable>>> Allsamples = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
-					.Allsamples(truths, nsamples, outsideCutoffDistance, insideCutoffDistance);
-
+					.Allsamples(truths, nsamples, outsideCutoffDistance, insideCutoffDistance, maxSize, minSize, minpoints);
+			// Exclusion criteria
 			for (int i = 0; i < Allsamples.size(); ++i) {
+				
+				double size2D = 1;
 
-				EllipseRoi ellipse = DisplayEllipse.create2DEllipse(Allsamples.get(i).getA().getCenter(),
-						new double[] {Allsamples.get(i).getA().getCovariance()[0][0], Allsamples.get(i).getA().getCovariance()[0][1], Allsamples.get(i).getA().getCovariance()[1][1] });
+				for (int j = 0; j < Allsamples.get(i).getA().getRadii().length; ++j) {
+			
+					if (Math.abs(Allsamples.get(i).getA().getRadii()[j]) < Double.MAX_VALUE) {
+					
+					size2D*= Allsamples.get(i).getA().getRadii()[j];
+				
+					
+					}
+				}
+				
+				if (size2D > minSize && size2D < maxSize ) {
+					
+					Reducedsamples.add(Allsamples.get(i));
+					System.out.println("Accepting Ellipse at " + " (" + Allsamples.get(i).getA().getCenter()[0] + ", " +   Allsamples.get(i).getA().getCenter()[1]  + ", " +  Allsamples.get(i).getA().getCenter()[2] + " )"  );
+					
+				}
+				
+				
+				
+			
+			}
+			
+			
+			
+			for (int i = 0; i < Reducedsamples.size(); ++i) {
+
+				EllipseRoi ellipse = DisplayEllipse.create2DEllipse(Reducedsamples.get(i).getA().getCenter(),
+						new double[] {Reducedsamples.get(i).getA().getCovariance()[0][0], Reducedsamples.get(i).getA().getCovariance()[0][1], Reducedsamples.get(i).getA().getCovariance()[1][1] });
 				ellipseList.add(ellipse);
 				ellipse.setStrokeColor(Color.RED);
-				 roim.addRoi(ellipse);
+				ellipse.setStrokeWidth(2);
 				 
-				System.out.println(Allsamples.get(i).getA().getCenter()[0] + " " + Allsamples.get(i).getA().getCenter()[1] + " " + Allsamples.get(i).getA().getRadii()[0] + " " + Allsamples.get(i).getA().getRadii()[2] 
-						+ " " + Allsamples.get(i).getA().getCenter().length) ;
+				System.out.println("Center :" + Reducedsamples.get(i).getA().getCenter()[0] + " " + Reducedsamples.get(i).getA().getCenter()[1] + " "  
+				+ " Radius "+ Reducedsamples.get(i).getA().getRadii()[0] + " " + Reducedsamples.get(i).getA().getRadii()[2] + " " + Reducedsamples.get(i).getA().getRadii()[1]) ;
 				ov.add(ellipse);
                 
 				
@@ -90,7 +127,6 @@ public class FindEllipsoids {
 		}
 		
 
-        
         
 		impA.updateAndDraw();
 		
