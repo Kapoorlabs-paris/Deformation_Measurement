@@ -30,7 +30,7 @@ public class FindEllipsoids {
 
 		new ImageJ();
 
-		ImagePlus impA = new Opener().openImage("/home/varun/Downloads/MaitreData/PreExample.tif");
+		ImagePlus impA = new Opener().openImage("/home/varun/sampleimages/TwoCircles.tif");
 		
 		RandomAccessibleInterval<FloatType> inputimage = ImageJFunctions.convertFloat(impA);
 		new Normalize();
@@ -58,7 +58,7 @@ public class FindEllipsoids {
 			cursor.localize(posf);
 			final RealPoint rpos = new RealPoint(posf);
 
-			if (cursor.get().get() > 2 * threshold) {
+			if (cursor.get().get() > threshold) {
 				truths.add(rpos);
 				nsamples++;
 			}
@@ -71,7 +71,7 @@ public class FindEllipsoids {
 		double outsideCutoffDistance = 2.5;
 		double insideCutoffDistance = 2.5;
 		double minSize = 0;
-		double maxSize = 5500;
+		double maxSize = 55500;
 		double maxdist = 1;
 		double minpoints = 50;
     
