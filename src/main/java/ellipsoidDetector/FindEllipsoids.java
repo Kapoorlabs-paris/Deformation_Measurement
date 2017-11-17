@@ -30,7 +30,7 @@ public class FindEllipsoids {
 
 		new ImageJ();
 
-		ImagePlus impA = new Opener().openImage("/home/varun/sampleimages/TwoCircles.tif");
+		ImagePlus impA = new Opener().openImage("/Users/varunkapoor/Documents/TwoCircles.tif");
 		
 		RandomAccessibleInterval<FloatType> inputimage = ImageJFunctions.convertFloat(impA);
 		new Normalize();
@@ -68,18 +68,18 @@ public class FindEllipsoids {
 		Overlay ov = new Overlay();
         impA.setOverlay(ov);
 		
-		double outsideCutoffDistance = 2.5;
-		double insideCutoffDistance = 2.5;
+		double outsideCutoffDistance = 2;
+		double insideCutoffDistance = 2;
 		double minSize = 0;
 		double maxSize = 55500;
-		double maxdist = 1;
+		double maxdist = 2;
 		double minpoints = 50;
     
 		// Using the ellipse model to do the fitting
 		ArrayList<Pair<Ellipsoid, List<RealLocalizable>>> Reducedsamples = new ArrayList<Pair<Ellipsoid, List<RealLocalizable>>>(); 
 		if (nsamples > 0) {
 			final ArrayList<Pair<Ellipsoid, List<RealLocalizable>>> Allsamples = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
-					.Allsamples(truths, nsamples, outsideCutoffDistance, insideCutoffDistance, maxSize, minSize, minpoints);
+					.Allsamples(truths, nsamples, outsideCutoffDistance, insideCutoffDistance, maxSize, minSize, minpoints, maxdist);
 			// Exclusion criteria
 			for (int i = 0; i < Allsamples.size(); ++i) {
 				
