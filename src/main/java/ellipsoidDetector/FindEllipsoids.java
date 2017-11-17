@@ -38,7 +38,6 @@ public class FindEllipsoids {
 		FloatType maxval = new FloatType(1);
 		Normalize.normalize(Views.iterable(inputimage), minval, maxval);
         impA = ImageJFunctions.show(inputimage);
-		int nsamples = 0;
 
 		final List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
 
@@ -60,7 +59,6 @@ public class FindEllipsoids {
 
 			if (cursor.get().get() > threshold) {
 				truths.add(rpos);
-				nsamples++;
 			}
 
 		}
@@ -68,18 +66,14 @@ public class FindEllipsoids {
 		Overlay ov = new Overlay();
         impA.setOverlay(ov);
 		
-		double outsideCutoffDistance = 2;
-		double insideCutoffDistance = 2;
-		double minSize = 0;
-		double maxSize = 55500;
-		double maxdist = 2;
-		double minpoints = 50;
+		double outsideCutoffDistance = 10;
+		double insideCutoffDistance = 10;
+		int minpoints = 50;
     
 		// Using the ellipse model to do the fitting
 		ArrayList<Pair<Ellipsoid, List<RealLocalizable>>> Reducedsamples = new ArrayList<Pair<Ellipsoid, List<RealLocalizable>>>(); 
-		if (nsamples > 0) {
 			final ArrayList<Pair<Ellipsoid, List<RealLocalizable>>> Allsamples = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
-					.Allsamples(truths, nsamples, outsideCutoffDistance, insideCutoffDistance, maxSize, minSize, minpoints, maxdist);
+					.Allsamples(truths, outsideCutoffDistance, insideCutoffDistance, minpoints);
 			// Exclusion criteria
 			for (int i = 0; i < Allsamples.size(); ++i) {
 				
@@ -95,12 +89,9 @@ public class FindEllipsoids {
 					}
 				}
 				
-				if (size2D > minSize && size2D < maxSize ) {
 					
 					Reducedsamples.add(Allsamples.get(i));
-					System.out.println("Accepting Ellipse at " + " (" + Allsamples.get(i).getA().getCenter()[0] + ", " +   Allsamples.get(i).getA().getCenter()[1]  + ", " +  Allsamples.get(i).getA().getCenter()[2] + " )"  );
 					
-				}
 				
 				
 				
@@ -124,7 +115,6 @@ public class FindEllipsoids {
 				
 			}
 
-		}
 		
 
         
