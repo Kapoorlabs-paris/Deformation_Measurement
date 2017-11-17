@@ -68,7 +68,7 @@ public class FindEllipsoids {
 		
 		double outsideCutoffDistance = 10;
 		double insideCutoffDistance = 10;
-		int minpoints = 50;
+		int minpoints = 0;
     
 		// Using the ellipse model to do the fitting
 		ArrayList<Pair<Ellipsoid, List<RealLocalizable>>> Reducedsamples = new ArrayList<Pair<Ellipsoid, List<RealLocalizable>>>(); 
