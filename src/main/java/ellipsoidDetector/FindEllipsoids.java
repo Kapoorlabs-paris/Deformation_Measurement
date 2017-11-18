@@ -30,15 +30,16 @@ public class FindEllipsoids {
 
 		new ImageJ();
 
-		ImagePlus impA = new Opener().openImage("/Users/varunkapoor/Documents/TwoCircles.tif");
+		ImagePlus imp = new Opener().openImage("/Users/varunkapoor/Documents/Ellipses.tif");
+		ImagePlus impA = new Opener().openImage("/Users/varunkapoor/Documents/Ellipses.tif");
 		
 		RandomAccessibleInterval<FloatType> inputimage = ImageJFunctions.convertFloat(impA);
 		new Normalize();
 		FloatType minval = new FloatType(0);
 		FloatType maxval = new FloatType(1);
 		Normalize.normalize(Views.iterable(inputimage), minval, maxval);
-        impA = ImageJFunctions.show(inputimage);
-
+      //  impA = ImageJFunctions.show(inputimage);
+        imp.show();
 		final List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
 
 		ArrayList<EllipseRoi> ellipseList = new ArrayList<EllipseRoi>();
@@ -57,19 +58,21 @@ public class FindEllipsoids {
 			cursor.localize(posf);
 			final RealPoint rpos = new RealPoint(posf);
 
-			if (cursor.get().get() > threshold) {
+			if (cursor.get().get() >  threshold) {
 				truths.add(rpos);
 			}
 
 		}
 
 		Overlay ov = new Overlay();
-        impA.setOverlay(ov);
+        imp.setOverlay(ov);
 		
-		double outsideCutoffDistance = 10;
-		double insideCutoffDistance = 10;
+		double outsideCutoffDistance = 1;
+		double insideCutoffDistance = 1;
 		int minpoints = 0;
     
+		int minSize = 10;
+		int maxSize = 1000;
 		// Using the ellipse model to do the fitting
 		ArrayList<Pair<Ellipsoid, List<RealLocalizable>>> Reducedsamples = new ArrayList<Pair<Ellipsoid, List<RealLocalizable>>>(); 
 			final ArrayList<Pair<Ellipsoid, List<RealLocalizable>>> Allsamples = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
@@ -89,7 +92,7 @@ public class FindEllipsoids {
 					}
 				}
 				
-					
+				//	if (size2D > minSize && size2D < maxSize)
 					Reducedsamples.add(Allsamples.get(i));
 					
 				
@@ -118,7 +121,7 @@ public class FindEllipsoids {
 		
 
         
-		impA.updateAndDraw();
+		imp.updateAndDraw();
 		
 
 	}
