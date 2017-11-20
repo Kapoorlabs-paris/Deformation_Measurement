@@ -31,8 +31,8 @@ public class FindEllipsoids {
 
 		new ImageJ();
 
-		ImagePlus imp = new Opener().openImage("/Users/varunkapoor/Documents/Ellipses.tif");
-		ImagePlus impA = new Opener().openImage("/Users/varunkapoor/Documents/Ellipses.tif");
+		ImagePlus imp = new Opener().openImage("/home/varun/sampleimages/TwoCircles.tif");
+		ImagePlus impA = new Opener().openImage("/home/varun/sampleimages/TwoCircles.tif");
 		
 		RandomAccessibleInterval<FloatType> inputimage = ImageJFunctions.convertFloat(impA);
 		new Normalize();
@@ -75,7 +75,7 @@ public class FindEllipsoids {
     
 		int minSize = 10;
 		int maxSize = 1000;
-		final NumericalSolvers numsol = new NewtonRaphsonEllipsoid();
+		final NumericalSolvers numsol = new BisectorEllipsoid();
 		// Using the ellipse model to do the fitting
 		ArrayList<Pair<Ellipsoid, List<RealLocalizable>>> Reducedsamples = new ArrayList<Pair<Ellipsoid, List<RealLocalizable>>>(); 
 			final ArrayList<Pair<Ellipsoid, List<RealLocalizable>>> Allsamples = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
