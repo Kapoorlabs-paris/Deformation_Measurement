@@ -3,6 +3,7 @@ package ellipsoidDetector;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -56,6 +57,7 @@ public class FindEllipsoids {
 
 			cursor.fwd();
 			cursor.localize(posf);
+			posf[inputimage.numDimensions()] = 0;
 			final RealPoint rpos = new RealPoint(posf);
 
 			if (cursor.get().get() >  threshold) {
@@ -73,10 +75,11 @@ public class FindEllipsoids {
     
 		int minSize = 10;
 		int maxSize = 1000;
+		final NumericalSolvers numsol = new NewtonRaphsonEllipsoid();
 		// Using the ellipse model to do the fitting
 		ArrayList<Pair<Ellipsoid, List<RealLocalizable>>> Reducedsamples = new ArrayList<Pair<Ellipsoid, List<RealLocalizable>>>(); 
 			final ArrayList<Pair<Ellipsoid, List<RealLocalizable>>> Allsamples = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
-					.Allsamples(truths, outsideCutoffDistance, insideCutoffDistance, minpoints);
+					.Allsamples(truths, outsideCutoffDistance, insideCutoffDistance, minpoints, numsol);
 			// Exclusion criteria
 			for (int i = 0; i < Allsamples.size(); ++i) {
 				
