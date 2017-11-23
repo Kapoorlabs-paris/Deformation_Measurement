@@ -66,12 +66,14 @@ public class FindEllipsoids {
 
 		}
 
+		
+		SortRealLocalizable.SortPoints(truths);
 		Overlay ov = new Overlay();
         imp.setOverlay(ov);
 		
 		double outsideCutoffDistance = 1;
 		double insideCutoffDistance = 1;
-		int minpoints = 0;
+		int minpoints = 100;
     
 		int minSize = 10;
 		int maxSize = 1000;
