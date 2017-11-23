@@ -31,8 +31,8 @@ public class FindEllipsoids {
 
 		new ImageJ();
 
-		ImagePlus imp = new Opener().openImage("/home/varun/sampleimages/TwoCircles.tif");
-		ImagePlus impA = new Opener().openImage("/home/varun/sampleimages/TwoCircles.tif");
+		ImagePlus imp = new Opener().openImage("/home/varun/sampleimages/NewImage.tif");
+		ImagePlus impA = new Opener().openImage("/home/varun/sampleimages/NewImage.tif");
 		
 		RandomAccessibleInterval<FloatType> inputimage = ImageJFunctions.convertFloat(impA);
 		new Normalize();
@@ -67,37 +67,39 @@ public class FindEllipsoids {
 		}
 
 		
-		SortRealLocalizable.SortPoints(truths);
 		Overlay ov = new Overlay();
         imp.setOverlay(ov);
 		
-		double outsideCutoffDistance = 1;
-		double insideCutoffDistance = 1;
+		double outsideCutoffDistance = 2;
+		double insideCutoffDistance = 2;
 		int minpoints = 100;
     
 		int minSize = 10;
-		int maxSize = 1000;
+		int maxSize = 10000;
 		final NumericalSolvers numsol = new BisectorEllipsoid();
 		// Using the ellipse model to do the fitting
-		ArrayList<Pair<Ellipsoid, List<RealLocalizable>>> Reducedsamples = new ArrayList<Pair<Ellipsoid, List<RealLocalizable>>>(); 
-			final ArrayList<Pair<Ellipsoid, List<RealLocalizable>>> Allsamples = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
+		ArrayList<Pair<Pair<Ellipsoid, GeneralEllipsoid>, List<RealLocalizable>>> Reducedsamples = new ArrayList<Pair<Pair<Ellipsoid, GeneralEllipsoid>, List<RealLocalizable>>>(); 
+			final ArrayList<Pair<Pair<Ellipsoid, GeneralEllipsoid>, List<RealLocalizable>>> Allsamples = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
 					.Allsamples(truths, outsideCutoffDistance, insideCutoffDistance, minpoints, numsol);
+			
+			
 			// Exclusion criteria
 			for (int i = 0; i < Allsamples.size(); ++i) {
 				
 				double size2D = 1;
 
-				for (int j = 0; j < Allsamples.get(i).getA().getRadii().length; ++j) {
+				for (int j = 0; j < Allsamples.get(i).getA().getA().getRadii().length; ++j) {
 			
-					if (Math.abs(Allsamples.get(i).getA().getRadii()[j]) < Double.MAX_VALUE) {
+					if (Math.abs(Allsamples.get(i).getA().getA().getRadii()[j]) < Double.MAX_VALUE) {
 					
-					size2D*= Allsamples.get(i).getA().getRadii()[j];
+					size2D*= Allsamples.get(i).getA().getA().getRadii()[j];
 				
 					
 					}
 				}
 				
 				//	if (size2D > minSize && size2D < maxSize)
+			
 					Reducedsamples.add(Allsamples.get(i));
 					
 				
@@ -110,14 +112,14 @@ public class FindEllipsoids {
 			
 			for (int i = 0; i < Reducedsamples.size(); ++i) {
 
-				EllipseRoi ellipse = DisplayEllipse.create2DEllipse(Reducedsamples.get(i).getA().getCenter(),
-						new double[] {Reducedsamples.get(i).getA().getCovariance()[0][0], Reducedsamples.get(i).getA().getCovariance()[0][1], Reducedsamples.get(i).getA().getCovariance()[1][1] });
+				EllipseRoi ellipse = DisplayEllipse.create2DEllipse(Reducedsamples.get(i).getA().getA().getCenter(),
+						new double[] {Reducedsamples.get(i).getA().getA().getCovariance()[0][0], Reducedsamples.get(i).getA().getA().getCovariance()[0][1], Reducedsamples.get(i).getA().getA().getCovariance()[1][1] });
 				ellipseList.add(ellipse);
 				ellipse.setStrokeColor(Color.RED);
 				ellipse.setStrokeWidth(2);
 				 
-				System.out.println("Center :" + Reducedsamples.get(i).getA().getCenter()[0] + " " + Reducedsamples.get(i).getA().getCenter()[1] + " "  
-				+ " Radius "+ Reducedsamples.get(i).getA().getRadii()[0] + " " + Reducedsamples.get(i).getA().getRadii()[2] + " " + Reducedsamples.get(i).getA().getRadii()[1]) ;
+				System.out.println("Center :" + Reducedsamples.get(i).getA().getA().getCenter()[0] + " " + Reducedsamples.get(i).getA().getA().getCenter()[1] + " "  
+				+ " Radius "+ Reducedsamples.get(i).getA().getA().getRadii()[0] + " " + Reducedsamples.get(i).getA().getA().getRadii()[2] + " " + Reducedsamples.get(i).getA().getA().getRadii()[1]) ;
 				ov.add(ellipse);
                 
 				
