@@ -45,7 +45,13 @@
 			</roles>
 		</developer>
 	</developers>
-	
+	<contributors>
+		<contributor>
+			<name></name>
+			<url></url>
+			<properties><id></id></properties>
+		</contributor>
+	</contributors>
 
 	<mailingLists>
 		<mailingList>

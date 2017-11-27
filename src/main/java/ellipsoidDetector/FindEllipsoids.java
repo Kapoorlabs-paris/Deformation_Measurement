@@ -31,8 +31,8 @@ public class FindEllipsoids {
 
 		new ImageJ();
 
-		ImagePlus imp = new Opener().openImage("/home/varun/sampleimages/NewImage.tif");
-		ImagePlus impA = new Opener().openImage("/home/varun/sampleimages/NewImage.tif");
+		ImagePlus imp = new Opener().openImage("/home/varun/sampleimages/Ellipses.tif");
+		ImagePlus impA = new Opener().openImage("/home/varun/sampleimages/Ellipses.tif");
 
 		RandomAccessibleInterval<FloatType> inputimage = ImageJFunctions.convertFloat(impA);
 		new Normalize();
@@ -57,17 +57,14 @@ public class FindEllipsoids {
 
 		double outsideCutoffDistance = 2;
 		double insideCutoffDistance = 2;
-		int minpoints = 200;
-
+		double minpercent = 0.5;
+        int maxiter =100;
+		
 		final NumericalSolvers numsol = new BisectorEllipsoid();
 		// Using the ellipse model to do the fitting
-		ArrayList<Pair<Pair<Ellipsoid, GeneralEllipsoid>, List<Pair<RealLocalizable, FloatType>>>> Reducedsamples =
-				new ArrayList<Pair<Pair<Ellipsoid, GeneralEllipsoid>, List<Pair<RealLocalizable, FloatType>>>>();
+		ArrayList<Pair<Pair<Ellipsoid, GeneralEllipsoid>, List<Pair<RealLocalizable, FloatType>>>> Reducedsamples  = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
+				.Allsamples(truths, outsideCutoffDistance, insideCutoffDistance, minpercent, numsol, maxiter);
 
-		final ArrayList<Pair<Pair<Ellipsoid, GeneralEllipsoid>, List<Pair<RealLocalizable, FloatType>>>> Allsamples = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
-				.Allsamples(truths, outsideCutoffDistance, insideCutoffDistance, minpoints, numsol);
-
-		Reducedsamples.addAll(Allsamples);
 
 		for (int i = 0; i < Reducedsamples.size(); ++i) {
 
