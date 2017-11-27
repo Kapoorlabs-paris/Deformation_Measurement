@@ -41,7 +41,7 @@ public class FindEllipsoids {
 		Normalize.normalize(Views.iterable(inputimage), minval, maxval);
 		// impA = ImageJFunctions.show(inputimage);
 		imp.show();
-		List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
+		List<Pair<RealLocalizable, FloatType>> truths = new ArrayList<Pair<RealLocalizable, FloatType>>();
 
 		ArrayList<EllipseRoi> ellipseList = new ArrayList<EllipseRoi>();
 
@@ -51,19 +51,20 @@ public class FindEllipsoids {
 
 		truths = ConnectedComponentCoordinates.GetCoordinates(inputimage, new FloatType(threshold));
 
-		System.out.println("Initial set of points" + truths.size());
+		System.out.println("Initial set of points " + truths.size());
 		Overlay ov = new Overlay();
 		imp.setOverlay(ov);
 
 		double outsideCutoffDistance = 2;
 		double insideCutoffDistance = 2;
-		int minpoints = 100;
+		int minpoints = 200;
 
 		final NumericalSolvers numsol = new BisectorEllipsoid();
 		// Using the ellipse model to do the fitting
-		ArrayList<Pair<Pair<Ellipsoid, GeneralEllipsoid>, List<RealLocalizable>>> Reducedsamples = new ArrayList<Pair<Pair<Ellipsoid, GeneralEllipsoid>, List<RealLocalizable>>>();
+		ArrayList<Pair<Pair<Ellipsoid, GeneralEllipsoid>, List<Pair<RealLocalizable, FloatType>>>> Reducedsamples =
+				new ArrayList<Pair<Pair<Ellipsoid, GeneralEllipsoid>, List<Pair<RealLocalizable, FloatType>>>>();
 
-		final ArrayList<Pair<Pair<Ellipsoid, GeneralEllipsoid>, List<RealLocalizable>>> Allsamples = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
+		final ArrayList<Pair<Pair<Ellipsoid, GeneralEllipsoid>, List<Pair<RealLocalizable, FloatType>>>> Allsamples = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
 				.Allsamples(truths, outsideCutoffDistance, insideCutoffDistance, minpoints, numsol);
 
 		Reducedsamples.addAll(Allsamples);
