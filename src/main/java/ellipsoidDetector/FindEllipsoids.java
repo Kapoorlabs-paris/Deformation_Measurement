@@ -27,6 +27,7 @@ import net.imglib2.algorithm.stats.Normalize;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
+import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
 
 public class FindEllipsoids {
@@ -35,8 +36,8 @@ public class FindEllipsoids {
 
 		new ImageJ();
 
-		ImagePlus imp = new Opener().openImage("/Users/varunkapoor/Documents/Bubbles/TwoEllipses.tif");
-		ImagePlus impA = new Opener().openImage("/Users/varunkapoor/Documents/Bubbles/TwoEllipses.tif");
+		ImagePlus imp = new Opener().openImage("/Users/varunkapoor/Documents/Bubbles/ThreeIntersections.tif");
+		ImagePlus impA = new Opener().openImage("/Users/varunkapoor/Documents/Bubbles/ThreeIntersections.tif");
 
 		RandomAccessibleInterval<FloatType> inputimage = ImageJFunctions.convertFloat(impA);
 		new Normalize();
@@ -71,7 +72,7 @@ public class FindEllipsoids {
 		ArrayList<Pair<Pair<Ellipsoid, GeneralEllipsoid>, List<Pair<RealLocalizable, FloatType>>>> Reducedsamples  = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
 				.Allsamples(truths, outsideCutoffDistance, insideCutoffDistance, minpercent, numsol, maxiter, ndims);
 
-
+		
 		for (int i = 0; i < Reducedsamples.size(); ++i) {
 
 			EllipseRoi ellipse = DisplayEllipse.create2DEllipse(Reducedsamples.get(i).getA().getA().getCenter(),
@@ -96,41 +97,51 @@ public class FindEllipsoids {
 
 		
 		// Obtain the points of intersections
-		Vector<double[]> PointsIntersect = new Vector<double[]>();
+		ArrayList<double[]> PointsIntersect = new ArrayList<double[]>();
 		
 		
-		HashMap<Boolean, GeneralEllipsoid> fitmap = new HashMap<Boolean, GeneralEllipsoid>();
+		HashMap<Integer, Pair<GeneralEllipsoid, GeneralEllipsoid>> fitmap = new HashMap<Integer, Pair<GeneralEllipsoid, GeneralEllipsoid>>();
 		
 		for (int i = 0; i < Reducedsamples.size() ; ++i) {
+		
+			for (int j = 0; j < Reducedsamples.size() ; ++j) {
 			
+				
+				if (j!=i)
+			fitmap.put(Reducedsamples.get(i).getA().getB().hashCode() + Reducedsamples.get(j).getA().getB().hashCode() , new ValuePair<GeneralEllipsoid, GeneralEllipsoid>(Reducedsamples.get(i).getA().getB(),Reducedsamples.get(j).getA().getB() ));
 			
-			fitmap.put(false, Reducedsamples.get(i).getA().getB());
-			
+		}
 		}
 		
 		
 		
 		
 		// Currently for the pair of Ellipses, to be improved for multiple intersecting points
-		
-		for (int i = 0; i < Reducedsamples.size() ; ++i) {
+		ArrayList<Integer> ellipsepairlist = new ArrayList<Integer>();
 			
 			
 			
-			GeneralEllipsoid genellipse = Reducedsamples.get(i).getA().getB();
 			
 			
-			for(Map.Entry<Boolean, GeneralEllipsoid> entry : fitmap.entrySet()) {
-				
-				GeneralEllipsoid secondgenellipse = entry.getValue();
-				
-				if(genellipse!=secondgenellipse) {
+
+				for(Map.Entry<Integer, Pair<GeneralEllipsoid, GeneralEllipsoid>> entry : fitmap.entrySet()) {
 					
-					PointsIntersect.addAll(Intersections.PointsofIntersection(genellipse, secondgenellipse));
+					Pair<GeneralEllipsoid, GeneralEllipsoid> ellipsepair = entry.getValue();
+					int sum = entry.getKey();
+						boolean isfitted = false;
+						for (int index = 0; index < ellipsepairlist.size(); ++index) {
+						
+							if(sum==ellipsepairlist.get(index))
+							isfitted = true;
+						
+						}
+						
+						if(!isfitted)
+						PointsIntersect.addAll(Intersections.PointsofIntersection(ellipsepair));
+						ellipsepairlist.add(sum);
 					
-				}
-				
-			}
+
+					
 			
 			
 		
