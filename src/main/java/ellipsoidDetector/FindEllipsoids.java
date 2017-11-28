@@ -2,12 +2,16 @@ package ellipsoidDetector;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.Vector;
 
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.EllipseRoi;
+import ij.gui.OvalRoi;
 import ij.gui.Overlay;
 import ij.io.Opener;
 import ij.plugin.frame.RoiManager;
@@ -31,8 +35,8 @@ public class FindEllipsoids {
 
 		new ImageJ();
 
-		ImagePlus imp = new Opener().openImage("/home/varun/sampleimages/Ellipses.tif");
-		ImagePlus impA = new Opener().openImage("/home/varun/sampleimages/Ellipses.tif");
+		ImagePlus imp = new Opener().openImage("/Users/varunkapoor/Documents/Bubbles/TwoEllipses.tif");
+		ImagePlus impA = new Opener().openImage("/Users/varunkapoor/Documents/Bubbles/TwoEllipses.tif");
 
 		RandomAccessibleInterval<FloatType> inputimage = ImageJFunctions.convertFloat(impA);
 		new Normalize();
@@ -57,13 +61,15 @@ public class FindEllipsoids {
 
 		double outsideCutoffDistance = 2;
 		double insideCutoffDistance = 2;
-		double minpercent = 0.5;
+		double minpercent = 0.65;
         int maxiter =100;
-		
+        int radiusdetection = 5;
+        Color colorDet = Color.GREEN;
+		final int ndims = inputimage.numDimensions();
 		final NumericalSolvers numsol = new BisectorEllipsoid();
 		// Using the ellipse model to do the fitting
 		ArrayList<Pair<Pair<Ellipsoid, GeneralEllipsoid>, List<Pair<RealLocalizable, FloatType>>>> Reducedsamples  = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
-				.Allsamples(truths, outsideCutoffDistance, insideCutoffDistance, minpercent, numsol, maxiter);
+				.Allsamples(truths, outsideCutoffDistance, insideCutoffDistance, minpercent, numsol, maxiter, ndims);
 
 
 		for (int i = 0; i < Reducedsamples.size(); ++i) {
@@ -79,14 +85,70 @@ public class FindEllipsoids {
 			System.out.println("Center :" + Reducedsamples.get(i).getA().getA().getCenter()[0] + " "
 					+ Reducedsamples.get(i).getA().getA().getCenter()[1] + " " + " Radius "
 					+ Reducedsamples.get(i).getA().getA().getRadii()[0] + " "
-					+ Reducedsamples.get(i).getA().getA().getRadii()[2] + " "
 					+ Reducedsamples.get(i).getA().getA().getRadii()[1]);
 			ov.add(ellipse);
 
+			
 		}
 
+		
 		imp.updateAndDraw();
 
+		
+		// Obtain the points of intersections
+		Vector<double[]> PointsIntersect = new Vector<double[]>();
+		
+		
+		HashMap<Boolean, GeneralEllipsoid> fitmap = new HashMap<Boolean, GeneralEllipsoid>();
+		
+		for (int i = 0; i < Reducedsamples.size() ; ++i) {
+			
+			
+			fitmap.put(false, Reducedsamples.get(i).getA().getB());
+			
+		}
+		
+		
+		
+		
+		
+		
+		for (int i = 0; i < Reducedsamples.size() ; ++i) {
+			
+			
+			
+			GeneralEllipsoid genellipse = Reducedsamples.get(i).getA().getB();
+			
+			
+			for(Map.Entry<Boolean, GeneralEllipsoid> entry : fitmap.entrySet()) {
+				
+				boolean isIntesected = entry.getKey();
+				GeneralEllipsoid secondgenellipse = entry.getValue();
+				
+				if(isIntesected==false && genellipse!=secondgenellipse) {
+					
+					PointsIntersect.addAll(Intersections.PointsofIntersection(genellipse, secondgenellipse));
+					isIntesected = true;
+				}
+				
+			}
+			
+			
+		
+		}
+		
+		
+		for (int i = 0; i < PointsIntersect.size(); ++i) {
+			
+			System.out.println(PointsIntersect.get(i)[0] + " " + PointsIntersect.get(i)[1]);
+			
+           OvalRoi intersectionsRoi = new OvalRoi(PointsIntersect.get(i)[0] - radiusdetection, PointsIntersect.get(i)[1] - radiusdetection, 2 * radiusdetection , 2 * radiusdetection);	
+           intersectionsRoi.setStrokeColor(colorDet);
+           ov.add(intersectionsRoi);
+			
+		}
+		imp.updateAndDraw();
+		
 	}
 
 }
