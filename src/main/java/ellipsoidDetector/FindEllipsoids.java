@@ -111,7 +111,7 @@ public class FindEllipsoids {
 		
 		
 		
-		
+		// Currently for the pair of Ellipses, to be improved for multiple intersecting points
 		
 		for (int i = 0; i < Reducedsamples.size() ; ++i) {
 			
@@ -122,13 +122,12 @@ public class FindEllipsoids {
 			
 			for(Map.Entry<Boolean, GeneralEllipsoid> entry : fitmap.entrySet()) {
 				
-				boolean isIntesected = entry.getKey();
 				GeneralEllipsoid secondgenellipse = entry.getValue();
 				
-				if(isIntesected==false && genellipse!=secondgenellipse) {
+				if(genellipse!=secondgenellipse) {
 					
 					PointsIntersect.addAll(Intersections.PointsofIntersection(genellipse, secondgenellipse));
-					isIntesected = true;
+					
 				}
 				
 			}
