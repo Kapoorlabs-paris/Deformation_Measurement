@@ -36,8 +36,8 @@ public class FindEllipsoids {
 
 		new ImageJ();
 
-		ImagePlus imp = new Opener().openImage("/Users/varunkapoor/Documents/Bubbles/ThreeIntersections.tif");
-		ImagePlus impA = new Opener().openImage("/Users/varunkapoor/Documents/Bubbles/ThreeIntersections.tif");
+		ImagePlus imp = new Opener().openImage("/Users/varunkapoor/Documents/Bubbles/TwoEllipses.tif");
+		ImagePlus impA = new Opener().openImage("/Users/varunkapoor/Documents/Bubbles/TwoEllipses.tif");
 
 		RandomAccessibleInterval<FloatType> inputimage = ImageJFunctions.convertFloat(impA);
 		new Normalize();
