@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Vector;
 
+import distanceTransform.CreateDistanceTransform;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.EllipseRoi;
@@ -28,6 +29,7 @@ import net.imglib2.algorithm.ransac.RansacModels.*;
 import net.imglib2.algorithm.stats.Normalize;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -42,93 +44,94 @@ public class FindEllipsoids {
 
 		new ImageJ();
 
-		ImagePlus imp = new Opener().openImage("/Users/varunkapoor/Documents/Bubbles/ThreeEllipses.tif");
-		ImagePlus impPRE = new Opener().openImage("/Users/varunkapoor/Documents/Bubbles/ThreeEllipses.tif");
+		ImagePlus imp = new Opener().openImage("/Users/varunkapoor/Documents/JLMData/Testcases/realtest-1.tif");
 		RandomAccessibleInterval<FloatType> inputimage = ImageJFunctions.convertFloat(imp);
-		RandomAccessibleInterval<FloatType> inputimageIlastik = ImageJFunctions.convertFloat(impPRE);
 		new Normalize();
 		FloatType minval = new FloatType(0);
 		FloatType maxval = new FloatType(1);
 		Normalize.normalize(Views.iterable(inputimage), minval, maxval);
-		 imp = ImageJFunctions.show(inputimage);
-		
-		
-		
-		
-		
+		imp = ImageJFunctions.show(inputimage);
+
 		List<Pair<RealLocalizable, FloatType>> truths = new ArrayList<Pair<RealLocalizable, FloatType>>();
 
 		ArrayList<EllipseRoi> ellipseList = new ArrayList<EllipseRoi>();
 
-		
-
 		int MedianFilterRadi = 1;
 		int FlatFieldRadi = 10;
 		int label = 1;
-		//PreProcessing Step
-		RandomAccessibleInterval<FloatType> inputimagePRE =  
-				//PrePipeline.SelectClassLabel(inputimageIlastik, label);
-				PrePipeline.Dothinning(inputimageIlastik, FlatFieldRadi); 
-		
-		
-		float threshold = Otsu.AutomaticThresholding(inputimagePRE);
 
+		// Create Distance Transform Map
+		float threshold = Otsu.AutomaticThresholding(inputimage);
+		RandomAccessibleInterval<BitType> bitimg = Otsu.Getbinaryimage(inputimage, threshold);
+		CreateDistanceTransform<FloatType> Dist = new CreateDistanceTransform<FloatType>(inputimage, bitimg);
+		Dist.process();
+		RandomAccessibleInterval<FloatType> inputimagePRE = Dist.getResult();
+		// Normalize the Distance Transformed image
+		Normalize.normalize(Views.iterable(inputimagePRE), minval, maxval);
+		threshold = Otsu.AutomaticThresholding(inputimagePRE);
 		System.out.println("Threshold Value " + threshold);
-	
-		
+
+
+
+
 		ImagePlus impPre = ImageJFunctions.show(inputimagePRE);
-		
-		impPre.setTitle("Pre-Preocessed image");
-		
-		truths = ConnectedComponentCoordinates.GetCoordinates(inputimagePRE, new FloatType(threshold));
+
+		impPre.setTitle("Distance Transformed image");
+
+		truths = ConnectedComponentCoordinates.GetCoordinates(inputimagePRE,
+				new FloatType(threshold));
 
 		System.out.println("Initial set of points " + truths.size());
 		Overlay ov = new Overlay();
 		imp.setOverlay(ov);
 
+		// To condider the points as inliers these variables have to be specified, if
+		// large you allow for more error
 		double outsideCutoffDistance = 2;
 		double insideCutoffDistance = 2;
-		double minpercent = 0.65;
+		// To consider what is a good ellipse, most of the ellipse points on the image
+		// must lie on the detection, how much percent of points lie on it is specified
+		// here
+		double minpercent = 0.25;
+
+		// Program rejects bad ellipses but in some cases there are no ellipses to be
+		// found but other shapes are present, this parameter tells the program how many
+		// max tries to find the ellipsoids
 		int maxiter = 100;
+
+		// In order to prevent overlapping detections, use this distance veto between
+		// centers of detected ellipsoids
 		final double minSeperation = 5;
+
+		// Expected number of ellipses to be found in an image (Put large value if
+		// uncertain)
 		final int maxCircles = 5;
-		
+
 		int radiusdetection = 5;
 		Color colorDet = Color.GREEN;
 		Color colorLineA = Color.YELLOW;
 		Color colorLineB = Color.YELLOW;
 		final int ndims = inputimage.numDimensions();
 		final NumericalSolvers numsol = new BisectorEllipsoid();
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
 		// Using the ellipse model to do the fitting
 		ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>> Reducedsamples = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
-				.Allsamples(truths, outsideCutoffDistance, insideCutoffDistance, minpercent, numsol, maxiter, ndims, maxCircles);
-		
+				.Allsamples(truths, outsideCutoffDistance, insideCutoffDistance, minpercent, numsol, maxiter, ndims,
+						maxCircles);
+
 		SortSegments.Sort(Reducedsamples);
 		for (int i = 0; i < Reducedsamples.size() - 1; ++i) {
-			
+
 			double[] center = Reducedsamples.get(i).getA().getCenter();
-			
+
 			double[] centernext = Reducedsamples.get(i + 1).getA().getCenter();
-			
-			
+
 			double dist = Distance.DistanceSq(center, centernext);
-			
+
 			if (dist < minSeperation * minSeperation)
 				Reducedsamples.remove(Reducedsamples.get(i));
-			
-			
+
 		}
-		
 
 		for (int i = 0; i < Reducedsamples.size(); ++i) {
 
@@ -142,8 +145,7 @@ public class FindEllipsoids {
 
 			System.out.println("Center :" + Reducedsamples.get(i).getA().getCenter()[0] + " "
 					+ Reducedsamples.get(i).getA().getCenter()[1] + " " + " Radius "
-					+ Reducedsamples.get(i).getA().getRadii()[0] + " "
-					+ Reducedsamples.get(i).getA().getRadii()[1]);
+					+ Reducedsamples.get(i).getA().getRadii()[0] + " " + Reducedsamples.get(i).getA().getRadii()[1]);
 			ov.add(ellipse);
 
 		}
@@ -160,10 +162,8 @@ public class FindEllipsoids {
 			for (int j = 0; j < Reducedsamples.size(); ++j) {
 
 				if (j != i) {
-					
-					fitmapspecial.put(
-							Reducedsamples.get(i).getA().hashCode()
-									+ Reducedsamples.get(j).getA().hashCode(),
+
+					fitmapspecial.put(Reducedsamples.get(i).getA().hashCode() + Reducedsamples.get(j).getA().hashCode(),
 							new ValuePair<Ellipsoid, Ellipsoid>(Reducedsamples.get(i).getA(),
 									Reducedsamples.get(j).getA()));
 
@@ -204,8 +204,6 @@ public class FindEllipsoids {
 
 			for (int j = 0; j < AllPointsofIntersect.get(i).Intersections.size(); ++j) {
 
-				
-
 				OvalRoi intersectionsRoi = new OvalRoi(
 						AllPointsofIntersect.get(i).Intersections.get(j)[0] - radiusdetection,
 						AllPointsofIntersect.get(i).Intersections.get(j)[1] - radiusdetection, 2 * radiusdetection,
@@ -227,7 +225,6 @@ public class FindEllipsoids {
 				newlineB.setStrokeWidth(2);
 				ov.add(newlineB);
 
-				
 			}
 
 		}
