@@ -3,7 +3,6 @@ package ellipsoidDetector;
 import java.util.ArrayList;
 
 import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
-import net.imglib2.algorithm.ransac.RansacModels.GeneralEllipsoid;
 import net.imglib2.util.Pair;
 
 public class Tangentobject {
