@@ -42,8 +42,8 @@ public class FindEllipsoids {
 
 		new ImageJ();
 
-		ImagePlus imp = new Opener().openImage("/Users/varunkapoor/Documents/Bubbles/ComplexCase.tif");
-		ImagePlus impPRE = new Opener().openImage("/Users/varunkapoor/Documents/Bubbles/ComplexCase.tif");
+		ImagePlus imp = new Opener().openImage("/Users/varunkapoor/Documents/Bubbles/ThreeEllipses.tif");
+		ImagePlus impPRE = new Opener().openImage("/Users/varunkapoor/Documents/Bubbles/ThreeEllipses.tif");
 		RandomAccessibleInterval<FloatType> inputimage = ImageJFunctions.convertFloat(imp);
 		RandomAccessibleInterval<FloatType> inputimageIlastik = ImageJFunctions.convertFloat(impPRE);
 		new Normalize();
@@ -91,7 +91,7 @@ public class FindEllipsoids {
 		double minpercent = 0.65;
 		int maxiter = 100;
 		final double minSeperation = 5;
-		
+		final int maxCircles = 5;
 		
 		int radiusdetection = 5;
 		Color colorDet = Color.GREEN;
@@ -110,15 +110,15 @@ public class FindEllipsoids {
 		
 		
 		// Using the ellipse model to do the fitting
-		ArrayList<Pair<Pair<Ellipsoid, GeneralEllipsoid>, List<Pair<RealLocalizable, FloatType>>>> Reducedsamples = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
-				.Allsamples(truths, outsideCutoffDistance, insideCutoffDistance, minpercent, numsol, maxiter, ndims);
+		ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>> Reducedsamples = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
+				.Allsamples(truths, outsideCutoffDistance, insideCutoffDistance, minpercent, numsol, maxiter, ndims, maxCircles);
 		
 		SortSegments.Sort(Reducedsamples);
 		for (int i = 0; i < Reducedsamples.size() - 1; ++i) {
 			
-			double[] center = Reducedsamples.get(i).getA().getA().getCenter();
+			double[] center = Reducedsamples.get(i).getA().getCenter();
 			
-			double[] centernext = Reducedsamples.get(i + 1).getA().getA().getCenter();
+			double[] centernext = Reducedsamples.get(i + 1).getA().getCenter();
 			
 			
 			double dist = Distance.DistanceSq(center, centernext);
@@ -132,18 +132,18 @@ public class FindEllipsoids {
 
 		for (int i = 0; i < Reducedsamples.size(); ++i) {
 
-			EllipseRoi ellipse = DisplayasROI.create2DEllipse(Reducedsamples.get(i).getA().getA().getCenter(),
-					new double[] { Reducedsamples.get(i).getA().getA().getCovariance()[0][0],
-							Reducedsamples.get(i).getA().getA().getCovariance()[0][1],
-							Reducedsamples.get(i).getA().getA().getCovariance()[1][1] });
+			EllipseRoi ellipse = DisplayasROI.create2DEllipse(Reducedsamples.get(i).getA().getCenter(),
+					new double[] { Reducedsamples.get(i).getA().getCovariance()[0][0],
+							Reducedsamples.get(i).getA().getCovariance()[0][1],
+							Reducedsamples.get(i).getA().getCovariance()[1][1] });
 			ellipseList.add(ellipse);
 			ellipse.setStrokeColor(Color.RED);
 			ellipse.setStrokeWidth(1);
 
-			System.out.println("Center :" + Reducedsamples.get(i).getA().getA().getCenter()[0] + " "
-					+ Reducedsamples.get(i).getA().getA().getCenter()[1] + " " + " Radius "
-					+ Reducedsamples.get(i).getA().getA().getRadii()[0] + " "
-					+ Reducedsamples.get(i).getA().getA().getRadii()[1]);
+			System.out.println("Center :" + Reducedsamples.get(i).getA().getCenter()[0] + " "
+					+ Reducedsamples.get(i).getA().getCenter()[1] + " " + " Radius "
+					+ Reducedsamples.get(i).getA().getRadii()[0] + " "
+					+ Reducedsamples.get(i).getA().getRadii()[1]);
 			ov.add(ellipse);
 
 		}
@@ -154,23 +154,18 @@ public class FindEllipsoids {
 
 		ArrayList<Tangentobject> AllPointsofIntersect = new ArrayList<Tangentobject>();
 
-		HashMap<Integer, Pair<GeneralEllipsoid, GeneralEllipsoid>> fitmap = new HashMap<Integer, Pair<GeneralEllipsoid, GeneralEllipsoid>>();
 		HashMap<Integer, Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new HashMap<Integer, Pair<Ellipsoid, Ellipsoid>>();
 		for (int i = 0; i < Reducedsamples.size(); ++i) {
 
 			for (int j = 0; j < Reducedsamples.size(); ++j) {
 
 				if (j != i) {
-					fitmap.put(
-							Reducedsamples.get(i).getA().getB().hashCode()
-									+ Reducedsamples.get(j).getA().getB().hashCode(),
-							new ValuePair<GeneralEllipsoid, GeneralEllipsoid>(Reducedsamples.get(i).getA().getB(),
-									Reducedsamples.get(j).getA().getB()));
+					
 					fitmapspecial.put(
-							Reducedsamples.get(i).getA().getB().hashCode()
-									+ Reducedsamples.get(j).getA().getB().hashCode(),
-							new ValuePair<Ellipsoid, Ellipsoid>(Reducedsamples.get(i).getA().getA(),
-									Reducedsamples.get(j).getA().getA()));
+							Reducedsamples.get(i).getA().hashCode()
+									+ Reducedsamples.get(j).getA().hashCode(),
+							new ValuePair<Ellipsoid, Ellipsoid>(Reducedsamples.get(i).getA(),
+									Reducedsamples.get(j).getA()));
 
 				}
 			}
@@ -180,9 +175,9 @@ public class FindEllipsoids {
 		// points
 		ArrayList<Integer> ellipsepairlist = new ArrayList<Integer>();
 
-		for (Map.Entry<Integer, Pair<GeneralEllipsoid, GeneralEllipsoid>> entry : fitmap.entrySet()) {
+		for (Map.Entry<Integer, Pair<Ellipsoid, Ellipsoid>> entry : fitmapspecial.entrySet()) {
 
-			Pair<GeneralEllipsoid, GeneralEllipsoid> ellipsepair = entry.getValue();
+			Pair<Ellipsoid, Ellipsoid> ellipsepair = entry.getValue();
 
 			int sum = entry.getKey();
 			boolean isfitted = false;
@@ -232,6 +227,7 @@ public class FindEllipsoids {
 				newlineB.setStrokeWidth(2);
 				ov.add(newlineB);
 
+				
 			}
 
 		}
