@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.Vector;
 
 import distanceTransform.CreateDistanceTransform;
+import distanceTransform.CreateWatershed;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.EllipseRoi;
@@ -17,6 +18,7 @@ import ij.gui.OvalRoi;
 import ij.gui.Overlay;
 import ij.io.Opener;
 import ij.plugin.frame.RoiManager;
+import mpicbg.imglib.algorithm.fft.FourierTransform.PreProcessing;
 import mpicbg.models.IllDefinedDataPointsException;
 import mpicbg.models.NotEnoughDataPointsException;
 import mpicbg.models.Point;
@@ -30,6 +32,7 @@ import net.imglib2.algorithm.stats.Normalize;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -44,7 +47,7 @@ public class FindEllipsoids {
 
 		new ImageJ();
 
-		ImagePlus imp = new Opener().openImage("/Users/varunkapoor/Documents/JLMData/Testcases/realtest-1.tif");
+		ImagePlus imp = new Opener().openImage("/Users/varunkapoor/Documents/Bubbles/RoiSet.tif");
 		RandomAccessibleInterval<FloatType> inputimage = ImageJFunctions.convertFloat(imp);
 		new Normalize();
 		FloatType minval = new FloatType(0);
@@ -56,30 +59,36 @@ public class FindEllipsoids {
 
 		ArrayList<EllipseRoi> ellipseList = new ArrayList<EllipseRoi>();
 
-		int MedianFilterRadi = 1;
-		int FlatFieldRadi = 10;
-		int label = 1;
+		
 
 		// Create Distance Transform Map
-		float threshold = Otsu.AutomaticThresholding(inputimage);
-		RandomAccessibleInterval<BitType> bitimg = Otsu.Getbinaryimage(inputimage, threshold);
+		float thresholdOrig = Otsu.AutomaticThresholding(inputimage);
+		RandomAccessibleInterval<BitType> bitimg = Otsu.Getbinaryimage(inputimage, thresholdOrig);
 		CreateDistanceTransform<FloatType> Dist = new CreateDistanceTransform<FloatType>(inputimage, bitimg);
 		Dist.process();
-		RandomAccessibleInterval<FloatType> inputimagePRE = Dist.getResult();
+		RandomAccessibleInterval<FloatType> inputimagePRE = 
+				preProcessing.Kernels.CannyEdgeandMean(Dist.getResult(), 5);
+		
+		
 		// Normalize the Distance Transformed image
 		Normalize.normalize(Views.iterable(inputimagePRE), minval, maxval);
-		threshold = Otsu.AutomaticThresholding(inputimagePRE);
+		float threshold = Otsu.AutomaticThresholding(inputimagePRE);
 		System.out.println("Threshold Value " + threshold);
 
 
-
+/*
+		// Watershed the image
+		CreateWatershed<FloatType> Water = new CreateWatershed<>(inputimage, bitimg);
+		Water.process();
+		RandomAccessibleInterval<IntType> inputimageINT = Water.getResult();
+		ImageJFunctions.show(inputimageINT);
 
 		ImagePlus impPre = ImageJFunctions.show(inputimagePRE);
 
 		impPre.setTitle("Distance Transformed image");
-
-		truths = ConnectedComponentCoordinates.GetCoordinates(inputimagePRE,
-				new FloatType(threshold));
+*/
+		truths = ConnectedComponentCoordinates.GetCoordinates(inputimage,
+				new FloatType(thresholdOrig));
 
 		System.out.println("Initial set of points " + truths.size());
 		Overlay ov = new Overlay();
@@ -92,12 +101,12 @@ public class FindEllipsoids {
 		// To consider what is a good ellipse, most of the ellipse points on the image
 		// must lie on the detection, how much percent of points lie on it is specified
 		// here
-		double minpercent = 0.25;
+		double minpercent = 0.65;
 
 		// Program rejects bad ellipses but in some cases there are no ellipses to be
 		// found but other shapes are present, this parameter tells the program how many
 		// max tries to find the ellipsoids
-		int maxiter = 100;
+		int maxiter = 30;
 
 		// In order to prevent overlapping detections, use this distance veto between
 		// centers of detected ellipsoids
@@ -105,9 +114,15 @@ public class FindEllipsoids {
 
 		// Expected number of ellipses to be found in an image (Put large value if
 		// uncertain)
-		final int maxCircles = 5;
+		final int maxCircles = 15;
 
 		int radiusdetection = 5;
+		
+		
+		final int maxSize = 200;
+		
+		
+		
 		Color colorDet = Color.GREEN;
 		Color colorLineA = Color.YELLOW;
 		Color colorLineB = Color.YELLOW;
@@ -128,7 +143,11 @@ public class FindEllipsoids {
 
 			double dist = Distance.DistanceSq(center, centernext);
 
-			if (dist < minSeperation * minSeperation)
+			double[] radi = Reducedsamples.get(i).getA().getRadii();
+			
+			double maxradius = Math.max(radi[0], radi[1]);
+			
+			if (dist < minSeperation * minSeperation || maxradius > maxSize )
 				Reducedsamples.remove(Reducedsamples.get(i));
 
 		}

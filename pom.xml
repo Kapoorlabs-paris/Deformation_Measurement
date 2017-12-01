@@ -47,12 +47,25 @@
 	</developers>
 	<contributors>
 		<contributor>
-			<name></name>
-			<url></url>
+			<name> Varun </name>
+			<url> </url>
 			<properties><id></id></properties>
 		</contributor>
 	</contributors>
-
+<scm>
+		<connection>scm:git:git://github.com/kapoorlab/Bubbleator</connection>
+		<developerConnection>scm:git:git@github.com:kapoorlab/Bubbleator</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://github.com/kapoorlab/Bubbleator</url>
+	</scm>
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/kapoorlab/Bubbleator/issues</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Travis CI</system>
+		<url>https://travis-ci.org/kapoorlab/Bubbleator</url>
+	</ciManagement>
 	<mailingLists>
 		<mailingList>
 			<name>ImageJ Forum</name>
@@ -61,11 +74,6 @@
 	</mailingLists>
 
 	
-	<issueManagement>
-		<system>GitHub Issues</system>
-		<url>https://github.com/kapoorlab/Bubbleator</url>
-	</issueManagement>
-
 	<properties>
 		<license.licenseName>gpl_v3</license.licenseName>
 		<license.copyrightOwners>Bubbleator developers.</license.copyrightOwners>
