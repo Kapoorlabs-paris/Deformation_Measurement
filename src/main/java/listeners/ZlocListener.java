@@ -1,0 +1,62 @@
+package listeners;
+
+import java.awt.TextComponent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
+
+import ij.IJ;
+import pluginTools.InteractiveEllipseFit;
+import pluginTools.InteractiveEllipseFit.ValueChange;
+import utility.ShowView;
+
+public class ZlocListener implements TextListener {
+
+	final InteractiveEllipseFit parent;
+
+	public ZlocListener(final InteractiveEllipseFit parent) {
+
+		this.parent = parent;
+
+	}
+
+	@Override
+	public void textValueChanged(TextEvent e) {
+		final TextComponent tc = (TextComponent) e.getSource();
+
+		tc.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+
+			}
+
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				String s = tc.getText();
+				if (arg0.getKeyChar() == KeyEvent.VK_ENTER) {
+					if (parent.fourthDimension > parent.fourthDimensionSize) {
+						IJ.log("Max frame number exceeded, moving to last frame instead");
+						parent.fourthDimension = parent.fourthDimensionSize;
+					} else
+						parent.fourthDimension = Integer.parseInt(s);
+					ShowView show = new ShowView(parent);
+					show.shownewZ();
+				 //   parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension, parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
+					
+					parent.zText.setText("Current Z location = " + parent.fourthDimension);
+				    parent.panelFirst.validate();
+				    parent.panelFirst.repaint();
+					parent.updatePreview(ValueChange.FOURTHDIM);
+				}
+
+			}
+		});
+
+	}
+}

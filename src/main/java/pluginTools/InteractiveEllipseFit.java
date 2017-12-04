@@ -14,6 +14,7 @@ import java.awt.Scrollbar;
 import java.awt.TextField;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.Border;
@@ -37,212 +39,429 @@ import javax.swing.table.DefaultTableModel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import ellipsoidDetector.TlocListener;
 import ij.IJ;
 import ij.ImageJ;
+import ij.ImagePlus;
+import ij.gui.Overlay;
+import ij.io.Opener;
 import ij.measure.ResultsTable;
 import ij.plugin.PlugIn;
+import listeners.TimeListener;
+import listeners.ZListener;
+import listeners.ZlocListener;
+import net.imglib2.Cursor;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
+import net.imglib2.view.Views;
 
 public class InteractiveEllipseFit implements PlugIn {
 
+	public String usefolder = IJ.getDirectory("imagej");
+	public String addToName = "EllipseFits";
+	public final int scrollbarSize = 10000;
+
+
+	public Overlay overlay;
+	public int thirdDimensionslider = 1;
+	public int thirdDimensionsliderInit = 1;
+	public int fourthDimensionslider = 1;
+	public int fourthDimensionsliderInit = 1;
+
+	public int thirdDimension;
+	public int fourthDimension;
+	public int thirdDimensionSize;
+	public int fourthDimensionSize;
+
+	public boolean isDone;
+	public static int MIN_SLIDER = 0;
+	public static int MAX_SLIDER = 500;
+	public int row;
+	public MouseListener ml;
+	public JProgressBar jpb;
+	public JLabel label = new JLabel("Fitting..");
+	public int Progressmin = 0;
+	public int Progressmax = 100;
+	public int max = Progressmax;
+	public File userfile;
+	Frame jFreeChartFrame;
+	public NumberFormat nf;
+	public XYSeriesCollection dataset;
+	JFreeChart chart;
+	public RandomAccessibleInterval<FloatType> originalimg;
+	ResultsTable rtAll;
+	public File inputfile;
+	public String inputdirectory;
+	public JLabel inputLabelwidth;
+	public TextField inputFieldwidth;
+	public JLabel inputLabelBins;
+	public TextField inputFieldBins;
+	public JLabel inputLabelIter;
+	public TextField inputFieldIter;
+	public JTable table;
+	public ImagePlus imp;
+	public int ndims;
+	public RandomAccessibleInterval<FloatType> CurrentView;
 	
-	 public String usefolder = IJ.getDirectory("imagej");
-	  public String addToName = "EllipseFits";
-	  public final int scrollbarSize = 1000;
-	  public final int scrollbarSizebig = 1000;
-	  
-	  public static int standardSensitivity = 4;
-	  public int sensitivity = standardSensitivity;
-	  public ArrayList<Pair<Double, Double>> timeseries;
-	  public ArrayList<Pair<Double, Double>> frequchirphist;
-	  int FrequInt;
-	  int ChirpInt;
-	  int PhaseInt;
-	  int BackInt; public boolean polymode = true;
-	  public boolean randommode = false;
-	  public boolean isDone;
-	  public static int MIN_SLIDER = 0;
-	  public static int MAX_SLIDER = 500;
-	  public int row;
-	  public static double MIN_FREQU = 0.0D;
-	  public static double MAX_FREQU = 30.0D;
-	  
-	  public static double MIN_CHIRP = 0.0D;
-	  public static double MAX_CHIRP = 40.0D;
-	  public boolean enableHigh = false;
-	  public double Lowfrequ = 2.6166666666666667D;
-	  public double Highfrequ = Lowfrequ / 2.0D;
-	  public double phase = 0.0D;
-	  public double back = 0.0D;
-	  
-	  public int numBins = 10;
-
-	  public int maxiter = 5000;
-	  public JProgressBar jpb;
-	  public JLabel label = new JLabel("Fitting..");
-	  public int Progressmin = 0;
-	  public int Progressmax = 100;
-	  public int max = Progressmax;
-	  public File userfile;
-	  Frame jFreeChartFrame;
-	  public NumberFormat nf;
-	  public XYSeriesCollection dataset;
-	  JFreeChart chart;
-	  ResultsTable rtAll;
-	  public File inputfile;
-	  public File[] inputfiles;
-	  public String inputdirectory;
-	  public JLabel inputLabelwidth;
-	  public TextField inputFieldwidth;
-	  public JLabel inputLabelBins;
-	  public TextField inputFieldBins;
-	  public JLabel inputLabelIter;
-	  public TextField inputFieldIter;
-	  public JTable table;
-	  
-	  public InteractiveEllipseFit() {
-	    nf = NumberFormat.getInstance(Locale.ENGLISH);
-	    nf.setMaximumFractionDigits(3);
-	  }
-	  
-	  public InteractiveEllipseFit(File[] file)
-	  {
-	    inputfiles = file;
-	    inputdirectory = file[0].getParent();
-	    
-
-	    nf = NumberFormat.getInstance(Locale.ENGLISH);
-	    nf.setMaximumFractionDigits(3);
-	  }
-	  
-	  public void run(String arg0) {
-	    frequchirphist = new ArrayList();
-	    rtAll = new ResultsTable();
-	    jpb = new JProgressBar();
-	    Card();
-	  }
-	  
-
-	  public JFrame Cardframe = new JFrame("Welcome to Chirp Fits ");
-	  public JPanel panelCont = new JPanel();
-	  public JPanel panelFirst = new JPanel();
-	  public JComboBox<String> ChooseModel;
-	  public JPanel Panelmodel = new JPanel();
-	  private JPanel Panelparam = new JPanel();
-	  public JPanel Panelfile = new JPanel();
-	  public static final Insets insets = new Insets(10, 0, 0, 0);
-	  JPanel PanelDirectory = new JPanel();
-	  public final GridBagLayout layout = new GridBagLayout();
-	  public final GridBagConstraints c = new GridBagConstraints();
-	  public Border selectfile = new CompoundBorder(new TitledBorder("Select file"), new EmptyBorder(c.insets));
-	  Border selectparam = new CompoundBorder(new TitledBorder("Select Chirp Fit parameters"), new EmptyBorder(c.insets));
-	  Border Model = new CompoundBorder(new TitledBorder("Select model"), new EmptyBorder(c.insets));
-	  Border selectdirectory = new CompoundBorder(new TitledBorder("Load directory of TxT files"), new EmptyBorder(c.insets));
-	  public JScrollPane scrollPane;
-	  public JFileChooser chooserA;
-	  public String choosertitleA;
-	  public final JButton AutoFit = new JButton("Auto-Fit all files");
-	  public final Button Frequhist = new Button("Frequency Histogram");
-	  
-
-	  public void Card()
-	  {
-	    CardLayout cl = new CardLayout();
-	    
-	    DefaultTableModel userTableModel = new DefaultTableModel(new Object[0], 0)
-	    {
-	      public boolean isCellEditable(int row, int column) {
-	        return false;
-	      }
-	    };
-	    
-	    if (inputfiles != null) {
-	      for (int i = 0; i < inputfiles.length; i++)
-	      {
-	        String[] currentfile = { inputfiles[i].getName() };
-	        userTableModel.addRow(currentfile);
-	      }
-	    }
-	    
-	    table = new JTable(userTableModel);
-	    
-	    table.setFillsViewportHeight(true);
-	    
-	    table.setAutoResizeMode(0);
-	    
-	    scrollPane = new JScrollPane(table);
-	    scrollPane.setMinimumSize(new Dimension(200, 200));
-	    scrollPane.setPreferredSize(new Dimension(200, 200));
-	    
-
-	    scrollPane.getViewport().add(table);
-	    scrollPane.setAutoscrolls(true);
-	    
-	    panelCont.setLayout(cl);
-	    
-	    panelCont.add(panelFirst, "1");
-	    
-	    panelFirst.setName("Chirp Fits");
-	    Panelmodel.setLayout(this.layout);
-	    Panelparam.setLayout(this.layout);
-	    Panelfile.setLayout(this.layout);
-	    PanelDirectory.setLayout(this.layout);
-	    
-
-
-	    Cardframe.add(panelCont, "Center");
-	    Cardframe.add(jpb, "Last");
-	    
-	    Cardframe.setDefaultCloseOperation(2);
-	    Cardframe.pack();
-	    Cardframe.setVisible(true);
-	    Cardframe.pack();
-	  }
-	  
-	  public void displayclicked(int trackindex)
-	  {
-	  
-	  }
-	  
-
-
-
-
-
-
+	private Label inputLabelZ,  inputLabelT;
+	public TextField inputFieldZ;
+	public TextField inputFieldT;
 	
+	public static enum ValueChange {
+		ROI, ALL, THIRDDIM, FOURTHDIM, THIRDDIMmouse, FOURTHDIMmouse
+	}
 
+	public void setTime(final int value) {
+		thirdDimensionslider = value;
+		thirdDimensionsliderInit = 1;
+	}
 
+	public int getTimeMax() {
 
-	  public static double computeValueFromScrollbarPosition(int scrollbarPosition, int scrollbarMax, double minValue, double maxValue)
-	  {
-	    return minValue + scrollbarPosition / scrollbarMax * (maxValue - minValue);
-	  }
-	  
-	  public static int computeScrollbarPositionFromValue(int scrollbarMax, double value, double minValue, double maxValue)
-	  {
-	    return (int)Math.round((value - minValue) / (maxValue - minValue) * scrollbarMax);
-	  }
-	  
-	  public int computeScrollbarPositionFromValue(double sigma, float min, float max, int scrollbarSize)
-	  {
-	    return round((sigma - min) / (max - min) * scrollbarSize);
-	  }
-	  
-	  public static int round(double value) {
-	    return (int)(value + 0.5D * Math.signum(value));
-	  }
-	  
-	  public static void main(String[] args)
-	  {
-	    new ImageJ();
-	    
-	    JFrame frame = new JFrame("");
-	    EllipseFileChooser panel = new EllipseFileChooser();
-	    
-	    frame.getContentPane().add(panel, "Center");
-	    frame.setSize(panel.getPreferredSize());
-	  }
+		return thirdDimensionSize;
+	}
+	
+	public void setZ(final int value) {
+		fourthDimensionslider = value;
+		fourthDimensionsliderInit = 1;
+	}
+
+	public int getZMax() {
+
+		return fourthDimensionSize;
+	}
+
+	public InteractiveEllipseFit() {
+		nf = NumberFormat.getInstance(Locale.ENGLISH);
+		nf.setMaximumFractionDigits(3);
+	}
+
+	public InteractiveEllipseFit(RandomAccessibleInterval<FloatType> originalimg, File file) {
+		this.inputfile = file;
+		this.inputdirectory = file.getParent();
+		this.originalimg = originalimg;
+		this.ndims = originalimg.numDimensions();
+	
+		nf = NumberFormat.getInstance(Locale.ENGLISH);
+		nf.setMaximumFractionDigits(3);
+	}
+	
+	public InteractiveEllipseFit(RandomAccessibleInterval<FloatType> originalimg) {
+		this.inputfile = null;
+		this.inputdirectory = null;
+		this.originalimg = originalimg;
+		this.ndims = originalimg.numDimensions();
+	
+		nf = NumberFormat.getInstance(Locale.ENGLISH);
+		nf.setMaximumFractionDigits(3);
+	}
 	
 	
+
+	public void run(String arg0) {
+		rtAll = new ResultsTable();
+		jpb = new JProgressBar();
+
+		
+		
+		if (ndims < 3) {
+
+			thirdDimensionSize = 0;
+			fourthDimensionSize = 0;
+		}
+
+		if (ndims == 3) {
+
+			thirdDimension = 1;
+			fourthDimensionSize = 0;
+
+			thirdDimensionSize = (int) originalimg.dimension(2);
+
+		}
+
+		if (ndims == 4) {
+
+			thirdDimension = 1;
+			fourthDimension = 1;
+
+			thirdDimensionSize = (int) originalimg.dimension(2);
+			fourthDimensionSize = (int) originalimg.dimension(3);
+		}
+
+		if (ndims > 4) {
+
+			System.out.println("Image has wrong dimensionality, upload an XYZT/XYT/XYZ/XY image");
+			return;
+		}
+
+		
+		setTime(thirdDimension);
+        setZ(fourthDimension);		
+		CurrentView = utility.Slicer.getCurrentView(originalimg, thirdDimension,
+				thirdDimensionSize, fourthDimension, fourthDimensionSize);
+		imp = ImageJFunctions.show(CurrentView);
+		imp.setTitle("Active image" + " " +  "time point : " + thirdDimension + " " + " Z: " + fourthDimension );
+		
+		Card();
+	}
+
+	
+	public void updatePreview(final ValueChange change) {
+		
+		boolean roiChanged = false;
+		overlay = imp.getOverlay();
+
+		if (overlay == null) {
+
+			overlay = new Overlay();
+			imp.setOverlay(overlay);
+		}
+
+		if (change == ValueChange.THIRDDIM) {
+			
+			if (imp == null){
+				imp = ImageJFunctions.show(CurrentView);
+			
+			}
+			
+			else {
+			
+				final float[] pixels = (float[]) imp.getProcessor().getPixels();
+				final Cursor<FloatType> c = Views.iterable(CurrentView).cursor();
+
+				for (int i = 0; i < pixels.length; ++i)
+					pixels[i] = (float) c.next().get();
+
+				imp.updateAndDraw();
+
+			}
+
+			imp.setTitle("Active image" + " " +  "time point : " + thirdDimension + " " + " Z: " + fourthDimension );
+		
+			}
+		
+		if (change == ValueChange.THIRDDIMmouse) {
+		
+			if (imp == null){
+				imp = ImageJFunctions.show(CurrentView);
+			
+			}
+			
+			else {
+			
+				final float[] pixels = (float[]) imp.getProcessor().getPixels();
+				final Cursor<FloatType> c = Views.iterable(CurrentView).cursor();
+
+				for (int i = 0; i < pixels.length; ++i)
+					pixels[i] = c.next().get();
+
+				imp.updateAndDraw();
+
+			}
+
+			imp.setTitle("Active image" + " " +  "time point : " + thirdDimension + " " + " Z: " + fourthDimension );
+		
+			imp.getCanvas().removeMouseListener(ml);
+			
+			}
+		
+		if (change == ValueChange.FOURTHDIM) {
+			
+			if (imp == null){
+				imp = ImageJFunctions.show(CurrentView);
+			
+			}
+			
+			else {
+			
+				final float[] pixels = (float[]) imp.getProcessor().getPixels();
+				final Cursor<FloatType> c = Views.iterable(CurrentView).cursor();
+
+				for (int i = 0; i < pixels.length; ++i)
+					pixels[i] = (float) c.next().get();
+
+				imp.updateAndDraw();
+
+			}
+
+			imp.setTitle("Active image" + " " +  "time point : " + thirdDimension + " " + " Z: " + fourthDimension );
+		
+			}
+		
+		if (change == ValueChange.FOURTHDIMmouse) {
+			
+			if (imp == null){
+				imp = ImageJFunctions.show(CurrentView);
+			
+			}
+			
+			else {
+			
+				final float[] pixels = (float[]) imp.getProcessor().getPixels();
+				final Cursor<FloatType> c = Views.iterable(CurrentView).cursor();
+
+				for (int i = 0; i < pixels.length; ++i)
+					pixels[i] = c.next().get();
+
+				imp.updateAndDraw();
+
+			}
+
+			imp.setTitle("Active image" + " " +  "time point : " + thirdDimension + " " + " Z: " + fourthDimension );
+		
+			imp.getCanvas().removeMouseListener(ml);
+			
+			}
+		
+		
+	}
+	
+	
+	
+	public JFrame Cardframe = new JFrame("Ellipsoid detector");
+	public JPanel panelCont = new JPanel();
+	public JPanel panelFirst = new JPanel();
+	private JPanel Timeselect = new JPanel();
+    private int SizeX = 500;
+    private int SizeY = 200;
+	private JPanel Zselect = new JPanel();
+	public Label timeText = new Label("Current time point = " + thirdDimension, Label.CENTER);
+	public Label zText = new Label("Current Z location = " + fourthDimension, Label.CENTER);
+
+	final String timestring = "Current Time point";
+	final String zstring = "Current Z location";
+	public static final Insets insets = new Insets(10, 0, 0, 0);
+	public final GridBagLayout layout = new GridBagLayout();
+	public final GridBagConstraints c = new GridBagConstraints();
+	Border selectparam = new CompoundBorder(new TitledBorder("Select Chirp Fit parameters"), new EmptyBorder(c.insets));
+	Border Model = new CompoundBorder(new TitledBorder("Select model"), new EmptyBorder(c.insets));
+	public JScrollPane scrollPane;
+	public JFileChooser chooserA;
+	public String choosertitleA;
+	public JScrollBar timeslider = new JScrollBar(Scrollbar.HORIZONTAL, thirdDimensionsliderInit, 10, 0,
+			10 + scrollbarSize);
+	public JScrollBar zslider = new JScrollBar(Scrollbar.HORIZONTAL, fourthDimensionsliderInit, 10, 0,
+			10 + scrollbarSize);
+	public void Card() {
+		CardLayout cl = new CardLayout();
+
+		panelCont.setLayout(cl);
+
+		panelCont.add(panelFirst, "1");
+
+		panelFirst.setName("Angle Tool for ellipsoids");
+
+		Timeselect.setLayout(layout);
+
+		Zselect.setLayout(layout);
+
+	
+		
+		inputLabelZ = new Label("Curent Z: ");
+		inputFieldZ = new TextField(3);
+
+		inputFieldZ.setText(Float.toString(fourthDimension));
+		
+		inputLabelT = new Label("Curent T: ");
+		inputFieldT = new TextField(3);
+
+		inputFieldT.setText(Float.toString(thirdDimension));
+	
+		
+		
+		Border timeborder = new CompoundBorder(new TitledBorder("Select time"), new EmptyBorder(c.insets));
+		Border zborder = new CompoundBorder(new TitledBorder("Select Z"), new EmptyBorder(c.insets));
+	
+
+		if (ndims >= 3) {
+
+			// Put time slider
+
+			Timeselect.add(timeText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+
+			
+			Timeselect.add(timeslider, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			
+			Timeselect.add(inputFieldT, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			
+			Timeselect.setBorder(timeborder);
+			Timeselect.setMinimumSize(new Dimension(SizeX,SizeY));
+			Timeselect.setPreferredSize(new Dimension(SizeX,SizeY));
+			panelFirst.add(Timeselect, new GridBagConstraints(0, 0, 5, 1, 0.0, 0.0, GridBagConstraints.EAST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			
+		}
+
+		if (ndims > 3) {
+
+			// Put z slider
+			
+
+			Zselect.add(zText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+
+			Zselect.add(zslider, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+
+			Zselect.add(inputFieldZ, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			
+			Zselect.setBorder(zborder);
+			Zselect.setMinimumSize(new Dimension(SizeX,SizeY));
+			Zselect.setPreferredSize(new Dimension(SizeX,SizeY));
+			panelFirst.add(Zselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			
+			
+
+		}
+
+		timeslider.addAdjustmentListener(new TimeListener(this, timeText, timestring, thirdDimensionsliderInit,
+				thirdDimensionSize, scrollbarSize, timeslider));
+		zslider.addAdjustmentListener(new ZListener(this, zText, zstring, fourthDimensionsliderInit,
+				fourthDimensionSize, scrollbarSize, zslider));
+		inputFieldZ.addTextListener(new ZlocListener(this));
+		inputFieldT.addTextListener(new TlocListener(this));
+		
+		
+		
+		panelFirst.setMinimumSize(new Dimension(SizeX,SizeY));
+		
+		panelFirst.setVisible(true);
+		cl.show(panelCont, "1");
+		Cardframe.add(panelCont, "Center");
+		Cardframe.add(jpb, "Last");
+
+		Cardframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		Cardframe.pack();
+		Cardframe.setVisible(true);
+	}
+
+	public void displayclicked(int trackindex) {
+
+	}
+
+
+
+
+	public static int round(double value) {
+		return (int) (value + 0.5D * Math.signum(value));
+	}
+
+	public static void main(String[] args) {
+		new ImageJ();
+		ImagePlus impA = new Opener().openImage("/Users/varunkapoor/Documents/JLMData/Hyperstack_ML7.tif");
+		impA.show();
+		JFrame frame = new JFrame("");
+		EllipseFileChooser panel = new EllipseFileChooser();
+
+		frame.getContentPane().add(panel, "Center");
+		frame.setSize(panel.getPreferredSize());
+	}
+
 }
