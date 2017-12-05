@@ -30,24 +30,23 @@ public class ZListener implements AdjustmentListener {
 			this.scrollbarSize = scrollbarSize;
 
 			this.deltaScrollbar = deltaScrollbar;
-			deltaScrollbar.addMouseMotionListener(new EllipseNonStandardMouseListener(parent, ValueChange.FOURTHDIM));
+			deltaScrollbar.addMouseMotionListener(new EllipseNonStandardMouseListener(parent, ValueChange.FOURTHDIMmouse));
 			deltaScrollbar.setBlockIncrement(1);
 		}
 
 		@Override
 		public void adjustmentValueChanged(AdjustmentEvent e) {
-			parent.fourthDimension = (int) utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize);
+			parent.thirdDimension = (int) utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize);
 		
 			deltaScrollbar
-					.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension, min, max, scrollbarSize));
+					.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension, min, max, scrollbarSize));
 
-			label.setText(string +  " = "  + parent.fourthDimension);
-			parent.inputFieldZ.setText(Float.toString(parent.fourthDimension));
+			label.setText(string +  " = "  + parent.thirdDimension);
+			parent.inputFieldZ.setText(Integer.toString(parent.thirdDimension));
 			parent.panelFirst.validate();
 			parent.panelFirst.repaint();
 			ShowView show = new ShowView(parent);
 			show.shownewZ();
-
 		}
 		
 	

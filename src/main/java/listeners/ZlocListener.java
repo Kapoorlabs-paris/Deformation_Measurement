@@ -15,16 +15,19 @@ public class ZlocListener implements TextListener {
 
 	final InteractiveEllipseFit parent;
 
-	public ZlocListener(final InteractiveEllipseFit parent) {
+	boolean pressed;
+	public ZlocListener(final InteractiveEllipseFit parent, boolean pressed) {
 
 		this.parent = parent;
 
+		this.pressed = pressed;
 	}
 
 	@Override
 	public void textValueChanged(TextEvent e) {
 		final TextComponent tc = (TextComponent) e.getSource();
 
+		
 		tc.addKeyListener(new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent arg0) {
@@ -33,30 +36,39 @@ public class ZlocListener implements TextListener {
 
 			@Override
 			public void keyReleased(KeyEvent arg0) {
-
+				
+				if (arg0.getKeyChar() == KeyEvent.VK_ENTER ) {
+					
+					
+					pressed = false;
+					
+				}
+				
+				
 			}
 
 			@Override
 			public void keyPressed(KeyEvent arg0) {
 				String s = tc.getText();
-				if (arg0.getKeyChar() == KeyEvent.VK_ENTER) {
-					if (parent.fourthDimension > parent.fourthDimensionSize) {
+				if (arg0.getKeyChar() == KeyEvent.VK_ENTER && !pressed) {
+					pressed = true;
+					if (parent.thirdDimension > parent.thirdDimensionSize) {
 						IJ.log("Max frame number exceeded, moving to last frame instead");
-						parent.fourthDimension = parent.fourthDimensionSize;
+						parent.thirdDimension = parent.thirdDimensionSize;
 					} else
-						parent.fourthDimension = Integer.parseInt(s);
+						parent.thirdDimension = Integer.parseInt(s);
 					ShowView show = new ShowView(parent);
 					show.shownewZ();
-				 //   parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension, parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
 					
-					parent.zText.setText("Current Z location = " + parent.fourthDimension);
-				    parent.panelFirst.validate();
-				    parent.panelFirst.repaint();
-					parent.updatePreview(ValueChange.FOURTHDIM);
+					parent.zText.setText("Current Z location = " + parent.thirdDimension);
+					parent.updatePreview(ValueChange.THIRDDIMmouse);
+					
 				}
 
 			}
 		});
+		
+		
 
 	}
 }

@@ -1,4 +1,4 @@
-package ellipsoidDetector;
+package listeners;
 
 import java.awt.TextComponent;
 import java.awt.event.KeyEvent;
@@ -16,10 +16,11 @@ public class TlocListener implements TextListener {
 	
 	final InteractiveEllipseFit parent;
 	
-	
-	public TlocListener(final InteractiveEllipseFit parent) {
+	boolean pressed;
+	public TlocListener(final InteractiveEllipseFit parent, final boolean pressed) {
 		
 		this.parent = parent;
+		this.pressed = pressed;
 		
 	}
 	
@@ -36,26 +37,31 @@ public class TlocListener implements TextListener {
 			    @Override
 			    public void keyReleased(KeyEvent arg0) {
 			    	
+			    	if (arg0.getKeyChar() == KeyEvent.VK_ENTER ) {
+						
+						
+						pressed = false;
+						
+					}
 
 			    }
 
 			    @Override
 			    public void keyPressed(KeyEvent arg0) {
 			    	String s = tc.getText();
-			    	if (arg0.getKeyChar() == KeyEvent.VK_ENTER)
-					 {
-			    		if (parent.thirdDimension > parent.thirdDimensionSize) {
+			    	if (arg0.getKeyChar() == KeyEvent.VK_ENTER&& !pressed) {
+						pressed = true;
+			    		if (parent.fourthDimension > parent.fourthDimensionSize) {
 							IJ.log("Max frame number exceeded, moving to last frame instead");
-							parent.thirdDimension = parent.thirdDimensionSize;
+							parent.fourthDimension = parent.fourthDimensionSize;
 						} else
-							parent.thirdDimension = Integer.parseInt(s);
+							parent.fourthDimension = Integer.parseInt(s);
 			    		ShowView show = new ShowView(parent);
 					show.shownewT();
-					// parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension, parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
-					parent.timeText.setText("Current time point = " + parent.thirdDimension);
-					    parent.panelFirst.validate();
-					    parent.panelFirst.repaint();
-			    		parent.updatePreview(ValueChange.THIRDDIM);
+					parent.timeText.setText("Current time point = " + parent.fourthDimension);
+					parent.updatePreview(ValueChange.FOURTHDIMmouse);
+					
+			    		
 					 }
 
 			    }

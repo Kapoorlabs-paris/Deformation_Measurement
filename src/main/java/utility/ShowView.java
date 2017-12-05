@@ -18,9 +18,9 @@ public class ShowView {
 	
 	public void shownewZ() {
 
-		if (parent.fourthDimension > parent.fourthDimensionSize) {
+		if (parent.thirdDimension > parent.thirdDimensionSize) {
 			IJ.log("Max Z stack exceeded, moving to last Z instead");
-			parent.fourthDimension = parent.fourthDimensionSize;
+			parent.thirdDimension = parent.thirdDimensionSize;
 			
 			
 			parent.CurrentView = utility.Slicer.getCurrentView(parent.originalimg, parent.thirdDimension,
@@ -40,9 +40,9 @@ public class ShowView {
 	
 	public void shownewT() {
 
-		if (parent.thirdDimension > parent.thirdDimensionSize) {
+		if (parent.fourthDimension > parent.fourthDimensionSize) {
 			IJ.log("Max time point exceeded, moving to last time point instead");
-			parent.thirdDimension = parent.thirdDimensionSize;
+			parent.fourthDimension = parent.fourthDimensionSize;
 			
 			
 			parent.CurrentView = utility.Slicer.getCurrentView(parent.originalimg, parent.thirdDimension,
