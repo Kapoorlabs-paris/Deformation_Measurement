@@ -54,6 +54,7 @@ import ij.io.Opener;
 import ij.measure.ResultsTable;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.RoiManager;
+import listeners.AngleListener;
 import listeners.DisplayRoiListener;
 import listeners.EllipseNonStandardMouseListener;
 import listeners.RListener;
@@ -65,7 +66,10 @@ import listeners.ZlocListener;
 import mpicbg.imglib.util.Util;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.view.Views;
@@ -83,6 +87,7 @@ public class InteractiveEllipseFit implements PlugIn {
 
 
 	public Overlay overlay;
+	public Overlay emptyoverlay;
 	public int thirdDimensionslider = 1;
 	public int thirdDimensionsliderInit = 1;
 	public int fourthDimensionslider = 1;
@@ -131,10 +136,13 @@ public class InteractiveEllipseFit implements PlugIn {
 	public HashMap<String, Roiobject> ZTRois;
 	public HashMap<String,Roiobject> DefaultZTRois;
 	public ImagePlus imp;
+	public ImagePlus emptyimp;
 	public int ndims;
 	public RandomAccessibleInterval<FloatType> CurrentView;
 	public Color confirmedRois = Color.BLUE;
 	public Color defaultRois = Color.YELLOW;
+	public Color colorChange = Color.PINK;
+	public Color colorInChange = Color.RED;
 	public int[] Clickedpoints;
 	private Label inputLabelZ,  inputLabelT;
 	public TextField inputFieldZ;
@@ -142,7 +150,8 @@ public class InteractiveEllipseFit implements PlugIn {
 	public TextField inputFieldT;
 	public boolean isCreated = false;
 	public RoiManager roimanager;
-	public String uniqueID;
+	public String uniqueID, tmpID;
+	public RandomAccessibleInterval<BitType> empty;
 	public static enum ValueChange {
 		ROI, ALL, THIRDDIMmouse, FOURTHDIMmouse, DISPLAYROI, RADIUS
 	}
@@ -244,6 +253,18 @@ public class InteractiveEllipseFit implements PlugIn {
 		
 		Card();
 		
+		
+		//Create empty Hyperstack
+		
+	     empty = new ArrayImgFactory<BitType>().create(originalimg, new BitType());
+	 	roimanager = RoiManager.getInstance();
+
+		if (roimanager == null) {
+			roimanager = new RoiManager();
+		}
+		
+		
+				
 		updatePreview(ValueChange.ALL);
 	}
 
@@ -256,7 +277,9 @@ public class InteractiveEllipseFit implements PlugIn {
 			roimanager = new RoiManager();
 		}
 
+	//	
 		uniqueID = Integer.toString(thirdDimension) + Integer.toString(fourthDimension);
+		tmpID = Float.toString(thirdDimension) + Float.toString(fourthDimension);
 		overlay = imp.getOverlay();
 
 		if (overlay == null) {
@@ -265,13 +288,42 @@ public class InteractiveEllipseFit implements PlugIn {
 			imp.setOverlay(overlay);
 		}
 		
-	
+    if (change == ValueChange.DISPLAYROI) {
+			
+		
+			Roi[] Rois = roimanager.getRoisAsArray();
+			Roiobject CurrentRoi = new Roiobject(Rois, thirdDimension, fourthDimension, true);
+			
+			
+			
+			if (ZTRois.get(tmpID)==null) {
+			
+		
+			   ZTRois.put(tmpID, CurrentRoi);
+
+			
+		  
+		}
+				 else {
+				   
+					   ZTRois.remove(tmpID);
+					
+					   ZTRois.put(tmpID, CurrentRoi);
+					   
+				   }
+			
+			
+			
+				DisplayOnly();	
+			
+		}
 		
 		if (change == ValueChange.ROI) {
 			
 			
 			
 			DefaultZTRois.clear();
+		//	roimanager.runCommand("show all");
 			Roi[] Rois = roimanager.getRoisAsArray();
 			Roiobject CurrentRoi = new Roiobject(Rois, thirdDimension, fourthDimension, true);
 			
@@ -281,15 +333,10 @@ public class InteractiveEllipseFit implements PlugIn {
 			if (ZTRois.get(uniqueID)==null) {
 			
 		
-			
-		
-			
-		   
 			   ZTRois.put(uniqueID, CurrentRoi);
 
 			
 		  
-			Display();
 		}
 				 else {
 				   
@@ -298,11 +345,20 @@ public class InteractiveEllipseFit implements PlugIn {
 					   ZTRois.put(uniqueID, CurrentRoi);
 					   
 				   }
+			
+			
+			
+			if (ZTRois.get(uniqueID) == null)
+				DisplayDefault();
+				else
+				Display();	
+			
 		}
 		
 		
 		if (change == ValueChange.THIRDDIMmouse) {
 		
+			
 			if (imp == null){
 				imp = ImageJFunctions.show(CurrentView);
 			
@@ -366,6 +422,8 @@ public class InteractiveEllipseFit implements PlugIn {
 	public  void Display(){
 		
 	overlay.clear();
+	
+	
 		if(ZTRois.size() > 0) {
 		
 
@@ -402,9 +460,61 @@ public class InteractiveEllipseFit implements PlugIn {
 	}
 	}
 	
+	public  void DisplayOnly(){
+		
+		overlay.clear();
+		
+		
+			if(ZTRois.size() > 0) {
+			
+
+				for (Map.Entry<String, Roiobject> entry: ZTRois.entrySet()) {
+					
+					Roiobject currentobject = entry.getValue();
+			
+				if(currentobject.fourthDimension == fourthDimension && currentobject.thirdDimension == thirdDimension) {
+					
+
+					
+					for (int indexx = 0; indexx < currentobject.roilist.length; ++indexx) {
+						
+						
+						Roi or = currentobject.roilist[indexx];
+						
+						
+						if (or== nearestRoiCurr) {
+							
+							
+							or.setStrokeColor(colorInChange);
+							
+						}
+						
+				
+						
+						
+						overlay.add(or);
+					}
+					
+					break;
+				}
+				
+				
+				
+				}
+			imp.updateAndDraw();
+			MarkNew mark = new MarkNew(this);
+			mark.mark();
+			SelectNew show = new SelectNew(this);
+		    show.select();
+			
+		}
+		}
+	
 	public  void DisplayDefault(){
 		
 		overlay.clear();
+		
+	
 			if(DefaultZTRois.size() > 0) {
 			
 
@@ -584,6 +694,9 @@ public class InteractiveEllipseFit implements PlugIn {
 		rslider.addAdjustmentListener(new RListener(this, rText, rstring, radiusMin,
 				radiusMax, scrollbarSize, rslider));
 		
+		
+		
+		Anglebutton.addActionListener(new AngleListener(this));
 		Roibutton.addActionListener(new RoiListener(this));
 		inputFieldZ.addTextListener(new ZlocListener(this, false));
 		inputFieldT.addTextListener(new TlocListener(this, false));

@@ -1,5 +1,6 @@
 package utility;
 
+import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 
@@ -17,14 +18,30 @@ public class LeftClick {
 public static void LeftRightClick(int x, int y, MouseEvent e, InteractiveEllipseFit parent){
 		
 
-	int index =	parent.roimanager.getRoiIndex(parent.nearestRoiCurr);
 	
-		if(SwingUtilities.isLeftMouseButton(e) && e.isShiftDown()){
-			
+	
+	
+	if(SwingUtilities.isLeftMouseButton(e) && !e.isShiftDown() ){
 		
-			
-			parent.roimanager.select(index);
-		}
+		
+
+		int index =	parent.roimanager.getRoiIndex(parent.nearestRoiCurr);
+		parent.roimanager.select(index);
+		parent.nearestRoiCurr.setStrokeColor(parent.colorChange);
+	
+		
+		parent.imp.updateAndDraw();
+		
+		parent.updatePreview(ValueChange.DISPLAYROI);
+	}
+	
+	
+	if(SwingUtilities.isLeftMouseButton(e) && e.isShiftDown() ){
+		
+		parent.updatePreview(ValueChange.ROI);
+		
+	}
+		
 		
 	
 		

@@ -63,7 +63,11 @@ public class FindEllipsoids {
 
 		// Create Distance Transform Map
 		float thresholdOrig = Otsu.AutomaticThresholding(inputimage);
+		
+		/*
 		RandomAccessibleInterval<BitType> bitimg = Otsu.Getbinaryimage(inputimage, thresholdOrig);
+
+		
 		CreateDistanceTransform<FloatType> Dist = new CreateDistanceTransform<FloatType>(inputimage, bitimg);
 		Dist.process();
 		RandomAccessibleInterval<FloatType> inputimagePRE = 
@@ -75,7 +79,7 @@ public class FindEllipsoids {
 		float threshold = Otsu.AutomaticThresholding(inputimagePRE);
 		System.out.println("Threshold Value " + threshold);
 
-
+*/
 /*
 		// Watershed the image
 		CreateWatershed<FloatType> Water = new CreateWatershed<>(inputimage, bitimg);
