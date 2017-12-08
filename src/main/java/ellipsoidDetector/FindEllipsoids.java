@@ -57,7 +57,6 @@ public class FindEllipsoids {
 
 		List<Pair<RealLocalizable, FloatType>> truths = new ArrayList<Pair<RealLocalizable, FloatType>>();
 
-		ArrayList<EllipseRoi> ellipseList = new ArrayList<EllipseRoi>();
 
 		
 
@@ -162,7 +161,6 @@ public class FindEllipsoids {
 					new double[] { Reducedsamples.get(i).getA().getCovariance()[0][0],
 							Reducedsamples.get(i).getA().getCovariance()[0][1],
 							Reducedsamples.get(i).getA().getCovariance()[1][1] });
-			ellipseList.add(ellipse);
 			ellipse.setStrokeColor(Color.RED);
 			ellipse.setStrokeWidth(1);
 

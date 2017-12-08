@@ -8,8 +8,8 @@ import net.imglib2.util.Pair;
 public class Tangentobject {
 
 	
-	final ArrayList<double[]> Intersections;
-	final Pair<Ellipsoid, Ellipsoid> ellipsepair;
+	public final ArrayList<double[]> Intersections;
+	public final Pair<Ellipsoid, Ellipsoid> ellipsepair;
 	
 	
 	public Tangentobject(final ArrayList<double[]> Intersections, final Pair<Ellipsoid, Ellipsoid> ellipsepair) {

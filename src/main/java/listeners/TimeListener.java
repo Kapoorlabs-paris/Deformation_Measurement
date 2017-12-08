@@ -7,6 +7,9 @@ import java.awt.event.AdjustmentListener;
 import javax.swing.JScrollBar;
 
 import ij.IJ;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.type.logic.BitType;
 import pluginTools.InteractiveEllipseFit;
 import pluginTools.InteractiveEllipseFit.ValueChange;
 import utility.ShowView;
@@ -48,6 +51,7 @@ public class TimeListener implements AdjustmentListener {
 
 		parent.inputFieldT.setText(Integer.toString(parent.fourthDimension));
 	
+		
 		ShowView show = new ShowView(parent);
 		show.shownewT();
 

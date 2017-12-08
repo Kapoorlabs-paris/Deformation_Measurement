@@ -57,6 +57,7 @@ public class MarkNew {
                 }
                 parent.nearestRoiCurr = NearestRoi.getNearestRois(currentobject, loc.get(0), parent);
             
+                if(parent.nearestRoiCurr!=null) {
                 parent.nearestRoiCurr.setStrokeColor(Color.ORANGE);
                
                 if (lastnearest!=parent.nearestRoiCurr && lastnearest!= null)
@@ -66,6 +67,7 @@ public class MarkNew {
                 lastnearest = parent.nearestRoiCurr;
                 
                 parent.imp.updateAndDraw();
+                }
 				
 			}
 			

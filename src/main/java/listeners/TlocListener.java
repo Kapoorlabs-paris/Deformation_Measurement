@@ -7,6 +7,9 @@ import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 
 import ij.IJ;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.type.logic.BitType;
 import pluginTools.InteractiveEllipseFit;
 import pluginTools.InteractiveEllipseFit.ValueChange;
 import utility.ShowView;
@@ -59,6 +62,10 @@ public class TlocListener implements TextListener {
 			    		ShowView show = new ShowView(parent);
 					show.shownewT();
 					parent.timeText.setText("Current time point = " + parent.fourthDimension);
+					
+					
+					
+					
 					parent.updatePreview(ValueChange.FOURTHDIMmouse);
 					
 			    		
