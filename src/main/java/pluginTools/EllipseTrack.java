@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.swing.JProgressBar;
 
 import ellipsoidDetector.Distance;
+import ellipsoidDetector.Intersectionobject;
 import ellipsoidDetector.Tangentobject;
 import ij.ImagePlus;
 import ij.gui.EllipseRoi;
@@ -110,6 +111,7 @@ public class EllipseTrack {
 				// Obtain the points of intersections
 
 				ArrayList<Tangentobject> AllPointsofIntersect = new ArrayList<Tangentobject>();
+				ArrayList<Intersectionobject> Allintersection = new ArrayList<Intersectionobject>();
 
 				HashMap<Integer, Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new HashMap<Integer, Pair<Ellipsoid, Ellipsoid>>();
 				for (int i = 0; i < Reducedsamples.size(); ++i) {
@@ -154,8 +156,34 @@ public class EllipseTrack {
 
 				}
 				
+				for (int index = 0; index< AllPointsofIntersect.size(); ++index) {
+					
+					for (int i = 0; i < AllPointsofIntersect.get(index).Intersections.size();++i) {
+						
+						
+						Intersectionobject currentintersection = new Intersectionobject(AllPointsofIntersect.get(index).Intersections.get(i), AllPointsofIntersect.get(index).ellipsepair);
+						
+						Allintersection.add(currentintersection);
+						
+					}
+					
+					
+				}
 				
-			
+				
+				if (parent.ALLIntersections.get(uniqueID) == null) {
+					
+					parent.ALLIntersections.put(uniqueID, Allintersection);
+					
+				}
+				
+				else {
+					
+					
+					parent.ALLIntersections.remove(uniqueID);
+					parent.ALLIntersections.put(uniqueID, Allintersection);
+					
+				}
 				
 				
 
@@ -196,11 +224,9 @@ public class EllipseTrack {
 					if (currentobject.fourthDimension == t
 							&& currentobject.thirdDimension == z) {
 
-						System.out.println(currentobject.thirdDimension + "  " + currentobject.fourthDimension + " " + t + " " + z );				
 						currentobject.resultroi = resultroi;
 						currentobject.resultovalroi = resultovalroi;
 						currentobject.resultlineroi = resultlineroi;
-						System.out.println(resultroi.size());
 					
 					}
 

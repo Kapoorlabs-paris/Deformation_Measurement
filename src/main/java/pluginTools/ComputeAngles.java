@@ -40,27 +40,11 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 
 		}
 		
-/*	
-		NearestNeighbourSearch NNsearch = new NearestNeighbourSearch(parent.ALLIntersections, parent.thirdDimension, parent.fourthDimensionSize);
-		NNsearch.process();
-		parent.parentgraph = NNsearch.getResult();
-		System.out.println("Size of graph" + parent.parentgraph.vertexSet().size());
+
+	
 		
 		
-			if (parent.ALLIntersections.get(uniqueID) == null) {
-					
-					parent.ALLIntersections.put(uniqueID, AllPointsofIntersect);
-					
-				}
-				
-				else {
-					
-					
-					parent.ALLIntersections.remove(uniqueID);
-					parent.ALLIntersections.put(uniqueID, AllPointsofIntersect);
-					
-				}
-*/
+
 		return null;
 
 	}
@@ -70,6 +54,11 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 
 		parent.jpb.setIndeterminate(false);
 		parent.Cardframe.validate();
+		
+		NearestNeighbourSearch NNsearch = new NearestNeighbourSearch(parent.ALLIntersections, parent.thirdDimension, parent.fourthDimensionSize);
+		NNsearch.process();
+		parent.parentgraph = NNsearch.getResult();
+		System.out.println("Size of graph" + parent.parentgraph.vertexSet().size());
 		try {
 			get();
 		} catch (InterruptedException e) {

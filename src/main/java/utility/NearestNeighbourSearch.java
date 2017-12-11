@@ -8,19 +8,19 @@ import java.util.List;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
-import ellipsoidDetector.Tangentobject;
+import ellipsoidDetector.Intersectionobject;
 import net.imglib2.KDTree;
 import net.imglib2.RealPoint;
 
 public class NearestNeighbourSearch implements IntersectionTracker {
 
-	private final HashMap<String, ArrayList<Tangentobject>> ALLIntersections;
-	private SimpleWeightedGraph<Tangentobject, DefaultWeightedEdge> graph;
+	private final HashMap<String, ArrayList<Intersectionobject>> ALLIntersections;
+	private SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> graph;
 	protected String errorMessage;
 	private final int z;
 	private final int fourthDimSize;
 
-	public NearestNeighbourSearch(final HashMap<String, ArrayList<Tangentobject>> ALLIntersections, final int z,
+	public NearestNeighbourSearch(final HashMap<String, ArrayList<Intersectionobject>> ALLIntersections, final int z,
 			final int fourthDimSize) {
 
 		this.ALLIntersections = ALLIntersections;
@@ -30,7 +30,7 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 	}
 
 	@Override
-	public SimpleWeightedGraph<Tangentobject, DefaultWeightedEdge> getResult() {
+	public SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> getResult() {
 
 		return graph;
 	}
@@ -43,54 +43,50 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 
 	@Override
 	public boolean process() {
-
+		graph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 		for (int t = 1; t < fourthDimSize - 1; ++t) {
 
 			String uniqueID = Integer.toString(z) + Integer.toString(t);
 			String uniqueIDnext = Integer.toString(z) + Integer.toString(t + 1);
 
-			ArrayList<Tangentobject> baseobject = ALLIntersections.get(uniqueID);
-			ArrayList<Tangentobject> targetobject = ALLIntersections.get(uniqueIDnext);
+			ArrayList<Intersectionobject> baseobject = ALLIntersections.get(uniqueID);
+			ArrayList<Intersectionobject> targetobject = ALLIntersections.get(uniqueIDnext);
+			
+			
 
-			Iterator<Tangentobject> baseobjectiterator = baseobject.iterator();
+			Iterator<Intersectionobject> baseobjectiterator = baseobject.iterator();
 
 			final int Targetintersections = targetobject.size();
 
 			final List<RealPoint> targetCoords = new ArrayList<RealPoint>(Targetintersections);
 
-			final List<FlagNode<Tangentobject>> targetNodes = new ArrayList<FlagNode<Tangentobject>>(
+			final List<FlagNode<Intersectionobject>> targetNodes = new ArrayList<FlagNode<Intersectionobject>>(
 					Targetintersections);
 
 			for (int index = 0; index < baseobject.size(); ++index) {
 
-				ArrayList<double[]> cordlist = baseobject.get(index).Intersections;
+					targetCoords.add(new RealPoint( baseobject.get(index).Intersectionpoint));
+					targetNodes.add(new FlagNode<Intersectionobject>(targetobject.get(index)));
 
-				for (int i = 0; i < cordlist.size(); ++i) {
-					targetCoords.add(new RealPoint(cordlist.get(i)));
-					targetNodes.add(new FlagNode<Tangentobject>(targetobject.get(i)));
-
-				}
 
 			}
 
 			if (targetNodes.size() > 0 && targetCoords.size() > 0) {
 
-				final KDTree<FlagNode<Tangentobject>> Tree = new KDTree<FlagNode<Tangentobject>>(targetNodes,
+				final KDTree<FlagNode<Intersectionobject>> Tree = new KDTree<FlagNode<Intersectionobject>>(targetNodes,
 						targetCoords);
 
-				final NNFlagsearchKDtree<Tangentobject> Search = new NNFlagsearchKDtree<Tangentobject>(Tree);
+				final NNFlagsearchKDtree<Intersectionobject> Search = new NNFlagsearchKDtree<Intersectionobject>(Tree);
 
 				while (baseobjectiterator.hasNext()) {
 
-					final Tangentobject source = baseobjectiterator.next();
+					final Intersectionobject source = baseobjectiterator.next();
 
-					ArrayList<double[]> cordlist = source.Intersections;
-
-					for (int i = 0; i < cordlist.size(); ++i) {
-						final RealPoint sourceCoords = new RealPoint(cordlist.get(i));
+					
+						final RealPoint sourceCoords = new RealPoint(source.Intersectionpoint);
 						Search.search(sourceCoords);
 						final double squareDist = Search.getSquareDistance();
-						final FlagNode<Tangentobject> targetNode = Search.getSampler().get();
+						final FlagNode<Intersectionobject> targetNode = Search.getSampler().get();
 
 						targetNode.setVisited(true);
 
@@ -105,7 +101,6 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 
 					}
 
-				}
 
 			}
 

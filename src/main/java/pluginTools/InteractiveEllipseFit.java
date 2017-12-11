@@ -47,6 +47,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
+import ellipsoidDetector.Intersectionobject;
 import ellipsoidDetector.Tangentobject;
 import ij.IJ;
 import ij.ImageJ;
@@ -165,8 +166,8 @@ public class InteractiveEllipseFit implements PlugIn {
 	public int[] Clickedpoints;
 
 	public KeyListener kl;
-	public SimpleWeightedGraph<Tangentobject, DefaultWeightedEdge> parentgraph;
-	public HashMap<String, ArrayList<Tangentobject>> ALLIntersections;
+	public SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> parentgraph;
+	public HashMap<String, ArrayList<Intersectionobject>> ALLIntersections;
 	public boolean isCreated = false;
 	public RoiManager roimanager;
 	public String uniqueID, tmpID;
@@ -240,7 +241,7 @@ public class InteractiveEllipseFit implements PlugIn {
 		ZTRois = new HashMap<String, Roiobject>();
 		DefaultZTRois = new HashMap<String, Roiobject>();
 		Clickedpoints = new int[ndims];
-		ALLIntersections = new HashMap<String, ArrayList<Tangentobject>>();
+		ALLIntersections = new HashMap<String, ArrayList<Intersectionobject>>();
 
 		if (ndims < 3) {
 
