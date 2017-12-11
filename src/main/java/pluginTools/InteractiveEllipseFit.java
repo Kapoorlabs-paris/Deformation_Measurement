@@ -44,6 +44,8 @@ import javax.swing.table.DefaultTableModel;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.SimpleWeightedGraph;
 
 import ellipsoidDetector.Tangentobject;
 import ij.IJ;
@@ -163,7 +165,7 @@ public class InteractiveEllipseFit implements PlugIn {
 	public int[] Clickedpoints;
 
 	public KeyListener kl;
-
+	public SimpleWeightedGraph<Tangentobject, DefaultWeightedEdge> parentgraph;
 	public HashMap<String, ArrayList<Tangentobject>> ALLIntersections;
 	public boolean isCreated = false;
 	public RoiManager roimanager;
@@ -411,8 +413,10 @@ public class InteractiveEllipseFit implements PlugIn {
 
 			}
 
-			if (ZTRois.get(uniqueID) == null)
+			if (ZTRois.get(uniqueID) == null) {
 				DisplayDefault();
+			
+			}
 			else
 				Display();
 			imp.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);

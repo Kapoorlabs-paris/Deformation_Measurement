@@ -6,6 +6,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import utility.NearestNeighbourSearch;
 
 public class ComputeAngles extends SwingWorker<Void, Void> {
 
@@ -22,11 +23,11 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 	@Override
 	protected Void doInBackground() throws Exception {
 		double percent = 0;
-		for (int t = 1; t < parent.fourthDimensionSize; ++t) {
+		for (int t = 1; t <= parent.fourthDimensionSize; ++t) {
 
 			percent++;
 
-			for (int z = 1; z < parent.thirdDimensionSize; ++z) {
+			for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
 
 				percent++;
 
@@ -38,7 +39,28 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 			}
 
 		}
-
+		
+/*	
+		NearestNeighbourSearch NNsearch = new NearestNeighbourSearch(parent.ALLIntersections, parent.thirdDimension, parent.fourthDimensionSize);
+		NNsearch.process();
+		parent.parentgraph = NNsearch.getResult();
+		System.out.println("Size of graph" + parent.parentgraph.vertexSet().size());
+		
+		
+			if (parent.ALLIntersections.get(uniqueID) == null) {
+					
+					parent.ALLIntersections.put(uniqueID, AllPointsofIntersect);
+					
+				}
+				
+				else {
+					
+					
+					parent.ALLIntersections.remove(uniqueID);
+					parent.ALLIntersections.put(uniqueID, AllPointsofIntersect);
+					
+				}
+*/
 		return null;
 
 	}

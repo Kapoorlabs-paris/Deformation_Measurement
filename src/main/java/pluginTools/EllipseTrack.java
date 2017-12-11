@@ -51,7 +51,7 @@ public class EllipseTrack {
 	public void IntersectandTrack(int t, int z) {
 		
 		// Main method for computing intersections and tangents and angles between tangents
-		
+
 		        String uniqueID = Integer.toString(z) + Integer.toString(t);
 				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z , parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 				List<Pair<RealLocalizable, BitType>>	truths = ConnectedComponentCoordinates.GetCoordinatesBit(CurrentView);
@@ -155,19 +155,7 @@ public class EllipseTrack {
 				}
 				
 				
-				if (parent.ALLIntersections.get(uniqueID) == null) {
-					
-					parent.ALLIntersections.put(uniqueID, AllPointsofIntersect);
-					
-				}
-				
-				else {
-					
-					
-					parent.ALLIntersections.remove(uniqueID);
-					parent.ALLIntersections.put(uniqueID, AllPointsofIntersect);
-					
-				}
+			
 				
 				
 
@@ -208,10 +196,11 @@ public class EllipseTrack {
 					if (currentobject.fourthDimension == t
 							&& currentobject.thirdDimension == z) {
 
-						
+						System.out.println(currentobject.thirdDimension + "  " + currentobject.fourthDimension + " " + t + " " + z );				
 						currentobject.resultroi = resultroi;
 						currentobject.resultovalroi = resultovalroi;
 						currentobject.resultlineroi = resultlineroi;
+						System.out.println(resultroi.size());
 					
 					}
 
