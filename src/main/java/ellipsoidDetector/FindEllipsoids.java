@@ -212,7 +212,7 @@ public class FindEllipsoids {
 			if (!isfitted) {
 
 				Tangentobject PointsIntersect = new Tangentobject(Intersections.PointsofIntersection(ellipsepair),
-						fitmapspecial.get(sum));
+						fitmapspecial.get(sum), 0 ,0 );
 
 				AllPointsofIntersect.add(PointsIntersect);
 				ellipsepairlist.add(sum);

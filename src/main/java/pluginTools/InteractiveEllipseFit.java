@@ -45,6 +45,7 @@ import javax.swing.table.DefaultTableModel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import ellipsoidDetector.Tangentobject;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -163,6 +164,7 @@ public class InteractiveEllipseFit implements PlugIn {
 
 	public KeyListener kl;
 
+	public HashMap<String, ArrayList<Tangentobject>> ALLIntersections;
 	public boolean isCreated = false;
 	public RoiManager roimanager;
 	public String uniqueID, tmpID;
@@ -236,6 +238,7 @@ public class InteractiveEllipseFit implements PlugIn {
 		ZTRois = new HashMap<String, Roiobject>();
 		DefaultZTRois = new HashMap<String, Roiobject>();
 		Clickedpoints = new int[ndims];
+		ALLIntersections = new HashMap<String, ArrayList<Tangentobject>>();
 
 		if (ndims < 3) {
 
@@ -639,7 +642,7 @@ public class InteractiveEllipseFit implements PlugIn {
 	public Label zText = new Label("Current Z location = " + 1, Label.CENTER);
 	final Label rText = new Label("Left Click selects a Roi");
 	final Label contText = new Label("After making all roi selections");
-	final Label insideText = new Label("Cutoff distance for points inside ellipse = " + insideCutoff, Label.CENTER);
+	final Label insideText = new Label("Cutoff distance for points belonging to ellipse = " + insideCutoff, Label.CENTER);
 	final Label outsideText = new Label("Cutoff distance for points outside ellipse = " + outsideCutoff, Label.CENTER);
 
 	final String timestring = "Current Time point";
@@ -714,7 +717,13 @@ public class InteractiveEllipseFit implements PlugIn {
 
 		Border ellipsetools = new CompoundBorder(new TitledBorder("Ransac and Angle computer"),
 				new EmptyBorder(c.insets));
+		c.anchor = GridBagConstraints.BOTH;
+		c.ipadx = 35;
 
+		c.gridwidth = 10;
+		c.gridheight = 10;
+		c.gridy = 1;
+		c.gridx = 0;
 		if (ndims >= 3) {
 
 			// Put time slider
@@ -763,31 +772,27 @@ public class InteractiveEllipseFit implements PlugIn {
 		Roiselect.add(Roibutton, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-		Roiselect.add(inputLabelIter, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,
-				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-		Roiselect.add(inputFieldIter, new GridBagConstraints(4, 2, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-				GridBagConstraints.RELATIVE, insets, 0, 0));
-
-		Roiselect.add(inputLabelminpercent, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,
-				GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-		Roiselect.add(inputFieldminpercent, new GridBagConstraints(4, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-				GridBagConstraints.RELATIVE, insets, 0, 0));
 		Roiselect.setBorder(roitools);
 		panelFirst.add(Roiselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		
+		
+		Angleselect.add(inputLabelIter, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
+		Angleselect.add(inputFieldIter, new GridBagConstraints(4, 2, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				GridBagConstraints.RELATIVE, insets, 0, 0));
+
+		Angleselect.add(inputLabelminpercent, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+		Angleselect.add(inputFieldminpercent, new GridBagConstraints(4, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				GridBagConstraints.RELATIVE, insets, 0, 0));
 		Angleselect.add(insideText, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		Angleselect.add(insideslider, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-		Angleselect.add(outsideText, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-		Angleselect.add(outsideslider, new GridBagConstraints(0, 7, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		Angleselect.add(Anglebutton, new GridBagConstraints(0, 8, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,

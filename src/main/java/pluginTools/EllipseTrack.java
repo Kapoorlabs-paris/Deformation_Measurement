@@ -52,7 +52,7 @@ public class EllipseTrack {
 		
 		// Main method for computing intersections and tangents and angles between tangents
 		
-	
+		        String uniqueID = Integer.toString(z) + Integer.toString(t);
 				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z , parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 				List<Pair<RealLocalizable, BitType>>	truths = ConnectedComponentCoordinates.GetCoordinatesBit(CurrentView);
 				
@@ -126,8 +126,7 @@ public class EllipseTrack {
 					}
 				}
 
-				// Currently for the pair of Ellipses, to be improved for multiple intersecting
-				// points
+				
 				ArrayList<Integer> ellipsepairlist = new ArrayList<Integer>();
 
 				for (Map.Entry<Integer, Pair<Ellipsoid, Ellipsoid>> entry : fitmapspecial.entrySet()) {
@@ -146,7 +145,7 @@ public class EllipseTrack {
 					if (!isfitted) {
 
 						Tangentobject PointsIntersect = new Tangentobject(Intersections.PointsofIntersection(ellipsepair),
-								fitmapspecial.get(sum));
+								fitmapspecial.get(sum), t, z);
 
 						AllPointsofIntersect.add(PointsIntersect);
 						ellipsepairlist.add(sum);
@@ -154,6 +153,23 @@ public class EllipseTrack {
 					}
 
 				}
+				
+				
+				if (parent.ALLIntersections.get(uniqueID) == null) {
+					
+					parent.ALLIntersections.put(uniqueID, AllPointsofIntersect);
+					
+				}
+				
+				else {
+					
+					
+					parent.ALLIntersections.remove(uniqueID);
+					parent.ALLIntersections.put(uniqueID, AllPointsofIntersect);
+					
+				}
+				
+				
 
 				for (int i = 0; i < AllPointsofIntersect.size(); ++i) {
 
