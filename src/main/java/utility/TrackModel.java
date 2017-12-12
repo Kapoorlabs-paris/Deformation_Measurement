@@ -34,7 +34,9 @@ import org.jgrapht.traverse.BreadthFirstIterator;
 import org.jgrapht.traverse.DepthFirstIterator;
 import org.jgrapht.traverse.GraphIterator;
 
-import ellipsoidDetector.Tangentobject;
+import ellipsoidDetector.Intersectionobject;
+
+
 
 
 
@@ -51,11 +53,11 @@ public class TrackModel
 	/**
 	 * The mother graph, from which all subsequent fields are calculated. This
 	 * graph is not made accessible to the outside world. Editing it must be
-	 * trough the model methods {@link #addEdge(Tangentobject, Tangentobject, double)},
-	 * {@link #removeEdge(DefaultWeightedEdge)}, {@link #removeEdge(Tangentobject, Tangentobject)}
+	 * trough the model methods {@link #addEdge(Intersectionobject, Intersectionobject, double)},
+	 * {@link #removeEdge(DefaultWeightedEdge)}, {@link #removeEdge(Intersectionobject, Intersectionobject)}
 	 * .
 	 */
-	private ListenableUndirectedGraph< Tangentobject, DefaultWeightedEdge > graph;
+	private ListenableUndirectedGraph< Intersectionobject, DefaultWeightedEdge > graph;
 
 	private final MyGraphListener mgl;
 
@@ -65,7 +67,7 @@ public class TrackModel
 
 	/**
 	 * The edges that have been added to this model by
-	 * {@link #addEdge(Tangentobject, Tangentobject, double)}.
+	 * {@link #addEdge(Intersectionobject, Intersectionobject, double)}.
 	 * <p>
 	 * It is the parent instance responsibility to clear this field when it is
 	 * fit to do so.
@@ -75,7 +77,7 @@ public class TrackModel
 	/**
 	 * The edges that have removed from this model by
 	 * {@link #removeEdge(DefaultWeightedEdge)} or
-	 * {@link #removeEdge(Tangentobject, Tangentobject)}.
+	 * {@link #removeEdge(Intersectionobject, Intersectionobject)}.
 	 * <p>
 	 * It is the parent instance responsibility to clear this field when it is
 	 * fit to do so.
@@ -85,7 +87,7 @@ public class TrackModel
 	/**
 	 * The edges that have been modified in this model by changing its cost
 	 * using {@link #setEdgeWeight(DefaultWeightedEdge, double)} or modifying
-	 * the Tangentobjects it links elsewhere.
+	 * the Intersectionobjects it links elsewhere.
 	 * <p>
 	 * It is the parent instance responsibility to clear this field when it is
 	 * fit to do so.
@@ -94,9 +96,9 @@ public class TrackModel
 
 	/**
 	 * The track IDs that have been modified, updated or created, <b>solely</b>
-	 * by removing or adding an edge. Possibly after the removal of a Tangentobject.
+	 * by removing or adding an edge. Possibly after the removal of a Intersectionobject.
 	 * Tracks having edges that are <b>modified</b>, for instance by modifying a
-	 * Tangentobject it contains, will not be listed here, but must be sought from the
+	 * Intersectionobject it contains, will not be listed here, but must be sought from the
 	 * {@link #edgesModified} field.
 	 * <p>
 	 * It is the parent instance responsibility to clear this field when it is
@@ -115,9 +117,9 @@ public class TrackModel
 
 	Map< DefaultWeightedEdge, Integer > edgeToID;
 
-	private Map< Integer, HashSet< Tangentobject > > connectedVertexSets;
+	private Map< Integer, HashSet< Intersectionobject > > connectedVertexSets;
 
-	Map< Tangentobject, Integer > vertexToID;
+	Map< Intersectionobject, Integer > vertexToID;
 
 	private Map< Integer, Boolean > visibility;
 
@@ -131,10 +133,10 @@ public class TrackModel
 
 	public TrackModel()
 	{
-		this( new SimpleWeightedGraph< Tangentobject, DefaultWeightedEdge >( DefaultWeightedEdge.class ) );
+		this( new SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge >( DefaultWeightedEdge.class ) );
 	}
 
-	public TrackModel( final SimpleWeightedGraph< Tangentobject, DefaultWeightedEdge > graph )
+	public TrackModel( final SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > graph )
 	{
 		this.mgl = new MyGraphListener();
 		setGraph( graph );
@@ -153,13 +155,13 @@ public class TrackModel
 	 * @param graph
 	 *            the graph to parse for tracks.
 	 */
-	void setGraph( final SimpleWeightedGraph< Tangentobject, DefaultWeightedEdge > graph )
+	void setGraph( final SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > graph )
 	{
 		if ( null != this.graph )
 		{
 			this.graph.removeGraphListener( mgl );
 		}
-		this.graph = new ListenableUndirectedGraph< Tangentobject, DefaultWeightedEdge >( graph );
+		this.graph = new ListenableUndirectedGraph< Intersectionobject, DefaultWeightedEdge >( graph );
 		this.graph.addGraphListener( mgl );
 		init( graph );
 	}
@@ -169,7 +171,7 @@ public class TrackModel
 	 */
 	void clear()
 	{
-		setGraph( new SimpleWeightedGraph< Tangentobject, DefaultWeightedEdge >( DefaultWeightedEdge.class ) );
+		setGraph( new SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge >( DefaultWeightedEdge.class ) );
 	}
 
 	/**
@@ -177,16 +179,16 @@ public class TrackModel
 	 * such as a saved file. It allows specifying the exact mapping of track IDs
 	 * to the connected sets. The model content is completely replaced by the
 	 * specified parameters, including the global graph, its connected
-	 * components (both in Tangentobjects and edges), visibility and naming.
+	 * components (both in Intersectionobjects and edges), visibility and naming.
 	 * <p>
 	 * It is the caller responsibility to ensure that the graph and provided
 	 * component are coherent. Unexpected behavior might result otherwise.
 	 *
 	 * @param graph
 	 *            the mother graph for the model.
-	 * @param trackTangentobjects
+	 * @param trackIntersectionobjects
 	 *            the mapping of track IDs vs the connected components as sets
-	 *            of Tangentobjects.
+	 *            of Intersectionobjects.
 	 * @param trackEdges
 	 *            the mapping of track IDs vs the connected components as sets
 	 *            of edges.
@@ -195,15 +197,15 @@ public class TrackModel
 	 * @param trackNames
 	 *            the track names.
 	 */
-	public void from( final SimpleWeightedGraph< Tangentobject, DefaultWeightedEdge > graph, 
-			final Map<Integer, HashSet<Tangentobject>> trackTangentobjects, final Map< Integer, Set< DefaultWeightedEdge > > trackEdges, final Map< Integer, Boolean > trackVisibility, final Map< Integer, String > trackNames )
+	public void from( final SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > graph, 
+			final Map<Integer, HashSet<Intersectionobject>> trackIntersectionobjects, final Map< Integer, Set< DefaultWeightedEdge > > trackEdges, final Map< Integer, Boolean > trackVisibility, final Map< Integer, String > trackNames )
 	{
 
 		if ( null != this.graph )
 		{
 			this.graph.removeGraphListener( mgl );
 		}
-		this.graph = new ListenableUndirectedGraph< Tangentobject, DefaultWeightedEdge >( graph );
+		this.graph = new ListenableUndirectedGraph< Intersectionobject, DefaultWeightedEdge >( graph );
 		this.graph.addGraphListener( mgl );
 
 		edgesAdded.clear();
@@ -213,17 +215,17 @@ public class TrackModel
 
 		visibility = trackVisibility;
 		names = trackNames;
-		connectedVertexSets = trackTangentobjects;
+		connectedVertexSets = trackIntersectionobjects;
 		connectedEdgeSets = trackEdges;
 
 		// Rebuild the id maps
 		IDcounter = 0;
-		vertexToID = new HashMap< Tangentobject, Integer >();
-		for ( final Integer id : trackTangentobjects.keySet() )
+		vertexToID = new HashMap< Intersectionobject, Integer >();
+		for ( final Integer id : trackIntersectionobjects.keySet() )
 		{
-			for ( final Tangentobject Tangentobject : trackTangentobjects.get( id ) )
+			for ( final Intersectionobject Intersectionobject : trackIntersectionobjects.get( id ) )
 			{
-				vertexToID.put( Tangentobject, id );
+				vertexToID.put( Intersectionobject, id );
 			}
 			if ( id > IDcounter )
 			{
@@ -247,17 +249,17 @@ public class TrackModel
 	 * DEFAULT VISIBILIT METHODS made to be called from the mother model.
 	 */
 
-	void addTangentobject( final Tangentobject TangentobjectToAdd )
+	void addIntersectionobject( final Intersectionobject IntersectionobjectToAdd )
 	{
-		graph.addVertex( TangentobjectToAdd );
+		graph.addVertex( IntersectionobjectToAdd );
 	}
 
-	void removeTangentobject( final Tangentobject TangentobjectToRemove )
+	void removeIntersectionobject( final Intersectionobject IntersectionobjectToRemove )
 	{
-		graph.removeVertex( TangentobjectToRemove );
+		graph.removeVertex( IntersectionobjectToRemove );
 	}
 
-	DefaultWeightedEdge addEdge( final Tangentobject source, final Tangentobject target, final double weight )
+	DefaultWeightedEdge addEdge( final Intersectionobject source, final Intersectionobject target, final double weight )
 	{
 		if ( !graph.containsVertex( source ) )
 		{
@@ -272,7 +274,7 @@ public class TrackModel
 		return edge;
 	}
 
-	DefaultWeightedEdge removeEdge( final Tangentobject source, final Tangentobject target )
+	DefaultWeightedEdge removeEdge( final Intersectionobject source, final Intersectionobject target )
 	{
 		return graph.removeEdge( source, target );
 	}
@@ -311,24 +313,24 @@ public class TrackModel
 	 *            graph
 	 * @param function
 	 *            the function used to set values of a new vertex in the new
-	 *            graph, from the matching Tangentobject
+	 *            graph, from the matching Intersectionobject
 	 * @param mappings
-	 *            a map that will receive mappings from {@link Tangentobject} to the new
+	 *            a map that will receive mappings from {@link Intersectionobject} to the new
 	 *            vertices. Can be <code>null</code> if you do not want to get
 	 *            the mappings
 	 * @param <V>
 	 *            the type of the vertices.
 	 * @return a new {@link SimpleDirectedWeightedGraph}.
 	 */
-	public < V > SimpleDirectedWeightedGraph< V, DefaultWeightedEdge > copy( final VertexFactory< V > factory, final Function1< Tangentobject, V > function, final Map< Tangentobject, V > mappings )
+	public < V > SimpleDirectedWeightedGraph< V, DefaultWeightedEdge > copy( final VertexFactory< V > factory, final Function1< Intersectionobject, V > function, final Map< Intersectionobject, V > mappings )
 	{
 		final SimpleDirectedWeightedGraph< V, DefaultWeightedEdge > copy = new SimpleDirectedWeightedGraph< V, DefaultWeightedEdge >( DefaultWeightedEdge.class );
-		final Set< Tangentobject > Tangentobjects = graph.vertexSet();
+		final Set< Intersectionobject > Intersectionobjects = graph.vertexSet();
 		// To store mapping of old graph vs new graph
-		Map< Tangentobject, V > map;
+		Map< Intersectionobject, V > map;
 		if ( null == mappings )
 		{
-			map = new HashMap< Tangentobject, V >( Tangentobjects.size() );
+			map = new HashMap< Intersectionobject, V >( Intersectionobjects.size() );
 		}
 		else
 		{
@@ -336,11 +338,11 @@ public class TrackModel
 		}
 
 		// Generate new vertices
-		for ( final Tangentobject Tangentobject : Collections.unmodifiableCollection( Tangentobjects ) )
+		for ( final Intersectionobject Intersectionobject : Collections.unmodifiableCollection( Intersectionobjects ) )
 		{
 			final V vertex = factory.createVertex();
-			function.compute( Tangentobject, vertex );
-			map.put( Tangentobject, vertex );
+			function.compute( Intersectionobject, vertex );
+			map.put( Intersectionobject, vertex );
 			copy.addVertex( vertex );
 		}
 
@@ -365,7 +367,7 @@ public class TrackModel
 	 * 
 	 * @see org.jgrapht.Graph#containsEdge(Object, Object)
 	 */
-	public boolean containsEdge( final Tangentobject source, final Tangentobject target )
+	public boolean containsEdge( final Intersectionobject source, final Intersectionobject target )
 	{
 		return graph.containsEdge( source, target );
 	}
@@ -381,26 +383,26 @@ public class TrackModel
 	 * 
 	 * @see org.jgrapht.Graph#getEdge(Object, Object)
 	 */
-	public DefaultWeightedEdge getEdge( final Tangentobject source, final Tangentobject target )
+	public DefaultWeightedEdge getEdge( final Intersectionobject source, final Intersectionobject target )
 	{
 		return graph.getEdge( source, target );
 	}
 
 	/**
-	 * Returns the set of edges of a Tangentobject.
+	 * Returns the set of edges of a Intersectionobject.
 	 * 
-	 * @param Tangentobject
-	 *            the Tangentobject.
-	 * @return the set of edges connected to this Tangentobject. Can be empty if the Tangentobject
+	 * @param Intersectionobject
+	 *            the Intersectionobject.
+	 * @return the set of edges connected to this Intersectionobject. Can be empty if the Intersectionobject
 	 *         does not have any edge.
 	 * 
 	 * @see org.jgrapht.Graph#edgesOf(Object)
 	 */
-	public Set< DefaultWeightedEdge > edgesOf( final Tangentobject Tangentobject )
+	public Set< DefaultWeightedEdge > edgesOf( final Intersectionobject Intersectionobject )
 	{
-		if ( graph.containsVertex( Tangentobject ) )
+		if ( graph.containsVertex( Intersectionobject ) )
 		{
-			return graph.edgesOf( Tangentobject );
+			return graph.edgesOf( Intersectionobject );
 		}
 		else
 		{
@@ -433,35 +435,35 @@ public class TrackModel
 	 * 
 	 * @see org.jgrapht.Graph#vertexSet()
 	 */
-	public Set< Tangentobject > vertexSet()
+	public Set< Intersectionobject > vertexSet()
 	{
 		return graph.vertexSet();
 	}
 
 	/**
-	 * Returns the source Tangentobject of the specified edge.
+	 * Returns the source Intersectionobject of the specified edge.
 	 * 
 	 * @param e
 	 *            the edge.
-	 * @return the source Tangentobject of this edge.
+	 * @return the source Intersectionobject of this edge.
 	 * 
 	 * @see org.jgrapht.Graph#getEdgeSource(Object)
 	 */
-	public Tangentobject getEdgeSource( final DefaultWeightedEdge e )
+	public Intersectionobject getEdgeSource( final DefaultWeightedEdge e )
 	{
 		return graph.getEdgeSource( e );
 	}
 
 	/**
-	 * Returns the target Tangentobject of the specified edge.
+	 * Returns the target Intersectionobject of the specified edge.
 	 * 
 	 * @param e
 	 *            the edge.
-	 * @return the target Tangentobject of this edge.
+	 * @return the target Intersectionobject of this edge.
 	 * 
 	 * @see org.jgrapht.Graph#getEdgeTarget(Object)
 	 */
-	public Tangentobject getEdgeTarget( final DefaultWeightedEdge e )
+	public Intersectionobject getEdgeTarget( final DefaultWeightedEdge e )
 	{
 		return graph.getEdgeTarget( e );
 	}
@@ -618,13 +620,13 @@ public class TrackModel
 	}
 
 	/**
-	 * Returns the Tangentobjects of the track with the specified ID.
+	 * Returns the Intersectionobjects of the track with the specified ID.
 	 *
 	 * @param trackID
 	 *            the track ID.
-	 * @return the set of Tangentobjects.
+	 * @return the set of Intersectionobjects.
 	 */
-	public HashSet< Tangentobject > trackTangentobjects( final Integer trackID )
+	public HashSet< Intersectionobject > trackIntersectionobjects( final Integer trackID )
 	{
 		return connectedVertexSets.get( trackID );
 	}
@@ -663,17 +665,17 @@ public class TrackModel
 	}
 
 	/**
-	 * Returns the track ID the specified Tangentobject belong to, or <code>null</code>
-	 * if the specified Tangentobject cannot be found in this model.
+	 * Returns the track ID the specified Intersectionobject belong to, or <code>null</code>
+	 * if the specified Intersectionobject cannot be found in this model.
 	 * 
-	 * @param Tangentobject
-	 *            the Tangentobject to search for.
+	 * @param Intersectionobject
+	 *            the Intersectionobject to search for.
 	 *
 	 * @return the track ID it belongs to.
 	 */
-	public Integer trackIDOf( final Tangentobject Tangentobject )
+	public Integer trackIDOf( final Intersectionobject Intersectionobject )
 	{
-		return vertexToID.get( Tangentobject );
+		return vertexToID.get( Intersectionobject );
 	}
 
 	/*
@@ -687,14 +689,14 @@ public class TrackModel
 	 * @param graph
 	 *            the graph to read edges and vertices from.
 	 */
-	private void init( final UndirectedGraph< Tangentobject, DefaultWeightedEdge > graph )
+	private void init( final UndirectedGraph< Intersectionobject, DefaultWeightedEdge > graph )
 	{
-		vertexToID = new HashMap< Tangentobject, Integer >();
+		vertexToID = new HashMap< Intersectionobject, Integer >();
 		edgeToID = new HashMap< DefaultWeightedEdge, Integer >();
 		IDcounter = 0;
 		visibility = new HashMap< Integer, Boolean >();
 		names = new HashMap< Integer, String >();
-		connectedVertexSets = new HashMap< Integer, HashSet< Tangentobject > >();
+		connectedVertexSets = new HashMap< Integer, HashSet< Intersectionobject > >();
 		connectedEdgeSets = new HashMap< Integer, Set< DefaultWeightedEdge > >();
 
 		edgesAdded.clear();
@@ -702,10 +704,10 @@ public class TrackModel
 		edgesRemoved.clear();
 		tracksUpdated.clear();
 
-		final Set< Tangentobject > vertexSet = graph.vertexSet();
+		final Set< Intersectionobject > vertexSet = graph.vertexSet();
 		if ( vertexSet.size() > 0 )
 		{
-			final BreadthFirstIterator< Tangentobject, DefaultWeightedEdge > i = new BreadthFirstIterator< Tangentobject, DefaultWeightedEdge >( graph, null );
+			final BreadthFirstIterator< Intersectionobject, DefaultWeightedEdge > i = new BreadthFirstIterator< Intersectionobject, DefaultWeightedEdge >( graph, null );
 			i.addTraversalListener( new MyTraversalListener() );
 
 			while ( i.hasNext() )
@@ -765,20 +767,20 @@ public class TrackModel
 	 */
 
 	/**
-	 * Returns a new depth first iterator over the Tangentobjects connected by links in
+	 * Returns a new depth first iterator over the Intersectionobjects connected by links in
 	 * this model. A boolean flag allow to set whether the returned iterator
 	 * does take into account the edge direction. If true, the iterator will not
 	 * be able to iterate backward in time.
 	 *
 	 * @param start
-	 *            the Tangentobject to start iteration with. Can be <code>null</code>,
+	 *            the Intersectionobject to start iteration with. Can be <code>null</code>,
 	 *            then the start will be taken randomly and will traverse all
 	 *            the links.
 	 * @param directed
 	 *            if true returns a directed iterator, undirected if false.
 	 * @return a new depth-first iterator.
 	 */
-	public GraphIterator< Tangentobject, DefaultWeightedEdge > getDepthFirstIterator( final Tangentobject start, final boolean directed )
+	public GraphIterator< Intersectionobject, DefaultWeightedEdge > getDepthFirstIterator( final Intersectionobject start, final boolean directed )
 	{
 		if ( directed )
 		{
@@ -786,19 +788,19 @@ public class TrackModel
 		}
 		else
 		{
-			return new DepthFirstIterator< Tangentobject, DefaultWeightedEdge >( graph, start );
+			return new DepthFirstIterator< Intersectionobject, DefaultWeightedEdge >( graph, start );
 		}
 	}
 
 	/**
-	 * Returns a new depth first iterator over the Tangentobjects connected by links in
+	 * Returns a new depth first iterator over the Intersectionobjects connected by links in
 	 * this model. This iterator is sorted: when branching, it chooses the next
 	 * vertex according to a specified comparator. A boolean flag allow to set
 	 * whether the returned iterator does take into account the edge direction.
 	 * If true, the iterator will not be able to iterate backward in time.
 	 *
 	 * @param start
-	 *            the Tangentobject to start iteration with. Can be <code>null</code>,
+	 *            the Intersectionobject to start iteration with. Can be <code>null</code>,
 	 *            then the start will be taken randomly and will traverse all
 	 *            the links.
 	 * @param directed
@@ -808,7 +810,7 @@ public class TrackModel
 	 *            branching.
 	 * @return a new depth-first iterator.
 	 */
-	public SortedDepthFirstIterator< Tangentobject, DefaultWeightedEdge > getSortedDepthFirstIterator( final Tangentobject start, final Comparator< Tangentobject > comparator, final boolean directed )
+	public SortedDepthFirstIterator< Intersectionobject, DefaultWeightedEdge > getSortedDepthFirstIterator( final Intersectionobject start, final Comparator< Intersectionobject > comparator, final boolean directed )
 	{
 		if ( directed )
 		{
@@ -816,7 +818,7 @@ public class TrackModel
 		}
 		else
 		{
-			return new SortedDepthFirstIterator< Tangentobject, DefaultWeightedEdge >( graph, start, comparator );
+			return new SortedDepthFirstIterator< Intersectionobject, DefaultWeightedEdge >( graph, start, comparator );
 		}
 	}
 
@@ -826,25 +828,25 @@ public class TrackModel
 	}
 
 	/**
-	 * Returns the shortest path between two connected Tangentobject, using Dijkstra's
+	 * Returns the shortest path between two connected Intersectionobject, using Dijkstra's
 	 * algorithm. The edge weights, if any, are ignored here, meaning that the
 	 * returned path is the shortest in terms of number of edges.
 	 * <p>
-	 * Returns <code>null</code> if the two Tangentobjects are not connected by a track,
-	 * or if one of the Tangentobject do not belong to the graph, or if the graph field
+	 * Returns <code>null</code> if the two Intersectionobjects are not connected by a track,
+	 * or if one of the Intersectionobject do not belong to the graph, or if the graph field
 	 * is <code>null</code>.
 	 *
 	 * @param source
-	 *            the Tangentobject to start the path with
+	 *            the Intersectionobject to start the path with
 	 * @param target
-	 *            the Tangentobject to stop the path with
+	 *            the Intersectionobject to stop the path with
 	 * @return the shortest path, as a list of edges.
 	 */
-	public List< DefaultWeightedEdge > dijkstraShortestPath( final Tangentobject source, final Tangentobject target )
+	public List< DefaultWeightedEdge > dijkstraShortestPath( final Intersectionobject source, final Intersectionobject target )
 	{
 		if ( null == graph ) { return null; }
-		final AsUnweightedGraph< Tangentobject, DefaultWeightedEdge > unWeightedGrah = new AsUnweightedGraph< Tangentobject, DefaultWeightedEdge >( graph );
-		final DijkstraShortestPath< Tangentobject, DefaultWeightedEdge > pathFinder = new DijkstraShortestPath< Tangentobject, DefaultWeightedEdge >( unWeightedGrah, source, target );
+		final AsUnweightedGraph< Intersectionobject, DefaultWeightedEdge > unWeightedGrah = new AsUnweightedGraph< Intersectionobject, DefaultWeightedEdge >( graph );
+		final DijkstraShortestPath< Intersectionobject, DefaultWeightedEdge > pathFinder = new DijkstraShortestPath< Intersectionobject, DefaultWeightedEdge >( unWeightedGrah, source, target );
 		final List< DefaultWeightedEdge > path = pathFinder.getPathEdgeList();
 		return path;
 	}
@@ -853,9 +855,9 @@ public class TrackModel
 	 * Inner Classes
 	 */
 
-	private class MyTraversalListener implements TraversalListener< Tangentobject, DefaultWeightedEdge >
+	private class MyTraversalListener implements TraversalListener< Intersectionobject, DefaultWeightedEdge >
 	{
-		private HashSet<Tangentobject> currentConnectedVertexSet;
+		private HashSet<Intersectionobject> currentConnectedVertexSet;
 
 		private Set< DefaultWeightedEdge > currentConnectedEdgeSet;
 
@@ -876,7 +878,7 @@ public class TrackModel
 				{
 					edgeToID.remove( e );
 				}
-				for ( final Tangentobject v : currentConnectedVertexSet )
+				for ( final Intersectionobject v : currentConnectedVertexSet )
 				{
 					vertexToID.remove( v );
 				}
@@ -895,7 +897,7 @@ public class TrackModel
 		@Override
 		public void connectedComponentStarted( final ConnectedComponentTraversalEvent e )
 		{
-			currentConnectedVertexSet = new HashSet< Tangentobject >();
+			currentConnectedVertexSet = new HashSet< Intersectionobject >();
 			currentConnectedEdgeSet = new HashSet< DefaultWeightedEdge >();
 			ID = IDcounter++;
 		}
@@ -904,15 +906,15 @@ public class TrackModel
 		 * @see TraversalListenerAdapter#vertexTraversed(VertexTraversalEvent)
 		 */
 		@Override
-		public void vertexTraversed( final VertexTraversalEvent< Tangentobject > event )
+		public void vertexTraversed( final VertexTraversalEvent< Intersectionobject > event )
 		{
-			final Tangentobject v = event.getVertex();
+			final Intersectionobject v = event.getVertex();
 			currentConnectedVertexSet.add( v );
 			vertexToID.put( v, ID );
 		}
 
 		@Override
-		public void edgeTraversed( final EdgeTraversalEvent< Tangentobject, DefaultWeightedEdge > event )
+		public void edgeTraversed( final EdgeTraversalEvent< Intersectionobject, DefaultWeightedEdge > event )
 		{
 			final DefaultWeightedEdge e = event.getEdge();
 			currentConnectedEdgeSet.add( e );
@@ -920,7 +922,7 @@ public class TrackModel
 		}
 
 		@Override
-		public void vertexFinished( final VertexTraversalEvent< Tangentobject > e )
+		public void vertexFinished( final VertexTraversalEvent< Intersectionobject > e )
 		{}
 	}
 
@@ -930,16 +932,16 @@ public class TrackModel
 	 * <p>
 	 * By complex change, we mean the changes occurring in the graph caused by
 	 * another change that was initiated manually by the user. For instance,
-	 * imagine we have a simple track branch made of 5 Tangentobjects that link linearly,
+	 * imagine we have a simple track branch made of 5 Intersectionobjects that link linearly,
 	 * like this:
 	 *
 	 * <pre>
 	 * S1 - S2 - S3 - S4 - S5
 	 * </pre>
 	 *
-	 * The user might want to remove the S3 Tangentobject, in the middle of the track. On
+	 * The user might want to remove the S3 Intersectionobject, in the middle of the track. On
 	 * top of the track rearrangement, that is dealt with elsewhere in the model
-	 * class, this Tangentobject removal also triggers 2 edges removal: the links S2-S3
+	 * class, this Intersectionobject removal also triggers 2 edges removal: the links S2-S3
 	 * and S3-S4 disappear. The only way for the {@link TrackModel} to be aware
 	 * of that, and to forward these events to its listener, is to listen itself
 	 * to the {@link #graph} that store links.
@@ -947,13 +949,13 @@ public class TrackModel
 	 * This is done through this class. This class is notified every time a
 	 * change occur in the {@link #graph}:
 	 * <ul>
-	 * <li>It ignores events triggered by Tangentobjects being added or removed, because
+	 * <li>It ignores events triggered by Intersectionobjects being added or removed, because
 	 * they can't be triggered automatically, and are dealt with in the
-	 * {@link TrackModel#addTangentobjectTo(Tangentobject, Integer)} and
-	 * {@link TrackModel#removeTangentobject(Tangentobject, Integer)} methods.
+	 * {@link TrackModel#addIntersectionobjectTo(Intersectionobject, Integer)} and
+	 * {@link TrackModel#removeIntersectionobject(Intersectionobject, Integer)} methods.
 	 * <li>It catches all events triggered by a link being added or removed in
 	 * the graph, whether they are triggered manually through a call to a model
-	 * method such as {@link TrackModel#addEdge(Tangentobject, Tangentobject, double)}, or
+	 * method such as {@link TrackModel#addEdge(Intersectionobject, Intersectionobject, double)}, or
 	 * triggered by another call. They are used to build the
 	 * {@link TrackModel#edgesAdded} and {@link TrackModel#edgesRemoved} fields,
 	 * that will be used to notify listeners of the model.
@@ -961,24 +963,24 @@ public class TrackModel
 	 * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt; Aug 12, 2011
 	 *
 	 */
-	private class MyGraphListener implements GraphListener< Tangentobject, DefaultWeightedEdge >
+	private class MyGraphListener implements GraphListener< Intersectionobject, DefaultWeightedEdge >
 	{
 
 		@Override
-		public void vertexAdded( final GraphVertexChangeEvent< Tangentobject > event )
+		public void vertexAdded( final GraphVertexChangeEvent< Intersectionobject > event )
 		{}
 
 		@Override
-		public void vertexRemoved( final GraphVertexChangeEvent< Tangentobject > event )
+		public void vertexRemoved( final GraphVertexChangeEvent< Intersectionobject > event )
 		{
 			if ( null == connectedEdgeSets ) { return; }
 
-			final Tangentobject v = event.getVertex();
+			final Intersectionobject v = event.getVertex();
 			vertexToID.remove( v );
 			final Integer id = vertexToID.get( v );
 			if ( id != null )
 			{
-				final Set< Tangentobject > set = connectedVertexSets.get( id );
+				final Set< Intersectionobject > set = connectedVertexSets.get( id );
 				if ( null == set ) { return; // it was removed when removing the
 												// last edge of a track, most
 												// likely.
@@ -996,7 +998,7 @@ public class TrackModel
 		}
 
 		@Override
-		public void edgeAdded( final GraphEdgeChangeEvent< Tangentobject, DefaultWeightedEdge > event )
+		public void edgeAdded( final GraphEdgeChangeEvent< Intersectionobject, DefaultWeightedEdge > event )
 		{
 			// To signal to ModelChangeListener
 			edgesAdded.add( event.getEdge() );
@@ -1011,9 +1013,9 @@ public class TrackModel
 			final DefaultWeightedEdge e = event.getEdge();
 
 			// Was it added to known tracks?
-			final Tangentobject sv = graph.getEdgeSource( e );
+			final Intersectionobject sv = graph.getEdgeSource( e );
 			final Integer sid = vertexToID.get( sv );
-			final Tangentobject tv = graph.getEdgeTarget( e );
+			final Intersectionobject tv = graph.getEdgeTarget( e );
 			final Integer tid = vertexToID.get( tv );
 
 			if ( null != tid && null != sid )
@@ -1046,9 +1048,9 @@ public class TrackModel
 					nes.add( e );
 
 					// Vertices:
-					final Set< Tangentobject > svs = connectedVertexSets.get( sid );
-					final Set< Tangentobject > tvs = connectedVertexSets.get( tid );
-					final HashSet< Tangentobject > nvs = new HashSet< Tangentobject >( ses.size() + tes.size() );
+					final Set< Intersectionobject > svs = connectedVertexSets.get( sid );
+					final Set< Intersectionobject > tvs = connectedVertexSets.get( tid );
+					final HashSet< Intersectionobject > nvs = new HashSet< Intersectionobject >( ses.size() + tes.size() );
 					nvs.addAll( svs );
 					nvs.addAll( tvs );
 
@@ -1057,7 +1059,7 @@ public class TrackModel
 					{
 						nid = sid;
 						rid = tid;
-						for ( final Tangentobject v : tvs )
+						for ( final Intersectionobject v : tvs )
 						{
 							// Vertices of target set change id
 							vertexToID.put( v, nid );
@@ -1071,7 +1073,7 @@ public class TrackModel
 					{
 						nid = tid;
 						rid = sid;
-						for ( final Tangentobject v : svs )
+						for ( final Intersectionobject v : svs )
 						{
 							// Vertices of source set change id
 							vertexToID.put( v, nid );
@@ -1107,7 +1109,7 @@ public class TrackModel
 			{
 				// Case 4: the edge was added between two lonely vertices.
 				// Create a new set id from this
-				final HashSet< Tangentobject > nvs = new HashSet< Tangentobject >( 2 );
+				final HashSet< Intersectionobject > nvs = new HashSet< Intersectionobject >( 2 );
 				nvs.add( graph.getEdgeSource( e ) );
 				nvs.add( graph.getEdgeTarget( e ) );
 
@@ -1161,7 +1163,7 @@ public class TrackModel
 		}
 
 		@Override
-		public void edgeRemoved( final GraphEdgeChangeEvent< Tangentobject, DefaultWeightedEdge > event )
+		public void edgeRemoved( final GraphEdgeChangeEvent< Intersectionobject, DefaultWeightedEdge > event )
 		{
 			// To signal to ModelChangeListeners
 			edgesRemoved.add( event.getEdge() );
@@ -1193,11 +1195,11 @@ public class TrackModel
 				names.remove( id );
 				visibility.remove( id );
 				/* We need to remove also the vertices */
-				final Set< Tangentobject > vertexSet = connectedVertexSets.get( id );
+				final Set< Intersectionobject > vertexSet = connectedVertexSets.get( id );
 				// Forget the vertices were in a set
-				for ( final Tangentobject Tangentobject : vertexSet )
+				for ( final Intersectionobject Intersectionobject : vertexSet )
 				{
-					vertexToID.remove( Tangentobject );
+					vertexToID.remove( Intersectionobject );
 				}
 				// Forget the vertex set
 				connectedVertexSets.remove( id );
@@ -1215,29 +1217,29 @@ public class TrackModel
 				// So there are some edges remaining in the set.
 				// Look at the connected component of its source and target.
 				// Source
-				final HashSet< Tangentobject > sourceVCS = new HashSet< Tangentobject >();
+				final HashSet< Intersectionobject > sourceVCS = new HashSet< Intersectionobject >();
 				final HashSet< DefaultWeightedEdge > sourceECS = new HashSet< DefaultWeightedEdge >();
 				{
-					final Tangentobject source = graph.getEdgeSource( e );
+					final Intersectionobject source = graph.getEdgeSource( e );
 					// Get its connected set
-					final BreadthFirstIterator< Tangentobject, DefaultWeightedEdge > i = new BreadthFirstIterator< Tangentobject, DefaultWeightedEdge >( graph, source );
+					final BreadthFirstIterator< Intersectionobject, DefaultWeightedEdge > i = new BreadthFirstIterator< Intersectionobject, DefaultWeightedEdge >( graph, source );
 					while ( i.hasNext() )
 					{
-						final Tangentobject sv = i.next();
+						final Intersectionobject sv = i.next();
 						sourceVCS.add( sv );
 						sourceECS.addAll( graph.edgesOf( sv ) );
 					}
 				}
 				// Target
-				final HashSet< Tangentobject > targetVCS = new HashSet< Tangentobject >();
+				final HashSet< Intersectionobject > targetVCS = new HashSet< Intersectionobject >();
 				final HashSet< DefaultWeightedEdge > targetECS = new HashSet< DefaultWeightedEdge >();
 				{
-					final Tangentobject target = graph.getEdgeTarget( e );
+					final Intersectionobject target = graph.getEdgeTarget( e );
 					// Get its connected set
-					final BreadthFirstIterator< Tangentobject, DefaultWeightedEdge > i = new BreadthFirstIterator< Tangentobject, DefaultWeightedEdge >( graph, target );
+					final BreadthFirstIterator< Intersectionobject, DefaultWeightedEdge > i = new BreadthFirstIterator< Intersectionobject, DefaultWeightedEdge >( graph, target );
 					while ( i.hasNext() )
 					{
-						final Tangentobject sv = i.next();
+						final Intersectionobject sv = i.next();
 						targetVCS.add( sv );
 						targetECS.addAll( graph.edgesOf( sv ) );
 					}
@@ -1285,7 +1287,7 @@ public class TrackModel
 							edgeToID.put( te, newid );
 						}
 						connectedVertexSets.put( newid, sourceVCS );
-						for ( final Tangentobject tv : sourceVCS )
+						for ( final Intersectionobject tv : sourceVCS )
 						{
 							vertexToID.put( tv, newid );
 						}
@@ -1303,7 +1305,7 @@ public class TrackModel
 						 * Nothing remains from the smallest part. The remaining
 						 * solitary vertex has no right to be called a track.
 						 */
-						final Tangentobject solitary = sourceVCS.iterator().next();
+						final Intersectionobject solitary = sourceVCS.iterator().next();
 						vertexToID.remove( solitary );
 					}
 
@@ -1329,7 +1331,7 @@ public class TrackModel
 								edgeToID.put( te, newid );
 							}
 							connectedVertexSets.put( newid, targetVCS );
-							for ( final Tangentobject v : targetVCS )
+							for ( final Intersectionobject v : targetVCS )
 							{
 								vertexToID.put( v, newid );
 							}
@@ -1347,7 +1349,7 @@ public class TrackModel
 							 * remaining solitary vertex has no right to be
 							 * called a track.
 							 */
-							final Tangentobject solitary = targetVCS.iterator().next();
+							final Intersectionobject solitary = targetVCS.iterator().next();
 							vertexToID.remove( solitary );
 						}
 

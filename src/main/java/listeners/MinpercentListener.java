@@ -24,6 +24,7 @@ public class MinpercentListener implements TextListener {
 		
 				String s = tc.getText();
 			
+				if(s.length() > 0)
 						parent.minpercent = Float.parseFloat(s);
 				
 				

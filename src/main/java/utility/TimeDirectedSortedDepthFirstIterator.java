@@ -12,31 +12,32 @@ import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
-import ellipsoidDetector.Tangentobject;
+import ellipsoidDetector.Intersectionobject;
 
 
 
-public class TimeDirectedSortedDepthFirstIterator extends SortedDepthFirstIterator<Tangentobject, DefaultWeightedEdge> {
 
-	public TimeDirectedSortedDepthFirstIterator(final Graph<Tangentobject, DefaultWeightedEdge> g, final Tangentobject startVertex, final Comparator<Tangentobject> comparator) {
+public class TimeDirectedSortedDepthFirstIterator extends SortedDepthFirstIterator<Intersectionobject, DefaultWeightedEdge> {
+
+	public TimeDirectedSortedDepthFirstIterator(final Graph<Intersectionobject, DefaultWeightedEdge> g, final Intersectionobject startVertex, final Comparator<Intersectionobject> comparator) {
 		super(g, startVertex, comparator);
 	}
 
 
 
     @Override
-	protected void addUnseenChildrenOf(final Tangentobject vertex) {
+	protected void addUnseenChildrenOf(final Intersectionobject vertex) {
 
 		// Retrieve target vertices, and sort them in a list
-		final List< Tangentobject > sortedChildren = new ArrayList< Tangentobject >();
+		final List< Intersectionobject > sortedChildren = new ArrayList< Intersectionobject >();
     	// Keep a map of matching edges so that we can retrieve them in the same order
-    	final Map<Tangentobject, DefaultWeightedEdge> localEdges = new HashMap<Tangentobject, DefaultWeightedEdge>();
+    	final Map<Intersectionobject, DefaultWeightedEdge> localEdges = new HashMap<Intersectionobject, DefaultWeightedEdge>();
 
-    	final int ts = vertex.getFeature(Tangentobject.FRAME).intValue();
+    	final int ts = vertex.getFeature(Intersectionobject.FRAME).intValue();
         for (final DefaultWeightedEdge edge : specifics.edgesOf(vertex)) {
 
-        	final Tangentobject oppositeV = Graphs.getOppositeVertex(graph, edge, vertex);
-        	final int tt = oppositeV.getFeature(Tangentobject.FRAME).intValue();
+        	final Intersectionobject oppositeV = Graphs.getOppositeVertex(graph, edge, vertex);
+        	final int tt = oppositeV.getFeature(Intersectionobject.FRAME).intValue();
         	if (tt <= ts) {
         		continue;
         	}
@@ -48,9 +49,9 @@ public class TimeDirectedSortedDepthFirstIterator extends SortedDepthFirstIterat
         }
 
 		Collections.sort( sortedChildren, Collections.reverseOrder( comparator ) );
-		final Iterator< Tangentobject > it = sortedChildren.iterator();
+		final Iterator< Intersectionobject > it = sortedChildren.iterator();
         while (it.hasNext()) {
-			final Tangentobject child = it.next();
+			final Intersectionobject child = it.next();
 
             if (nListeners != 0) {
                 fireEdgeTraversed(createEdgeTraversalEvent(localEdges.get(child)));

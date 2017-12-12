@@ -52,7 +52,7 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 			ArrayList<Intersectionobject> baseobject = ALLIntersections.get(uniqueID);
 			ArrayList<Intersectionobject> targetobject = ALLIntersections.get(uniqueIDnext);
 			
-			
+			if(targetobject!=null && targetobject.size() > 0) {
 
 			Iterator<Intersectionobject> baseobjectiterator = baseobject.iterator();
 
@@ -101,7 +101,7 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 
 					}
 
-
+			}
 			}
 
 		}

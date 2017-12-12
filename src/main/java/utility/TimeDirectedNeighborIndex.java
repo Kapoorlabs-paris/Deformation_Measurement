@@ -17,27 +17,28 @@ import org.jgrapht.event.GraphVertexChangeEvent;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.util.ModifiableInteger;
 
-import ellipsoidDetector.Tangentobject;
+import ellipsoidDetector.Intersectionobject;
 
 
 
 
-public class TimeDirectedNeighborIndex extends NeighborIndex< Tangentobject, DefaultWeightedEdge >
+
+public class TimeDirectedNeighborIndex extends NeighborIndex< Intersectionobject, DefaultWeightedEdge >
 {
 
 	// ~ Instance fields
 	// --------------------------------------------------------
 
-	Map< Tangentobject, Neighbors< Tangentobject, DefaultWeightedEdge > > predecessorMap = new HashMap< Tangentobject, Neighbors< Tangentobject, DefaultWeightedEdge > >();
+	Map< Intersectionobject, Neighbors< Intersectionobject, DefaultWeightedEdge > > predecessorMap = new HashMap< Intersectionobject, Neighbors< Intersectionobject, DefaultWeightedEdge > >();
 
-	Map< Tangentobject, Neighbors< Tangentobject, DefaultWeightedEdge > > successorMap = new HashMap< Tangentobject, Neighbors< Tangentobject, DefaultWeightedEdge > >();
+	Map< Intersectionobject, Neighbors< Intersectionobject, DefaultWeightedEdge > > successorMap = new HashMap< Intersectionobject, Neighbors< Intersectionobject, DefaultWeightedEdge > >();
 
-	private final Graph< Tangentobject, DefaultWeightedEdge > graph;
+	private final Graph< Intersectionobject, DefaultWeightedEdge > graph;
 
 	// ~ Constructors
 	// -----------------------------------------------------------
 
-	public TimeDirectedNeighborIndex( final Graph< Tangentobject, DefaultWeightedEdge > g )
+	public TimeDirectedNeighborIndex( final Graph< Intersectionobject, DefaultWeightedEdge > g )
 	{
 		super( g );
 		this.graph = g;
@@ -57,7 +58,7 @@ public class TimeDirectedNeighborIndex extends NeighborIndex< Tangentobject, Def
 	 *
 	 * @return all unique predecessors of the specified vertex
 	 */
-	public Set< Tangentobject > predecessorsOf( final Tangentobject v )
+	public Set< Intersectionobject > predecessorsOf( final Intersectionobject v )
 	{
 		return getPredecessors( v ).getNeighbors();
 	}
@@ -68,14 +69,14 @@ public class TimeDirectedNeighborIndex extends NeighborIndex< Tangentobject, Def
 	 * in the returned list. Because a list of predecessors can not be
 	 * efficiently maintained, it is reconstructed on every invocation by
 	 * duplicating entries in the neighbor set. It is thus more efficient to use
-	 * {@link #predecessorsOf(Tangentobject)} unless duplicate neighbors are required.
+	 * {@link #predecessorsOf(Intersectionobject)} unless duplicate neighbors are required.
 	 *
 	 * @param v
 	 *            the vertex whose predecessors are desired
 	 *
 	 * @return all predecessors of the specified vertex
 	 */
-	public List< Tangentobject > predecessorListOf( final Tangentobject v )
+	public List< Intersectionobject > predecessorListOf( final Intersectionobject v )
 	{
 		return getPredecessors( v ).getNeighborList();
 	}
@@ -91,7 +92,7 @@ public class TimeDirectedNeighborIndex extends NeighborIndex< Tangentobject, Def
 	 *
 	 * @return all unique successors of the specified vertex
 	 */
-	public Set< Tangentobject > successorsOf( final Tangentobject v )
+	public Set< Intersectionobject > successorsOf( final Intersectionobject v )
 	{
 		return getSuccessors( v ).getNeighbors();
 	}
@@ -102,14 +103,14 @@ public class TimeDirectedNeighborIndex extends NeighborIndex< Tangentobject, Def
 	 * in the returned list. Because a list of successors can not be efficiently
 	 * maintained, it is reconstructed on every invocation by duplicating
 	 * entries in the neighbor set. It is thus more efficient to use
-	 * {@link #successorsOf(Tangentobject)} unless duplicate neighbors are required.
+	 * {@link #successorsOf(Intersectionobject)} unless duplicate neighbors are required.
 	 *
 	 * @param v
 	 *            the vertex whose successors are desired
 	 *
 	 * @return all successors of the specified vertex
 	 */
-	public List< Tangentobject > successorListOf( final Tangentobject v )
+	public List< Intersectionobject > successorListOf( final Intersectionobject v )
 	{
 		return getSuccessors( v ).getNeighborList();
 	}
@@ -118,11 +119,11 @@ public class TimeDirectedNeighborIndex extends NeighborIndex< Tangentobject, Def
 	 * @see org.jgrapht.event.GraphListener#edgeAdded(GraphEdgeChangeEvent)
 	 */
 	@Override
-	public void edgeAdded( final GraphEdgeChangeEvent< Tangentobject, DefaultWeightedEdge > e )
+	public void edgeAdded( final GraphEdgeChangeEvent< Intersectionobject, DefaultWeightedEdge > e )
 	{
 		final DefaultWeightedEdge edge = e.getEdge();
-		final Tangentobject source = graph.getEdgeSource( edge );
-		final Tangentobject target = graph.getEdgeTarget( edge );
+		final Intersectionobject source = graph.getEdgeSource( edge );
+		final Intersectionobject target = graph.getEdgeTarget( edge );
 
 		// if a map does not already contain an entry,
 		// then skip addNeighbor, since instantiating the map
@@ -151,11 +152,11 @@ public class TimeDirectedNeighborIndex extends NeighborIndex< Tangentobject, Def
 	 * @see org.jgrapht.event.GraphListener#edgeRemoved(GraphEdgeChangeEvent)
 	 */
 	@Override
-	public void edgeRemoved( final GraphEdgeChangeEvent< Tangentobject, DefaultWeightedEdge > e )
+	public void edgeRemoved( final GraphEdgeChangeEvent< Intersectionobject, DefaultWeightedEdge > e )
 	{
 		final DefaultWeightedEdge edge = e.getEdge();
-		final Tangentobject source = graph.getEdgeSource( edge );
-		final Tangentobject target = graph.getEdgeTarget( edge );
+		final Intersectionobject source = graph.getEdgeSource( edge );
+		final Intersectionobject target = graph.getEdgeTarget( edge );
 		if ( successorMap.containsKey( source ) )
 		{
 			successorMap.get( source ).removeNeighbor( target );
@@ -170,7 +171,7 @@ public class TimeDirectedNeighborIndex extends NeighborIndex< Tangentobject, Def
 	 * @see org.jgrapht.event.VertexSetListener#vertexAdded(GraphVertexChangeEvent)
 	 */
 	@Override
-	public void vertexAdded( final GraphVertexChangeEvent< Tangentobject > e )
+	public void vertexAdded( final GraphVertexChangeEvent< Intersectionobject > e )
 	{
 		// nothing to cache until there are edges
 	}
@@ -179,51 +180,51 @@ public class TimeDirectedNeighborIndex extends NeighborIndex< Tangentobject, Def
 	 * @see org.jgrapht.event.VertexSetListener#vertexRemoved(GraphVertexChangeEvent)
 	 */
 	@Override
-	public void vertexRemoved( final GraphVertexChangeEvent< Tangentobject > e )
+	public void vertexRemoved( final GraphVertexChangeEvent< Intersectionobject > e )
 	{
 		predecessorMap.remove( e.getVertex() );
 		successorMap.remove( e.getVertex() );
 	}
 
-	private Neighbors< Tangentobject, DefaultWeightedEdge > getPredecessors( final Tangentobject v )
+	private Neighbors< Intersectionobject, DefaultWeightedEdge > getPredecessors( final Intersectionobject v )
 	{
-		Neighbors< Tangentobject, DefaultWeightedEdge > neighbors = predecessorMap.get( v );
+		Neighbors< Intersectionobject, DefaultWeightedEdge > neighbors = predecessorMap.get( v );
 		if ( neighbors == null )
 		{
-			final List< Tangentobject > nl = Graphs.neighborListOf( graph, v );
-			final List< Tangentobject > bnl = new ArrayList< Tangentobject >();
-			final int ts = v.getFeature( Tangentobject.FRAME ).intValue();
-			for ( final Tangentobject Tangentobject : nl )
+			final List< Intersectionobject > nl = Graphs.neighborListOf( graph, v );
+			final List< Intersectionobject > bnl = new ArrayList< Intersectionobject >();
+			final int ts = v.getFeature( Intersectionobject.FRAME ).intValue();
+			for ( final Intersectionobject Intersectionobject : nl )
 			{
-				final int tt = Tangentobject.getFeature( Tangentobject.FRAME ).intValue();
+				final int tt = Intersectionobject.getFeature( Intersectionobject.FRAME ).intValue();
 				if ( tt < ts )
 				{
-					bnl.add( Tangentobject );
+					bnl.add( Intersectionobject );
 				}
 			}
-			neighbors = new Neighbors< Tangentobject, DefaultWeightedEdge >( v, bnl );
+			neighbors = new Neighbors< Intersectionobject, DefaultWeightedEdge >( v, bnl );
 			predecessorMap.put( v, neighbors );
 		}
 		return neighbors;
 	}
 
-	private Neighbors< Tangentobject, DefaultWeightedEdge > getSuccessors( final Tangentobject v )
+	private Neighbors< Intersectionobject, DefaultWeightedEdge > getSuccessors( final Intersectionobject v )
 	{
-		Neighbors< Tangentobject, DefaultWeightedEdge > neighbors = successorMap.get( v );
+		Neighbors< Intersectionobject, DefaultWeightedEdge > neighbors = successorMap.get( v );
 		if ( neighbors == null )
 		{
-			final List< Tangentobject > nl = Graphs.neighborListOf( graph, v );
-			final List< Tangentobject > bnl = new ArrayList< Tangentobject >();
-			final int ts = v.getFeature( Tangentobject.FRAME ).intValue();
-			for ( final Tangentobject Tangentobject : nl )
+			final List< Intersectionobject > nl = Graphs.neighborListOf( graph, v );
+			final List< Intersectionobject > bnl = new ArrayList< Intersectionobject >();
+			final int ts = v.getFeature( Intersectionobject.FRAME ).intValue();
+			for ( final Intersectionobject Intersectionobject : nl )
 			{
-				final int tt = Tangentobject.getFeature( Tangentobject.FRAME ).intValue();
+				final int tt = Intersectionobject.getFeature( Intersectionobject.FRAME ).intValue();
 				if ( tt > ts )
 				{
-					bnl.add( Tangentobject );
+					bnl.add( Intersectionobject );
 				}
 			}
-			neighbors = new Neighbors< Tangentobject, DefaultWeightedEdge >( v, bnl );
+			neighbors = new Neighbors< Intersectionobject, DefaultWeightedEdge >( v, bnl );
 			successorMap.put( v, neighbors );
 		}
 		return neighbors;

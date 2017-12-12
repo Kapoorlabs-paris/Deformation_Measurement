@@ -1,5 +1,6 @@
 package pluginTools;
 
+import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.CardLayout;
 import java.awt.Checkbox;
@@ -65,6 +66,9 @@ import listeners.AngleListener;
 import listeners.DisplayRoiListener;
 import listeners.EllipseNonStandardMouseListener;
 import listeners.InsideCutoffListener;
+import listeners.MaxEllipseListener;
+import listeners.MaxTryListener;
+import listeners.MinpercentListener;
 import listeners.OutsideCutoffListener;
 import listeners.RListener;
 import listeners.RoiListener;
@@ -168,6 +172,8 @@ public class InteractiveEllipseFit implements PlugIn {
 	public KeyListener kl;
 	public SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> parentgraph;
 	public HashMap<String, ArrayList<Intersectionobject>> ALLIntersections;
+	
+	public HashMap<Integer, Intersectionobject> Finalresult;
 	public boolean isCreated = false;
 	public RoiManager roimanager;
 	public String uniqueID, tmpID;
@@ -242,6 +248,7 @@ public class InteractiveEllipseFit implements PlugIn {
 		DefaultZTRois = new HashMap<String, Roiobject>();
 		Clickedpoints = new int[ndims];
 		ALLIntersections = new HashMap<String, ArrayList<Intersectionobject>>();
+		Finalresult = new HashMap<Integer,Intersectionobject>();
 
 		if (ndims < 3) {
 
@@ -669,9 +676,32 @@ public class InteractiveEllipseFit implements PlugIn {
 	public JScrollBar rslider = new JScrollBar(Scrollbar.HORIZONTAL, radiusInt, 10, 0, 10 + scrollbarSize);
 	public JScrollBar insideslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
 	public JScrollBar outsideslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
-
+	JPanel PanelSelectFile = new JPanel();
 	public void Card() {
 		CardLayout cl = new CardLayout();
+		
+		Object[] colnames = new Object[]{"Track Id", "Location X", "Location Y" , "Starting Angle", "Start time", 
+				"Start Z"};
+		
+		
+		Object[][] rowvalues = new Object[0][colnames.length];
+		
+
+		
+        table = new JTable(rowvalues, colnames);
+		
+		table.setFillsViewportHeight(true);
+		
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		
+		scrollPane = new JScrollPane(table);
+		scrollPane.setMinimumSize(new Dimension(300, 200));
+		scrollPane.setPreferredSize(new Dimension(300, 200));
+		
+	
+		scrollPane.getViewport().add(table);
+		scrollPane.setAutoscrolls(true);
+		
 		c.insets = new Insets(5, 5, 5, 5);
 		panelCont.setLayout(cl);
 
@@ -719,6 +749,8 @@ public class InteractiveEllipseFit implements PlugIn {
 		Border zborder = new CompoundBorder(new TitledBorder("Select Z"), new EmptyBorder(c.insets));
 		Border roitools = new CompoundBorder(new TitledBorder("Roi and ellipse finder tools"),
 				new EmptyBorder(c.insets));
+		Border selectfile = new CompoundBorder(new TitledBorder("Select Track"), new EmptyBorder(c.insets));
+
 
 		Border ellipsetools = new CompoundBorder(new TitledBorder("Ransac and Angle computer"),
 				new EmptyBorder(c.insets));
@@ -807,6 +839,18 @@ public class InteractiveEllipseFit implements PlugIn {
 		panelFirst.add(Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
+		
+		PanelSelectFile.add(scrollPane, BorderLayout.CENTER);
+
+		
+
+		PanelSelectFile.setBorder(selectfile);
+		
+		
+		panelFirst.add(PanelSelectFile, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
+
+		
 		timeslider.addAdjustmentListener(new TimeListener(this, timeText, timestring, fourthDimensionsliderInit,
 				fourthDimensionSize, scrollbarSize, timeslider));
 		zslider.addAdjustmentListener(new ZListener(this, zText, zstring, thirdDimensionsliderInit, thirdDimensionSize,
@@ -819,11 +863,39 @@ public class InteractiveEllipseFit implements PlugIn {
 		outsideslider.addAdjustmentListener(
 				new OutsideCutoffListener(this, outsideText, outsidestring, 0, 100, scrollbarSize, outsideslider));
 
+		
+		
+		if (Finalresult !=null){
+		table.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 1) {
+				
+					if (!jFreeChartFrame.isVisible())
+						jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
+					JTable target = (JTable) e.getSource();
+					row = target.getSelectedRow();
+					// do some action if appropriate column
+					if (row > 0)
+						displayclicked(row);
+					else
+						displayclicked(0);
+				}
+			}
+		});
+		}
+		
+		
+		
+		
 		Anglebutton.addActionListener(new AngleListener(this));
 		Roibutton.addActionListener(new RoiListener(this));
 		inputFieldZ.addTextListener(new ZlocListener(this, false));
 		inputFieldT.addTextListener(new TlocListener(this, false));
-
+		inputFieldminpercent.addTextListener(new MinpercentListener(this));
+		inputFieldIter.addTextListener(new MaxTryListener(this));
+		inputFieldmaxellipse.addTextListener(new MaxEllipseListener(this));
+		
+		
 		panelFirst.setMinimumSize(new Dimension(SizeX, SizeY));
 
 		panelFirst.setVisible(true);
@@ -838,6 +910,10 @@ public class InteractiveEllipseFit implements PlugIn {
 
 	public void displayclicked(int trackindex) {
 
+		
+		// Make something happen
+		
+		row = trackindex;
 	}
 
 	public static int round(double value) {

@@ -4,26 +4,27 @@ import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
-import ellipsoidDetector.Tangentobject;
+import ellipsoidDetector.Intersectionobject;
 
-public class TimeDirectedDepthFirstIterator extends SortedDepthFirstIterator<Tangentobject, DefaultWeightedEdge> {
 
-	public TimeDirectedDepthFirstIterator(Graph<Tangentobject, DefaultWeightedEdge> g, Tangentobject startVertex) {
+public class TimeDirectedDepthFirstIterator extends SortedDepthFirstIterator<Intersectionobject, DefaultWeightedEdge> {
+
+	public TimeDirectedDepthFirstIterator(Graph<Intersectionobject, DefaultWeightedEdge> g, Intersectionobject startVertex) {
 		super(g, startVertex, null);
 	}
 	
 	
 	
-    protected void addUnseenChildrenOf(Tangentobject vertex) {
+    protected void addUnseenChildrenOf(Intersectionobject vertex) {
     	
-    	int ts = vertex.getFeature(Tangentobject.FRAME).intValue();
+    	int ts = vertex.getFeature(Intersectionobject.FRAME).intValue();
         for (DefaultWeightedEdge edge : specifics.edgesOf(vertex)) {
             if (nListeners != 0) {
                 fireEdgeTraversed(createEdgeTraversalEvent(edge));
             }
 
-            Tangentobject oppositeV = Graphs.getOppositeVertex(graph, edge, vertex);
-            int tt = oppositeV.getFeature(Tangentobject.FRAME).intValue();
+            Intersectionobject oppositeV = Graphs.getOppositeVertex(graph, edge, vertex);
+            int tt = oppositeV.getFeature(Intersectionobject.FRAME).intValue();
             if (tt <= ts) {
             	continue;
             }

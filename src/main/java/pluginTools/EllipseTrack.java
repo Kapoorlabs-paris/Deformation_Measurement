@@ -49,18 +49,29 @@ public class EllipseTrack {
 	}
 	
 	
-	public void IntersectandTrack(int t, int z) {
+	public void IntersectandTrack() {
 		
 		// Main method for computing intersections and tangents and angles between tangents
+		double percent = 0;
+		for (int t = 1; t <= parent.fourthDimensionSize; ++t) {
 
+			percent++;
+
+			for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
+
+				percent++;
+
+				utility.ProgressBar.SetProgressBar(jpb, 100 * percent/ (parent.thirdDimensionSize + parent.fourthDimensionSize), "Fitting ellipses and computing angles T = " + t + "/"
+						+ parent.fourthDimensionSize + " Z = " + z + "/" + parent.fourthDimensionSize);
 		        String uniqueID = Integer.toString(z) + Integer.toString(t);
+		        
+		        
 				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z , parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 				List<Pair<RealLocalizable, BitType>>	truths = ConnectedComponentCoordinates.GetCoordinatesBit(CurrentView);
 				
 				
 				final int ndims = CurrentView.numDimensions();
 				final NumericalSolvers numsol = new BisectorEllipsoid();
-
 				// Using the ellipse model to do the fitting
 				ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> Reducedsamples = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
 						.Allsamples(truths, parent.outsideCutoff, parent.insideCutoff, parent.minpercent, numsol, parent.maxtry, ndims,
@@ -130,13 +141,13 @@ public class EllipseTrack {
 
 				
 				ArrayList<Integer> ellipsepairlist = new ArrayList<Integer>();
-
+				boolean isfitted = false;
 				for (Map.Entry<Integer, Pair<Ellipsoid, Ellipsoid>> entry : fitmapspecial.entrySet()) {
 
 					Pair<Ellipsoid, Ellipsoid> ellipsepair = entry.getValue();
 
 					int sum = entry.getKey();
-					boolean isfitted = false;
+					
 					for (int index = 0; index < ellipsepairlist.size(); ++index) {
 
 						if (sum == ellipsepairlist.get(index))
@@ -146,35 +157,64 @@ public class EllipseTrack {
 
 					if (!isfitted) {
 
-						Tangentobject PointsIntersect = new Tangentobject(Intersections.PointsofIntersection(ellipsepair),
+						
+						ArrayList<double[]> pos = Intersections.PointsofIntersection(ellipsepair);
+						
+						Tangentobject PointsIntersect = new Tangentobject(pos,
 								fitmapspecial.get(sum), t, z);
 
+						
+						
+						for (int j = 0; j < pos.size(); ++j) {
+							
+							OvalRoi intersectionsRoi = new OvalRoi(
+									pos.get(j)[0] - parent.radiusdetection,
+									pos.get(j)[1] - parent.radiusdetection, 2 * parent.radiusdetection,
+									2 * parent.radiusdetection);
+							intersectionsRoi.setStrokeColor(parent.colorDet);
+							resultovalroi.add(intersectionsRoi);
+							
+
+							double[] lineparamA = Tangent2D.GetTangent(ellipsepair.getA(),
+									pos.get(j));
+							Line newlineA = DisplayasROI.create2DLine(lineparamA, pos.get(j));
+							newlineA.setStrokeColor(parent.colorLineA);
+							newlineA.setStrokeWidth(2);
+							resultlineroi.add(newlineA);
+
+							double[] lineparamB = Tangent2D.GetTangent(ellipsepair.getB(),
+									pos.get(j));
+							Line newlineB = DisplayasROI.create2DLine(lineparamB, pos.get(j));
+							newlineB.setStrokeColor(parent.colorLineB);
+							newlineB.setStrokeWidth(2);
+							resultlineroi.add(newlineB);
+							
+							
+							double angle = Tangent2D.GetAngle(lineparamA, lineparamB);
+							
+
+							Intersectionobject currentintersection = new Intersectionobject(pos.get(j), angle, ellipsepair, t, z);
+							
+							Allintersection.add(currentintersection);
+							
+							
+							System.out.println(angle);
+							
+						}
+						
 						AllPointsofIntersect.add(PointsIntersect);
 						ellipsepairlist.add(sum);
 
 					}
 
 				}
+			
 				
-				for (int index = 0; index< AllPointsofIntersect.size(); ++index) {
-					
-					for (int i = 0; i < AllPointsofIntersect.get(index).Intersections.size();++i) {
-						
-						
-						Intersectionobject currentintersection = new Intersectionobject(AllPointsofIntersect.get(index).Intersections.get(i), AllPointsofIntersect.get(index).ellipsepair);
-						
-						Allintersection.add(currentintersection);
-						
-					}
-					
-					
-				}
 				
 				
 				if (parent.ALLIntersections.get(uniqueID) == null) {
 					
 					parent.ALLIntersections.put(uniqueID, Allintersection);
-					
 				}
 				
 				else {
@@ -182,40 +222,11 @@ public class EllipseTrack {
 					
 					parent.ALLIntersections.remove(uniqueID);
 					parent.ALLIntersections.put(uniqueID, Allintersection);
-					
 				}
 				
 				
-
-				for (int i = 0; i < AllPointsofIntersect.size(); ++i) {
-
-					for (int j = 0; j < AllPointsofIntersect.get(i).Intersections.size(); ++j) {
-
-						OvalRoi intersectionsRoi = new OvalRoi(
-								AllPointsofIntersect.get(i).Intersections.get(j)[0] - parent.radiusdetection,
-								AllPointsofIntersect.get(i).Intersections.get(j)[1] - parent.radiusdetection, 2 * parent.radiusdetection,
-								2 * parent.radiusdetection);
-						intersectionsRoi.setStrokeColor(parent.colorDet);
-						resultovalroi.add(intersectionsRoi);
-						
-
-						double[] lineparamA = Tangent2D.GetTangent(AllPointsofIntersect.get(i).ellipsepair.getA(),
-								AllPointsofIntersect.get(i).Intersections.get(j));
-						Line newlineA = DisplayasROI.create2DLine(lineparamA, AllPointsofIntersect.get(i).Intersections.get(j));
-						newlineA.setStrokeColor(parent.colorLineA);
-						newlineA.setStrokeWidth(2);
-						resultlineroi.add(newlineA);
-
-						double[] lineparamB = Tangent2D.GetTangent(AllPointsofIntersect.get(i).ellipsepair.getB(),
-								AllPointsofIntersect.get(i).Intersections.get(j));
-						Line newlineB = DisplayasROI.create2DLine(lineparamB, AllPointsofIntersect.get(i).Intersections.get(j));
-						newlineB.setStrokeColor(parent.colorLineB);
-						newlineB.setStrokeWidth(2);
-						resultlineroi.add(newlineB);
-
-					}
-
-				}
+				
+				
 				   // Add new result rois to ZTRois
 				for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
 
@@ -233,7 +244,9 @@ public class EllipseTrack {
 				}
 
 					
-		
+			}
+			
+		}
 		
 		parent.updatePreview(ValueChange.FOURTHDIMmouse);
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
