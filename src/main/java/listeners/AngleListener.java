@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.SimpleWeightedGraph;
+
+import ellipsoidDetector.Intersectionobject;
 import ij.gui.Overlay;
 import ij.gui.Roi;
 import net.imglib2.Cursor;
@@ -34,7 +38,6 @@ public class AngleListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-
 		parent.StartComputing();
 		
 		

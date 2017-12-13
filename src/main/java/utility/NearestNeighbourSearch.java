@@ -19,13 +19,15 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 	protected String errorMessage;
 	private final int z;
 	private final int fourthDimSize;
+	private final double maxdistance;
 
 	public NearestNeighbourSearch(final HashMap<String, ArrayList<Intersectionobject>> ALLIntersections, final int z,
-			final int fourthDimSize) {
+			final int fourthDimSize, final double maxdistance) {
 
 		this.ALLIntersections = ALLIntersections;
 		this.z = z;
 		this.fourthDimSize = fourthDimSize;
+		this.maxdistance = maxdistance;
 
 	}
 
@@ -44,13 +46,15 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 	@Override
 	public boolean process() {
 		graph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
-		for (int t = 1; t < fourthDimSize - 1; ++t) {
+		for (int t = 1; t < fourthDimSize; ++t) {
 
 			String uniqueID = Integer.toString(z) + Integer.toString(t);
 			String uniqueIDnext = Integer.toString(z) + Integer.toString(t + 1);
 
 			ArrayList<Intersectionobject> baseobject = ALLIntersections.get(uniqueID);
 			ArrayList<Intersectionobject> targetobject = ALLIntersections.get(uniqueIDnext);
+			
+		
 			
 			if(targetobject!=null && targetobject.size() > 0) {
 
@@ -63,9 +67,9 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 			final List<FlagNode<Intersectionobject>> targetNodes = new ArrayList<FlagNode<Intersectionobject>>(
 					Targetintersections);
 
-			for (int index = 0; index < baseobject.size(); ++index) {
+			for (int index = 0; index < targetobject.size(); ++index) {
 
-					targetCoords.add(new RealPoint( baseobject.get(index).Intersectionpoint));
+					targetCoords.add(new RealPoint( targetobject.get(index).Intersectionpoint));
 					targetNodes.add(new FlagNode<Intersectionobject>(targetobject.get(index)));
 
 
@@ -87,6 +91,8 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 						Search.search(sourceCoords);
 						final double squareDist = Search.getSquareDistance();
 						final FlagNode<Intersectionobject> targetNode = Search.getSampler().get();
+						if (squareDist > maxdistance)
+							continue;
 
 						targetNode.setVisited(true);
 

@@ -4,15 +4,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import distanceTransform.WatershedBinary;
 import ij.gui.Roi;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.view.Views;
 import pluginTools.InteractiveEllipseFit;
 import pluginTools.InteractiveEllipseFit.ValueChange;
+import preProcessing.Otsu;
 import utility.Roiobject;
 
 public class RoiListener implements ActionListener{
@@ -39,9 +43,44 @@ public class RoiListener implements ActionListener{
 		
 		Paint(totalimg, parent.uniqueID, parent.thirdDimension, parent.fourthDimension);
 		
+		Segment(totalimg);
+		
 		
 		
 	}
+	
+	
+	
+	private void Segment(RandomAccessibleInterval<BitType> totalimg) {
+		
+		
+		
+		
+		WatershedBinary segmentimage = new WatershedBinary(totalimg);
+		segmentimage.process();
+		RandomAccessibleInterval<IntType> watershedimage = segmentimage.getResult();
+		parent.maxlabel = segmentimage.GetMaxlabelsseeded(watershedimage);
+		SliceInt(watershedimage, parent.thirdDimension, parent.fourthDimension);
+		
+		
+	}
+	private void SliceInt(RandomAccessibleInterval<IntType> current, int z, int t) {
+
+
+		final Cursor<IntType> cursor = Views.iterable(current).localizingCursor();
+		final RandomAccess<IntType> ranacsec = Views.hyperSlice(Views.hyperSlice(parent.emptyWater, 2, z - 1), 2, t - 1).randomAccess();
+		while (cursor.hasNext()) {
+
+			cursor.fwd();
+
+			ranacsec.setPosition(cursor.getIntPosition(0), 0);
+			ranacsec.setPosition(cursor.getIntPosition(1), 1);
+          
+			
+			ranacsec.get().set(cursor.get());
+		}
+	}
+	
 	private void Slice(RandomAccessibleInterval<BitType> current, ArrayList<int[]> pointlist, int z, int t) {
 
 		final RandomAccess<BitType> ranac = current.randomAccess();

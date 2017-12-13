@@ -1,12 +1,24 @@
 package utility;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Shape;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+
+import net.imglib2.util.Pair;
 
 public class ChartMaker {
 
@@ -41,5 +53,51 @@ public class ChartMaker {
 		return frame;
 	}
 	
+	public static JFreeChart makeChart( final XYSeriesCollection dataset ) { return makeChart( dataset, "XY Chart", "x-axis", "y-axis" ); }
+	public static JFreeChart makeChart( final XYSeriesCollection dataset, final String title, final String x, final String y )
+	{
+		final JFreeChart chart = ChartFactory.createXYLineChart(
+				title, x, y,
+				dataset, 
+				PlotOrientation.VERTICAL,
+				true,
+				true,
+				false
+				);
+
+		return chart;
+	}
+	public static XYSeries drawPoints( final List< double[] > mts ) { return drawPoints( mts, "Angle evolution" ); }
+	public static XYSeries drawPoints( final List< double[]> mts, final String name )
+	{
+		XYSeries series = new XYSeries( name );
+
+		if (mts!=null){
+		for ( final double[] mt : mts )
+			series.add(  mt[0], mt[1] );
+		}
+		return series;
+	}
+	
+	public static void setColor( final JFreeChart chart, final int seriesIndex, final Color col )
+	{
+		final XYPlot plot = chart.getXYPlot();
+		final XYItemRenderer renderer = plot.getRenderer();
+		renderer.setSeriesPaint( seriesIndex, col );
+	}
+
+	public static void setStroke( final JFreeChart chart, final int seriesIndex, final float stroke )
+	{
+		final XYPlot plot = chart.getXYPlot();
+		final XYItemRenderer renderer = plot.getRenderer();
+		renderer.setSeriesStroke( seriesIndex, new BasicStroke( stroke ) );
+	}
+
+	public static void setShape( final JFreeChart chart, final int seriesIndex, final Shape shape )
+	{
+		final XYPlot plot = chart.getXYPlot();
+		final XYItemRenderer renderer = plot.getRenderer();
+		renderer.setSeriesShape( seriesIndex, shape );
+	}
 	
 }
