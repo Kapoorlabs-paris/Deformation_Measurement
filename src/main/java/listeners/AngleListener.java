@@ -38,6 +38,8 @@ public class AngleListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
+		parent.parentgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 		parent.StartComputing();
 		
 		

@@ -81,8 +81,17 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 		
 		parent.Finalresult = new HashMap<Integer, Intersectionobject>();
 	
-		
-		
+		int minid = Integer.MAX_VALUE;
+		int maxid = Integer.MIN_VALUE;
+		for (final Integer id : model.trackIDs(true)) {
+			
+			if (id > maxid)
+				maxid = id;
+			
+			if(id < minid)
+				minid = id;
+			
+		}
 		for (final Integer id : model.trackIDs(true)) {
 
 			
@@ -129,12 +138,16 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 			if (parent.fourthDimensionSize > 1)
 				Collections.sort(parent.Tracklist, FourthDimcomparison);
 
-			for (int index = 0; index <parent.Tracklist.size(); ++index) {
-			if (id == parent.Tracklist.get(index).getA()) {
-			parent.Finalresult.put(id, parent.Tracklist.get(index).getB());
-			break;
-			}
-			}
+			
+		}
+		
+		
+		
+		for (int id = minid; id <= maxid; ++id) {
+			
+			if(model.trackIntersectionobjects(id)!=null)
+			parent.Finalresult.put(id, model.trackIntersectionobjects(id).iterator().next());
+			
 		}
 
 		CreateTable();
@@ -151,7 +164,8 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 		for (Map.Entry<Integer, Intersectionobject> entry : parent.Finalresult.entrySet()) {
 
 			Intersectionobject currentangle = entry.getValue();
-
+			parent.table.getModel().setValueAt(new DecimalFormat("#.###").format(entry.getKey()),
+					parent.row, 0);
 			parent.table.getModel().setValueAt(new DecimalFormat("#.###").format(currentangle.Intersectionpoint[0]),
 					parent.row, 1);
 			parent.table.getModel().setValueAt(new DecimalFormat("#.###").format(currentangle.Intersectionpoint[1]),
@@ -160,7 +174,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 			parent.table.getModel().setValueAt(new DecimalFormat("#.###").format(currentangle.t), parent.row, 4);
 			parent.table.getModel().setValueAt(new DecimalFormat("#.###").format(currentangle.z), parent.row, 5);
 
-			++parent.row;
+			parent.row++;
 		}
 
 		

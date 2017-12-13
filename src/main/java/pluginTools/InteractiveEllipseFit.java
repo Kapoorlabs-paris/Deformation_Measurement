@@ -171,7 +171,7 @@ public class InteractiveEllipseFit implements PlugIn {
 	public Color colorDet = Color.GREEN;
 	public Color colorLineA = Color.YELLOW;
 	public Color colorLineB = Color.YELLOW;
-	public double maxdistance = 50;
+	public double maxdistance = 10;
 	
 	
 	
@@ -272,7 +272,8 @@ public class InteractiveEllipseFit implements PlugIn {
 		ALLIntersections = new HashMap<String, ArrayList<Intersectionobject>>();
 		Finalresult = new HashMap<Integer, Intersectionobject>();
 		Tracklist = new ArrayList<Pair<Integer, Intersectionobject>>();
-		
+	
+
 		
 		
 		this.jFreeChartFrame.setVisible(false);
@@ -760,13 +761,6 @@ public class InteractiveEllipseFit implements PlugIn {
 
 			rowvalues = new Object[Finalresult.size()][colnames.length];
 
-			int count = 0;
-			for (Map.Entry<Integer, Intersectionobject> entry : Finalresult.entrySet()) {
-
-				rowvalues[count][0] = entry.getKey();
-
-				count++;
-			}
 
 		}
 

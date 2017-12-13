@@ -28,7 +28,7 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 		this.z = z;
 		this.fourthDimSize = fourthDimSize;
 		this.maxdistance = maxdistance;
-
+        
 	}
 
 	@Override
@@ -45,7 +45,10 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 
 	@Override
 	public boolean process() {
-		graph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+		
+		
+		
+		reset();
 		for (int t = 1; t < fourthDimSize; ++t) {
 
 			String uniqueID = Integer.toString(z) + Integer.toString(t);
@@ -91,7 +94,8 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 						Search.search(sourceCoords);
 						final double squareDist = Search.getSquareDistance();
 						final FlagNode<Intersectionobject> targetNode = Search.getSampler().get();
-						
+						if (squareDist > maxdistance)
+							continue;
 
 						targetNode.setVisited(true);
 
@@ -119,5 +123,13 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 
 		return errorMessage;
 	}
-
+	public void reset() {
+		
+		graph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+		String uniqueID = Integer.toString(z) + Integer.toString(1);
+		final Iterator<Intersectionobject> it = ALLIntersections.get(uniqueID).iterator();
+		while (it.hasNext()) {
+			graph.addVertex(it.next());
+		}
+	}
 }

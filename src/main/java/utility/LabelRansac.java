@@ -37,8 +37,12 @@ public class LabelRansac implements Runnable {
 	final ArrayList<EllipseRoi> resultroi;
 	final ArrayList<OvalRoi> resultovalroi;
 	final 	ArrayList<Line> resultlineroi;
-    
-	public LabelRansac(final InteractiveEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,  List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, ArrayList<EllipseRoi> resultroi,ArrayList<OvalRoi> resultovalroi, ArrayList<Line> resultlineroi  ) {
+	final ArrayList<Tangentobject> AllPointsofIntersect ;
+	final ArrayList<Intersectionobject> Allintersection ;
+
+	final HashMap<Boolean, Pair<Ellipsoid, Ellipsoid>> fitmapspecial ;
+	public LabelRansac(final InteractiveEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,  List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, ArrayList<EllipseRoi> resultroi,ArrayList<OvalRoi> resultovalroi, ArrayList<Line> resultlineroi,
+			final ArrayList<Tangentobject> AllPointsofIntersect, final ArrayList<Intersectionobject> Allintersection, final HashMap<Boolean, Pair<Ellipsoid, Ellipsoid>> fitmapspecial ) {
 		
 		this.parent = parent;
 		this.ActualRoiimg = ActualRoiimg;
@@ -48,6 +52,9 @@ public class LabelRansac implements Runnable {
 		this.resultroi = resultroi;
 		this.resultovalroi = resultovalroi;
 		this.resultlineroi = resultlineroi;
+		this.Allintersection = Allintersection;
+		this.AllPointsofIntersect = AllPointsofIntersect;
+		this.fitmapspecial = fitmapspecial;
 	}
 	@Override
 	public void run()  {
@@ -72,12 +79,7 @@ public class LabelRansac implements Runnable {
 
 			double dist = Distance.DistanceSq(center, centernext);
 
-			double[] radi = Reducedsamples.get(i).getA().getRadii();
-			
-			/*  Maybe another constraint
-			double maxradius = Math.max(radi[0], radi[1]);
-			|| maxradius > parent.maxSize
-			*/
+	
 			if (dist < parent.minSeperation * parent.minSeperation  )
 				Reducedsamples.remove(Reducedsamples.get(i));
 
@@ -103,41 +105,38 @@ public class LabelRansac implements Runnable {
             
 		
 		
-		// Obtain the points of intersections
 
-		ArrayList<Tangentobject> AllPointsofIntersect = new ArrayList<Tangentobject>();
-		ArrayList<Intersectionobject> Allintersection = new ArrayList<Intersectionobject>();
-
-		HashMap<Integer, Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new HashMap<Integer, Pair<Ellipsoid, Ellipsoid>>();
+		   int count = 0;
+			ArrayList<Integer> ellipsepairlist = new ArrayList<Integer>();
 		for (int i = 0; i < Reducedsamples.size(); ++i) {
 
 			for (int j = 0; j < Reducedsamples.size(); ++j) {
 
 				if (j != i) {
 
-					fitmapspecial.put(Reducedsamples.get(i).getA().hashCode() + Reducedsamples.get(j).getA().hashCode(),
+					ellipsepairlist.add(count);
+					fitmapspecial.put(false,
 							new ValuePair<Ellipsoid, Ellipsoid>(Reducedsamples.get(i).getA(),
 									Reducedsamples.get(j).getA()));
 
+					count++;
 				}
 			}
 		}
 
 		
-		ArrayList<Integer> ellipsepairlist = new ArrayList<Integer>();
+	
 		boolean isfitted = false;
-		for (Map.Entry<Integer, Pair<Ellipsoid, Ellipsoid>> entry : fitmapspecial.entrySet()) {
+		for (Map.Entry<Boolean, Pair<Ellipsoid, Ellipsoid>> entry : fitmapspecial.entrySet()) {
 
 			Pair<Ellipsoid, Ellipsoid> ellipsepair = entry.getValue();
 
-			int sum = entry.getKey();
 			
-			for (int index = 0; index < ellipsepairlist.size(); ++index) {
 
-				if (sum == ellipsepairlist.get(index))
-					isfitted = true;
+				isfitted = entry.getKey();
+				
 
-			}
+			
 
 			if (!isfitted) {
 
@@ -145,7 +144,7 @@ public class LabelRansac implements Runnable {
 				ArrayList<double[]> pos = Intersections.PointsofIntersection(ellipsepair);
 				
 				Tangentobject PointsIntersect = new Tangentobject(pos,
-						fitmapspecial.get(sum), t, z);
+						fitmapspecial.get(isfitted), t, z);
 
 				
 				
@@ -182,17 +181,19 @@ public class LabelRansac implements Runnable {
 					Allintersection.add(currentintersection);
 					
 					
-					System.out.println(angle);
+					System.out.println(angle + " " + pos.get(j)[0]);
 					
 				}
 				
 				AllPointsofIntersect.add(PointsIntersect);
-				ellipsepairlist.add(sum);
+				
+				fitmapspecial.put(true, ellipsepair);
 
 			}
+			
+			
 
 		}
-	
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
         
 		

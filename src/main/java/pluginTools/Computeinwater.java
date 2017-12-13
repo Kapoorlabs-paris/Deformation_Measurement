@@ -1,6 +1,7 @@
 package pluginTools;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -8,6 +9,8 @@ import java.util.concurrent.Executors;
 
 import javax.swing.SwingWorker;
 
+import ellipsoidDetector.Intersectionobject;
+import ellipsoidDetector.Tangentobject;
 import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
@@ -16,6 +19,7 @@ import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
+import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
@@ -55,13 +59,19 @@ public class Computeinwater   {
 		 ArrayList<EllipseRoi> resultroi = new ArrayList<EllipseRoi>();
 			ArrayList<OvalRoi> resultovalroi = new ArrayList<OvalRoi>();
 			ArrayList<Line> resultlineroi = new ArrayList<Line>();
+			// Obtain the points of intersections
+
+			ArrayList<Tangentobject> AllPointsofIntersect = new ArrayList<Tangentobject>();
+			ArrayList<Intersectionobject> Allintersection = new ArrayList<Intersectionobject>();
+
+			HashMap<Boolean, Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new HashMap<Boolean, Pair<Ellipsoid, Ellipsoid>>();
 		for (int label = 1; label< parent.maxlabel; ++label) {
 			
 			
 			 RandomAccessibleInterval<BitType> ActualRoiimg = CurrentLabelImage(CurrentViewInt, CurrentView, label);
 			 
 			 List<Pair<RealLocalizable, BitType>> truths =  new ArrayList<Pair<RealLocalizable, BitType>>();
-			tasks.add(Executors.callable(new LabelRansac(parent, ActualRoiimg, truths, t, z, resultroi, resultovalroi, resultlineroi)));
+			tasks.add(Executors.callable(new LabelRansac(parent, ActualRoiimg, truths, t, z, resultroi, resultovalroi, resultlineroi,AllPointsofIntersect,Allintersection,fitmapspecial )));
 			
 			
 			
