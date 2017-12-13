@@ -171,13 +171,13 @@ public class InteractiveEllipseFit implements PlugIn {
 	public Color colorDet = Color.GREEN;
 	public Color colorLineA = Color.YELLOW;
 	public Color colorLineB = Color.YELLOW;
-	public double maxdistance = 10;
+	public double maxdistance = 50;
 	
 	
 	
 	public int[] Clickedpoints;
 
-	public ArrayList<Intersectionobject> Tracklist;
+	public ArrayList<Pair<Integer, Intersectionobject>> Tracklist;
 	public ArrayList<double[]> resultAngle;
 	public KeyListener kl;
 	public SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> parentgraph;
@@ -271,7 +271,7 @@ public class InteractiveEllipseFit implements PlugIn {
 		Clickedpoints = new int[ndims];
 		ALLIntersections = new HashMap<String, ArrayList<Intersectionobject>>();
 		Finalresult = new HashMap<Integer, Intersectionobject>();
-		Tracklist = new ArrayList<Intersectionobject>();
+		Tracklist = new ArrayList<Pair<Integer, Intersectionobject>>();
 		
 		
 		
@@ -935,14 +935,16 @@ public class InteractiveEllipseFit implements PlugIn {
 
 		// Make something happen
 
-		TrackModel model = new TrackModel(parentgraph);
-
-		model.getDirectedNeighborIndex();
+		row = trackindex;
+	    
+		int ID = (int) table.getValueAt(trackindex, 0);
+		
 		resultAngle = new ArrayList<double[]>();
 		
-		for (Intersectionobject currentangle: Tracklist) {
+		for (Pair<Integer,Intersectionobject> currentangle: Tracklist) {
 				
-				resultAngle.add(new double[] {currentangle.t, currentangle.angle });
+			if (ID == currentangle.getA())
+				resultAngle.add(new double[] {currentangle.getB().t, currentangle.getB().angle });
 				
 			}
 

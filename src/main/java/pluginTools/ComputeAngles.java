@@ -23,6 +23,8 @@ import javax.swing.SwingWorker;
 
 import ellipsoidDetector.Intersectionobject;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.util.Pair;
+import net.imglib2.util.ValuePair;
 import utility.NearestNeighbourSearch;
 import utility.TrackModel;
 
@@ -84,26 +86,25 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 		for (final Integer id : model.trackIDs(true)) {
 
 			
-			parent.Tracklist = new ArrayList<Intersectionobject>();
 
 			
-			Comparator<Intersectionobject> ThirdDimcomparison = new Comparator<Intersectionobject>() {
+			Comparator<Pair<Integer,Intersectionobject>> ThirdDimcomparison = new Comparator<Pair<Integer,Intersectionobject>>() {
 
 				@Override
-				public int compare(final Intersectionobject A, final Intersectionobject B) {
+				public int compare(final Pair<Integer,Intersectionobject> A, final Pair<Integer,Intersectionobject> B) {
 
-					return A.z - B.z;
+					return A.getB().z - B.getB().z;
 
 				}
 
 			};
 
-			Comparator<Intersectionobject> FourthDimcomparison = new Comparator<Intersectionobject>() {
+			Comparator<Pair<Integer,Intersectionobject>> FourthDimcomparison = new Comparator<Pair<Integer,Intersectionobject>>() {
 
 				@Override
-				public int compare(final Intersectionobject A, final Intersectionobject B) {
+				public int compare(final Pair<Integer,Intersectionobject> A, final Pair<Integer,Intersectionobject> B) {
 
-					return A.t - B.t;
+					return A.getB().t - B.getB().t;
 
 				}
 
@@ -121,16 +122,19 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 				
 				Intersectionobject currentangle = Angleiter.next();
 				
-				parent.Tracklist.add(currentangle);
+				parent.Tracklist.add(new ValuePair<Integer, Intersectionobject>( id, currentangle));
 			}
 			
 			Collections.sort(parent.Tracklist, ThirdDimcomparison);
 			if (parent.fourthDimensionSize > 1)
 				Collections.sort(parent.Tracklist, FourthDimcomparison);
 
-			parent.Finalresult.put(id, parent.Tracklist.get(0));
-			
-			System.out.println(id + " " + parent.Tracklist.get(0).t + " " + parent.Tracklist.get(0).Intersectionpoint[0]);
+			for (int index = 0; index <parent.Tracklist.size(); ++index) {
+			if (id == parent.Tracklist.get(index).getA()) {
+			parent.Finalresult.put(id, parent.Tracklist.get(index).getB());
+			break;
+			}
+			}
 		}
 
 		CreateTable();
