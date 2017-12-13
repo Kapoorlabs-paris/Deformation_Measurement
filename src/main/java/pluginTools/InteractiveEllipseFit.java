@@ -84,6 +84,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.ransac.RansacModels.DisplayasROI;
 import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
+import net.imglib2.histogram.Integer1dBinMapperTest;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
@@ -931,13 +932,13 @@ public class InteractiveEllipseFit implements PlugIn {
 
 		row = trackindex;
 	    
-		int ID = (int) table.getValueAt(trackindex, 0);
+		String ID = (String) table.getValueAt(trackindex, 0);
 		
 		resultAngle = new ArrayList<double[]>();
 		
 		for (Pair<Integer,Intersectionobject> currentangle: Tracklist) {
 				
-			if (ID == currentangle.getA())
+			if (Integer.parseInt(ID) == currentangle.getA())
 				resultAngle.add(new double[] {currentangle.getB().t, currentangle.getB().angle });
 				
 			}
