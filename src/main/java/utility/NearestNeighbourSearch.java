@@ -94,8 +94,7 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 						Search.search(sourceCoords);
 						final double squareDist = Search.getSquareDistance();
 						final FlagNode<Intersectionobject> targetNode = Search.getSampler().get();
-						if (squareDist > maxdistance)
-							continue;
+						
 
 						targetNode.setVisited(true);
 

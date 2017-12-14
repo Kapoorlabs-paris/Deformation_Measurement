@@ -67,14 +67,14 @@ public class ChartMaker {
 
 		return chart;
 	}
-	public static XYSeries drawPoints( final List< double[] > mts ) { return drawPoints( mts, "Angle evolution" ); }
-	public static XYSeries drawPoints( final List< double[]> mts, final String name )
+	public static XYSeries drawPoints( final List< Pair< String,double[] >> mts ) { return drawPoints( mts, "Angle evolution" ); }
+	public static XYSeries drawPoints( final  List< Pair< String,double[] >> mts, final String name )
 	{
 		XYSeries series = new XYSeries( name );
 
 		if (mts!=null){
-		for ( final double[] mt : mts )
-			series.add(  mt[0], mt[1] );
+		for ( final Pair<String, double[]> mt : mts )
+			series.add(  mt.getB()[0], mt.getB()[1] );
 		}
 		return series;
 	}

@@ -66,6 +66,9 @@ public class EllipseFileChooser extends JPanel {
 	  public Border selectfile = new CompoundBorder(new TitledBorder("Select file"), new EmptyBorder(c.insets));
 	
 	public EllipseFileChooser() {
+		
+		
+		
 
 		   panelFirst.setLayout(layout);
 		   Panelfile.setLayout(layout);

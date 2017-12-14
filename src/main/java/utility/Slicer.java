@@ -15,7 +15,25 @@ import net.imglib2.view.Views;
 import pluginTools.InteractiveEllipseFit;
 
 public class Slicer {
+	
+	public static  RandomAccessibleInterval<FloatType> getCurrentViewLarge(RandomAccessibleInterval<FloatType> originalimg, int thirdDimension) {
+		
+		
+		
+		final FloatType type = originalimg.randomAccess().get().createVariable();
+		long[] dim = { originalimg.dimension(0), originalimg.dimension(1), originalimg.dimension(2) };
+		final ImgFactory<FloatType> factory = net.imglib2.util.Util.getArrayOrCellImgFactory(originalimg, type);
+		RandomAccessibleInterval<FloatType> totalimg = factory.create(dim, type);
 
+	
+		
+		totalimg = Views.hyperSlice(originalimg, 2, thirdDimension - 1);
+			
+		
+		return totalimg;
+
+	}
+	
 	
 	public static  RandomAccessibleInterval<FloatType> getCurrentView(RandomAccessibleInterval<FloatType> originalimg, int thirdDimension, int thirdDimensionSize, int fourthDimension, int fourthDimensionSize) {
 
