@@ -156,11 +156,19 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 
 	public void CreateTable() {
 
-		parent.PanelSelectFile.removeAll();
-		parent.Cardframe.repaint();
-		parent.Cardframe.validate();
+	
+		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Starting Angle", "Start time",
+		"Start Z" };
+
+Object[][] rowvalues = new Object[0][colnames.length];
+
+	rowvalues = new Object[parent.Finalresult.size()][colnames.length];
+
+
+
+	parent.table = new JTable(rowvalues, colnames);
 		parent.row = 0;
-		parent.Card();
+	
 		for (Map.Entry<Integer, Intersectionobject> entry : parent.Finalresult.entrySet()) {
 
 			Intersectionobject currentangle = entry.getValue();
@@ -177,9 +185,71 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 			parent.row++;
 		}
 
-		
-	
+			parent.table.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(MouseEvent e) {
+					if (e.getClickCount() == 1) {
+					
+						if (!parent.jFreeChartFrame.isVisible())
+							parent.jFreeChartFrame = utility.ChartMaker.display(parent.chart, new Dimension(500, 500));
+						JTable target = (JTable) e.getSource();
+						parent.row = target.getSelectedRow();
+						// do some action if appropriate column
+						if (parent.row > 0)
+							parent.displayclicked(parent.row);
+						else
+							parent.displayclicked(0);
+						
+					}
+					System.out.print("Click");
+				}
+			});
+			
+			parent.PanelSelectFile.removeAll();
+			parent.Original.removeAll();
+			parent.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
+			parent.table.setMinimumSize(new Dimension(500, 300));
+			parent.table.setPreferredSize(new Dimension(500, 200));
+			
+			parent.scrollPane = new JScrollPane(parent.table);
+			parent.scrollPane.setMinimumSize(new Dimension(300, 200));
+			parent.scrollPane.setPreferredSize(new Dimension(300, 200));
+
+			parent.scrollPane.getViewport().add(parent.table);
+			parent.scrollPane.setAutoscrolls(true);
+			parent.PanelSelectFile.add(parent.scrollPane, BorderLayout.CENTER);
+
+			parent.PanelSelectFile.setBorder(parent.selectfile);
+
+			parent.panelFirst.add(parent.PanelSelectFile, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
+			
+			parent.Original.add(parent.inputLabel,  new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0) );
+			parent.Original.add(parent.inputField,  new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0) );
+			parent.Original.add(parent.ChooseDirectory,  new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0) );
+			parent.Original.add(parent.Savebutton,  new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0) );
+			
+			parent.Original.setBorder(parent.origborder);
+			
+			
+			
+			parent.Original.setMinimumSize(new Dimension(parent.SizeX, parent.SizeY));
+			parent.Original.setPreferredSize(new Dimension(parent.SizeX, parent.SizeY));
+			parent.panelFirst.add(parent.Original, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
+
+			parent.PanelSelectFile.repaint();
+			parent.PanelSelectFile.validate();
+			parent.Original.repaint();
+			parent.Original.validate();
+			parent.panelFirst.repaint();
+			parent.panelFirst.validate();
+			parent.Cardframe.repaint();
+			parent.Cardframe.validate();
 	}
 
 }

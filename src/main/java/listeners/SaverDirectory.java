@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import ij.IJ;
 import pluginTools.InteractiveEllipseFit;
@@ -12,12 +13,10 @@ import pluginTools.InteractiveEllipseFit;
 public class SaverDirectory implements ActionListener {
 	
     InteractiveEllipseFit parent;
-  
     
 	public SaverDirectory(InteractiveEllipseFit parent) {
 
 		this.parent = parent;
-	
 
 	}
 	
@@ -26,21 +25,22 @@ public class SaverDirectory implements ActionListener {
 
 	@Override
 	public void actionPerformed(final ActionEvent arg0) {
-
-		JFileChooser chooserA = new JFileChooser();
-		if(parent.chooserA!=null)
-		chooserA.setCurrentDirectory(parent.chooserA.getCurrentDirectory());
-		else
-		chooserA.setCurrentDirectory(new java.io.File("."));	
-		chooserA.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		chooserA.showOpenDialog(parent.panelFirst);
-		if(chooserA.getSelectedFile()!=null) {
-		parent.chooserA = chooserA;
-		parent.usefolder = chooserA.getSelectedFile().getAbsolutePath();
-		parent.userfile = chooserA.getSelectedFile();
-	
-		System.out.println(parent.usefolder + " " + parent.addToName);
+		
+		parent.chooserA = new JFileChooser();
+		parent.chooserA.setCurrentDirectory(new java.io.File("."));
+		
+		parent.chooserA.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		//
+		
+		//
+		if (parent.chooserA.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+			System.out.println("getCurrentDirectory(): " + parent.chooserA.getCurrentDirectory());
+			System.out.println("getSelectedFile() : " + parent.chooserA.getSelectedFile());
+		} else {
+			System.out.println("No Selection ");
 		}
+		
+		
 	}
 
 }

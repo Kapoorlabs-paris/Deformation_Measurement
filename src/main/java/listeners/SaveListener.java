@@ -25,7 +25,6 @@ public class SaveListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-	
 		String ID = (String) parent.table.getValueAt(parent.row, 0);
 		
 		try {

@@ -67,7 +67,6 @@ import ij.plugin.PlugIn;
 import ij.plugin.frame.RoiManager;
 import ij.process.ColorProcessor;
 import listeners.AngleListener;
-import listeners.BubbleFireTrigger;
 import listeners.DisplayRoiListener;
 import listeners.EllipseNonStandardMouseListener;
 import listeners.FilenameListener;
@@ -158,7 +157,6 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	ResultsTable rtAll;
 	public File inputfile;
 	public String inputdirectory;
-
 	public int radiusInt = 2;
 	public float radius = 50f;
 	public float radiusMin = radiusInt;
@@ -391,6 +389,9 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		}
 
 		if (change == ValueChange.RESULT) {
+			prestack = new ImageStack((int) originalimg.dimension(0), (int) originalimg.dimension(1),
+					java.awt.image.ColorModel.getRGBdefault());
+			
 			String ID = (String) table.getValueAt(row, 0);
 			ArrayList<double[]> resultlist = new ArrayList<double[]>();
 			for (Pair<Integer,Intersectionobject> currentangle: Tracklist) {
@@ -425,7 +426,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 					
 					prestack.addSlice(resultimp.getImageStack().getProcessor(time).convertToRGB());
 					cp = (ColorProcessor) (prestack.getProcessor(time).duplicate());
-					
+					cp.reset();
 					
 					
 					
@@ -762,10 +763,10 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public JFrame Cardframe = new JFrame("Ellipsoid detector");
 	public JPanel panelCont = new JPanel();
 	public JPanel panelFirst = new JPanel();
-	private JPanel Timeselect = new JPanel();
-	private JPanel Zselect = new JPanel();
-	private JPanel Roiselect = new JPanel();
-	private JPanel Angleselect = new JPanel();
+	public JPanel Timeselect = new JPanel();
+	public JPanel Zselect = new JPanel();
+	public JPanel Roiselect = new JPanel();
+	public JPanel Angleselect = new JPanel();
 
 	public TextField inputFieldT;
 	public TextField inputFieldZ;
@@ -777,8 +778,8 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public Label inputLabelminpercent;
 	public Label inputLabelIter;
 	public JPanel Original = new JPanel();
-	private int SizeX = 400;
-	private int SizeY = 200;
+	public int SizeX = 400;
+	public int SizeY = 200;
 
 	public JButton Roibutton = new JButton("Confirm current roi selection");
 	public JButton DisplayRoibutton = new JButton("Display roi selection");
@@ -799,11 +800,11 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	final String insidestring = "Cutoff distance for points inside ellipse";
 	final String outsidestring = "Cutoff distance for points outside ellipse";
 
-	public static final Insets insets = new Insets(10, 0, 0, 0);
+	public final Insets insets = new Insets(10, 0, 0, 0);
 	public final GridBagLayout layout = new GridBagLayout();
 	public final GridBagConstraints c = new GridBagConstraints();
 	public JScrollPane scrollPane;
-	public JFileChooser chooserA;
+	public JFileChooser chooserA = new JFileChooser();
 	public String choosertitleA;
 	public JScrollBar timeslider = new JScrollBar(Scrollbar.HORIZONTAL, thirdDimensionsliderInit, 10, 0,
 			10 + scrollbarSize);
@@ -818,7 +819,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public TextField inputField = new TextField();
 	final JButton ChooseDirectory = new JButton("Choose Directory to save results in");
 	
-	
+	Border origborder = new CompoundBorder(new TitledBorder("Enter filename for results files"), new EmptyBorder(c.insets));
 	public void Card() {
 		CardLayout cl = new CardLayout();
 
@@ -996,7 +997,19 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 		scrollPane.getViewport().add(table);
 		scrollPane.setAutoscrolls(true);
-		if (Finalresult != null && Finalresult.size() > 0) {
+		
+		
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+		table.setMinimumSize(new Dimension(500, 300));
+		table.setPreferredSize(new Dimension(500, 200));
+		
+		scrollPane = new JScrollPane(table);
+		scrollPane.setMinimumSize(new Dimension(300, 200));
+		scrollPane.setPreferredSize(new Dimension(300, 200));
+
+		scrollPane.getViewport().add(table);
+		scrollPane.setAutoscrolls(true);
 		PanelSelectFile.add(scrollPane, BorderLayout.CENTER);
 
 		PanelSelectFile.setBorder(selectfile);
@@ -1021,10 +1034,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		Original.setPreferredSize(new Dimension(SizeX, SizeY));
 		panelFirst.add(Original, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
-		
-		
-		}
-		
+
 		
 		
 		
@@ -1039,26 +1049,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 				new InsideCutoffListener(this, insideText, insidestring, 0, 100, scrollbarSize, insideslider));
 		outsideslider.addAdjustmentListener(
 				new OutsideCutoffListener(this, outsideText, outsidestring, 0, 100, scrollbarSize, outsideslider));
-		if (Finalresult !=null && Finalresult.size() > 0){
-			table.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(MouseEvent e) {
-					if (e.getClickCount() == 1) {
-					
-						if (!jFreeChartFrame.isVisible())
-							jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
-						JTable target = (JTable) e.getSource();
-						row = target.getSelectedRow();
-						// do some action if appropriate column
-						if (row > 0)
-							displayclicked(row);
-						else
-							displayclicked(0);
-					}
-				}
-			});
-			}
-		
-		
+	
 		
 		Anglebutton.addActionListener(new AngleListener(this));
 		Roibutton.addActionListener(new RoiListener(this));
