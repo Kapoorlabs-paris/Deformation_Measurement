@@ -165,7 +165,6 @@ Object[][] rowvalues = new Object[0][colnames.length];
 	rowvalues = new Object[parent.Finalresult.size()][colnames.length];
 
 
-
 	parent.table = new JTable(rowvalues, colnames);
 		parent.row = 0;
 	
@@ -183,8 +182,10 @@ Object[][] rowvalues = new Object[0][colnames.length];
 			parent.table.getModel().setValueAt(new DecimalFormat("#.###").format(currentangle.z), parent.row, 5);
 
 			parent.row++;
+			
+			parent.tablesize = parent.row;
 		}
-
+/*
 			parent.table.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
 					if (e.getClickCount() == 1) {
@@ -203,7 +204,7 @@ Object[][] rowvalues = new Object[0][colnames.length];
 					System.out.print("Click");
 				}
 			});
-			
+			*/
 			parent.PanelSelectFile.removeAll();
 			parent.Original.removeAll();
 			parent.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);

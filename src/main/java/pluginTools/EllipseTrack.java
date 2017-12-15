@@ -62,9 +62,7 @@ public class EllipseTrack {
 
 				percent++;
 
-				utility.ProgressBar.SetProgressBar(jpb, 100 * percent/ (parent.thirdDimensionSize + parent.fourthDimensionSize), "Fitting ellipses and computing angles T = " + t + "/"
-						+ parent.fourthDimensionSize + " Z = " + z + "/" + parent.fourthDimensionSize);
-		        
+			
 		        
 				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z , parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 				
@@ -72,7 +70,9 @@ public class EllipseTrack {
 				
         		   Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z);
         		   compute.ParallelRansac();
-				
+        			utility.ProgressBar.SetProgressBar(jpb, 100 * percent/ (parent.thirdDimensionSize + parent.fourthDimensionSize), "Fitting ellipses and computing angles T = " + t + "/"
+    						+ parent.fourthDimensionSize + " Z = " + z + "/" + parent.fourthDimensionSize);
+    		        
 
 					
 			}

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import ij.gui.OvalRoi;
 import ij.gui.Roi;
 
 import net.imglib2.KDTree;
@@ -55,6 +56,49 @@ public class NearestRoi {
 		return KDtreeroi;
 		
 	}
+	
+	
+	public static OvalRoi getNearestIntersectionRois(Roiobject roi, double[] Clickedpoint, final InteractiveEllipseFit parent ) {
+		
+
+		ArrayList<OvalRoi> Allrois = roi.resultovalroi;
+		
+		OvalRoi KDtreeroi = null;
+
+		final List<RealPoint> targetCoords = new ArrayList<RealPoint>(Allrois.size());
+		final List<FlagNode<OvalRoi>> targetNodes = new ArrayList<FlagNode<OvalRoi>>(Allrois.size());
+		for (int index = 0; index < Allrois.size(); ++index) {
+
+			 Roi r = Allrois.get(index);
+			 Rectangle rect = r.getBounds();
+			 
+			 targetCoords.add( new RealPoint(rect.x + rect.width/2.0, rect.y + rect.height/2.0 ) );
+			 
+
+			targetNodes.add(new FlagNode<OvalRoi>(Allrois.get(index)));
+
+		}
+
+		if (targetNodes.size() > 0 && targetCoords.size() > 0) {
+
+			final KDTree<FlagNode<OvalRoi>> Tree = new KDTree<FlagNode<OvalRoi>>(targetNodes, targetCoords);
+
+			final NNFlagsearchKDtree<OvalRoi> Search = new NNFlagsearchKDtree<OvalRoi>(Tree);
+
+
+				final double[] source = Clickedpoint;
+				final RealPoint sourceCoords = new RealPoint(source);
+				Search.search(sourceCoords);
+				final FlagNode<OvalRoi> targetNode = Search.getSampler().get();
+
+				KDtreeroi = targetNode.getValue();
+
+		}
+
+		return KDtreeroi;
+		
+	}
+	
 	
 	
 }

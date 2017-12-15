@@ -57,6 +57,7 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.EllipseRoi;
+import ij.gui.ImageCanvas;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
 import ij.gui.Overlay;
@@ -68,10 +69,10 @@ import ij.plugin.frame.RoiManager;
 import ij.process.ColorProcessor;
 import listeners.AngleListener;
 import listeners.DisplayRoiListener;
+import listeners.DrawListener;
 import listeners.EllipseNonStandardMouseListener;
 import listeners.FilenameListener;
 import listeners.InsideCutoffListener;
-import listeners.MaxEllipseListener;
 import listeners.MaxTryListener;
 import listeners.MinpercentListener;
 import listeners.OutsideCutoffListener;
@@ -102,7 +103,6 @@ import net.imglib2.view.Views;
 import pluginTools.InteractiveEllipseFit.ValueChange;
 import utility.MarkNew;
 import utility.Roiobject;
-import utility.SelectNew;
 import utility.ShowResultView;
 import utility.ShowView;
 import utility.Slicer;
@@ -117,18 +117,19 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public String usefolder = IJ.getDirectory("imagej");
 	public String addToName = "EllipseFits";
 	public final int scrollbarSize = 10000;
+	public int tablesize;
 	public Overlay overlay;
 	public Overlay emptyoverlay;
 	public int thirdDimensionslider = 1;
 	public int thirdDimensionsliderInit = 1;
 	public int fourthDimensionslider = 1;
 	public int fourthDimensionsliderInit = 1;
-
+    public int rowchoice;
 	public int radiusdetection = 5;
 	public int maxtry = 30;
 	public float minpercent = 0.65f;
+	public float minpercentINI = 0.65f;
 	public final double minSeperation = 5;
-	public int maxEllipses = 15;
 
 	public float insideCutoff = 5;
 	public float outsideCutoff = 5;
@@ -149,10 +150,10 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public int Progressmax = 100;
 	public int max = Progressmax;
 	public File userfile;
-	Frame jFreeChartFrame;
+	public Frame jFreeChartFrame;
 	public NumberFormat nf;
 	public XYSeriesCollection dataset;
-	JFreeChart chart;
+	public JFreeChart chart;
 	public RandomAccessibleInterval<FloatType> originalimg;
 	ResultsTable rtAll;
 	public File inputfile;
@@ -164,12 +165,14 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public MouseMotionListener ml;
 	public MouseListener mvl;
 	public Roi nearestRoiCurr;
+	public OvalRoi nearestIntersectionRoiCurr;
 	public Roi selectedRoi;
 	public TextField inputFieldIter;
 	public JTable table;
 	public ArrayList<Roi> Allrois;
 	public HashMap<String, Roiobject> ZTRois;
 	public HashMap<String, Roiobject> DefaultZTRois;
+	public HashMap<String, Roiobject> IntersectionZTRois;
 	public ImagePlus imp;
 	public ImagePlus resultimp;
 	public ImagePlus emptyimp;
@@ -178,8 +181,8 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public RandomAccessibleInterval<FloatType> CurrentResultView;
 	public Color confirmedRois = Color.BLUE;
 	public Color defaultRois = Color.YELLOW;
-	public Color colorChange = Color.PINK;
-	public Color colorInChange = Color.RED;
+	public Color colorChange = Color.RED;
+	public Color colorInChange = Color.BLACK;
     public int maxlabel;
     public Color colorOval = Color.CYAN;
 	public Color colorDet = Color.GREEN;
@@ -188,7 +191,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public Color colorresult = Color.magenta;
 	public double maxdistance = 10;
 	ImageStack prestack;
-	
+	public MouseAdapter mouseadapter;
 	
 	public int[] Clickedpoints;
     public int starttime;
@@ -285,6 +288,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		Allrois = new ArrayList<Roi>();
 		ZTRois = new HashMap<String, Roiobject>();
 		DefaultZTRois = new HashMap<String, Roiobject>();
+		IntersectionZTRois = new HashMap<String, Roiobject>();
 		Clickedpoints = new int[ndims];
 		ALLIntersections = new HashMap<String, ArrayList<Intersectionobject>>();
 		Finalresult = new HashMap<Integer, Intersectionobject>();
@@ -392,7 +396,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 			prestack = new ImageStack((int) originalimg.dimension(0), (int) originalimg.dimension(1),
 					java.awt.image.ColorModel.getRGBdefault());
 			
-			String ID = (String) table.getValueAt(row, 0);
+			String ID = (String) table.getValueAt(rowchoice, 0);
 			ArrayList<double[]> resultlist = new ArrayList<double[]>();
 			for (Pair<Integer,Intersectionobject> currentangle: Tracklist) {
 				
@@ -481,7 +485,6 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 			}
 
-			DisplayOnly();
 
 		}
 
@@ -604,7 +607,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 						for (int i = 0; i < currentobject.resultroi.size(); ++i) {
 
 							EllipseRoi ellipse = currentobject.resultroi.get(i);
-							ellipse.setStrokeColor(Color.RED);
+							ellipse.setStrokeColor(colorInChange);
 							ellipse.setStrokeWidth(2);
 							overlay.add(ellipse);
 
@@ -617,7 +620,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 						for (int i = 0; i < currentobject.resultovalroi.size(); ++i) {
 
 							OvalRoi ellipse = currentobject.resultovalroi.get(i);
-							ellipse.setStrokeColor(Color.GREEN);
+							ellipse.setStrokeColor(colorDet);
 							ellipse.setStrokeWidth(2);
 							overlay.add(ellipse);
 
@@ -630,7 +633,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 						for (int i = 0; i < currentobject.resultlineroi.size(); ++i) {
 
 							Line ellipse = currentobject.resultlineroi.get(i);
-							ellipse.setStrokeColor(Color.YELLOW);
+							ellipse.setStrokeColor(colorLineA);
 							ellipse.setStrokeWidth(2);
 							overlay.add(ellipse);
 
@@ -644,10 +647,8 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 			}
 			imp.updateAndDraw();
 
-			MarkNew mark = new MarkNew(this);
-			mark.mark();
-			SelectNew show = new SelectNew(this);
-			show.select();
+			MarkNew.mark(this);
+		
 
 		}
 	}
@@ -683,7 +684,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 						for (int i = 0; i < currentobject.resultroi.size(); ++i) {
 
 							EllipseRoi ellipse = currentobject.resultroi.get(i);
-							ellipse.setStrokeColor(Color.RED);
+							ellipse.setStrokeColor(colorInChange);
 							ellipse.setStrokeWidth(2);
 							overlay.add(ellipse);
 
@@ -695,7 +696,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 						for (int i = 0; i < currentobject.resultovalroi.size(); ++i) {
 
 							OvalRoi ellipse = currentobject.resultovalroi.get(i);
-							ellipse.setStrokeColor(Color.GREEN);
+							ellipse.setStrokeColor(colorDet);
 							ellipse.setStrokeWidth(2);
 							overlay.add(ellipse);
 
@@ -708,7 +709,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 						for (int i = 0; i < currentobject.resultlineroi.size(); ++i) {
 
 							Line ellipse = currentobject.resultlineroi.get(i);
-							ellipse.setStrokeColor(Color.YELLOW);
+							ellipse.setStrokeColor(colorLineA);
 							ellipse.setStrokeWidth(2);
 							overlay.add(ellipse);
 
@@ -720,10 +721,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 			}
 			imp.updateAndDraw();
-			MarkNew mark = new MarkNew(this);
-			mark.mark();
-			SelectNew show = new SelectNew(this);
-			show.select();
+			
 
 		}
 	}
@@ -751,11 +749,9 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 			}
 			imp.updateAndDraw();
-			MarkNew mark = new MarkNew(this);
-			mark.mark();
-
-			SelectNew show = new SelectNew(this);
-			show.select();
+			MarkNew.mark(this);
+			
+		
 
 		}
 	}
@@ -800,6 +796,8 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	final String insidestring = "Cutoff distance for points inside ellipse";
 	final String outsidestring = "Cutoff distance for points outside ellipse";
 
+	
+	
 	public final Insets insets = new Insets(10, 0, 0, 0);
 	public final GridBagLayout layout = new GridBagLayout();
 	public final GridBagConstraints c = new GridBagConstraints();
@@ -818,7 +816,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public JLabel inputLabel = new JLabel("Filename:");
 	public TextField inputField = new TextField();
 	final JButton ChooseDirectory = new JButton("Choose Directory to save results in");
-	
+	public JComboBox<String> ChooseMethod;
 	Border origborder = new CompoundBorder(new TitledBorder("Enter filename for results files"), new EmptyBorder(c.insets));
 	public void Card() {
 		CardLayout cl = new CardLayout();
@@ -856,9 +854,9 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 		inputLabelIter = new Label("Max. attempts to find ellipses");
 
-		inputFieldmaxellipse = new TextField();
-		inputFieldmaxellipse = new TextField(5);
-		inputFieldmaxellipse.setText(Integer.toString(maxEllipses));
+
+		String[] DrawType = { "Closed Loops", "Arcs"};
+		ChooseMethod = new JComboBox<String>(DrawType);
 
 		inputLabelmaxellipse = new Label("Max. number of ellipses");
 
@@ -946,11 +944,18 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 		Roiselect.add(rText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-		Roiselect.add(Roibutton, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		Roiselect.add(ChooseMethod, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		Roiselect.add(Roibutton, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
+		
+		
+		
+		
 		Roiselect.setBorder(roitools);
+		
+		
 		panelFirst.add(Roiselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
@@ -1057,11 +1062,10 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		inputFieldT.addTextListener(new TlocListener(this, false));
 		inputFieldminpercent.addTextListener(new MinpercentListener(this));
 		inputFieldIter.addTextListener(new MaxTryListener(this));
-		inputFieldmaxellipse.addTextListener(new MaxEllipseListener(this));
 		ChooseDirectory.addActionListener(new SaverDirectory(this));
 		inputField.addTextListener(new FilenameListener(this));
 		Savebutton.addActionListener(new SaveListener(this));
-		
+		 ChooseMethod.addActionListener(new DrawListener(this, ChooseMethod));
 		panelFirst.setMinimumSize(new Dimension(SizeX, SizeY));
 
 		panelFirst.setVisible(true);
@@ -1077,7 +1081,6 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public void displayclicked(int trackindex) {
 
 		// Make something happen
-
 		row = trackindex;
 	    
 		String ID = (String) table.getValueAt(trackindex, 0);

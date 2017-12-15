@@ -134,8 +134,7 @@ public class FindEllipsoids {
 
 		// Using the ellipse model to do the fitting
 		ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>> Reducedsamples = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
-				.Allsamples(truths, outsideCutoffDistance, insideCutoffDistance, minpercent, numsol, maxiter, ndims,
-						maxCircles);
+				.Allsamples(truths, outsideCutoffDistance, insideCutoffDistance, minpercent, numsol, maxiter, ndims);
 
 		SortSegments.Sort(Reducedsamples);
 		for (int i = 0; i < Reducedsamples.size() - 1; ++i) {
