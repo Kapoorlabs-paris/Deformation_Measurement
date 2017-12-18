@@ -62,7 +62,6 @@ public class RoiListener implements ActionListener{
 		parent.maxlabel = segmentimage.GetMaxlabelsseeded(watershedimage);
 		SliceInt(watershedimage, parent.thirdDimension, parent.fourthDimension);
 		
-		
 	}
 	private void SliceInt(RandomAccessibleInterval<IntType> current, int z, int t) {
 

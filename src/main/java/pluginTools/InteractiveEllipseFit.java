@@ -1,5 +1,6 @@
 package pluginTools;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.CardLayout;
@@ -90,7 +91,6 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.ransac.RansacModels.DisplayasROI;
 import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
-import net.imglib2.histogram.Integer1dBinMapperTest;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
@@ -103,6 +103,7 @@ import net.imglib2.view.Views;
 import pluginTools.InteractiveEllipseFit.ValueChange;
 import utility.MarkNew;
 import utility.Roiobject;
+import utility.SelectNew;
 import utility.ShowResultView;
 import utility.ShowView;
 import utility.Slicer;
@@ -143,7 +144,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public static int MIN_SLIDER = 0;
 	public static int MAX_SLIDER = 500;
 	public int row;
-
+    public HashMap<String, Integer> Accountedframes;
 	public JProgressBar jpb;
 	public JLabel label = new JLabel("Fitting..");
 	public int Progressmin = 0;
@@ -182,7 +183,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public Color confirmedRois = Color.BLUE;
 	public Color defaultRois = Color.YELLOW;
 	public Color colorChange = Color.RED;
-	public Color colorInChange = Color.BLACK;
+	public Color colorInChange = Color.RED;
     public int maxlabel;
     public Color colorOval = Color.CYAN;
 	public Color colorDet = Color.GREEN;
@@ -294,7 +295,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		Finalresult = new HashMap<Integer, Intersectionobject>();
 		Tracklist = new ArrayList<Pair<Integer, Intersectionobject>>();
 	    resultDraw = new HashMap<String, ArrayList<double[]>>();
-
+        Accountedframes = new HashMap<String, Integer>();
 		
 		
 		
@@ -473,6 +474,18 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 			Roi[] Rois = roimanager.getRoisAsArray();
 			Roiobject CurrentRoi = new Roiobject(Rois, thirdDimension, fourthDimension, true);
 
+			if (Accountedframes.get(uniqueID) == null){
+				
+				Accountedframes.put(uniqueID, thirdDimension);
+			}
+			
+			else{
+				
+				Accountedframes.remove(uniqueID);
+
+				Accountedframes.put(uniqueID, thirdDimension);
+			}
+			
 			if (ZTRois.get(tmpID) == null) {
 
 				ZTRois.put(tmpID, CurrentRoi);
@@ -485,7 +498,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 			}
 
-
+            
 		}
 
 		if (change == ValueChange.ROI) {
@@ -608,7 +621,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 							EllipseRoi ellipse = currentobject.resultroi.get(i);
 							ellipse.setStrokeColor(colorInChange);
-							ellipse.setStrokeWidth(2);
+							ellipse.setStrokeWidth(1);
 							overlay.add(ellipse);
 
 						}
@@ -621,7 +634,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 							OvalRoi ellipse = currentobject.resultovalroi.get(i);
 							ellipse.setStrokeColor(colorDet);
-							ellipse.setStrokeWidth(2);
+							ellipse.setStrokeWidth(1);
 							overlay.add(ellipse);
 
 						}
@@ -634,7 +647,8 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 							Line ellipse = currentobject.resultlineroi.get(i);
 							ellipse.setStrokeColor(colorLineA);
-							ellipse.setStrokeWidth(2);
+							ellipse.setStrokeWidth(1);
+						
 							overlay.add(ellipse);
 
 						}
@@ -648,7 +662,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 			imp.updateAndDraw();
 
 			MarkNew.mark(this);
-		
+		    SelectNew.select(this);
 
 		}
 	}
@@ -685,7 +699,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 							EllipseRoi ellipse = currentobject.resultroi.get(i);
 							ellipse.setStrokeColor(colorInChange);
-							ellipse.setStrokeWidth(2);
+							ellipse.setStrokeWidth(1);
 							overlay.add(ellipse);
 
 						}
@@ -697,7 +711,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 							OvalRoi ellipse = currentobject.resultovalroi.get(i);
 							ellipse.setStrokeColor(colorDet);
-							ellipse.setStrokeWidth(2);
+							ellipse.setStrokeWidth(1);
 							overlay.add(ellipse);
 
 						}
@@ -710,7 +724,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 							Line ellipse = currentobject.resultlineroi.get(i);
 							ellipse.setStrokeColor(colorLineA);
-							ellipse.setStrokeWidth(2);
+							ellipse.setStrokeWidth(1);
 							overlay.add(ellipse);
 
 						}
@@ -750,7 +764,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 			}
 			imp.updateAndDraw();
 			MarkNew.mark(this);
-			
+			SelectNew.select(this);
 		
 
 		}

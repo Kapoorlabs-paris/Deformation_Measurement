@@ -9,19 +9,19 @@
 		<relativePath />
 	</parent>
 
-	<groupId>net.imglib2.Bubbleator</groupId>
-	<artifactId>Bubbleator</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<groupId>net.kapoor</groupId>
+	<artifactId>E_Track</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
 
-	<name>Ellipsoid detector</name>
-	<description>Detects ellipsoids in an image</description>
-	<url>https://github.com/kapoorlab/Bubbleator</url>
+	<name>Ellipsoid Detector</name>
+	<description>Ellipsoid detector and angle measurement.</description>
+	<url>https://github.com/kapoorlab/Bubbelator</url>
 	<inceptionYear>2017</inceptionYear>
 	<organization>
-		<name>BDDImaging</name>
+		<name>Kapoor Lab</name>
 		<url>https://science.institut-curie.org/platforms/cell-and-tissue-imaging/photonics/contacts</url>
 	</organization>
-	<licenses>
+	<licenses> 
 		<license>
 			<name>GNU General Public License v3+</name>
 			<url>https://www.gnu.org/licenses/gpl.en.html</url>
@@ -33,7 +33,7 @@
 		<developer>
 			<id>kapoorlab</id>
 			<name>Varun Kapoor</name>
-			<url>k</url>
+			<url>http://imagej.net/User:MTrack</url>
 			<roles>
 				<role>founder</role>
 				<role>lead</role>
@@ -47,25 +47,12 @@
 	</developers>
 	<contributors>
 		<contributor>
-			<name> Varun </name>
-			<url> </url>
-			<properties><id></id></properties>
+			<name>None</name>
+			<url>http://imagej.net/User:MTrack</url>
+			<properties><id>vkapoor</id></properties>
 		</contributor>
 	</contributors>
-<scm>
-		<connection>scm:git:git://github.com/kapoorlab/Bubbleator</connection>
-		<developerConnection>scm:git:git@github.com:kapoorlab/Bubbleator</developerConnection>
-		<tag>HEAD</tag>
-		<url>https://github.com/kapoorlab/Bubbleator</url>
-	</scm>
-	<issueManagement>
-		<system>GitHub Issues</system>
-		<url>https://github.com/kapoorlab/Bubbleator/issues</url>
-	</issueManagement>
-	<ciManagement>
-		<system>Travis CI</system>
-		<url>https://travis-ci.org/kapoorlab/Bubbleator</url>
-	</ciManagement>
+
 	<mailingLists>
 		<mailingList>
 			<name>ImageJ Forum</name>
@@ -73,10 +60,24 @@
 		</mailingList>
 	</mailingLists>
 
-	
+	<scm>
+		<connection>scm:git:git://github.com/kapoorlab/Bubbelator</connection>
+		<developerConnection>scm:git:git@github.com:kapoorlab/Bubbelator</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://github.com/kapoorlab/Bubbelator</url>
+	</scm>
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/kapoorlab/Bubbelator/issues</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Travis CI</system>
+		<url>https://travis-ci.org/kapoorlab/Bubbelator</url>
+	</ciManagement>
+
 	<properties>
 		<license.licenseName>gpl_v3</license.licenseName>
-		<license.copyrightOwners>Bubbleator developers.</license.copyrightOwners>
+		<license.copyrightOwners>Bubbelator developers.</license.copyrightOwners>
 
 		<commons-io.version>2.5</commons-io.version>
 		<poi.version>3.12</poi.version>
@@ -167,4 +168,3 @@
 		</dependency>
 	</dependencies>
 </project>
-

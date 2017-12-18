@@ -54,13 +54,16 @@ public class EllipseTrack {
 		
 		// Main method for computing intersections and tangents and angles between tangents
 		double percent = 0;
-		for (int t = 1; t <= parent.fourthDimensionSize; ++t) {
-
+		
+		for(Map.Entry<String, Integer> entry : parent.Accountedframes.entrySet()){
+			
+			int t = entry.getValue();
+			
+			
 			percent++;
 
 			for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
 
-				percent++;
 
 			
 		        
@@ -70,8 +73,8 @@ public class EllipseTrack {
 				
         		   Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z);
         		   compute.ParallelRansac();
-        			utility.ProgressBar.SetProgressBar(jpb, 100 * percent/ (parent.thirdDimensionSize + parent.fourthDimensionSize), "Fitting ellipses and computing angles T = " + t + "/"
-    						+ parent.fourthDimensionSize + " Z = " + z + "/" + parent.fourthDimensionSize);
+        			utility.ProgressBar.SetProgressBar(jpb, 100 * percent/ (parent.Accountedframes.entrySet().size()), "Fitting ellipses and computing angles T = " + t + "/"
+    						+ parent.fourthDimensionSize + " Z = " + z + "/" + parent.thirdDimensionSize);
     		        
 
 					

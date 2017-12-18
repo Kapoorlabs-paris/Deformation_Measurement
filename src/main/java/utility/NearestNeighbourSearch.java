@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -16,18 +17,20 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 
 	private final HashMap<String, ArrayList<Intersectionobject>> ALLIntersections;
 	private SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> graph;
+	private HashMap<String, Integer> Accountedframes;
 	protected String errorMessage;
 	private final int z;
 	private final int fourthDimSize;
 	private final double maxdistance;
 
 	public NearestNeighbourSearch(final HashMap<String, ArrayList<Intersectionobject>> ALLIntersections, final int z,
-			final int fourthDimSize, final double maxdistance) {
+			final int fourthDimSize, final double maxdistance, final HashMap<String, Integer> Accountedframes) {
 
 		this.ALLIntersections = ALLIntersections;
 		this.z = z;
 		this.fourthDimSize = fourthDimSize;
 		this.maxdistance = maxdistance;
+		this.Accountedframes = Accountedframes;
         
 	}
 
@@ -49,10 +52,15 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 		
 		
 		reset();
-		for (int t = 1; t < fourthDimSize; ++t) {
-
+		
+		Iterator<Map.Entry<String, Integer>> it = Accountedframes.entrySet().iterator();
+         while(it.hasNext()){
+			
+			int t = it.next().getValue();
+			int nextt = it.next().getValue();
+			
 			String uniqueID = Integer.toString(z) + Integer.toString(t);
-			String uniqueIDnext = Integer.toString(z) + Integer.toString(t + 1);
+			String uniqueIDnext = Integer.toString(z) + Integer.toString(nextt);
 
 			ArrayList<Intersectionobject> baseobject = ALLIntersections.get(uniqueID);
 			ArrayList<Intersectionobject> targetobject = ALLIntersections.get(uniqueIDnext);
@@ -125,7 +133,7 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 	public void reset() {
 		
 		graph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
-		String uniqueID = Integer.toString(z) + Integer.toString(1);
+		String uniqueID = Integer.toString(z) + Integer.toString(Accountedframes.entrySet().iterator().next().getValue());
 		final Iterator<Intersectionobject> it = ALLIntersections.get(uniqueID).iterator();
 		while (it.hasNext()) {
 			graph.addVertex(it.next());

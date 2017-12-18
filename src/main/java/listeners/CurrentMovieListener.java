@@ -23,7 +23,7 @@ public class CurrentMovieListener implements ActionListener {
 
 		parent.impA = IJ.getImage();
 		
-		
+		if(parent.impA!=null)
 		parent.DoneCurr(parent.Cardframe);
 	}
 

@@ -57,7 +57,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 		parent.Cardframe.validate();
 
 		NearestNeighbourSearch NNsearch = new NearestNeighbourSearch(parent.ALLIntersections, parent.thirdDimension,
-				parent.fourthDimensionSize, parent.maxdistance);
+				parent.fourthDimensionSize, parent.maxdistance, parent.Accountedframes);
 		NNsearch.process();
 		parent.parentgraph = NNsearch.getResult();
 
@@ -185,26 +185,7 @@ Object[][] rowvalues = new Object[0][colnames.length];
 			
 			parent.tablesize = parent.row;
 		}
-/*
-			parent.table.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(MouseEvent e) {
-					if (e.getClickCount() == 1) {
-					
-						if (!parent.jFreeChartFrame.isVisible())
-							parent.jFreeChartFrame = utility.ChartMaker.display(parent.chart, new Dimension(500, 500));
-						JTable target = (JTable) e.getSource();
-						parent.row = target.getSelectedRow();
-						// do some action if appropriate column
-						if (parent.row > 0)
-							parent.displayclicked(parent.row);
-						else
-							parent.displayclicked(0);
-						
-					}
-					System.out.print("Click");
-				}
-			});
-			*/
+
 			parent.PanelSelectFile.removeAll();
 			parent.Original.removeAll();
 			parent.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);

@@ -26,7 +26,7 @@ public static void LeftRightClick(int x, int y, MouseEvent e, InteractiveEllipse
 	
 	
 	
-	if(SwingUtilities.isLeftMouseButton(e) && !e.isShiftDown() ){
+	if(SwingUtilities.isLeftMouseButton(e) && !e.isShiftDown() && e.isAltDown()){
 		
 		
 
@@ -45,8 +45,16 @@ public static void LeftRightClick(int x, int y, MouseEvent e, InteractiveEllipse
 
 	}
 	
-	
 
+	
+	
+	if(SwingUtilities.isLeftMouseButton(e) && e.isShiftDown()  ){
+		System.out.println("pressed");
+		if (!parent.jFreeChartFrame.isVisible())
+			parent.jFreeChartFrame = utility.ChartMaker.display(parent.chart, new Dimension(500, 500));
+		
+		parent.displayclicked(parent.rowchoice);
+	}
 		
 		
 	
