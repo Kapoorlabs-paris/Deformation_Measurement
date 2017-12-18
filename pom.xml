@@ -9,7 +9,7 @@
 		<relativePath />
 	</parent>
 
-	<groupId>net.kapoor</groupId>
+	<groupId>net.imglib2.Bubbleator</groupId>
 	<artifactId>Bubbleator</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 

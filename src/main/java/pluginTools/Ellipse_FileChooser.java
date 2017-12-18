@@ -38,7 +38,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 
 
-public class EllipseFileChooser extends JPanel {
+public class Ellipse_FileChooser extends JPanel {
 
 	
 	/**
@@ -65,7 +65,7 @@ public class EllipseFileChooser extends JPanel {
 	  public final GridBagConstraints c = new GridBagConstraints();
 	  public Border selectfile = new CompoundBorder(new TitledBorder("Select file"), new EmptyBorder(c.insets));
 	
-	public EllipseFileChooser() {
+	public Ellipse_FileChooser() {
 		
 		
 		

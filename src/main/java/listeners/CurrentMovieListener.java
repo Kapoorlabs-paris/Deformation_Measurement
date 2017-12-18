@@ -5,14 +5,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import ij.IJ;
-import pluginTools.EllipseFileChooser;
+import pluginTools.Ellipse_FileChooser;
 import pluginTools.InteractiveEllipseFit;
 
 public class CurrentMovieListener implements ActionListener {
 
-	final EllipseFileChooser parent;
+	final Ellipse_FileChooser parent;
 
-	public CurrentMovieListener(EllipseFileChooser parent) {
+	public CurrentMovieListener(Ellipse_FileChooser parent) {
 
 		this.parent = parent;
 
