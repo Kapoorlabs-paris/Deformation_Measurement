@@ -7,6 +7,7 @@ import java.awt.CardLayout;
 import java.awt.Checkbox;
 import java.awt.CheckboxGroup;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -40,10 +41,12 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import org.jfree.chart.JFreeChart;
@@ -51,6 +54,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
+import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import ellipsoidDetector.Tangentobject;
 import ij.IJ;
@@ -101,9 +105,9 @@ import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
 import pluginTools.InteractiveEllipseFit.ValueChange;
-import utility.MarkNew;
+
+import utility.NearestRoi;
 import utility.Roiobject;
-import utility.SelectNew;
 import utility.ShowResultView;
 import utility.ShowView;
 import utility.Slicer;
@@ -661,8 +665,8 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 			}
 			imp.updateAndDraw();
 
-			MarkNew.mark(this);
-		    SelectNew.select(this);
+		   mark();
+		   select();
 
 		}
 	}
@@ -763,13 +767,219 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 			}
 			imp.updateAndDraw();
-			MarkNew.mark(this);
-			SelectNew.select(this);
+			mark();
+			select();
 		
 
 		}
 	}
+public void select(){
+		
+		
+		if(mvl!=null)
+			 imp.getCanvas().removeMouseListener(mvl);
+          imp.getCanvas().addMouseListener(mvl = new MouseListener() {
 
+
+  			final ImageCanvas canvas = imp.getWindow().getCanvas();
+			
+
+			
+
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					
+		        	  int x = canvas.offScreenX(e.getX());
+		          int y = canvas.offScreenY(e.getY());
+		          
+		          Clickedpoints[0] = x;
+		          Clickedpoints[1] = y;
+		          if(SwingUtilities.isLeftMouseButton(e) && !e.isShiftDown() && e.isAltDown()){
+		      		
+		      		
+
+		      		int index =	roimanager.getRoiIndex(nearestRoiCurr);
+		      		roimanager.select(index);
+		      		nearestRoiCurr.setStrokeColor(colorChange);
+		      		nearestRoiCurr.setStrokeWidth(2);
+		      		
+		      		imp.updateAndDraw();
+		      		
+		      		updatePreview(ValueChange.DISPLAYROI);
+		      		
+		      		
+		      		
+		      		
+
+		      	}
+		      	
+
+		      	
+		      	
+		      	if(SwingUtilities.isLeftMouseButton(e) && e.isShiftDown()  ){
+		      		System.out.println("pressed");
+		      		if (!jFreeChartFrame.isVisible())
+		      			jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
+		      		
+		      		displayclicked(rowchoice);
+		      	}
+		      		
+		      		
+		      	
+				}
+
+				@Override
+				public void mousePressed(MouseEvent e) {
+
+					
+				
+					
+				}
+
+				@Override
+				public void mouseReleased(MouseEvent e) {
+					
+					
+					    	
+						
+					
+
+				}
+
+				@Override
+				public void mouseEntered(MouseEvent e) {
+
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+
+				}
+			});
+
+		
+		
+		
+		
+		
+		
+		
+	}
+public void mark() {
+	
+	if(ml!=null)
+		imp.getCanvas().removeMouseMotionListener(ml);
+        imp.getCanvas().addMouseMotionListener(ml = new MouseMotionListener() {
+		
+		final ImageCanvas canvas = imp.getWindow().getCanvas();
+		Roi lastnearest = null;
+		
+		@Override
+		public void mouseMoved(MouseEvent e) {
+			
+			int x = canvas.offScreenX(e.getX());
+            int y = canvas.offScreenY(e.getY());
+
+          
+            final HashMap<Integer,  double[] > loc = new HashMap<Integer, double[]>();
+            
+            loc.put(0, new double[] { x, y });
+            
+            Color roicolor;
+            Roiobject currentobject;
+            if (ZTRois.get(uniqueID) == null) {
+            roicolor = defaultRois;
+            
+            currentobject =  DefaultZTRois.entrySet().iterator().next().getValue();
+            
+            }
+            else {
+            	roicolor = confirmedRois;
+            
+            	currentobject = ZTRois.get(uniqueID);
+            	
+            }
+            nearestRoiCurr = NearestRoi.getNearestRois(currentobject, loc.get(0), InteractiveEllipseFit.this);
+        
+            if(nearestRoiCurr!=null) {
+            nearestRoiCurr.setStrokeColor(Color.ORANGE);
+           
+            if (lastnearest!=nearestRoiCurr && lastnearest!= null)
+            	lastnearest.setStrokeColor(roicolor);
+
+            
+            lastnearest = nearestRoiCurr;
+            
+            imp.updateAndDraw();
+            }
+            
+            double distmin = Double.MAX_VALUE;
+            if (tablesize > 0) {
+          	  
+          	  
+                 for (int row = 0; row < tablesize; ++row  ) {
+                 String CordX = (String) table.getValueAt(row, 1);
+                 String CordY = (String) table.getValueAt(row, 2);
+                 
+                 double dCordX = Double.parseDouble(CordX);
+                 double dCordY = Double.parseDouble(CordY);
+              
+                 double dist = Distance.DistanceSq(new double[] {dCordX,  dCordY} , new double[] {x, y}) ;
+                 if (Distance.DistanceSq(new double[] {dCordX,  dCordY} , new double[] {x, y}) < distmin) {
+                 	
+                 	rowchoice = row;
+                 	distmin = dist;
+                 	
+                 }
+                 
+                 }
+                 
+             	table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+     				@Override
+     				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+     						boolean hasFocus, int row, int col) {
+
+     					super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+     					if (row == rowchoice) {
+     						setBackground(Color.green);
+
+     					} else {
+     						setBackground(Color.white);
+     					}
+     					return this;
+     				}
+     			});
+             	
+     			table.validate();
+     			scrollPane.validate();
+     			panelFirst.repaint();
+     			panelFirst.validate();
+			
+		}
+		
+		
+
+		}		
+	
+		
+		
+
+		@Override
+		public void mouseDragged(MouseEvent e) {
+
+		}
+		
+		
+	});
+	
+
+
+	
+	
+	
+}
+	
 	public JFrame Cardframe = new JFrame("Ellipsoid detector");
 	public JPanel panelCont = new JPanel();
 	public JPanel panelFirst = new JPanel();
@@ -972,7 +1182,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		
 		panelFirst.add(Roiselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
+/*
 		Angleselect.add(inputLabelIter, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
@@ -997,7 +1207,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		panelFirst.add(Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-
+*/
 		table = new JTable(rowvalues, colnames);
 
 		table.setFillsViewportHeight(true);
@@ -1128,7 +1338,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		ImagePlus impA = new Opener().openImage("/Users/varunkapoor/Documents/JLMData/Hyperstack_ML7small.tif");
 		impA.show();
 		JFrame frame = new JFrame("");
-		Ellipse_FileChooser panel = new Ellipse_FileChooser();
+		EllipseFileChooser panel = new EllipseFileChooser();
 
 		frame.getContentPane().add(panel, "Center");
 		frame.setSize(panel.getPreferredSize());

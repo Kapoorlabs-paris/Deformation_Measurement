@@ -15,7 +15,7 @@ public class Detect_Measure implements PlugIn {
 			
 
 			    JFrame frame = new JFrame("");
-			  Ellipse_FileChooser panel = new Ellipse_FileChooser();
+			  EllipseFileChooser panel = new EllipseFileChooser();
 			 
 			    frame.getContentPane().add(panel,"Center");
 			    frame.setSize(panel.getPreferredSize());

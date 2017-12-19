@@ -7,14 +7,14 @@ import java.awt.event.ActionListener;
 import javax.swing.JFileChooser;
 
 import ij.io.Opener;
-import pluginTools.Ellipse_FileChooser;
+import pluginTools.EllipseFileChooser;
 
 public class UploadMovieListener implements ActionListener {
 	
 	
-	final Ellipse_FileChooser parent;
+	final EllipseFileChooser parent;
 
-	public UploadMovieListener(Ellipse_FileChooser parent) {
+	public UploadMovieListener(EllipseFileChooser parent) {
 
 		this.parent = parent;
 
