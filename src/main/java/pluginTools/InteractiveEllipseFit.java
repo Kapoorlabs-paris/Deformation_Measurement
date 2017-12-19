@@ -410,7 +410,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 				if (Integer.parseInt(ID) == currentangle.getA()) {
 					
 					resultlist.add(new double[] {currentangle.getB().t, currentangle.getB().z, currentangle.getB().Intersectionpoint[0], currentangle.getB().Intersectionpoint[1]  });
-					
+					System.out.println(currentangle.getB().t + " " +  currentangle.getB().z);
 					
 					
 				}
@@ -421,6 +421,9 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 			
 			
 			resultimp =  ImageJFunctions.show(Slicer.getCurrentViewLarge(originalimg, thirdDimension));
+			for(int time = 1; time <= fourthDimensionSize; ++time)
+			prestack.addSlice(resultimp.getImageStack().getProcessor(time).convertToRGB());
+			
 			 for (double[] current:resultDraw.get(ID)) {
 				 Overlay resultoverlay = new Overlay();
 				    int time = (int) current[0];
@@ -433,7 +436,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 					
 					
 					
-					prestack.addSlice(resultimp.getImageStack().getProcessor(time).convertToRGB());
+					
 					cp = (ColorProcessor) (prestack.getProcessor(time).duplicate());
 					cp.reset();
 					
@@ -480,14 +483,14 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 			if (Accountedframes.get(uniqueID) == null){
 				
-				Accountedframes.put(uniqueID, thirdDimension);
+				Accountedframes.put(uniqueID, fourthDimension);
 			}
 			
 			else{
 				
 				Accountedframes.remove(uniqueID);
 
-				Accountedframes.put(uniqueID, thirdDimension);
+				Accountedframes.put(uniqueID, fourthDimension);
 			}
 			
 			if (ZTRois.get(tmpID) == null) {
@@ -513,7 +516,18 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 			Roiobject CurrentRoi = new Roiobject(Rois, thirdDimension, fourthDimension, true);
 
 			DefaultZTRois.put(uniqueID, CurrentRoi);
+	            if (Accountedframes.get(uniqueID) == null){
+				
+				Accountedframes.put(uniqueID, fourthDimension);
+			}
+			
+			else{
+				
+				Accountedframes.remove(uniqueID);
 
+				Accountedframes.put(uniqueID, fourthDimension);
+			}
+			
 			if (ZTRois.get(uniqueID) == null) {
 
 				ZTRois.put(uniqueID, CurrentRoi);
@@ -1182,7 +1196,7 @@ public void mark() {
 		
 		panelFirst.add(Roiselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
-/*
+
 		Angleselect.add(inputLabelIter, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
@@ -1207,7 +1221,7 @@ public void mark() {
 		panelFirst.add(Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-*/
+
 		table = new JTable(rowvalues, colnames);
 
 		table.setFillsViewportHeight(true);

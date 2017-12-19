@@ -35,18 +35,17 @@ public class TimeListener implements AdjustmentListener {
 
 		this.deltaScrollbar = deltaScrollbar;
 		deltaScrollbar.addMouseMotionListener(new EllipseNonStandardMouseListener(parent, ValueChange.THIRDDIMmouse));
-		deltaScrollbar.setBlockIncrement(1);
+		deltaScrollbar.addMouseListener(new EllipseStandardMouseListener(parent, ValueChange.THIRDDIMmouse, deltaScrollbar));
 	}
 
 	@Override
 	public void adjustmentValueChanged(AdjustmentEvent e) {
-		parent.fourthDimension = (int) utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize);
+		parent.fourthDimension = (int) Math.round(utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize));
 
 	
 		
 		deltaScrollbar
 				.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension, min, max, scrollbarSize));
-
 		label.setText(string +  " = "  + parent.fourthDimension);
 
 		parent.inputFieldT.setText(Integer.toString(parent.fourthDimension));

@@ -29,8 +29,7 @@ public class InsideCutoffListener implements AdjustmentListener {
 		this.scrollbarSize = scrollbarSize;
 
 		this.deltaScrollbar = deltaScrollbar;
-		deltaScrollbar.addMouseListener(new EllipseStandardMouseListener(parent, ValueChange.INSIDE));
-		deltaScrollbar.setBlockIncrement(1);
+		deltaScrollbar.addMouseListener(new EllipseStandardMouseListener(parent, ValueChange.INSIDE, deltaScrollbar));
 	}
 
 	@Override

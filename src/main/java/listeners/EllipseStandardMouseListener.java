@@ -3,6 +3,8 @@ package listeners;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.JScrollBar;
+
 import pluginTools.InteractiveEllipseFit;
 import pluginTools.InteractiveEllipseFit.ValueChange;
 
@@ -19,11 +21,13 @@ public class EllipseStandardMouseListener implements MouseListener
 {
 	final InteractiveEllipseFit parent;
 	final ValueChange change;
+	final JScrollBar deltascrollbar;
 
-	public EllipseStandardMouseListener( final InteractiveEllipseFit parent, final ValueChange change )
+	public EllipseStandardMouseListener( final InteractiveEllipseFit parent, final ValueChange change, final JScrollBar deltascrollbar )
 	{
 		this.parent = parent;
 		this.change = change;
+		this.deltascrollbar = deltascrollbar;
 	}
 	
 	
@@ -33,20 +37,30 @@ public class EllipseStandardMouseListener implements MouseListener
 	{
 		
 		
-			try { Thread.sleep( 10 ); } catch ( InterruptedException e ) {}
+			
 		
 
 		parent.updatePreview(change);
 	}
 
 	@Override
-	public void mousePressed( MouseEvent arg0 ){}
+	public void mousePressed( MouseEvent arg0 ){
+		/*
+		deltascrollbar.setLocation(arg0.getLocationOnScreen());
+		deltascrollbar.repaint();
+		deltascrollbar.validate();
+		System.out.println(arg0.getLocationOnScreen());
+		*/
+	}
 
 	@Override
-	public void mouseExited( MouseEvent arg0 ) {}
+	public void mouseExited( MouseEvent arg0 ) {
+		
+	}
 
 	@Override
-	public void mouseEntered( MouseEvent arg0 ) {}
+	public void mouseEntered( MouseEvent arg0 ) {
+	}
 
 	@Override
 	public void mouseClicked( MouseEvent arg0 ) {}

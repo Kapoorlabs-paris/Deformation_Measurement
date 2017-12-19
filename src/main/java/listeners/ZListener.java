@@ -6,6 +6,8 @@ import java.awt.event.AdjustmentListener;
 
 import javax.swing.JScrollBar;
 
+import org.scijava.input.MouseCursor;
+
 import ij.IJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.array.ArrayImgFactory;
@@ -34,16 +36,15 @@ public class ZListener implements AdjustmentListener {
 
 			this.deltaScrollbar = deltaScrollbar;
 			deltaScrollbar.addMouseMotionListener(new EllipseNonStandardMouseListener(parent, ValueChange.FOURTHDIMmouse));
-			deltaScrollbar.setBlockIncrement(1);
+			deltaScrollbar.addMouseListener(new EllipseStandardMouseListener(parent, ValueChange.FOURTHDIMmouse, deltaScrollbar));
 		}
 
 		@Override
 		public void adjustmentValueChanged(AdjustmentEvent e) {
-			parent.thirdDimension = (int) utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize);
+			parent.thirdDimension = (int) Math.round(utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize));
 		
 			deltaScrollbar
 					.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension, min, max, scrollbarSize));
-
 			label.setText(string +  " = "  + parent.thirdDimension);
 			parent.inputFieldZ.setText(Integer.toString(parent.thirdDimension));
 			parent.panelFirst.validate();

@@ -57,6 +57,7 @@ public class NearestNeighbourSearch implements IntersectionTracker {
          while(it.hasNext()){
 			
 			int t = it.next().getValue();
+			while(it.hasNext()){
 			int nextt = it.next().getValue();
 			
 			String uniqueID = Integer.toString(z) + Integer.toString(t);
@@ -121,7 +122,7 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 			}
 
 		}
-
+         }
 		return true;
 	}
 
@@ -133,10 +134,12 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 	public void reset() {
 		
 		graph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+		if(Accountedframes.entrySet().iterator().hasNext()){
 		String uniqueID = Integer.toString(z) + Integer.toString(Accountedframes.entrySet().iterator().next().getValue());
 		final Iterator<Intersectionobject> it = ALLIntersections.get(uniqueID).iterator();
 		while (it.hasNext()) {
 			graph.addVertex(it.next());
+		}
 		}
 	}
 }
