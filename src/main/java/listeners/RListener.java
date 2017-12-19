@@ -36,10 +36,10 @@ import utility.ShowView;
 
 		@Override
 		public void adjustmentValueChanged(AdjustmentEvent e) {
-			parent.radius = (int) utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize);
+			parent.radius = (int) utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), parent.scrollbarSize, parent.radiusMin, parent.radiusMax);
 		
 			deltaScrollbar
-					.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.radius, min, max, scrollbarSize));
+					.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.scrollbarSize, parent.radius, parent.radiusMin, parent.radiusMax));
 
 			label.setText(string +  " = "  + parent.radius);
 			parent.panelFirst.validate();

@@ -63,12 +63,12 @@ public class ZlocListener implements TextListener {
 					ShowView show = new ShowView(parent);
 					show.shownewZ();
 					
-					parent.zText.setText("Current Z location = " + parent.thirdDimension);
+					parent.zText.setText("Current Z = " + parent.thirdDimension);
 					
 					
 					parent.updatePreview(ValueChange.THIRDDIMmouse);
 					parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(
-							parent.thirdDimension, parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
+							parent.scrollbarSize, parent.thirdDimension, parent.thirdDimensionsliderInit, parent.thirdDimensionSize));
 					parent.zslider.repaint();
 					parent.zslider.validate();
 				}

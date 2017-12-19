@@ -35,9 +35,9 @@ public class OutsideCutoffListener implements AdjustmentListener {
 	public void adjustmentValueChanged(AdjustmentEvent e) {
 		parent.outsideCutoff = parent.insideCutoff;  
 				//utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize);
-	
 		deltaScrollbar
-				.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.outsideCutoff, min, max, scrollbarSize));
+		.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.scrollbarSize, parent.outsideCutoff, parent.outsideCutoffmin, parent.outsideCutoffmax));
+
 
 		label.setText(string +  " = "  + parent.nf.format(parent.outsideCutoff));
 		parent.panelFirst.validate();

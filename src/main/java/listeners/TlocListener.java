@@ -61,11 +61,11 @@ public class TlocListener implements TextListener {
 							parent.fourthDimension = Integer.parseInt(s);
 			    		ShowView show = new ShowView(parent);
 					show.shownewT();
-					parent.timeText.setText("Current time point = " + parent.fourthDimension);
+					parent.timeText.setText("Current T = " + parent.fourthDimension);
 					parent.updatePreview(ValueChange.FOURTHDIMmouse);
 					
 					parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(
-							parent.fourthDimension, parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
+							parent.scrollbarSize, parent.fourthDimension, parent.fourthDimensionsliderInit, parent.fourthDimensionSize));
 					parent.timeslider.repaint();
 					parent.timeslider.validate();
 					

@@ -1,17 +1,10 @@
 package listeners;
 
 import java.awt.Label;
-import java.awt.event.ActionEvent;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JButton;
 import javax.swing.JScrollBar;
-import javax.swing.KeyStroke;
-
-import org.scijava.input.MouseCursor;
 
 import ij.IJ;
 import net.imglib2.RandomAccessibleInterval;
@@ -40,23 +33,26 @@ public class ZListener implements AdjustmentListener {
 			this.scrollbarSize = scrollbarSize;
 
 			this.deltaScrollbar = deltaScrollbar;
+			
 			deltaScrollbar.addMouseMotionListener(new EllipseNonStandardMouseListener(parent, ValueChange.THIRDDIMmouse));
 			deltaScrollbar.addMouseListener(new EllipseStandardMouseListener(parent, ValueChange.THIRDDIMmouse));
+			deltaScrollbar.setBlockIncrement(utility.Slicer.computeScrollbarPositionFromValue(parent.scrollbarSize, parent.thirdDimensionSize - 1, parent.thirdDimensionsliderInit, parent.thirdDimensionSize));
+			deltaScrollbar.setUnitIncrement(utility.Slicer.computeScrollbarPositionFromValue(parent.scrollbarSize, parent.thirdDimensionSize - 1, parent.thirdDimensionsliderInit, parent.thirdDimensionSize));
 		}
 
 		@Override
 		public void adjustmentValueChanged(AdjustmentEvent e) {
-			if(e.getAdjustmentType() == AdjustmentEvent.BLOCK_INCREMENT)
-				System.out.println("UP");
+			
+			parent.thirdDimension = (int) (utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), parent.scrollbarSize, parent.thirdDimensionsliderInit, parent.thirdDimensionSize));
 			
 			
 			
-			parent.thirdDimension = (int) Math.round(utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize));
+			System.out.println(utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), parent.scrollbarSize, parent.thirdDimensionsliderInit, parent.thirdDimensionSize));
+
+
 		
-			deltaScrollbar
-					.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension, min, max, scrollbarSize));
 			label.setText(string +  " = "  + parent.thirdDimension);
-			parent.inputFieldZ.setText(Integer.toString(parent.thirdDimension));
+			parent.inputFieldZ.setText(Integer.toString((int)parent.thirdDimension));
 			parent.panelFirst.validate();
 			parent.panelFirst.repaint();
 		
@@ -66,7 +62,6 @@ public class ZListener implements AdjustmentListener {
 			show.shownewZ();
 		}
 		
-		
-		
-		
+	
+	
 }

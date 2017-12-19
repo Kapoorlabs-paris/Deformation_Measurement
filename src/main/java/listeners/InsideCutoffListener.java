@@ -1,3 +1,4 @@
+
 package listeners;
 
 import java.awt.Label;
@@ -30,14 +31,15 @@ public class InsideCutoffListener implements AdjustmentListener {
 
 		this.deltaScrollbar = deltaScrollbar;
 		deltaScrollbar.addMouseListener(new EllipseStandardMouseListener(parent, ValueChange.INSIDE));
+		deltaScrollbar.setBlockIncrement(1);
 	}
 
 	@Override
 	public void adjustmentValueChanged(AdjustmentEvent e) {
-		parent.insideCutoff =  utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize);
+		parent.insideCutoff =  (float) utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), parent.scrollbarSize, parent.insideCutoffmin, parent.insideCutoffmax);
 	
 		deltaScrollbar
-				.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.insideCutoff, min, max, scrollbarSize));
+				.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.scrollbarSize, parent.insideCutoff, parent.insideCutoffmin, parent.insideCutoffmax));
 
 		parent.outsideCutoff = parent.insideCutoff;
 		label.setText(string +  " = "  + parent.nf.format(parent.insideCutoff));

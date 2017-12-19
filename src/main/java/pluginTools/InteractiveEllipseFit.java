@@ -121,7 +121,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	private static final long serialVersionUID = 1L;
 	public String usefolder = IJ.getDirectory("imagej");
 	public String addToName = "EllipseFits";
-	public final int scrollbarSize = 10000;
+	public final int scrollbarSize = 500;
 	public int tablesize;
 	public Overlay overlay;
 	public Overlay emptyoverlay;
@@ -138,15 +138,22 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 	public float insideCutoff = 5;
 	public float outsideCutoff = 5;
-
+	
+	public float insideCutoffmin = 5;
+	public float outsideCutoffmin = 5;
+	
+	
+	public float insideCutoffmax = 50;
+	public float outsideCutoffmax = 50;
+	
 	public int fourthDimension;
 	public int thirdDimension;
 	public int thirdDimensionSize;
 	public int fourthDimensionSize;
 	public ImagePlus impA;
 	public boolean isDone;
-	public static int MIN_SLIDER = 0;
-	public static int MAX_SLIDER = 500;
+	public  int MIN_SLIDER = 0;
+	public int MAX_SLIDER = 500;
 	public int row;
 	public HashMap<String, Integer> Accountedframes;
 	public JProgressBar jpb;
@@ -952,9 +959,9 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public JScrollPane scrollPane;
 	public JFileChooser chooserA = new JFileChooser();
 	public String choosertitleA;
-	public JScrollBar timeslider = new JScrollBar(Scrollbar.HORIZONTAL, thirdDimensionsliderInit, 10, 0,
-			10 + scrollbarSize);
-	public JScrollBar zslider = new JScrollBar(Scrollbar.HORIZONTAL, fourthDimensionsliderInit, 10, 0,
+	public JScrollBar timeslider = new JScrollBar(Scrollbar.HORIZONTAL, fourthDimensionsliderInit, 10, 0,
+			scrollbarSize + 10);
+	public JScrollBar zslider = new JScrollBar(Scrollbar.HORIZONTAL, thirdDimensionsliderInit, 10, 0,
 			10 + scrollbarSize);
 	public JScrollBar rslider = new JScrollBar(Scrollbar.HORIZONTAL, radiusInt, 10, 0, 10 + scrollbarSize);
 	public JScrollBar insideslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
@@ -1170,9 +1177,9 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		panelFirst.add(Original, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-		timeslider.addAdjustmentListener(new TimeListener(this, timeText, timestring, fourthDimensionsliderInit,
-				fourthDimensionSize, scrollbarSize, timeslider));
-		zslider.addAdjustmentListener(new ZListener(this, zText, zstring, thirdDimensionsliderInit, thirdDimensionSize,
+		timeslider.addAdjustmentListener(new TimeListener(this, timeText, timestring, MIN_SLIDER,
+				MAX_SLIDER , scrollbarSize, timeslider));
+		zslider.addAdjustmentListener(new ZListener(this, zText, zstring, MIN_SLIDER, MAX_SLIDER ,
 				scrollbarSize, zslider));
 		rslider.addAdjustmentListener(
 				new RListener(this, rText, rstring, radiusMin, radiusMax, scrollbarSize, rslider));

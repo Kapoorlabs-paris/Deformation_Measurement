@@ -56,8 +56,8 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 		parent.jpb.setIndeterminate(false);
 		parent.Cardframe.validate();
 
-		NearestNeighbourSearch NNsearch = new NearestNeighbourSearch(parent.ALLIntersections, parent.thirdDimension,
-				parent.fourthDimensionSize, parent.maxdistance, parent.Accountedframes);
+		NearestNeighbourSearch NNsearch = new NearestNeighbourSearch(parent.ALLIntersections, (int)parent.thirdDimension,
+				(int)parent.fourthDimensionSize, parent.maxdistance, parent.Accountedframes);
 		NNsearch.process();
 		parent.parentgraph = NNsearch.getResult();
 

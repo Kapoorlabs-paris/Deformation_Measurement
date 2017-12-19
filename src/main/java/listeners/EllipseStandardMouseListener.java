@@ -35,14 +35,15 @@ public class EllipseStandardMouseListener implements MouseListener
 	{
 		
 		
-			
 		parent.updatePreview(change);
+		
 
 		
 	}
 
 	@Override
 	public void mousePressed( MouseEvent arg0 ){
+		
 		
 		/*
 		deltascrollbar.setLocation(arg0.getLocationOnScreen());
@@ -54,7 +55,7 @@ public class EllipseStandardMouseListener implements MouseListener
 
 	@Override
 	public void mouseExited( MouseEvent arg0 ) {
-		
+	
 	}
 
 	@Override

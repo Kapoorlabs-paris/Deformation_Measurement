@@ -23,8 +23,8 @@ final int Z;
 
 	
 
-			parent.CurrentResultView = utility.Slicer.getCurrentView(parent.originalimg, Z,
-					parent.thirdDimensionSize, time, parent.fourthDimensionSize);
+			parent.CurrentResultView = utility.Slicer.getCurrentView(parent.originalimg,(int) Z,
+					(int)parent.thirdDimensionSize, time,(int) parent.fourthDimensionSize);
 			
 		
 

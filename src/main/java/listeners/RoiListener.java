@@ -41,7 +41,7 @@ public class RoiListener implements ActionListener{
 		RandomAccessibleInterval<BitType> totalimg = new ArrayImgFactory<BitType>()
 				.create(new long[] { parent.originalimg.dimension(0), parent.originalimg.dimension(1) }, new BitType());
 		
-		Paint(totalimg, parent.uniqueID, parent.thirdDimension, parent.fourthDimension);
+		Paint(totalimg, parent.uniqueID, (int)parent.thirdDimension, (int)parent.fourthDimension);
 		
 		Segment(totalimg);
 		
@@ -60,7 +60,7 @@ public class RoiListener implements ActionListener{
 		segmentimage.process();
 		RandomAccessibleInterval<IntType> watershedimage = segmentimage.getResult();
 		parent.maxlabel = segmentimage.GetMaxlabelsseeded(watershedimage);
-		SliceInt(watershedimage, parent.thirdDimension, parent.fourthDimension);
+		SliceInt(watershedimage, (int)parent.thirdDimension, (int)parent.fourthDimension);
 		
 	}
 	private void SliceInt(RandomAccessibleInterval<IntType> current, int z, int t) {

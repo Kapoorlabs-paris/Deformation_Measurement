@@ -180,16 +180,15 @@ public class Slicer {
 	
 	
 	
-	public static float computeValueFromScrollbarPosition(final int scrollbarPosition, final float min, final float max,
-			final int scrollbarSize) {
-		return min + (scrollbarPosition / (float) scrollbarSize) * (max - min);
+	public static double computeValueFromScrollbarPosition(final int scrollbarPosition, final int scrollbarMax,
+			final double minValue, final double maxValue) {
+		return minValue + (scrollbarPosition / (double) scrollbarMax) * (maxValue - minValue);
 	}
 
-	public static int computeScrollbarPositionFromValue(final float sigma, final float min, final float max,
-			final int scrollbarSize) {
-		return Util.round(((sigma - min) / (max - min)) * scrollbarSize);
+	public static int computeScrollbarPositionFromValue(final int scrollbarMax, final double value,
+			final double minValue, final double maxValue) {
+		return (int) Math.round(((value - minValue) / (maxValue - minValue)) * scrollbarMax);
 	}
-
 	
 	
 	

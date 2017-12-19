@@ -67,9 +67,9 @@ public class EllipseTrack {
 
 			
 		        
-				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z , parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z , (int)parent.thirdDimensionSize, t, (int)parent.fourthDimensionSize);
 				
-				RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.emptyWater, z , parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+				RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.emptyWater, z , (int)parent.thirdDimensionSize, t, (int)parent.fourthDimensionSize);
 				
         		   Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z);
         		   compute.ParallelRansac();

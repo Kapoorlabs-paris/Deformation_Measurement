@@ -36,20 +36,24 @@ public class TimeListener implements AdjustmentListener {
 		this.deltaScrollbar = deltaScrollbar;
 		deltaScrollbar.addMouseMotionListener(new EllipseNonStandardMouseListener(parent, ValueChange.FOURTHDIMmouse));
 		deltaScrollbar.addMouseListener(new EllipseStandardMouseListener(parent, ValueChange.FOURTHDIMmouse));
+		deltaScrollbar.setBlockIncrement(utility.Slicer.computeScrollbarPositionFromValue(parent.scrollbarSize, parent.fourthDimensionSize - 1, parent.fourthDimensionsliderInit, parent.fourthDimensionSize));
+		deltaScrollbar.setUnitIncrement(utility.Slicer.computeScrollbarPositionFromValue(parent.scrollbarSize, parent.thirdDimensionSize - 1, parent.fourthDimensionsliderInit, parent.fourthDimensionSize));
 	}
 
 	@Override
 	public void adjustmentValueChanged(AdjustmentEvent e) {
-		parent.fourthDimension = (int) Math.round(utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize));
-
-	
 		
-		deltaScrollbar
-				.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension, min, max, scrollbarSize));
+		parent.fourthDimension = (int) (utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), parent.scrollbarSize, parent.fourthDimensionsliderInit, parent.fourthDimensionSize));
+
+		System.out.println(utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), parent.scrollbarSize, parent.fourthDimensionsliderInit, parent.fourthDimensionSize));
+
+		
+		
 		label.setText(string +  " = "  + parent.fourthDimension);
 
-		parent.inputFieldT.setText(Integer.toString(parent.fourthDimension));
-	
+		parent.inputFieldT.setText(Integer.toString((int)parent.fourthDimension));
+		parent.panelFirst.validate();
+		parent.panelFirst.repaint();
 		
 		ShowView show = new ShowView(parent);
 		show.shownewT();
