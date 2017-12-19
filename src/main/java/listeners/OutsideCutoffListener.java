@@ -28,7 +28,7 @@ public class OutsideCutoffListener implements AdjustmentListener {
 		this.scrollbarSize = scrollbarSize;
 
 		this.deltaScrollbar = deltaScrollbar;
-		deltaScrollbar.addMouseListener(new EllipseStandardMouseListener(parent, ValueChange.OUTSIDE, deltaScrollbar));
+		deltaScrollbar.addMouseListener(new EllipseStandardMouseListener(parent, ValueChange.OUTSIDE));
 	}
 
 	@Override

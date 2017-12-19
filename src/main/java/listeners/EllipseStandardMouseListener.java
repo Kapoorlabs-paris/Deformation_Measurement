@@ -21,13 +21,11 @@ public class EllipseStandardMouseListener implements MouseListener
 {
 	final InteractiveEllipseFit parent;
 	final ValueChange change;
-	final JScrollBar deltascrollbar;
 
-	public EllipseStandardMouseListener( final InteractiveEllipseFit parent, final ValueChange change, final JScrollBar deltascrollbar )
+	public EllipseStandardMouseListener( final InteractiveEllipseFit parent, final ValueChange change)
 	{
 		this.parent = parent;
 		this.change = change;
-		this.deltascrollbar = deltascrollbar;
 	}
 	
 	
@@ -38,13 +36,14 @@ public class EllipseStandardMouseListener implements MouseListener
 		
 		
 			
-		
-
 		parent.updatePreview(change);
+
+		
 	}
 
 	@Override
 	public void mousePressed( MouseEvent arg0 ){
+		
 		/*
 		deltascrollbar.setLocation(arg0.getLocationOnScreen());
 		deltascrollbar.repaint();

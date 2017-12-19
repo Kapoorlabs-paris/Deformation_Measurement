@@ -34,8 +34,8 @@ public class TimeListener implements AdjustmentListener {
 		this.scrollbarSize = scrollbarSize;
 
 		this.deltaScrollbar = deltaScrollbar;
-		deltaScrollbar.addMouseMotionListener(new EllipseNonStandardMouseListener(parent, ValueChange.THIRDDIMmouse));
-		deltaScrollbar.addMouseListener(new EllipseStandardMouseListener(parent, ValueChange.THIRDDIMmouse, deltaScrollbar));
+		deltaScrollbar.addMouseMotionListener(new EllipseNonStandardMouseListener(parent, ValueChange.FOURTHDIMmouse));
+		deltaScrollbar.addMouseListener(new EllipseStandardMouseListener(parent, ValueChange.FOURTHDIMmouse));
 	}
 
 	@Override

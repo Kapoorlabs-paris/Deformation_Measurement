@@ -1,10 +1,15 @@
 package listeners;
 
 import java.awt.Label;
+import java.awt.event.ActionEvent;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JButton;
 import javax.swing.JScrollBar;
+import javax.swing.KeyStroke;
 
 import org.scijava.input.MouseCursor;
 
@@ -35,12 +40,17 @@ public class ZListener implements AdjustmentListener {
 			this.scrollbarSize = scrollbarSize;
 
 			this.deltaScrollbar = deltaScrollbar;
-			deltaScrollbar.addMouseMotionListener(new EllipseNonStandardMouseListener(parent, ValueChange.FOURTHDIMmouse));
-			deltaScrollbar.addMouseListener(new EllipseStandardMouseListener(parent, ValueChange.FOURTHDIMmouse, deltaScrollbar));
+			deltaScrollbar.addMouseMotionListener(new EllipseNonStandardMouseListener(parent, ValueChange.THIRDDIMmouse));
+			deltaScrollbar.addMouseListener(new EllipseStandardMouseListener(parent, ValueChange.THIRDDIMmouse));
 		}
 
 		@Override
 		public void adjustmentValueChanged(AdjustmentEvent e) {
+			if(e.getAdjustmentType() == AdjustmentEvent.BLOCK_INCREMENT)
+				System.out.println("UP");
+			
+			
+			
 			parent.thirdDimension = (int) Math.round(utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize));
 		
 			deltaScrollbar
@@ -56,6 +66,7 @@ public class ZListener implements AdjustmentListener {
 			show.shownewZ();
 		}
 		
-	
-	
+		
+		
+		
 }
