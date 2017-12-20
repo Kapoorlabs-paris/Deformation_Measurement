@@ -36,18 +36,18 @@ public class ZListener implements AdjustmentListener {
 			
 			deltaScrollbar.addMouseMotionListener(new EllipseNonStandardMouseListener(parent, ValueChange.THIRDDIMmouse));
 			deltaScrollbar.addMouseListener(new EllipseStandardMouseListener(parent, ValueChange.THIRDDIMmouse));
-			deltaScrollbar.setBlockIncrement(utility.Slicer.computeScrollbarPositionFromValue(parent.scrollbarSize, parent.thirdDimensionSize - 1, parent.thirdDimensionsliderInit, parent.thirdDimensionSize));
-			deltaScrollbar.setUnitIncrement(utility.Slicer.computeScrollbarPositionFromValue(parent.scrollbarSize, parent.thirdDimensionSize - 1, parent.thirdDimensionsliderInit, parent.thirdDimensionSize));
+			deltaScrollbar.setBlockIncrement(utility.Slicer.computeScrollbarPositionFromValue(2, min, max, scrollbarSize));
+			deltaScrollbar.setUnitIncrement(utility.Slicer.computeScrollbarPositionFromValue(2, min, max, scrollbarSize));
 		}
 
 		@Override
 		public void adjustmentValueChanged(AdjustmentEvent e) {
 			
-			parent.thirdDimension = (int) (utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), parent.scrollbarSize, parent.thirdDimensionsliderInit, parent.thirdDimensionSize));
+			parent.thirdDimension = (int) Math.round(utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize));
 			
-			
-			
-			System.out.println(utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), parent.scrollbarSize, parent.thirdDimensionsliderInit, parent.thirdDimensionSize));
+			deltaScrollbar
+			.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension, min, max, scrollbarSize));
+
 
 
 		

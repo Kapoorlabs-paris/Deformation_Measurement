@@ -13,7 +13,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.JProgressBar;
@@ -42,13 +47,40 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 
 	@Override
 	protected Void doInBackground() throws Exception {
-
+	
+		
+		HashMap<String, Integer> map = sortByValues(parent.Accountedframes);
+		parent.Accountedframes = map;
+		
+		
 		EllipseTrack newtrack = new EllipseTrack(parent, jpb);
 		newtrack.IntersectandTrack();
 
 		return null;
 
 	}
+	private static HashMap<String, Integer> sortByValues(HashMap<String, Integer> map) { 
+	       List<Entry<String, Integer>> list = new LinkedList<Entry<String, Integer>>(map.entrySet());
+	       // Defined Custom Comparator here
+	       Collections.sort(list, new Comparator<Entry<String, Integer>>() {
+	        
+
+				@Override
+				public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {
+					 return (o1.getValue())
+			                  .compareTo(o2.getValue());
+				}
+	       });
+
+	       // Here I am copying the sorted list in HashMap
+	       // using LinkedHashMap to preserve the insertion order
+	       HashMap<String, Integer> sortedHashMap = new LinkedHashMap<String, Integer>();
+	       for (Iterator<Entry<String, Integer>> it = list.iterator(); it.hasNext();) {
+	              Map.Entry<String, Integer> entry = (Map.Entry<String, Integer>) it.next();
+	              sortedHashMap.put(entry.getKey(), entry.getValue());
+	       } 
+	       return sortedHashMap;
+	  }
 
 	@Override
 	protected void done() {
@@ -56,6 +88,10 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 		parent.jpb.setIndeterminate(false);
 		parent.Cardframe.validate();
 
+	
+		
+		
+		
 		NearestNeighbourSearch NNsearch = new NearestNeighbourSearch(parent.ALLIntersections, (int)parent.thirdDimension,
 				(int)parent.fourthDimensionSize, parent.maxdistance, parent.Accountedframes);
 		NNsearch.process();

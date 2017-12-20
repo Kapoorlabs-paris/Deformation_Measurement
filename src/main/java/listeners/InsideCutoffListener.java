@@ -36,10 +36,10 @@ public class InsideCutoffListener implements AdjustmentListener {
 
 	@Override
 	public void adjustmentValueChanged(AdjustmentEvent e) {
-		parent.insideCutoff =  (float) utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), parent.scrollbarSize, parent.insideCutoffmin, parent.insideCutoffmax);
+		parent.insideCutoff =  (float) utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize);
 	
 		deltaScrollbar
-				.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.scrollbarSize, parent.insideCutoff, parent.insideCutoffmin, parent.insideCutoffmax));
+				.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.insideCutoff, min, max, scrollbarSize));
 
 		parent.outsideCutoff = parent.insideCutoff;
 		label.setText(string +  " = "  + parent.nf.format(parent.insideCutoff));

@@ -121,7 +121,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	private static final long serialVersionUID = 1L;
 	public String usefolder = IJ.getDirectory("imagej");
 	public String addToName = "EllipseFits";
-	public final int scrollbarSize = 500;
+	public final int scrollbarSize = 1000;
 	public int tablesize;
 	public Overlay overlay;
 	public Overlay emptyoverlay;
@@ -145,7 +145,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	
 	public float insideCutoffmax = 50;
 	public float outsideCutoffmax = 50;
-	
+	public int roiindex;
 	public int fourthDimension;
 	public int thirdDimension;
 	public int thirdDimensionSize;
@@ -194,7 +194,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public RandomAccessibleInterval<FloatType> CurrentResultView;
 	public Color confirmedRois = Color.BLUE;
 	public Color defaultRois = Color.YELLOW;
-	public Color colorChange = Color.RED;
+	public Color colorChange = Color.GRAY;
 	public Color colorInChange = Color.RED;
 	public int maxlabel;
 	public Color colorOval = Color.CYAN;
@@ -452,72 +452,33 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 		}
 
-		if (change == ValueChange.DISPLAYROI) {
-
-			Roi[] Rois = roimanager.getRoisAsArray();
-			Roiobject CurrentRoi = new Roiobject(Rois, thirdDimension, fourthDimension, true);
-
-			if (Accountedframes.get(uniqueID) == null) {
-
-				Accountedframes.put(uniqueID, fourthDimension);
-			}
-
-			else {
-
-				Accountedframes.remove(uniqueID);
-
-				Accountedframes.put(uniqueID, fourthDimension);
-			}
-
-			if (ZTRois.get(tmpID) == null) {
-
-				ZTRois.put(tmpID, CurrentRoi);
-
-			} else {
-
-				ZTRois.remove(tmpID);
-
-				ZTRois.put(tmpID, CurrentRoi);
-
-			}
-
-		}
+		
 
 		if (change == ValueChange.ROI) {
 
+			
+			IJ.run("Select None");
+			System.out.println(roiindex);
 			DefaultZTRois.clear();
 			// roimanager.runCommand("show all");
 			Roi[] Rois = roimanager.getRoisAsArray();
 			Roiobject CurrentRoi = new Roiobject(Rois, thirdDimension, fourthDimension, true);
 
+			
 			DefaultZTRois.put(uniqueID, CurrentRoi);
-			if (Accountedframes.get(uniqueID) == null) {
+			
+			
+		
 
 				Accountedframes.put(uniqueID, fourthDimension);
-			}
+			
 
-			else {
-
-				Accountedframes.remove(uniqueID);
-
-				Accountedframes.put(uniqueID, fourthDimension);
-			}
-
-			if (ZTRois.get(uniqueID) == null) {
 
 				ZTRois.put(uniqueID, CurrentRoi);
 
-			} else {
+			
 
-				ZTRois.remove(uniqueID);
-
-				ZTRois.put(uniqueID, CurrentRoi);
-
-			}
-
-			if (ZTRois.get(uniqueID) == null)
-				DisplayDefault();
-			else
+			System.out.println(CurrentRoi.toString());
 				Display();
 
 		}
@@ -589,6 +550,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 	public void Display() {
 
+		System.out.println("Displaying");
 		overlay.clear();
 
 		if (ZTRois.size() > 0) {
@@ -728,7 +690,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public void DisplayDefault() {
 
 		overlay.clear();
-
+		System.out.println("Displaying Def");
 		if (DefaultZTRois.size() > 0) {
 
 			for (Map.Entry<String, Roiobject> entry : DefaultZTRois.entrySet()) {
@@ -770,14 +732,12 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 				Clickedpoints[1] = y;
 				if (SwingUtilities.isLeftMouseButton(e) && !e.isShiftDown() && e.isAltDown()) {
 
-					int index = roimanager.getRoiIndex(nearestRoiCurr);
-					roimanager.select(index);
+					roiindex = roimanager.getRoiIndex(nearestRoiCurr);
+					roimanager.select(roiindex);
 					nearestRoiCurr.setStrokeColor(colorChange);
-					nearestRoiCurr.setStrokeWidth(1);
 
 					imp.updateAndDraw();
 
-					updatePreview(ValueChange.DISPLAYROI);
 
 				}
 
@@ -849,7 +809,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 				nearestRoiCurr = NearestRoi.getNearestRois(currentobject, loc.get(0), InteractiveEllipseFit.this);
 
 				if (nearestRoiCurr != null) {
-					nearestRoiCurr.setStrokeColor(Color.ORANGE);
+					nearestRoiCurr.setStrokeColor(colorChange);
 
 					if (lastnearest != nearestRoiCurr && lastnearest != null)
 						lastnearest.setStrokeColor(roicolor);
@@ -1177,17 +1137,17 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		panelFirst.add(Original, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-		timeslider.addAdjustmentListener(new TimeListener(this, timeText, timestring, MIN_SLIDER,
-				MAX_SLIDER , scrollbarSize, timeslider));
-		zslider.addAdjustmentListener(new ZListener(this, zText, zstring, MIN_SLIDER, MAX_SLIDER ,
+		timeslider.addAdjustmentListener(new TimeListener(this, timeText, timestring, fourthDimensionsliderInit,
+				fourthDimensionSize , scrollbarSize, timeslider));
+		zslider.addAdjustmentListener(new ZListener(this, zText, zstring, thirdDimensionsliderInit, thirdDimensionSize ,
 				scrollbarSize, zslider));
 		rslider.addAdjustmentListener(
 				new RListener(this, rText, rstring, radiusMin, radiusMax, scrollbarSize, rslider));
 
 		insideslider.addAdjustmentListener(
-				new InsideCutoffListener(this, insideText, insidestring, 0, 100, scrollbarSize, insideslider));
+				new InsideCutoffListener(this, insideText, insidestring, insideCutoffmin, insideCutoffmax, scrollbarSize, insideslider));
 		outsideslider.addAdjustmentListener(
-				new OutsideCutoffListener(this, outsideText, outsidestring, 0, 100, scrollbarSize, outsideslider));
+				new OutsideCutoffListener(this, outsideText, outsidestring, outsideCutoffmin, outsideCutoffmax, scrollbarSize, outsideslider));
 
 		Anglebutton.addActionListener(new AngleListener(this));
 		Roibutton.addActionListener(new RoiListener(this));
@@ -1244,7 +1204,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 	public static void main(String[] args) {
 		new ImageJ();
-		ImagePlus impA = new Opener().openImage("/Users/varunkapoor/Documents/JLMData/Hyperstack_ML7small.tif");
+		ImagePlus impA = new Opener().openImage("/Users/varunkapoor/Documents/JLMData/Hyperstack_ML7.tif");
 		impA.show();
 		JFrame frame = new JFrame("");
 		EllipseFileChooser panel = new EllipseFileChooser();

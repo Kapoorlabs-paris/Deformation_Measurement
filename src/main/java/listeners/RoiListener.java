@@ -34,7 +34,6 @@ public class RoiListener implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		
 		parent.updatePreview(ValueChange.ROI);
 		
 
