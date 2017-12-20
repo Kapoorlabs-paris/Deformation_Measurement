@@ -67,8 +67,7 @@ public class ZlocListener implements TextListener {
 					
 					
 					parent.updatePreview(ValueChange.THIRDDIMmouse);
-					parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(
-							parent.scrollbarSize, parent.thirdDimension, parent.thirdDimensionsliderInit, parent.thirdDimensionSize));
+					parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension, parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
 					parent.zslider.repaint();
 					parent.zslider.validate();
 				}
