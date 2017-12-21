@@ -156,6 +156,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public int MAX_SLIDER = 500;
 	public int row;
 	public HashMap<String, Integer> Accountedframes;
+	public HashMap<String, Integer> AccountedZ;
 	public JProgressBar jpb;
 	public JLabel label = new JLabel("Fitting..");
 	public int Progressmin = 0;
@@ -214,12 +215,13 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public HashMap<String, ArrayList<double[]>> resultDraw;
 	public KeyListener kl;
 	public SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> parentgraph;
+	public HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> parentgraphZ;
 	public HashMap<String, ArrayList<Intersectionobject>> ALLIntersections;
 	ColorProcessor cp = null;
-	public HashMap<Integer, Intersectionobject> Finalresult;
+	public HashMap<String, Intersectionobject> Finalresult;
 	public boolean isCreated = false;
 	public RoiManager roimanager;
-	public String uniqueID, tmpID;
+	public String uniqueID, tmpID, ZID, TID;
 	public RandomAccessibleInterval<BitType> empty;
 	public RandomAccessibleInterval<IntType> emptyWater;
 
@@ -303,11 +305,11 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		IntersectionZTRois = new HashMap<String, Roiobject>();
 		Clickedpoints = new int[ndims];
 		ALLIntersections = new HashMap<String, ArrayList<Intersectionobject>>();
-		Finalresult = new HashMap<Integer, Intersectionobject>();
+		Finalresult = new HashMap<String, Intersectionobject>();
 		Tracklist = new ArrayList<Pair<Integer, Intersectionobject>>();
 		resultDraw = new HashMap<String, ArrayList<double[]>>();
 		Accountedframes = new HashMap<String, Integer>();
-
+		AccountedZ= new HashMap<String, Integer>();
 		if (ndims < 3) {
 
 			thirdDimensionSize = 0;
@@ -381,6 +383,8 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 		//
 		uniqueID = Integer.toString(thirdDimension) + Integer.toString(fourthDimension);
+		ZID = Integer.toString(thirdDimension);
+		TID = Integer.toString(fourthDimension);
 		tmpID = Float.toString(thirdDimension) + Float.toString(fourthDimension);
 		overlay = imp.getOverlay();
 
@@ -408,7 +412,6 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 					resultlist.add(new double[] { currentangle.getB().t, currentangle.getB().z,
 							currentangle.getB().Intersectionpoint[0], currentangle.getB().Intersectionpoint[1] });
-					System.out.println(currentangle.getB().t + " " + currentangle.getB().z);
 
 				}
 
@@ -458,7 +461,6 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 			
 			IJ.run("Select None");
-			System.out.println(roiindex);
 			DefaultZTRois.clear();
 			// roimanager.runCommand("show all");
 			Roi[] Rois = roimanager.getRoisAsArray();
@@ -470,15 +472,15 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 			
 		
 
-				Accountedframes.put(uniqueID, fourthDimension);
-			
+				Accountedframes.put(TID, fourthDimension);
+				
+				AccountedZ.put(ZID, thirdDimension);
 
-
+				System.out.println(AccountedZ.size());
 				ZTRois.put(uniqueID, CurrentRoi);
 
 			
 
-			System.out.println(CurrentRoi.toString());
 				Display();
 
 		}
@@ -550,7 +552,6 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 	public void Display() {
 
-		System.out.println("Displaying");
 		overlay.clear();
 
 		if (ZTRois.size() > 0) {
@@ -690,7 +691,6 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public void DisplayDefault() {
 
 		overlay.clear();
-		System.out.println("Displaying Def");
 		if (DefaultZTRois.size() > 0) {
 
 			for (Map.Entry<String, Roiobject> entry : DefaultZTRois.entrySet()) {
@@ -742,7 +742,6 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 				}
 
 				if (SwingUtilities.isLeftMouseButton(e) && e.isShiftDown()) {
-					System.out.println("pressed");
 					if (!jFreeChartFrame.isVisible())
 						jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 
@@ -825,12 +824,15 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 					for (int row = 0; row < tablesize; ++row) {
 						String CordX = (String) table.getValueAt(row, 1);
 						String CordY = (String) table.getValueAt(row, 2);
+						
+						String CordZ = (String) table.getValueAt(row, 5);
 
 						double dCordX = Double.parseDouble(CordX);
 						double dCordY = Double.parseDouble(CordY);
-
+						double dCordZ = Double.parseDouble(CordZ);
+						
 						double dist = Distance.DistanceSq(new double[] { dCordX, dCordY }, new double[] { x, y });
-						if (Distance.DistanceSq(new double[] { dCordX, dCordY }, new double[] { x, y }) < distmin) {
+						if (Distance.DistanceSq(new double[] { dCordX, dCordY }, new double[] { x, y }) < distmin && thirdDimension == (int)dCordZ) {
 
 							rowchoice = row;
 							distmin = dist;

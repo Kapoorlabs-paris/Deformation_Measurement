@@ -26,6 +26,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingWorker;
 
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.SimpleWeightedGraph;
+
 import ellipsoidDetector.Intersectionobject;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.util.Pair;
@@ -52,6 +55,9 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 		HashMap<String, Integer> map = sortByValues(parent.Accountedframes);
 		parent.Accountedframes = map;
 		
+		
+		HashMap<String, Integer> mapZ = sortByValues(parent.AccountedZ);
+		parent.AccountedZ = mapZ;
 		
 		EllipseTrack newtrack = new EllipseTrack(parent, jpb);
 		newtrack.IntersectandTrack();
@@ -90,16 +96,21 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 
 	
 		
-		
-		
-		NearestNeighbourSearch NNsearch = new NearestNeighbourSearch(parent.ALLIntersections, (int)parent.thirdDimension,
+		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
+
+		while (itZ.hasNext()) {
+
+			int z = itZ.next().getValue();
+			
+			System.out.println("Z" +  z);
+		NearestNeighbourSearch NNsearch = new NearestNeighbourSearch(parent.ALLIntersections, z,
 				(int)parent.fourthDimensionSize, parent.maxdistance, parent.Accountedframes);
 		NNsearch.process();
-		parent.parentgraph = NNsearch.getResult();
+		parent.parentgraphZ.put(Integer.toString(z), NNsearch.getResult());
+		}
 
 		Lineage();
 
-		System.out.println("Size of graph" + parent.parentgraph.vertexSet().size());
 		try {
 			get();
 		} catch (InterruptedException e) {
@@ -112,10 +123,12 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 
 	public void Lineage() {
 
-		TrackModel model = new TrackModel(parent.parentgraph);
-
+		parent.Finalresult = new HashMap<String, Intersectionobject>();
+		for(Map.Entry<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> entryZ : parent.parentgraphZ.entrySet()){
 		
-		parent.Finalresult = new HashMap<Integer, Intersectionobject>();
+		TrackModel model = new TrackModel(entryZ.getValue());
+		
+		
 	
 		int minid = Integer.MAX_VALUE;
 		int maxid = Integer.MIN_VALUE;
@@ -128,6 +141,12 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 				minid = id;
 			
 		}
+		
+		
+		System.out.println("MinMax" + minid + " " + maxid);
+		
+		if (minid!=Integer.MAX_VALUE){
+		
 		for (final Integer id : model.trackIDs(true)) {
 
 			
@@ -156,7 +175,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 			};
 			
 			
-			model.setName(id, "Track" + id);
+			model.setName(id, "Track" + id + entryZ.getKey());
 
 			final HashSet<Intersectionobject> Angleset = model.trackIntersectionobjects(id);
 
@@ -180,12 +199,47 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 		
 		
 		for (int id = minid; id <= maxid; ++id) {
+			Intersectionobject bestangle = null;
+			if(model.trackIntersectionobjects(id)!=null){
 			
-			if(model.trackIntersectionobjects(id)!=null)
-			parent.Finalresult.put(id, model.trackIntersectionobjects(id).iterator().next());
+				List<Intersectionobject> sortedList = new ArrayList<Intersectionobject>(model.trackIntersectionobjects(id));
+				
+				
+				Collections.sort(sortedList, new Comparator<Intersectionobject>() {
+
+					@Override
+					public int compare(Intersectionobject o1, Intersectionobject o2) {
+
+						return o1.t - o2.t;
+					}
+					
+					
+					
+				});
+				
+				Iterator<Intersectionobject> iterator = sortedList.iterator(); 
+				
+				int count = 0;
+				while(iterator.hasNext()){
+				
+				
+					Intersectionobject currentangle = iterator.next();
+					
+					    if (count == 0)
+						bestangle = currentangle;
+					if (bestangle.t > currentangle.t)
+						bestangle = currentangle;
+					System.out.println(currentangle.t + " " + bestangle.t);
+					
+				}
+				parent.Finalresult.put(Integer.toString(id) + entryZ.getKey(), bestangle);
+				
+			
+			}
 			
 		}
-
+		}
+		}
 		CreateTable();
 
 	}
@@ -193,8 +247,8 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 	public void CreateTable() {
 
 	
-		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Starting Angle", "Start time",
-		"Start Z" };
+		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Last Angle", "End time",
+		"End Z" };
 
 Object[][] rowvalues = new Object[0][colnames.length];
 
@@ -204,10 +258,10 @@ Object[][] rowvalues = new Object[0][colnames.length];
 	parent.table = new JTable(rowvalues, colnames);
 		parent.row = 0;
 	
-		for (Map.Entry<Integer, Intersectionobject> entry : parent.Finalresult.entrySet()) {
+		for (Map.Entry<String, Intersectionobject> entry : parent.Finalresult.entrySet()) {
 
 			Intersectionobject currentangle = entry.getValue();
-			parent.table.getModel().setValueAt(new DecimalFormat("#.###").format(entry.getKey()),
+			parent.table.getModel().setValueAt(entry.getKey(),
 					parent.row, 0);
 			parent.table.getModel().setValueAt(new DecimalFormat("#.###").format(currentangle.Intersectionpoint[0]),
 					parent.row, 1);

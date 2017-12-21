@@ -22,6 +22,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
 import pluginTools.InteractiveEllipseFit;
 import pluginTools.InteractiveEllipseFit.ValueChange;
@@ -40,6 +41,8 @@ public class AngleListener implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		
 		parent.parentgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+		parent.parentgraphZ =  new 
+				HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
 		parent.StartComputing();
 		
 		

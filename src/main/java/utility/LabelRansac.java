@@ -79,8 +79,7 @@ public class LabelRansac implements Runnable {
 			double dist = Distance.DistanceSq(center, centernext);
 
 	
-			if (dist < parent.minSeperation * parent.minSeperation  )
-				Reducedsamples.remove(Reducedsamples.get(i));
+		
 
 		}
 		
@@ -98,7 +97,8 @@ public class LabelRansac implements Runnable {
 
 				System.out.println("Center :" + Reducedsamples.get(i).getA().getCenter()[0] + " "
 						+ Reducedsamples.get(i).getA().getCenter()[1] + " " + " Radius "
-						+ Reducedsamples.get(i).getA().getRadii()[0] + " " + Reducedsamples.get(i).getA().getRadii()[1]);
+						+ Reducedsamples.get(i).getA().getRadii()[0] + " " + Reducedsamples.get(i).getA().getRadii()[1]
+								+ "time " + "  " + t + " " + "Z" + " " + z);
 
 			}
             

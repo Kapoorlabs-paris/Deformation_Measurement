@@ -40,7 +40,7 @@ public class EllipseTrack {
 
 	final InteractiveEllipseFit parent;
 	final JProgressBar jpb;
-	
+	Pair<Boolean, String> isVisited;
 	public EllipseTrack(final InteractiveEllipseFit parent, final JProgressBar jpb) {
 		
 		
@@ -61,21 +61,25 @@ public class EllipseTrack {
 			
 			
 			percent++;
-
-			for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
-
-
+			
+			for(Map.Entry<String, Integer> entryZ : parent.AccountedZ.entrySet()){
+				
+				percent++;
+				int z = entryZ.getValue();
+		
+				System.out.println("Going" + t + z);
+				utility.ProgressBar.SetProgressBar(jpb, 100 * percent/ (parent.Accountedframes.entrySet().size() + parent.AccountedZ.entrySet().size() ), "Fitting ellipses and computing angles T = " + t + "/"
+						+ parent.fourthDimensionSize + " Z = " + z + "/" + parent.thirdDimensionSize);
+		        
 			
 		        
-				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z , (int)parent.thirdDimensionSize, t, (int)parent.fourthDimensionSize);
+				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z , parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 				
-				RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.emptyWater, z , (int)parent.thirdDimensionSize, t, (int)parent.fourthDimensionSize);
+				RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.emptyWater, z , parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 				
         		   Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z);
         		   compute.ParallelRansac();
-        			utility.ProgressBar.SetProgressBar(jpb, 100 * percent/ (parent.Accountedframes.entrySet().size()), "Fitting ellipses and computing angles T = " + t + "/"
-    						+ parent.fourthDimensionSize + " Z = " + z + "/" + parent.thirdDimensionSize);
-    		        
+        			
 
 					
 			}

@@ -12,32 +12,35 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 import ellipsoidDetector.Intersectionobject;
 import net.imglib2.KDTree;
 import net.imglib2.RealPoint;
+import net.imglib2.util.Pair;
+import net.imglib2.util.ValuePair;
 
 public class NearestNeighbourSearch implements IntersectionTracker {
 
 	private final HashMap<String, ArrayList<Intersectionobject>> ALLIntersections;
-	private SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> graph;
+	private SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph;
 	private HashMap<String, Integer> Accountedframes;
 	protected String errorMessage;
 	private final int z;
 	private final int fourthDimSize;
 	private final double maxdistance;
 
-	public NearestNeighbourSearch(final HashMap<String, ArrayList<Intersectionobject>> ALLIntersections, final int z,
-			final int fourthDimSize, final double maxdistance, final HashMap<String, Integer> Accountedframes) {
+	public NearestNeighbourSearch(final HashMap<String, ArrayList<Intersectionobject>> ALLIntersections,
+			final int z, final int fourthDimSize, final double maxdistance,
+			final HashMap<String, Integer> Accountedframes) {
 
 		this.ALLIntersections = ALLIntersections;
 		this.z = z;
 		this.fourthDimSize = fourthDimSize;
 		this.maxdistance = maxdistance;
 		this.Accountedframes = Accountedframes;
-        
+
 	}
 
 	@Override
 	public SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> getResult() {
 
-		return graph;
+		return simplegraph;
 	}
 
 	@Override
@@ -48,81 +51,79 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 
 	@Override
 	public boolean process() {
-		
-		
-		
-		reset();
-		
-		Iterator<Map.Entry<String, Integer>> it = Accountedframes.entrySet().iterator();
-         while(it.hasNext()){
-			
-			int t = it.next().getValue();
-			while(it.hasNext()){
-			int nextt = it.next().getValue();
-			
-			String uniqueID = Integer.toString(z) + Integer.toString(t);
-			String uniqueIDnext = Integer.toString(z) + Integer.toString(nextt);
-
-			ArrayList<Intersectionobject> baseobject = ALLIntersections.get(uniqueID);
-			ArrayList<Intersectionobject> targetobject = ALLIntersections.get(uniqueIDnext);
-			
-		
-			
-			if(targetobject!=null && targetobject.size() > 0) {
-
-			Iterator<Intersectionobject> baseobjectiterator = baseobject.iterator();
-
-			final int Targetintersections = targetobject.size();
-
-			final List<RealPoint> targetCoords = new ArrayList<RealPoint>(Targetintersections);
-
-			final List<FlagNode<Intersectionobject>> targetNodes = new ArrayList<FlagNode<Intersectionobject>>(
-					Targetintersections);
-
-			for (int index = 0; index < targetobject.size(); ++index) {
-
-					targetCoords.add(new RealPoint( targetobject.get(index).Intersectionpoint));
-					targetNodes.add(new FlagNode<Intersectionobject>(targetobject.get(index)));
 
 
-			}
+			reset();
+			Iterator<Map.Entry<String, Integer>> it = Accountedframes.entrySet().iterator();
+			while (it.hasNext()) {
 
-			if (targetNodes.size() > 0 && targetCoords.size() > 0) {
+				int t = it.next().getValue();
 
-				final KDTree<FlagNode<Intersectionobject>> Tree = new KDTree<FlagNode<Intersectionobject>>(targetNodes,
-						targetCoords);
+				while (it.hasNext()) {
+					int nextt = it.next().getValue();
 
-				final NNFlagsearchKDtree<Intersectionobject> Search = new NNFlagsearchKDtree<Intersectionobject>(Tree);
+					String uniqueID = Integer.toString(z) + Integer.toString(t);
+					String uniqueIDnext = Integer.toString(z) + Integer.toString(nextt);
+					String Zid = Integer.toString(z);
 
-				while (baseobjectiterator.hasNext()) {
+					ArrayList<Intersectionobject> baseobject = ALLIntersections.get(uniqueID);
+					ArrayList<Intersectionobject> targetobject = ALLIntersections.get(uniqueIDnext);
 
-					final Intersectionobject source = baseobjectiterator.next();
+					if (targetobject != null && targetobject.size() > 0) {
 
-					
-						final RealPoint sourceCoords = new RealPoint(source.Intersectionpoint);
-						Search.search(sourceCoords);
-						final double squareDist = Search.getSquareDistance();
-						final FlagNode<Intersectionobject> targetNode = Search.getSampler().get();
-						
+						Iterator<Intersectionobject> baseobjectiterator = baseobject.iterator();
 
-						targetNode.setVisited(true);
+						final int Targetintersections = targetobject.size();
 
-						synchronized (graph) {
+						final List<RealPoint> targetCoords = new ArrayList<RealPoint>(Targetintersections);
 
-							graph.addVertex(source);
-							graph.addVertex(targetNode.getValue());
-							final DefaultWeightedEdge edge = graph.addEdge(source, targetNode.getValue());
-							graph.setEdgeWeight(edge, squareDist);
+						final List<FlagNode<Intersectionobject>> targetNodes = new ArrayList<FlagNode<Intersectionobject>>(
+								Targetintersections);
+
+						for (int index = 0; index < targetobject.size(); ++index) {
+
+							targetCoords.add(new RealPoint(targetobject.get(index).Intersectionpoint));
+							targetNodes.add(new FlagNode<Intersectionobject>(targetobject.get(index)));
 
 						}
 
-					}
+						if (targetNodes.size() > 0 && targetCoords.size() > 0) {
+
+							final KDTree<FlagNode<Intersectionobject>> Tree = new KDTree<FlagNode<Intersectionobject>>(
+									targetNodes, targetCoords);
+
+							final NNFlagsearchKDtree<Intersectionobject> Search = new NNFlagsearchKDtree<Intersectionobject>(
+									Tree);
+
+							while (baseobjectiterator.hasNext()) {
+
+								final Intersectionobject source = baseobjectiterator.next();
+
+								final RealPoint sourceCoords = new RealPoint(source.Intersectionpoint);
+								Search.search(sourceCoords);
+								final double squareDist = Search.getSquareDistance();
+								final FlagNode<Intersectionobject> targetNode = Search.getSampler().get();
+
+								targetNode.setVisited(true);
+
+								synchronized (simplegraph) {
+
+									simplegraph.addVertex(source);
+									simplegraph.addVertex(targetNode.getValue());
+									final DefaultWeightedEdge edge = simplegraph.addEdge(source, targetNode.getValue());
+									simplegraph.setEdgeWeight(edge, squareDist);
+
+								}
+
+							}
+
+						}
+
+					
+				}
 
 			}
-			}
-
 		}
-         }
 		return true;
 	}
 
@@ -131,15 +132,23 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 
 		return errorMessage;
 	}
+
 	public void reset() {
-		
-		graph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
-		if(Accountedframes.entrySet().iterator().hasNext()){
-		String uniqueID = Integer.toString(z) + Integer.toString(Accountedframes.entrySet().iterator().next().getValue());
-		final Iterator<Intersectionobject> it = ALLIntersections.get(uniqueID).iterator();
-		while (it.hasNext()) {
-			graph.addVertex(it.next());
-		}
-		}
-	}
+		simplegraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+
+			if (Accountedframes.entrySet().iterator().hasNext()) {
+
+				String TID = Integer.toString(Accountedframes.entrySet().iterator().next().getValue());
+                 String uniqueID = z + TID;
+					if (ALLIntersections.get(uniqueID) != null) {
+						final Iterator<Intersectionobject> it = ALLIntersections.get(uniqueID).iterator();
+						
+						while (it.hasNext()) {
+							simplegraph.addVertex(it.next());
+						}
+					}
+				}
+			}
+
+
 }
