@@ -64,7 +64,7 @@ public class Computeinwater   {
 			ArrayList<Tangentobject> AllPointsofIntersect = new ArrayList<Tangentobject>();
 			ArrayList<Intersectionobject> Allintersection = new ArrayList<Intersectionobject>();
 
-			HashMap<Boolean, Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new HashMap<Boolean, Pair<Ellipsoid, Ellipsoid>>();
+			HashMap<Integer, Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new HashMap<Integer, Pair<Ellipsoid, Ellipsoid>>();
 		for (int label = 1; label< parent.maxlabel; ++label) {
 			
 			

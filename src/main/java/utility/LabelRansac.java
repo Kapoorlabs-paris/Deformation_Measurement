@@ -40,9 +40,9 @@ public class LabelRansac implements Runnable {
 	final ArrayList<Tangentobject> AllPointsofIntersect ;
 	final ArrayList<Intersectionobject> Allintersection ;
 
-	final HashMap<Boolean, Pair<Ellipsoid, Ellipsoid>> fitmapspecial ;
+	final HashMap<Integer, Pair<Ellipsoid, Ellipsoid>> fitmapspecial ;
 	public LabelRansac(final InteractiveEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,  List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, ArrayList<EllipseRoi> resultroi,ArrayList<OvalRoi> resultovalroi, ArrayList<Line> resultlineroi,
-			final ArrayList<Tangentobject> AllPointsofIntersect, final ArrayList<Intersectionobject> Allintersection, final HashMap<Boolean, Pair<Ellipsoid, Ellipsoid>> fitmapspecial ) {
+			final ArrayList<Tangentobject> AllPointsofIntersect, final ArrayList<Intersectionobject> Allintersection, final HashMap<Integer, Pair<Ellipsoid, Ellipsoid>> fitmapspecial ) {
 		
 		this.parent = parent;
 		this.ActualRoiimg = ActualRoiimg;
@@ -105,7 +105,7 @@ public class LabelRansac implements Runnable {
 		
 		
 
-		   int count = 0;
+		   int count = 1;
 			ArrayList<Integer> ellipsepairlist = new ArrayList<Integer>();
 		for (int i = 0; i < Reducedsamples.size(); ++i) {
 
@@ -114,7 +114,7 @@ public class LabelRansac implements Runnable {
 				if (j != i) {
 
 					ellipsepairlist.add(count);
-					fitmapspecial.put(false,
+					fitmapspecial.put(count,
 							new ValuePair<Ellipsoid, Ellipsoid>(Reducedsamples.get(i).getA(),
 									Reducedsamples.get(j).getA()));
 
@@ -125,25 +125,23 @@ public class LabelRansac implements Runnable {
 
 		
 	
-		boolean isfitted = false;
-		for (Map.Entry<Boolean, Pair<Ellipsoid, Ellipsoid>> entry : fitmapspecial.entrySet()) {
+		for (Map.Entry<Integer, Pair<Ellipsoid, Ellipsoid>> entry : fitmapspecial.entrySet()) {
 
 			Pair<Ellipsoid, Ellipsoid> ellipsepair = entry.getValue();
 
 			
 
-				isfitted = entry.getKey();
+				int key = entry.getKey();
 				
 
 			
 
-			if (!isfitted) {
-
+                if (key!=-1){
 				
 				ArrayList<double[]> pos = Intersections.PointsofIntersection(ellipsepair);
 				
 				Tangentobject PointsIntersect = new Tangentobject(pos,
-						fitmapspecial.get(isfitted), t, z);
+						fitmapspecial.get(key), t, z);
 
 				
 				
@@ -186,13 +184,12 @@ public class LabelRansac implements Runnable {
 				
 				AllPointsofIntersect.add(PointsIntersect);
 				
-				fitmapspecial.put(true, ellipsepair);
+				fitmapspecial.put(-1, ellipsepair);
 
 			}
 			
-			
-
 		}
+
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
         
 		

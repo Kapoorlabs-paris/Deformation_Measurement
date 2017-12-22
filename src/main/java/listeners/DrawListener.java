@@ -27,14 +27,22 @@ public class DrawListener implements ActionListener {
 		int selectedindex = choice.getSelectedIndex();
 		
 		if (selectedindex == 1) {
-			parent.minpercent = (float) (parent.minpercentINI / 2.0);
+			parent.minpercent = parent.minpercentINIArc;
 			parent.inputFieldminpercent.setText(Float.toString(parent.minpercent));	
+			parent.insideCutoff =  2 * parent.insideCutoffmin;
+			parent.insideslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.insideCutoff, parent.insideCutoffmin, parent.insideCutoffmax, parent.scrollbarSize));
+
 		}
 		else {
-			parent.minpercent = parent.minpercentINI;
+			parent.minpercent = (float) (parent.minpercentINI );
 			parent.inputFieldminpercent.setText(Float.toString(parent.minpercent));	
+			parent.insideCutoff = parent.insideCutoffmin;
+			parent.insideslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.insideCutoff, parent.insideCutoffmin, parent.insideCutoffmax, parent.scrollbarSize));
 			
 		}
+		
+		parent.Angleselect.repaint();
+		parent.Angleselect.validate();
 		parent.panelFirst.repaint();
 		parent.panelFirst.validate();
 		

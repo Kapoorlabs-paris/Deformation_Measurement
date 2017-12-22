@@ -134,6 +134,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public int maxtry = 30;
 	public float minpercent = 0.65f;
 	public float minpercentINI = 0.65f;
+	public float minpercentINIArc = 0.25f;
 	public final double minSeperation = 5;
 
 	public float insideCutoff = 5;
@@ -973,7 +974,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 		inputLabelIter = new Label("Max. attempts to find ellipses");
 
-		String[] DrawType = { "Closed Loops", "Arcs" };
+		String[] DrawType = { "Closed Loops", "Semi-Closed Loops" };
 		ChooseMethod = new JComboBox<String>(DrawType);
 
 		inputLabelmaxellipse = new Label("Max. number of ellipses");
