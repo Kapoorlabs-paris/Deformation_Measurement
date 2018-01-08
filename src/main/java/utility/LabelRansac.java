@@ -13,14 +13,8 @@ import ij.gui.Line;
 import ij.gui.OvalRoi;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
-import net.imglib2.algorithm.ransac.RansacModels.BisectorEllipsoid;
-import net.imglib2.algorithm.ransac.RansacModels.ConnectedComponentCoordinates;
-import net.imglib2.algorithm.ransac.RansacModels.DisplayasROI;
-import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
-import net.imglib2.algorithm.ransac.RansacModels.Intersections;
-import net.imglib2.algorithm.ransac.RansacModels.NumericalSolvers;
-import net.imglib2.algorithm.ransac.RansacModels.SortSegments;
-import net.imglib2.algorithm.ransac.RansacModels.Tangent2D;
+import net.imglib2.algorithm.ransac.RansacModels.*;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.util.Pair;
@@ -61,15 +55,14 @@ public class LabelRansac implements Runnable {
 		
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
 		
-		
-
 		final int ndims = ActualRoiimg.numDimensions();
 		final NumericalSolvers numsol = new BisectorEllipsoid();
 		// Using the ellipse model to do the fitting
-		ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> Reducedsamples = net.imglib2.algorithm.ransac.RansacModels.RansacEllipsoid
-				.Allsamples(truths, parent.outsideCutoff, parent.insideCutoff, parent.minpercent, numsol, parent.maxtry, ndims);
+		ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> Reducedsamples = 
+				RansacEllipsoid.Allsamples(truths, parent.outsideCutoff, parent.insideCutoff, parent.minpercent, numsol, parent.maxtry, ndims);
 
 		SortSegments.Sort(Reducedsamples);
+		
 		for (int i = 0; i < Reducedsamples.size() - 1; ++i) {
 
 			double[] center = Reducedsamples.get(i).getA().getCenter();
@@ -78,7 +71,8 @@ public class LabelRansac implements Runnable {
 
 			double dist = Distance.DistanceSq(center, centernext);
 
-	
+			if (dist < parent.minSeperation * parent.minSeperation  )
+				Reducedsamples.remove(Reducedsamples.get(i));
 		
 
 		}

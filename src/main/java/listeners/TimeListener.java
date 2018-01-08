@@ -45,7 +45,6 @@ public class TimeListener implements AdjustmentListener {
 		
 		parent.fourthDimension = (int) Math.round(utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize));
 
-		System.out.println((utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize)));
 
 		deltaScrollbar
 		.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension, min, max, scrollbarSize));

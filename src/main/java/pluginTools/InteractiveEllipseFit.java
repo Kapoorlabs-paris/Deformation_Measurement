@@ -1206,9 +1206,8 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	}
 
 	public static void main(String[] args) {
+
 		new ImageJ();
-		ImagePlus impA = new Opener().openImage("/Users/varunkapoor/Documents/JLMData/Hyperstack_ML7.tif");
-		impA.show();
 		JFrame frame = new JFrame("");
 		EllipseFileChooser panel = new EllipseFileChooser();
 
