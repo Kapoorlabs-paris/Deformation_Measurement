@@ -68,7 +68,7 @@ public class EllipseTrack {
 				int z = entryZ.getValue();
 		
 				System.out.println("Going" + t + z);
-				utility.ProgressBar.SetProgressBar(jpb, 100 * percent/ (parent.Accountedframes.entrySet().size() + parent.AccountedZ.entrySet().size() ), "Fitting ellipses and computing angles T = " + t + "/"
+				utility.ProgressBar.SetProgressBar(jpb, 100 * percent/ (parent.Accountedframes.entrySet().size() + parent.AccountedZ.entrySet().size() + 1), "Fitting ellipses and computing angles T = " + t + "/"
 						+ parent.fourthDimensionSize + " Z = " + z + "/" + parent.thirdDimensionSize);
 		        
 			

@@ -25,11 +25,11 @@ public class DisplayResults implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 
 		
-		for (Pair<Integer,Intersectionobject> currentangle: parent.Tracklist) {
+		for (Pair<String,Intersectionobject> currentangle: parent.Tracklist) {
 			
 			
 			ArrayList<double[]> resultlist = new ArrayList<double[]>();
-			if (Integer.parseInt(ID) == currentangle.getA()) {
+			if (ID.equals(currentangle.getA())) {
 				
 				resultlist.add(new double[] {currentangle.getB().t, currentangle.getB().z, currentangle.getB().Intersectionpoint[0], currentangle.getB().Intersectionpoint[1]  });
 				parent.resultDraw.put(ID, resultlist);

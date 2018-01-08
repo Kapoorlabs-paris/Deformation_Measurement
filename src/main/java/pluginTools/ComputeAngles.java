@@ -97,18 +97,19 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 	
 		
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
-
+		int count = 0;
 		while (itZ.hasNext()) {
 
-			int z = itZ.next().getValue();
+		int	z = itZ.next().getValue();
 			
-			System.out.println("Z" +  z);
+		System.out.println(z);
 		NearestNeighbourSearch NNsearch = new NearestNeighbourSearch(parent.ALLIntersections, z,
 				(int)parent.fourthDimensionSize, parent.maxdistance, parent.Accountedframes);
 		NNsearch.process();
 		parent.parentgraphZ.put(Integer.toString(z), NNsearch.getResult());
+		count++;
 		}
-
+		
 		Lineage();
 
 		try {
@@ -123,7 +124,6 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 
 	public void Lineage() {
 
-		parent.Finalresult = new HashMap<String, Intersectionobject>();
 		for(Map.Entry<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> entryZ : parent.parentgraphZ.entrySet()){
 		
 		TrackModel model = new TrackModel(entryZ.getValue());
@@ -132,6 +132,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 	
 		int minid = Integer.MAX_VALUE;
 		int maxid = Integer.MIN_VALUE;
+		
 		for (final Integer id : model.trackIDs(true)) {
 			
 			if (id > maxid)
@@ -143,7 +144,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 		}
 		
 		
-		System.out.println("MinMax" + minid + " " + maxid);
+		System.out.println("MinMax" + minid + " " + maxid + " " + entryZ.getKey());
 		
 		if (minid!=Integer.MAX_VALUE){
 		
@@ -152,10 +153,10 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 			
 
 			
-			Comparator<Pair<Integer,Intersectionobject>> ThirdDimcomparison = new Comparator<Pair<Integer,Intersectionobject>>() {
+			Comparator<Pair<String,Intersectionobject>> ThirdDimcomparison = new Comparator<Pair<String,Intersectionobject>>() {
 
 				@Override
-				public int compare(final Pair<Integer,Intersectionobject> A, final Pair<Integer,Intersectionobject> B) {
+				public int compare(final Pair<String,Intersectionobject> A, final Pair<String,Intersectionobject> B) {
 
 					return A.getB().z - B.getB().z;
 
@@ -163,10 +164,10 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 
 			};
 
-			Comparator<Pair<Integer,Intersectionobject>> FourthDimcomparison = new Comparator<Pair<Integer,Intersectionobject>>() {
+			Comparator<Pair<String,Intersectionobject>> FourthDimcomparison = new Comparator<Pair<String,Intersectionobject>>() {
 
 				@Override
-				public int compare(final Pair<Integer,Intersectionobject> A, final Pair<Integer,Intersectionobject> B) {
+				public int compare(final Pair<String,Intersectionobject> A, final Pair<String,Intersectionobject> B) {
 
 					return A.getB().t - B.getB().t;
 
@@ -175,7 +176,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 			};
 			
 			
-			model.setName(id, "Track" + id + entryZ.getKey());
+			model.setName(id, "Track" + id + entryZ.getKey() );
 
 			final HashSet<Intersectionobject> Angleset = model.trackIntersectionobjects(id);
 
@@ -186,9 +187,9 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 				
 				Intersectionobject currentangle = Angleiter.next();
 				
-				parent.Tracklist.add(new ValuePair<Integer, Intersectionobject>( id, currentangle));
+				parent.Tracklist.add(new ValuePair<String, Intersectionobject>( Integer.toString(id) + entryZ.getKey(), currentangle));
 			}
-			
+			System.out.println("In loop" + Integer.toString(id) + entryZ.getKey());
 			Collections.sort(parent.Tracklist, ThirdDimcomparison);
 			if (parent.fourthDimensionSize > 1)
 				Collections.sort(parent.Tracklist, FourthDimcomparison);
@@ -232,7 +233,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 					System.out.println(currentangle.t + " " + bestangle.t);
 					
 				}
-				parent.Finalresult.put(Integer.toString(id) + entryZ.getKey(), bestangle);
+				parent.Finalresult.put(Integer.toString(id) + entryZ.getKey() , bestangle);
 				
 			
 			}

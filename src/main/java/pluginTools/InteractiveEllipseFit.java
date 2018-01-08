@@ -211,7 +211,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public int[] Clickedpoints;
 	public int starttime;
 	public int endtime;
-	public ArrayList<Pair<Integer, Intersectionobject>> Tracklist;
+	public ArrayList<Pair<String, Intersectionobject>> Tracklist;
 	public ArrayList<Pair<String, double[]>> resultAngle;
 	public HashMap<String, ArrayList<double[]>> resultDraw;
 	public KeyListener kl;
@@ -307,7 +307,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		Clickedpoints = new int[ndims];
 		ALLIntersections = new HashMap<String, ArrayList<Intersectionobject>>();
 		Finalresult = new HashMap<String, Intersectionobject>();
-		Tracklist = new ArrayList<Pair<Integer, Intersectionobject>>();
+		Tracklist = new ArrayList<Pair<String, Intersectionobject>>();
 		resultDraw = new HashMap<String, ArrayList<double[]>>();
 		Accountedframes = new HashMap<String, Integer>();
 		AccountedZ= new HashMap<String, Integer>();
@@ -407,16 +407,17 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 			String ID = (String) table.getValueAt(rowchoice, 0);
 			ArrayList<double[]> resultlist = new ArrayList<double[]>();
-			for (Pair<Integer, Intersectionobject> currentangle : Tracklist) {
-
-				if (Integer.parseInt(ID) == currentangle.getA()) {
-
+			for (Pair<String, Intersectionobject> currentangle : Tracklist) {
+				
+				if (ID.equals(currentangle.getA())) {
+					System.out.println(ID + " " + currentangle.getA());
 					resultlist.add(new double[] { currentangle.getB().t, currentangle.getB().z,
 							currentangle.getB().Intersectionpoint[0], currentangle.getB().Intersectionpoint[1] });
 
 				}
 
 			}
+			System.out.println(resultlist.size());
 			resultDraw.put(ID, resultlist);
 
 			resultimp = ImageJFunctions.show(Slicer.getCurrentViewLarge(originalimg, thirdDimension));
@@ -1183,9 +1184,9 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 		resultAngle = new ArrayList<Pair<String, double[]>>();
 
-		for (Pair<Integer, Intersectionobject> currentangle : Tracklist) {
+		for (Pair<String, Intersectionobject> currentangle : Tracklist) {
 
-			if (Integer.parseInt(ID) == currentangle.getA())
+			if (ID.equals(currentangle.getA()))
 				resultAngle.add(new ValuePair<String, double[]>(ID,
 						new double[] { currentangle.getB().t, currentangle.getB().angle }));
 

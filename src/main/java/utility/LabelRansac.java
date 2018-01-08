@@ -99,11 +99,11 @@ public class LabelRansac implements Runnable {
 		
 		
 
-		   int count = 1;
+		   int count = 0;
 			ArrayList<Integer> ellipsepairlist = new ArrayList<Integer>();
 		for (int i = 0; i < Reducedsamples.size(); ++i) {
 
-			for (int j = 0; j < Reducedsamples.size(); ++j) {
+			for (int j = 0; j < Reducedsamples.size() - 1; ++j) {
 
 				if (j != i) {
 
@@ -132,7 +132,7 @@ public class LabelRansac implements Runnable {
 
                 if (key!=-1){
 				
-				ArrayList<double[]> pos = Intersections.PointsofIntersection(ellipsepair);
+				ArrayList<double[]> pos = Intersections.PointsofIntersection(ellipsepair, 1);
 				
 				Tangentobject PointsIntersect = new Tangentobject(pos,
 						fitmapspecial.get(key), t, z);
