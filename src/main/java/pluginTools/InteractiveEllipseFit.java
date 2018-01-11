@@ -912,6 +912,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 	final String timestring = "Current T";
 	final String zstring = "Current Z";
+	final String zgenstring = "Current Z / T";
 	final String rstring = "Radius";
 	final String insidestring = "Cutoff distance for points inside ellipse";
 	final String outsidestring = "Cutoff distance for points outside ellipse";
@@ -1151,7 +1152,11 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 		timeslider.addAdjustmentListener(new TimeListener(this, timeText, timestring, fourthDimensionsliderInit,
 				fourthDimensionSize, scrollbarSize, timeslider));
+		if (ndims > 3)
 		zslider.addAdjustmentListener(new ZListener(this, zText, zstring, thirdDimensionsliderInit, thirdDimensionSize,
+				scrollbarSize, zslider));
+		else
+		zslider.addAdjustmentListener(new ZListener(this, zgenText, zgenstring, thirdDimensionsliderInit, thirdDimensionSize,
 				scrollbarSize, zslider));
 		rslider.addAdjustmentListener(
 				new RListener(this, rText, rstring, radiusMin, radiusMax, scrollbarSize, rslider));
