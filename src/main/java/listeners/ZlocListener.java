@@ -64,7 +64,7 @@ public class ZlocListener implements TextListener {
 					show.shownewZ();
 					
 					parent.zText.setText("Current Z = " + parent.thirdDimension);
-					
+					parent.zgenText.setText("Current Z / T = " + parent.thirdDimension);
 					
 					parent.updatePreview(ValueChange.THIRDDIMmouse);
 					parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension, parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));

@@ -139,11 +139,10 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 	public float insideCutoff = 5;
 	public float outsideCutoff = 5;
-	
+
 	public float insideCutoffmin = 5;
 	public float outsideCutoffmin = 5;
-	
-	
+
 	public float insideCutoffmax = 50;
 	public float outsideCutoffmax = 50;
 	public int roiindex;
@@ -153,7 +152,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public int fourthDimensionSize;
 	public ImagePlus impA;
 	public boolean isDone;
-	public  int MIN_SLIDER = 0;
+	public int MIN_SLIDER = 0;
 	public int MAX_SLIDER = 500;
 	public int row;
 	public HashMap<String, Integer> Accountedframes;
@@ -310,7 +309,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		Tracklist = new ArrayList<Pair<String, Intersectionobject>>();
 		resultDraw = new HashMap<String, ArrayList<double[]>>();
 		Accountedframes = new HashMap<String, Integer>();
-		AccountedZ= new HashMap<String, Integer>();
+		AccountedZ = new HashMap<String, Integer>();
 		if (ndims < 3) {
 
 			thirdDimensionSize = 0;
@@ -408,7 +407,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 			String ID = (String) table.getValueAt(rowchoice, 0);
 			ArrayList<double[]> resultlist = new ArrayList<double[]>();
 			for (Pair<String, Intersectionobject> currentangle : Tracklist) {
-				
+
 				if (ID.equals(currentangle.getA())) {
 					System.out.println(ID + " " + currentangle.getA());
 					resultlist.add(new double[] { currentangle.getB().t, currentangle.getB().z,
@@ -457,33 +456,24 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 		}
 
-		
-
 		if (change == ValueChange.ROI) {
 
-			
 			IJ.run("Select None");
 			DefaultZTRois.clear();
 			// roimanager.runCommand("show all");
 			Roi[] Rois = roimanager.getRoisAsArray();
 			Roiobject CurrentRoi = new Roiobject(Rois, thirdDimension, fourthDimension, true);
 
-			
 			DefaultZTRois.put(uniqueID, CurrentRoi);
-			
-			
-		
 
-				Accountedframes.put(TID, fourthDimension);
-				
-				AccountedZ.put(ZID, thirdDimension);
+			Accountedframes.put(TID, fourthDimension);
 
-				System.out.println(AccountedZ.size());
-				ZTRois.put(uniqueID, CurrentRoi);
+			AccountedZ.put(ZID, thirdDimension);
 
-			
+			System.out.println(AccountedZ.size());
+			ZTRois.put(uniqueID, CurrentRoi);
 
-				Display();
+			Display();
 
 		}
 
@@ -740,7 +730,6 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 					imp.updateAndDraw();
 
-
 				}
 
 				if (SwingUtilities.isLeftMouseButton(e) && e.isShiftDown()) {
@@ -826,20 +815,29 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 					for (int row = 0; row < tablesize; ++row) {
 						String CordX = (String) table.getValueAt(row, 1);
 						String CordY = (String) table.getValueAt(row, 2);
-						
+
 						String CordZ = (String) table.getValueAt(row, 5);
 
 						double dCordX = Double.parseDouble(CordX);
 						double dCordY = Double.parseDouble(CordY);
 						double dCordZ = Double.parseDouble(CordZ);
-						
+
 						double dist = Distance.DistanceSq(new double[] { dCordX, dCordY }, new double[] { x, y });
-						if (Distance.DistanceSq(new double[] { dCordX, dCordY }, new double[] { x, y }) < distmin && thirdDimension == (int)dCordZ) {
+						if (Distance.DistanceSq(new double[] { dCordX, dCordY }, new double[] { x, y }) < distmin
+								&& thirdDimension == (int) dCordZ && ndims > 3) {
 
 							rowchoice = row;
 							distmin = dist;
 
 						}
+						if (Distance.DistanceSq(new double[] { dCordX, dCordY }, new double[] { x, y }) < distmin
+								 && ndims <= 3) {
+
+							rowchoice = row;
+							distmin = dist;
+
+						}
+						
 
 					}
 
@@ -905,6 +903,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 	public Label timeText = new Label("Current T = " + 1, Label.CENTER);
 	public Label zText = new Label("Current Z = " + 1, Label.CENTER);
+	public Label zgenText = new Label("Current Z / T = " + 1, Label.CENTER);
 	final Label rText = new Label("Left Click selects a Roi");
 	final Label contText = new Label("After making all roi selections");
 	final Label insideText = new Label("Cutoff distance for points belonging to ellipse = " + insideCutoff,
@@ -936,6 +935,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public TextField inputField = new TextField();
 	final JButton ChooseDirectory = new JButton("Choose Directory to save results in");
 	public JComboBox<String> ChooseMethod;
+	public JComboBox<String> ChooseColor;
 	Border origborder = new CompoundBorder(new TitledBorder("Enter filename for results files"),
 			new EmptyBorder(c.insets));
 
@@ -976,7 +976,12 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		inputLabelIter = new Label("Max. attempts to find ellipses");
 
 		String[] DrawType = { "Closed Loops", "Semi-Closed Loops" };
+
 		ChooseMethod = new JComboBox<String>(DrawType);
+
+		String[] DrawColor = { "Grey", "Red", "Blue", "Pink" };
+
+		ChooseColor = new JComboBox<String>(DrawColor);
 
 		inputLabelmaxellipse = new Label("Max. number of ellipses");
 
@@ -1013,46 +1018,49 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		c.gridy = 1;
 		c.gridx = 0;
 
-		if (ndims >= 3) {
+		int ycounter = 0;
+		int xcounter = 0;
 
-			// Put time slider
+		// Put time slider
 
-			Timeselect.add(timeText, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		Timeselect.add(timeText, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Timeselect.add(timeslider, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		Timeselect.add(timeslider, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Timeselect.add(inputFieldT, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		Timeselect.add(inputFieldT, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Timeselect.setBorder(timeborder);
-			Timeselect.setMinimumSize(new Dimension(SizeX, SizeY));
-			Timeselect.setPreferredSize(new Dimension(SizeX, SizeY));
-			panelFirst.add(Timeselect, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		Timeselect.setBorder(timeborder);
+		Timeselect.setMinimumSize(new Dimension(SizeX, SizeY));
+		Timeselect.setPreferredSize(new Dimension(SizeX, SizeY));
+		panelFirst.add(Timeselect, new GridBagConstraints(xcounter, ycounter, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-		}
-
-		if (ndims > 3) {
-
-			// Put z slider
-
+		// Put z slider
+		if (ndims > 3)
 			Zselect.add(zText, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-			Zselect.add(zslider, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		else
+			Zselect.add(zgenText, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		Zselect.add(zslider, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Zselect.add(inputFieldZ, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		Zselect.add(inputFieldZ, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Zselect.setBorder(zborder);
-			Zselect.setMinimumSize(new Dimension(SizeX, SizeY));
-			Zselect.setPreferredSize(new Dimension(SizeX, SizeY));
-			panelFirst.add(Zselect, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		Zselect.setBorder(zborder);
+		Zselect.setMinimumSize(new Dimension(SizeX, SizeY));
+		Zselect.setPreferredSize(new Dimension(SizeX, SizeY));
+		panelFirst.add(Zselect, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
+		if (ndims < 4) {
+
+			timeslider.setEnabled(false);
+			inputFieldT.setEnabled(false);
 		}
 
 		Roiselect.add(rText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,
@@ -1142,16 +1150,16 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		timeslider.addAdjustmentListener(new TimeListener(this, timeText, timestring, fourthDimensionsliderInit,
-				fourthDimensionSize , scrollbarSize, timeslider));
-		zslider.addAdjustmentListener(new ZListener(this, zText, zstring, thirdDimensionsliderInit, thirdDimensionSize ,
+				fourthDimensionSize, scrollbarSize, timeslider));
+		zslider.addAdjustmentListener(new ZListener(this, zText, zstring, thirdDimensionsliderInit, thirdDimensionSize,
 				scrollbarSize, zslider));
 		rslider.addAdjustmentListener(
 				new RListener(this, rText, rstring, radiusMin, radiusMax, scrollbarSize, rslider));
 
-		insideslider.addAdjustmentListener(
-				new InsideCutoffListener(this, insideText, insidestring, insideCutoffmin, insideCutoffmax, scrollbarSize, insideslider));
-		outsideslider.addAdjustmentListener(
-				new OutsideCutoffListener(this, outsideText, outsidestring, outsideCutoffmin, outsideCutoffmax, scrollbarSize, outsideslider));
+		insideslider.addAdjustmentListener(new InsideCutoffListener(this, insideText, insidestring, insideCutoffmin,
+				insideCutoffmax, scrollbarSize, insideslider));
+		outsideslider.addAdjustmentListener(new OutsideCutoffListener(this, outsideText, outsidestring,
+				outsideCutoffmin, outsideCutoffmax, scrollbarSize, outsideslider));
 
 		Anglebutton.addActionListener(new AngleListener(this));
 		Roibutton.addActionListener(new RoiListener(this));

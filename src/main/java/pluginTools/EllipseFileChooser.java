@@ -21,6 +21,7 @@ import java.util.Locale;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
@@ -58,7 +59,7 @@ public class EllipseFileChooser extends JPanel {
 	  public JPanel panelCont = new JPanel();
 	  public JPanel panelFirst = new JPanel();
 	  
-	  
+	  public Label ImageType = new Label("Image format supported : XYZT/XYZ/XYT");
 	  public JPanel Panelfile = new JPanel();
 	  public static final Insets insets = new Insets(10, 0, 0, 0);
 	  public final GridBagLayout layout = new GridBagLayout();
@@ -80,10 +81,15 @@ public class EllipseFileChooser extends JPanel {
 			
 			JButton Current = new JButton("Use Current movie");
 			
-		    Panelfile.add(Measureserial, new GridBagConstraints(0, 0, 1, 1, 0.0D, 0.0D, 17, 
-		      2, insets, 0, 0));
+			
+			 Panelfile.add( ImageType, new GridBagConstraints(0, 0, 1, 1, 0.0D, 0.0D, 17, 
+				      2, insets, 0, 1));
+			 
+			
+		    Panelfile.add(Measureserial, new GridBagConstraints(0, 1, 1, 1, 0.0D, 0.0D, 17, 
+		      2, insets, 0, 1));
 		    
-		    Panelfile.add(Current, new GridBagConstraints(1, 0, 1, 1, 0.0D, 0.0D, 17, 
+		    Panelfile.add(Current, new GridBagConstraints(1, 1, 1, 1, 0.0D, 0.0D, 17, 
 				      2, insets, 0, 0));
 		    
 		    Panelfile.setBorder(selectfile);

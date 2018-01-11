@@ -64,7 +64,7 @@ public class Computeinwater   {
 			ArrayList<Tangentobject> AllPointsofIntersect = new ArrayList<Tangentobject>();
 			ArrayList<Intersectionobject> Allintersection = new ArrayList<Intersectionobject>();
 
-			HashMap<Integer, Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new HashMap<Integer, Pair<Ellipsoid, Ellipsoid>>();
+			ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
 		for (int label = 1; label< parent.maxlabel; ++label) {
 			 RandomAccessibleInterval<BitType> ActualRoiimg = CurrentLabelImage(CurrentViewInt, CurrentView, label);
 			 

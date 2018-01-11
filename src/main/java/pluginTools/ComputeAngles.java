@@ -34,6 +34,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import utility.NearestNeighbourSearch;
+import utility.NearestNeighbourSearch2D;
 import utility.TrackModel;
 
 public class ComputeAngles extends SwingWorker<Void, Void> {
@@ -95,22 +96,31 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 		parent.Cardframe.validate();
 
 	
-		
+		if (parent.ndims > 3){
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
-		int count = 0;
 		while (itZ.hasNext()) {
 
 		int	z = itZ.next().getValue();
 			
-		System.out.println(z);
 		NearestNeighbourSearch NNsearch = new NearestNeighbourSearch(parent.ALLIntersections, z,
 				(int)parent.fourthDimensionSize, parent.maxdistance, parent.Accountedframes);
 		NNsearch.process();
 		parent.parentgraphZ.put(Integer.toString(z), NNsearch.getResult());
-		count++;
+		}
+		Lineage();
 		}
 		
-		Lineage();
+		else {
+			
+			NearestNeighbourSearch2D NNsearch = new NearestNeighbourSearch2D(parent.ALLIntersections, 
+					(int)parent.thirdDimensionSize, parent.maxdistance, parent.AccountedZ);
+			NNsearch.process();
+			 SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>	simplegraph =  NNsearch.getResult();
+			
+			Lineage2D(simplegraph);
+		}
+		
+	
 
 		try {
 			get();
@@ -245,6 +255,107 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 
 	}
 
+	public void Lineage2D(SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> entryZ) {
+
+		
+		TrackModel model = new TrackModel(entryZ);
+		
+		
+	
+		int minid = Integer.MAX_VALUE;
+		int maxid = Integer.MIN_VALUE;
+		
+		for (final Integer id : model.trackIDs(true)) {
+			
+			if (id > maxid)
+				maxid = id;
+			
+			if(id < minid)
+				minid = id;
+			
+		}
+		
+		
+		System.out.println("MinMax" + minid + " " + maxid + " " + entryZ);
+		
+		if (minid!=Integer.MAX_VALUE){
+		
+		for (final Integer id : model.trackIDs(true)) {
+
+			
+
+			
+			Comparator<Pair<String,Intersectionobject>> ThirdDimcomparison = new Comparator<Pair<String,Intersectionobject>>() {
+
+				@Override
+				public int compare(final Pair<String,Intersectionobject> A, final Pair<String,Intersectionobject> B) {
+
+					return A.getB().z - B.getB().z;
+
+				}
+
+			};
+
+		
+			
+			
+			model.setName(id, "Track" + id  );
+
+			final HashSet<Intersectionobject> Angleset = model.trackIntersectionobjects(id);
+
+			Iterator<Intersectionobject> Angleiter = Angleset.iterator();
+			
+			
+			while(Angleiter.hasNext()) {
+				
+				Intersectionobject currentangle = Angleiter.next();
+				
+				parent.Tracklist.add(new ValuePair<String, Intersectionobject>( Integer.toString(id) , currentangle));
+			}
+			System.out.println("In loop" + Integer.toString(id) );
+			Collections.sort(parent.Tracklist, ThirdDimcomparison);
+
+			
+		}
+		
+		
+		
+		for (int id = minid; id <= maxid; ++id) {
+			Intersectionobject bestangle = null;
+			if(model.trackIntersectionobjects(id)!=null){
+			
+				List<Intersectionobject> sortedList = new ArrayList<Intersectionobject>(model.trackIntersectionobjects(id));
+				
+			
+				
+				Iterator<Intersectionobject> iterator = sortedList.iterator(); 
+				
+				int count = 0;
+				while(iterator.hasNext()){
+				
+				
+					Intersectionobject currentangle = iterator.next();
+					
+					    if (count == 0)
+						bestangle = currentangle;
+					if (bestangle.z > currentangle.z)
+						bestangle = currentangle;
+					System.out.println(currentangle.z + " " + bestangle.z);
+					
+				}
+				parent.Finalresult.put(Integer.toString(id), bestangle);
+				
+			
+			}
+			
+		}
+		
+		}
+		CreateTable();
+
+	}
+
+	
 	public void CreateTable() {
 
 	

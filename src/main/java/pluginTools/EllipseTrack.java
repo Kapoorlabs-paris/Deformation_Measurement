@@ -60,27 +60,29 @@ public class EllipseTrack {
 			int t = entry.getValue();
 			
 			
-			percent++;
+			
 			
 			for(Map.Entry<String, Integer> entryZ : parent.AccountedZ.entrySet()){
 				
-				percent++;
 				int z = entryZ.getValue();
-		
-				System.out.println("Going" + t + z);
-				utility.ProgressBar.SetProgressBar(jpb, 100 * percent/ (parent.Accountedframes.entrySet().size() + parent.AccountedZ.entrySet().size() + 1), "Fitting ellipses and computing angles T = " + t + "/"
+				 percent++;
+				 if (parent.fourthDimensionSize!=0)
+				utility.ProgressBar.SetProgressBar(jpb, 100 * percent/ (parent.Accountedframes.entrySet().size()), "Fitting ellipses and computing angles T = " + t + "/"
 						+ parent.fourthDimensionSize + " Z = " + z + "/" + parent.thirdDimensionSize);
-		        
+				 else
+					 utility.ProgressBar.SetProgressBar(jpb, 100 * percent/ (parent.AccountedZ.entrySet().size()), "Fitting ellipses and computing angles T/Z = " 
+								 + z + "/" + parent.thirdDimensionSize);
 			
-		        
+			
 				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z , parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 				
 				RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.emptyWater, z , parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 				
+				
         		   Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z);
         		   compute.ParallelRansac();
         			
-
+        		  
 					
 			}
 			

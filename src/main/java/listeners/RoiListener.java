@@ -66,7 +66,11 @@ public class RoiListener implements ActionListener{
 
 
 		final Cursor<IntType> cursor = Views.iterable(current).localizingCursor();
-		final RandomAccess<IntType> ranacsec = Views.hyperSlice(Views.hyperSlice(parent.emptyWater, 2, z - 1), 2, t - 1).randomAccess();
+		final RandomAccess<IntType> ranacsec;
+		if(parent.originalimg.numDimensions() > 3)
+		ranacsec = Views.hyperSlice(Views.hyperSlice(parent.emptyWater, 2, z - 1), 2, t - 1).randomAccess();
+		else
+		ranacsec = Views.hyperSlice(parent.emptyWater, 2, z - 1).randomAccess();
 		while (cursor.hasNext()) {
 
 			cursor.fwd();
@@ -92,7 +96,11 @@ public class RoiListener implements ActionListener{
 		}
 
 		final Cursor<BitType> cursor = Views.iterable(current).localizingCursor();
-		final RandomAccess<BitType> ranacsec = Views.hyperSlice(Views.hyperSlice(parent.empty, 2, z - 1), 2, t - 1).randomAccess();
+		final RandomAccess<BitType> ranacsec;
+		if (parent.originalimg.numDimensions() >3)
+		ranacsec = Views.hyperSlice(Views.hyperSlice(parent.empty, 2, z - 1), 2, t - 1).randomAccess();
+		else
+		ranacsec = Views.hyperSlice(parent.empty, 2, z - 1).randomAccess();
 		while (cursor.hasNext()) {
 
 			cursor.fwd();
