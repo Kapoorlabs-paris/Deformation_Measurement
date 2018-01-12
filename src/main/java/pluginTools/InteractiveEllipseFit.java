@@ -14,6 +14,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Label;
+import java.awt.Rectangle;
 import java.awt.Scrollbar;
 import java.awt.TextField;
 import java.awt.event.KeyListener;
@@ -83,6 +84,7 @@ import listeners.MaxTryListener;
 import listeners.MinpercentListener;
 import listeners.OutsideCutoffListener;
 import listeners.RListener;
+import listeners.RedoListener;
 import listeners.RoiListener;
 import listeners.SaveListener;
 import listeners.SaverDirectory;
@@ -207,7 +209,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public double maxdistance = 10;
 	ImageStack prestack;
 	public MouseAdapter mouseadapter;
-
+    public Rectangle rect;
 	public int[] Clickedpoints;
 	public int starttime;
 	public int endtime;
@@ -227,7 +229,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public RandomAccessibleInterval<IntType> emptyWater;
 
 	public static enum ValueChange {
-		ROI, ALL, THIRDDIMmouse, FOURTHDIMmouse, DISPLAYROI, RADIUS, INSIDE, OUTSIDE, RESULT
+		ROI, ALL, THIRDDIMmouse, FOURTHDIMmouse, DISPLAYROI, RADIUS, INSIDE, OUTSIDE, RESULT, RectRoi
 	}
 
 	public void setTime(final int value) {
@@ -380,6 +382,31 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 		if (roimanager == null) {
 			roimanager = new RoiManager();
+		}
+		
+		if (change == ValueChange.RectRoi) {
+			RoiManager roim = RoiManager.getInstance();
+			Roi[] allrois = roim.getRoisAsArray();
+			
+			for(int i = 0; i < allrois.length; ++i) {
+				
+				if (allrois[i].getType() == Roi.RECTANGLE) {
+					
+					imp.setRoi(allrois[i]);
+					rect = imp.getRoi().getBounds();
+				}
+				
+				else {
+					
+					rect = new Rectangle(0, 0, (int) originalimg.dimension(0),
+							(int) originalimg.dimension(1));
+					imp.setRoi(rect);
+				}
+				
+			}
+			
+			System.out.println(rect.x);
+			
 		}
 
 		//
@@ -542,6 +569,15 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		compute.execute();
 
 	}
+	
+	
+	public void StartComputingCurrent(){
+	
+		ComputeAnglesCurrent compute = new ComputeAnglesCurrent(this, jpb);
+
+		compute.execute();
+	
+	}	
 
 	public void Display() {
 
@@ -900,6 +936,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public JButton DisplayRoibutton = new JButton("Display roi selection");
 	public JButton Anglebutton = new JButton("Intersection points and angles");
 	public JButton Savebutton = new JButton("Save Track");
+	public JButton Redobutton = new JButton("Recompute for current view");
 
 	public Label timeText = new Label("Current T = " + 1, Label.CENTER);
 	public Label zText = new Label("Current Z = " + 1, Label.CENTER);
@@ -1098,6 +1135,10 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 		Angleselect.add(Anglebutton, new GridBagConstraints(0, 8, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		
+		Angleselect.add(Redobutton, new GridBagConstraints(0, 9, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		
 		Angleselect.setBorder(ellipsetools);
 		Angleselect.setMinimumSize(new Dimension(SizeX, SizeY));
 		panelFirst.add(Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
@@ -1170,6 +1211,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 				outsideCutoffmin, outsideCutoffmax, scrollbarSize, outsideslider));
 
 		Anglebutton.addActionListener(new AngleListener(this));
+		Redobutton.addActionListener(new RedoListener(this));
 		Roibutton.addActionListener(new RoiListener(this));
 		inputFieldZ.addTextListener(new ZlocListener(this, false));
 		inputFieldT.addTextListener(new TlocListener(this, false));

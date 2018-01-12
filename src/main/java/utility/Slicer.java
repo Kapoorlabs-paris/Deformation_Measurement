@@ -1,5 +1,6 @@
 package utility;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import ij.gui.Roi;
@@ -119,6 +120,83 @@ public class Slicer {
 		}
 		
 		return totalimg;
+
+	}
+	
+	
+	public static  RandomAccessibleInterval<BitType> getCurrentViewBitRectangle(RandomAccessibleInterval<BitType> originalimg, int thirdDimension, int thirdDimensionSize, int fourthDimension, int fourthDimensionSize, Rectangle rect) {
+
+		final BitType type = originalimg.randomAccess().get().createVariable();
+		long[] dim = { originalimg.dimension(0), originalimg.dimension(1) };
+		final ImgFactory<BitType> factory = net.imglib2.util.Util.getArrayOrCellImgFactory(originalimg, type);
+		RandomAccessibleInterval<BitType> totalimg = factory.create(dim, type);
+
+     long maxY = (long)rect.getMaxY();
+	 long maxX = (long)rect.getMaxY();
+	 long minY = (long)rect.getMinY();
+	 long minX = (long)rect.getMinX();
+	 
+		if (thirdDimensionSize == 0) {
+
+			totalimg = originalimg;
+		}
+
+		if (thirdDimensionSize > 0 && fourthDimensionSize == 0) {
+
+			totalimg = Views.hyperSlice(originalimg, 2, thirdDimension - 1);
+
+		}
+		
+		if (fourthDimensionSize > 0) {
+			
+			RandomAccessibleInterval<BitType> pretotalimg = Views.hyperSlice(originalimg, 2, thirdDimension - 1);
+			
+			totalimg = Views.hyperSlice(pretotalimg, 2, fourthDimension - 1);
+		}
+		
+		  RandomAccessibleInterval< BitType > view =
+	                Views.interval( totalimg, new long[] { minX, minY }, new long[]{ maxX, maxY } );
+		
+		
+		return view;
+
+	}
+	
+	public static  RandomAccessibleInterval<IntType> getCurrentViewIntRectangle(RandomAccessibleInterval<IntType> originalimg, int thirdDimension, int thirdDimensionSize, int fourthDimension, int fourthDimensionSize, Rectangle rect) {
+
+		final IntType type = originalimg.randomAccess().get().createVariable();
+		long[] dim = { originalimg.dimension(0), originalimg.dimension(1) };
+		final ImgFactory<IntType> factory = net.imglib2.util.Util.getArrayOrCellImgFactory(originalimg, type);
+		RandomAccessibleInterval<IntType> totalimg = factory.create(dim, type);
+           
+		     long maxY = (long)rect.getMaxY();
+			 long maxX = (long)rect.getMaxY();
+			 long minY = (long)rect.getMinY();
+			 long minX = (long)rect.getMinX();
+		
+		if (thirdDimensionSize == 0) {
+
+			totalimg = originalimg;
+		}
+
+		if (thirdDimensionSize > 0 && fourthDimensionSize == 0) {
+
+			totalimg = Views.hyperSlice(originalimg, 2, thirdDimension - 1);
+
+		}
+		
+		if (fourthDimensionSize > 0) {
+			
+			RandomAccessibleInterval<IntType> pretotalimg = Views.hyperSlice(originalimg, 2, thirdDimension - 1);
+			
+			totalimg = Views.hyperSlice(pretotalimg, 2, fourthDimension - 1);
+		}
+		
+		 RandomAccessibleInterval< IntType > view =
+	                Views.interval( totalimg, new long[] { minX, minY }, new long[]{ maxX, maxY } );
+		
+		
+		return view;
 
 	}
 	

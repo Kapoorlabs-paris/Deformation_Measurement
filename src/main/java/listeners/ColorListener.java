@@ -29,22 +29,18 @@ public class ColorListener implements ActionListener {
 		if (selectedindex == 0) {
 
 			parent.colorChange = Color.GRAY;
-			System.out.println(selectedindex + " " + parent.colorChange) ;
 		}
 		if (selectedindex == 1) {
 
 			parent.colorChange = Color.RED;
-			System.out.println(selectedindex + " " + parent.colorChange) ;
 		}
 		if (selectedindex == 2) {
 
 			parent.colorChange = Color.BLUE;
-			System.out.println(selectedindex + " " + parent.colorChange) ;
 		}
 		if (selectedindex == 3) {
 
 			parent.colorChange = Color.PINK;
-			System.out.println(selectedindex + " " + parent.colorChange) ;
 		}
 	
 		
