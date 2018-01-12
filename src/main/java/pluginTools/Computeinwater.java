@@ -65,14 +65,12 @@ public class Computeinwater   {
 			ArrayList<Intersectionobject> Allintersection = new ArrayList<Intersectionobject>();
 
 			ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
-		for (int label = 1; label< parent.maxlabel; ++label) {
+		     for (int label = 1; label< parent.maxlabel; ++label) {
+			
 			 RandomAccessibleInterval<BitType> ActualRoiimg = CurrentLabelImage(CurrentViewInt, CurrentView, label);
 			 
 			 List<Pair<RealLocalizable, BitType>> truths =  new ArrayList<Pair<RealLocalizable, BitType>>();
-			tasks.add(Executors.callable(new LabelRansac(parent, ActualRoiimg, truths, t, z, resultroi, resultovalroi, resultlineroi,AllPointsofIntersect,Allintersection,fitmapspecial )));
-			
-			
-			
+			 tasks.add(Executors.callable(new LabelRansac(parent, ActualRoiimg, truths, t, z, resultroi, resultovalroi, resultlineroi,AllPointsofIntersect,Allintersection,fitmapspecial )));
 			
 			
 		}
@@ -80,7 +78,8 @@ public class Computeinwater   {
 			taskExecutor.invokeAll(tasks);
 			
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
+
+		
 		}
 		
 		

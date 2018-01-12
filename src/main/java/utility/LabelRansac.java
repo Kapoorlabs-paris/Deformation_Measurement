@@ -81,7 +81,6 @@ public class LabelRansac implements Runnable {
 				Reducedsamples.remove(Reducedsamples.get(i));
 
 		}
-		System.out.println("Red" + Reducedsamples.size());
 
 		for (int i = 0; i < Reducedsamples.size(); ++i) {
 
@@ -116,7 +115,6 @@ public class LabelRansac implements Runnable {
 			}
 		}
 
-		System.out.println(fitmapspecial.size());
 
 		for(int i = 0; i< fitmapspecial.size(); ++i) {
 
@@ -124,7 +122,7 @@ public class LabelRansac implements Runnable {
 
 		
 
-				ArrayList<double[]> pos = Intersections.PointsofIntersection(ellipsepair, 1);
+				ArrayList<double[]> pos = Intersections.PointsofIntersection(ellipsepair);
 
 				Tangentobject PointsIntersect = new Tangentobject(pos, ellipsepair, t, z);
 
@@ -168,7 +166,6 @@ public class LabelRansac implements Runnable {
 		
 
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
-System.out.println("T inside" + t);
 		if (parent.ALLIntersections.get(uniqueID) == null) {
 
 			parent.ALLIntersections.put(uniqueID, Allintersection);

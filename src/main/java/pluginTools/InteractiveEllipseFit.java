@@ -73,6 +73,7 @@ import ij.plugin.PlugIn;
 import ij.plugin.frame.RoiManager;
 import ij.process.ColorProcessor;
 import listeners.AngleListener;
+import listeners.ColorListener;
 import listeners.DisplayRoiListener;
 import listeners.DrawListener;
 import listeners.EllipseNonStandardMouseListener;
@@ -765,7 +766,6 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	}
 
 	public void mark() {
-
 		if (ml != null)
 			imp.getCanvas().removeMouseMotionListener(ml);
 		imp.getCanvas().addMouseMotionListener(ml = new MouseMotionListener() {
@@ -904,7 +904,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public Label timeText = new Label("Current T = " + 1, Label.CENTER);
 	public Label zText = new Label("Current Z = " + 1, Label.CENTER);
 	public Label zgenText = new Label("Current Z / T = " + 1, Label.CENTER);
-	final Label rText = new Label("Left Click selects a Roi");
+	final Label rText = new Label("Alt+Left Click selects a Roi");
 	final Label contText = new Label("After making all roi selections");
 	final Label insideText = new Label("Cutoff distance for points belonging to ellipse = " + insideCutoff,
 			Label.CENTER);
@@ -1068,6 +1068,9 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 		Roiselect.add(ChooseMethod, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		Roiselect.add(ChooseColor, new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		
 		Roiselect.add(Roibutton, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
@@ -1176,6 +1179,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		inputField.addTextListener(new FilenameListener(this));
 		Savebutton.addActionListener(new SaveListener(this));
 		ChooseMethod.addActionListener(new DrawListener(this, ChooseMethod));
+		ChooseColor.addActionListener(new ColorListener(this, ChooseColor));
 		panelFirst.setMinimumSize(new Dimension(SizeX, SizeY));
 
 		panelFirst.setVisible(true);
