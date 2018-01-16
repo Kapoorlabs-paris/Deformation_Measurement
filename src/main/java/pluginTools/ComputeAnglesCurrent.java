@@ -54,12 +54,8 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 	protected Void doInBackground() throws Exception {
 	
 		
-		HashMap<String, Integer> map = sortByValues(parent.Accountedframes);
-		parent.Accountedframes = map;
+		parent.Tracklist.clear();
 		
-		
-		HashMap<String, Integer> mapZ = sortByValues(parent.AccountedZ);
-		parent.AccountedZ = mapZ;
 		
 		EllipseTrack newtrack = new EllipseTrack(parent, jpb);
 		newtrack.IntersectandTrackCurrent();
@@ -99,14 +95,22 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 	
 		if (parent.ndims > 3){
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
+		
+		
+        		
+		
 		while (itZ.hasNext()) {
 
 		int	z = itZ.next().getValue();
-			
+	
+		
 		NearestNeighbourSearch NNsearch = new NearestNeighbourSearch(parent.ALLIntersections, z,
 				(int)parent.fourthDimensionSize, parent.maxdistance, parent.Accountedframes);
 		NNsearch.process();
 		parent.parentgraphZ.put(Integer.toString(z), NNsearch.getResult());
+		
+		
+		
 		}
 		Lineage();
 		}

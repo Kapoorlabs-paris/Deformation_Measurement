@@ -1264,13 +1264,23 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 		// Make something happen
 		row = trackindex;
-
-
+		String ID = (String) table.getValueAt(trackindex, 0);
+		ArrayList<Pair<String, double[]>> currentresultAngle = new ArrayList<Pair<String, double[]>>();
+		for (Pair<String, double[]> currentangle : resultAngle) {
+			
+			if(ID.equals(currentangle.getA())){
+				
+				currentresultAngle.add(currentangle);
+			}
+			
+		}
 	
 
 		this.dataset.removeAllSeries();
 
-		this.dataset.addSeries(utility.ChartMaker.drawPoints(resultAngle));
+		
+		
+		this.dataset.addSeries(utility.ChartMaker.drawPoints(currentresultAngle));
 		utility.ChartMaker.setColor(chart, 0, new Color(255, 64, 64));
 		utility.ChartMaker.setStroke(chart, 0, 2f);
 		if (fourthDimensionSize > 0)
