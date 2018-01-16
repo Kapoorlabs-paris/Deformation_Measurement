@@ -7,6 +7,7 @@ import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -134,6 +135,8 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 
 	public void Lineage() {
 
+		parent.Tracklist.clear();
+		
 		for(Map.Entry<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> entryZ : parent.parentgraphZ.entrySet()){
 		
 		TrackModel model = new TrackModel(entryZ.getValue());
@@ -256,7 +259,7 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 	}
 
 	public void Lineage2D(SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> entryZ) {
-
+		parent.Tracklist.clear();
 		
 		TrackModel model = new TrackModel(entryZ);
 		
@@ -301,6 +304,9 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 			
 			model.setName(id, "Track" + id  );
 
+			
+		
+			
 			final HashSet<Intersectionobject> Angleset = model.trackIntersectionobjects(id);
 
 			Iterator<Intersectionobject> Angleiter = Angleset.iterator();
@@ -309,7 +315,7 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 			while(Angleiter.hasNext()) {
 				
 				Intersectionobject currentangle = Angleiter.next();
-				
+			
 				parent.Tracklist.add(new ValuePair<String, Intersectionobject>( Integer.toString(id) , currentangle));
 			}
 			System.out.println("In loop" + Integer.toString(id) );
@@ -365,23 +371,32 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 Object[][] rowvalues = new Object[0][colnames.length];
 
 	rowvalues = new Object[parent.Finalresult.size()][colnames.length];
+	parent.resultAngle = new ArrayList<Pair<String, double[]>>();
 
+	parent.resultAngle.clear();
+	
+	for (Pair<String, Intersectionobject> currentangle : parent.Tracklist) {
+		
+			parent.resultAngle.add(new ValuePair<String, double[]>(currentangle.getA(),
+					new double[] { currentangle.getB().t, currentangle.getB().angle }));
+
+	}
 
 	parent.table = new JTable(rowvalues, colnames);
 		parent.row = 0;
-	
+		NumberFormat f = NumberFormat.getInstance();
 		for (Map.Entry<String, Intersectionobject> entry : parent.Finalresult.entrySet()) {
 
 			Intersectionobject currentangle = entry.getValue();
 			parent.table.getModel().setValueAt(entry.getKey(),
 					parent.row, 0);
-			parent.table.getModel().setValueAt(new DecimalFormat("#.###").format(currentangle.Intersectionpoint[0]),
+			parent.table.getModel().setValueAt(f.format(currentangle.Intersectionpoint[0]),
 					parent.row, 1);
-			parent.table.getModel().setValueAt(new DecimalFormat("#.###").format(currentangle.Intersectionpoint[1]),
+			parent.table.getModel().setValueAt(f.format(currentangle.Intersectionpoint[1]),
 					parent.row, 2);
-			parent.table.getModel().setValueAt(new DecimalFormat("#.###").format(currentangle.angle), parent.row, 3);
-			parent.table.getModel().setValueAt(new DecimalFormat("#.###").format(currentangle.t), parent.row, 4);
-			parent.table.getModel().setValueAt(new DecimalFormat("#.###").format(currentangle.z), parent.row, 5);
+			parent.table.getModel().setValueAt(f.format(currentangle.angle), parent.row, 3);
+			parent.table.getModel().setValueAt(f.format(currentangle.t), parent.row, 4);
+			parent.table.getModel().setValueAt(f.format(currentangle.z), parent.row, 5);
 
 			parent.row++;
 			
@@ -389,7 +404,7 @@ Object[][] rowvalues = new Object[0][colnames.length];
 		}
 
 			parent.PanelSelectFile.removeAll();
-			parent.Original.removeAll();
+			
 			parent.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 			parent.table.setMinimumSize(new Dimension(500, 300));
@@ -408,28 +423,39 @@ Object[][] rowvalues = new Object[0][colnames.length];
 			parent.panelFirst.add(parent.PanelSelectFile, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
 			
-			parent.Original.add(parent.inputLabel,  new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0) );
-			parent.Original.add(parent.inputField,  new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0) );
-			parent.Original.add(parent.ChooseDirectory,  new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
-					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0) );
-			parent.Original.add(parent.Savebutton,  new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
-					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0) );
+			parent.Original.add(parent.inputLabel, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			
+			
+			parent.Original.add(parent.inputField, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			
+			parent.Original.add(parent.inputtrackLabel, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			
+			
+			parent.Original.add(parent.inputtrackField, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			
+			
+			parent.Original.add(parent.ChooseDirectory, new GridBagConstraints(0, 7, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			parent.Original.add(parent.Savebutton, new GridBagConstraints(0, 8, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+
 			parent.Original.setBorder(parent.origborder);
-			
-			
-			
-			parent.Original.setMinimumSize(new Dimension(parent.SizeX, parent.SizeY));
-			parent.Original.setPreferredSize(new Dimension(parent.SizeX, parent.SizeY));
+
+			parent.Original.setMinimumSize(new Dimension(parent.SizeX + 10, parent.SizeY + 10));
+			parent.Original.setPreferredSize(new Dimension(parent.SizeX + 10, parent.SizeY + 10));
 			parent.panelFirst.add(parent.Original, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 
-			parent.PanelSelectFile.repaint();
-			parent.PanelSelectFile.validate();
 			parent.Original.repaint();
 			parent.Original.validate();
+
+			parent.PanelSelectFile.repaint();
+			parent.PanelSelectFile.validate();
+	
 			parent.panelFirst.repaint();
 			parent.panelFirst.validate();
 			parent.Cardframe.repaint();

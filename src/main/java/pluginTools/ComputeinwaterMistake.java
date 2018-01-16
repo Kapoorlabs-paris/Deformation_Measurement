@@ -58,9 +58,6 @@ public class ComputeinwaterMistake   {
 		 List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
 		 
 
-		 ArrayList<EllipseRoi> resultroi = new ArrayList<EllipseRoi>();
-			ArrayList<OvalRoi> resultovalroi = new ArrayList<OvalRoi>();
-			ArrayList<Line> resultlineroi = new ArrayList<Line>();
 		 
 		     for (int label = 1; label< parent.maxlabel; ++label) {
 			

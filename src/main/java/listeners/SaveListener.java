@@ -25,11 +25,11 @@ public class SaveListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		String ID = (String) parent.table.getValueAt(parent.row, 0);
-		
+		String ID = parent.selectedID;
+		System.out.println(ID);
 		try {
 			File fichier = new File(
-					parent.usefolder + "//" + parent.addToName + "TrackID" +ID + ".txt");
+					 parent.chooserA.getSelectedFile() + "//" + parent.addToName + "TrackID" +ID + ".txt");
 
 			FileWriter fw = new FileWriter(fichier);
 			BufferedWriter bw = new BufferedWriter(fw);
@@ -40,8 +40,8 @@ public class SaveListener implements ActionListener {
 		for (int index = 0; index< parent.resultAngle.size(); ++index) {
 			
 			
-			if (ID == parent.resultAngle.get(index).getA() ) {
-				
+			if (ID.equals(parent.resultAngle.get(index).getA() )) {
+				System.out.print("Now I am saving");
 				
 				// Save result sin file
 			

@@ -24,6 +24,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -90,6 +91,7 @@ import listeners.SaveListener;
 import listeners.SaverDirectory;
 import listeners.TimeListener;
 import listeners.TlocListener;
+import listeners.TrackidListener;
 import listeners.ZListener;
 import listeners.ZlocListener;
 import mpicbg.imglib.util.Util;
@@ -139,7 +141,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public float minpercentINI = 0.65f;
 	public float minpercentINIArc = 0.25f;
 	public final double minSeperation = 5;
-
+    public String selectedID;
 	public float insideCutoff = 5;
 	public float outsideCutoff = 5;
 
@@ -847,17 +849,22 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 				double distmin = Double.MAX_VALUE;
 				if (tablesize > 0) {
-
+					NumberFormat f = NumberFormat.getInstance();
 					for (int row = 0; row < tablesize; ++row) {
 						String CordX = (String) table.getValueAt(row, 1);
 						String CordY = (String) table.getValueAt(row, 2);
 
 						String CordZ = (String) table.getValueAt(row, 5);
 
-						double dCordX = Double.parseDouble(CordX);
-						double dCordY = Double.parseDouble(CordY);
-						double dCordZ = Double.parseDouble(CordZ);
-
+						double dCordX = 0, dCordZ = 0, dCordY = 0;
+						try {
+							dCordX = f.parse(CordX).doubleValue();
+						
+						dCordY = f.parse(CordY).doubleValue();
+						dCordZ = f.parse(CordZ).doubleValue();
+						} catch (ParseException e1) {
+							
+						}
 						double dist = Distance.DistanceSq(new double[] { dCordX, dCordY }, new double[] { x, y });
 						if (Distance.DistanceSq(new double[] { dCordX, dCordY }, new double[] { x, y }) < distmin
 								&& thirdDimension == (int) dCordZ && ndims > 3) {
@@ -919,7 +926,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public JPanel Roiselect = new JPanel();
 	public JPanel Angleselect = new JPanel();
 
-	public TextField inputFieldT;
+	public TextField inputFieldT, inputtrackField;
 	public TextField inputFieldZ;
 	public TextField inputFieldmaxtry;
 	public TextField inputFieldminpercent;
@@ -927,7 +934,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 	public Label inputLabelmaxellipse;
 	public Label inputLabelminpercent;
-	public Label inputLabelIter;
+	public Label inputLabelIter, inputtrackLabel;
 	public JPanel Original = new JPanel();
 	public int SizeX = 400;
 	public int SizeY = 200;
@@ -1007,6 +1014,9 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		inputFieldT = new TextField(5);
 		inputFieldT.setText(Integer.toString(fourthDimension));
 
+		inputtrackField = new TextField();
+		inputtrackField = new TextField(5);
+		
 		inputFieldIter = new TextField();
 		inputFieldIter = new TextField(5);
 		inputFieldIter.setText(Integer.toString(maxtry));
@@ -1022,7 +1032,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		ChooseColor = new JComboBox<String>(DrawColor);
 
 		inputLabelmaxellipse = new Label("Max. number of ellipses");
-
+        inputtrackLabel = new Label("Enter trackID to save");
 		inputFieldminpercent = new TextField();
 		inputFieldminpercent = new TextField(5);
 		inputFieldminpercent.setText(Float.toString(minpercent));
@@ -1180,17 +1190,32 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 		Original.add(inputLabel, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		
+		
 		Original.add(inputField, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-		Original.add(ChooseDirectory, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
+		
+		Original.add(inputtrackLabel, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-		Original.add(Savebutton, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
+		
+		
+		Original.add(inputtrackField, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		
+		
+		Original.add(ChooseDirectory, new GridBagConstraints(0, 7, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		Original.add(Savebutton, new GridBagConstraints(0, 8, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 
 		Original.setBorder(origborder);
 
-		Original.setMinimumSize(new Dimension(SizeX, SizeY));
-		Original.setPreferredSize(new Dimension(SizeX, SizeY));
+		Original.setMinimumSize(new Dimension(SizeX + 10, SizeY + 10));
+		Original.setPreferredSize(new Dimension(SizeX + 10, SizeY + 10));
+		inputField.setEnabled(false);
+		inputtrackField.setEnabled(false);
+		ChooseDirectory.setEnabled(false);
+		Savebutton.setEnabled(false);
 		panelFirst.add(Original, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
@@ -1215,6 +1240,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		Roibutton.addActionListener(new RoiListener(this));
 		inputFieldZ.addTextListener(new ZlocListener(this, false));
 		inputFieldT.addTextListener(new TlocListener(this, false));
+		inputtrackField.addTextListener(new TrackidListener(this));
 		inputFieldminpercent.addTextListener(new MinpercentListener(this));
 		inputFieldIter.addTextListener(new MaxTryListener(this));
 		ChooseDirectory.addActionListener(new SaverDirectory(this));
@@ -1239,17 +1265,8 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		// Make something happen
 		row = trackindex;
 
-		String ID = (String) table.getValueAt(trackindex, 0);
 
-		resultAngle = new ArrayList<Pair<String, double[]>>();
-
-		for (Pair<String, Intersectionobject> currentangle : Tracklist) {
-
-			if (ID.equals(currentangle.getA()))
-				resultAngle.add(new ValuePair<String, double[]>(ID,
-						new double[] { currentangle.getB().t, currentangle.getB().angle }));
-
-		}
+	
 
 		this.dataset.removeAllSeries();
 
