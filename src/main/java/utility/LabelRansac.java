@@ -135,25 +135,23 @@ public class LabelRansac implements Runnable {
 					resultovalroi.add(intersectionsRoi);
 
 					double[] lineparamA = Tangent2D.GetTangent(ellipsepair.getA(), pos.get(j));
-					Line newlineA = DisplayasROI.create2DLine(lineparamA, pos.get(j));
-					newlineA.setStrokeColor(parent.colorLineA);
-					newlineA.setStrokeWidth(2);
-					resultlineroi.add(newlineA);
+					
 
 					double[] lineparamB = Tangent2D.GetTangent(ellipsepair.getB(), pos.get(j));
-					Line newlineB = DisplayasROI.create2DLine(lineparamB, pos.get(j));
-					newlineB.setStrokeColor(parent.colorLineB);
-					newlineB.setStrokeWidth(2);
-					resultlineroi.add(newlineB);
+				
 
-					double angle = Tangent2D.GetAngle(lineparamA, lineparamB);
+					Angleobject angleobject = Tangent2D.GetTriAngle(lineparamA, lineparamB, pos.get(j), ellipsepair);
+							resultlineroi.add(angleobject.lineA);
+							resultlineroi.add(angleobject.lineB);
+							//GetAngle(lineparamA, lineparamB);
+							//GetTriAngle(lineparamA, lineparamB, pos.get(j), ellipsepair);
 
-					Intersectionobject currentintersection = new Intersectionobject(pos.get(j), angle, ellipsepair, t,
+					Intersectionobject currentintersection = new Intersectionobject(pos.get(j), angleobject.angle, ellipsepair, t,
 							z);
 
 					Allintersection.add(currentintersection);
 
-					System.out.println(angle + " " + pos.get(j)[0]);
+					System.out.println("Angle: " + angleobject.angle + " " + pos.get(j)[0]);
 
 				}
 

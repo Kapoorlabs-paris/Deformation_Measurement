@@ -446,7 +446,6 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 				}
 
 			}
-			System.out.println(resultlist.size());
 			resultDraw.put(ID, resultlist);
 
 			resultimp = ImageJFunctions.show(Slicer.getCurrentViewLarge(originalimg, thirdDimension));
