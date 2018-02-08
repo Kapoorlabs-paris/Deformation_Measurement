@@ -7,12 +7,16 @@ import java.util.ArrayList;
 import distanceTransform.WatershedBinary;
 import ij.gui.Roi;
 import net.imglib2.Cursor;
+import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
+import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.Type;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
+import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import pluginTools.InteractiveEllipseFit;
 import pluginTools.InteractiveEllipseFit.ValueChange;
@@ -83,6 +87,57 @@ public class RoiListener implements ActionListener{
 		}
 	}
 	
+	private void CreateBinary(RandomAccessibleInterval<FloatType> source, RandomAccessibleInterval<BitType> sourcebit, double lowprob, double highprob) {
+		
+		
+		RandomAccessibleInterval<FloatType> copyoriginal = new ArrayImgFactory<FloatType>().create(source, new FloatType());
+		
+		final RandomAccess<FloatType> ranac =  copyoriginal.randomAccess();
+		final RandomAccess<BitType> bitranac = sourcebit.randomAccess();
+		final Cursor<FloatType> cursor = Views.iterable(source).localizingCursor();
+		
+		while(cursor.hasNext()) {
+			
+			cursor.fwd();
+			
+			ranac.setPosition(cursor);
+			bitranac.setPosition(cursor);
+			if(cursor.get().getRealDouble() < lowprob && cursor.get().getRealDouble() > highprob) {
+				ranac.get().set(0);
+			    bitranac.get().setZero();	
+			}
+			else {
+				ranac.get().set(ranac.get());
+			    bitranac.get().setOne();
+			}
+			
+			
+		}
+		
+		
+		copy(copyoriginal, Views.iterable(source));
+		
+	}
+	 public < T extends Type< T > > void copy( final RandomAccessibleInterval< T > source,
+		        final IterableInterval< T > target )
+		    {
+		        // create a cursor that automatically localizes itself on every move
+		        Cursor< T > targetCursor = target.localizingCursor();
+		        RandomAccess< T > sourceRandomAccess = source.randomAccess();
+		 
+		        // iterate over the input cursor
+		        while ( targetCursor.hasNext())
+		        {
+		            // move input cursor forward
+		            targetCursor.fwd();
+		 
+		            // set the output cursor to the position of the input cursor
+		            sourceRandomAccess.setPosition( targetCursor );
+		 
+		            // set the value of this pixel of the output image, every Type supports T.set( T type )
+		            targetCursor.get().set( sourceRandomAccess.get() );
+		        }
+		    }
 	private void Slice(RandomAccessibleInterval<BitType> current, ArrayList<int[]> pointlist, int z, int t) {
 
 		final RandomAccess<BitType> ranac = current.randomAccess();

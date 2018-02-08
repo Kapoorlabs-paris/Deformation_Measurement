@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import ij.IJ;
+import ij.WindowManager;
 import pluginTools.EllipseFileChooser;
 import pluginTools.InteractiveEllipseFit;
 
@@ -21,7 +22,7 @@ public class CurrentMovieListener implements ActionListener {
 	@Override
 	public void actionPerformed(final ActionEvent arg0) {
 
-		parent.impA = IJ.getImage();
+		parent.impA = WindowManager.getCurrentImage();
 		
 		if(parent.impA!=null)
 		parent.DoneCurr(parent.Cardframe);
