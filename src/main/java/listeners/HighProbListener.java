@@ -30,7 +30,6 @@ public class HighProbListener implements AdjustmentListener {
 		
 		
 		
-		deltaScrollbar.addMouseMotionListener(new EllipseNonStandardMouseListener(parent, ValueChange.SEG));
 		deltaScrollbar.addMouseListener(new EllipseStandardMouseListener(parent, ValueChange.SEG));
 		
 		
@@ -45,7 +44,6 @@ public class HighProbListener implements AdjustmentListener {
 		.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.highprob, min, max, scrollbarSize));
 		label.setText(string +  " = "  + parent.highprob);
 		
-		System.out.println(parent.highprob);
 		parent.panelFirst.validate();
 		parent.panelFirst.repaint();
 		

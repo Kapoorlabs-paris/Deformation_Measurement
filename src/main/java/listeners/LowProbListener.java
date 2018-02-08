@@ -30,7 +30,6 @@ public class LowProbListener implements AdjustmentListener {
 		
 		
 		
-		deltaScrollbar.addMouseMotionListener(new EllipseNonStandardMouseListener(parent, ValueChange.SEG));
 		deltaScrollbar.addMouseListener(new EllipseStandardMouseListener(parent, ValueChange.SEG));
 		
 		

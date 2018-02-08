@@ -106,6 +106,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.ransac.RansacModels.DisplayasROI;
 import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
+import net.imglib2.algorithm.stats.Normalize;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.Type;
@@ -209,6 +210,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public HashMap<String, Roiobject> DefaultZTRois;
 	public HashMap<String, Roiobject> IntersectionZTRois;
 	public ImagePlus imp;
+	public ImagePlus localimp;
 	public ImagePlus resultimp;
 	public ImagePlus emptyimp;
 	public int ndims;
@@ -370,6 +372,12 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	}
 	
 	public void run(String arg0) {
+		
+	FloatType minval = new FloatType(0);
+	FloatType maxval = new FloatType(1);
+	Normalize.normalize(Views.iterable(originalimg), minval, maxval);
+		
+		
 		rtAll = new ResultsTable();
 		jpb = new JProgressBar();
 		Allrois = new ArrayList<Roi>();
@@ -503,6 +511,27 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		}
 		
 		if (change == ValueChange.SEG) {
+			RandomAccessibleInterval<FloatType> tempview = CreateBinary(CurrentView, lowprob, highprob);
+			System.out.println(localimp);
+			
+			if (localimp == null || !localimp.isVisible()) {
+				localimp = ImageJFunctions.show(tempview);
+
+			}
+			
+			else {
+
+				final float[] pixels = (float[]) localimp.getProcessor().getPixels();
+				final Cursor<FloatType> c = Views.iterable(tempview).cursor();
+
+				for (int i = 0; i < pixels.length; ++i)
+					pixels[i] = c.next().get();
+
+				localimp.updateAndDraw();
+
+			}
+
+			localimp.setTitle("Copy of Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 			
 		}
 
@@ -584,8 +613,9 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 		if (change == ValueChange.THIRDDIMmouse) {
 
-			
-			if (imp == null) {
+			if(automode)
+				updatePreview(ValueChange.SEG);
+			if (imp == null || !imp.isVisible()) {
 				imp = ImageJFunctions.show(CurrentView);
 
 			}
@@ -611,8 +641,9 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		}
 
 		if (change == ValueChange.FOURTHDIMmouse) {
-		
-			if (imp == null) {
+			if(automode)
+				updatePreview(ValueChange.SEG);
+			if (imp == null|| !imp.isVisible()) {
 				imp = ImageJFunctions.show(CurrentView);
 
 			}
@@ -663,11 +694,12 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 			cursor.fwd();
 			
 			ranac.setPosition(cursor);
-			if(cursor.get().getRealDouble() < lowprob && cursor.get().getRealDouble() > highprob) {
-				ranac.get().set(0);
+			if(cursor.get().getRealDouble() > lowprob && cursor.get().getRealDouble() < highprob) {
+				
+				ranac.get().set(cursor.get());
 			}
 			else {
-				ranac.get().set(ranac.get());
+				ranac.get().set(0);
 			}
 			
 			
