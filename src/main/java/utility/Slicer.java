@@ -3,6 +3,7 @@ package utility;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
+import ij.IJ;
 import ij.gui.Roi;
 import mpicbg.imglib.util.Util;
 import net.imglib2.Cursor;
@@ -77,11 +78,9 @@ public class Slicer {
 
 			totalimg = originalimg;
 		}
-
 		if (thirdDimensionSize > 0 && fourthDimensionSize == 0) {
 
 			totalimg = Views.hyperSlice(originalimg, 2, thirdDimension - 1);
-
 		}
 		
 		if (fourthDimensionSize > 0) {
@@ -90,6 +89,7 @@ public class Slicer {
 			
 			totalimg = Views.hyperSlice(pretotalimg, 2, fourthDimension - 1);
 		}
+	
 		return totalimg;
 
 	}

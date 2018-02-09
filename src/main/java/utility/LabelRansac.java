@@ -68,6 +68,7 @@ public class LabelRansac implements Runnable {
 		ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> Reducedsamples = RansacEllipsoid.Allsamples(
 				truths, parent.outsideCutoff, parent.insideCutoff, parent.minpercent, numsol, parent.maxtry, ndims);
 
+		if(Reducedsamples!=null) {
 		SortSegments.Sort(Reducedsamples);
 		for (int i = 0; i < Reducedsamples.size() - 1; ++i) {
 
@@ -191,5 +192,7 @@ public class LabelRansac implements Runnable {
 		}
 
 	}
-
+		else return;
+	}
+	
 }

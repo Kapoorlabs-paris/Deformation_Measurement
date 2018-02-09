@@ -512,9 +512,8 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		
 		if (change == ValueChange.SEG) {
 			RandomAccessibleInterval<FloatType> tempview = CreateBinary(CurrentView, lowprob, highprob);
-			System.out.println(localimp);
 			
-			if (localimp == null || !localimp.isVisible()) {
+			if (localimp == null || !localimp.isVisible() && automode) {
 				localimp = ImageJFunctions.show(tempview);
 
 			}
@@ -544,7 +543,6 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 			for (Pair<String, Intersectionobject> currentangle : Tracklist) {
 
 				if (ID.equals(currentangle.getA())) {
-					System.out.println(ID + " " + currentangle.getA());
 					resultlist.add(new double[] { currentangle.getB().t, currentangle.getB().z,
 							currentangle.getB().Intersectionpoint[0], currentangle.getB().Intersectionpoint[1] });
 
@@ -554,6 +552,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 			resultDraw.put(ID, resultlist);
 
 			resultimp = ImageJFunctions.show(Slicer.getCurrentViewLarge(originalimg, thirdDimension));
+			if(originalimg.numDimensions() > 3) {
 			for (int time = 1; time <= fourthDimensionSize; ++time)
 				prestack.addSlice(resultimp.getImageStack().getProcessor(time).convertToRGB());
 
@@ -584,7 +583,40 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 					prestack.setPixels(cp.getPixels(), time);
 
 			}
+			}
+			
+			else {
+				for (int time = 1; time <= thirdDimensionSize; ++time)
+					prestack.addSlice(resultimp.getImageStack().getProcessor(time).convertToRGB());
 
+				for (double[] current : resultDraw.get(ID)) {
+					Overlay resultoverlay = new Overlay();
+					int Z = (int) current[1];
+					double IntersectionX = current[2];
+					double IntersectionY = current[3];
+					int radius = 3;
+					ShowResultView showcurrent = new ShowResultView(this, Z);
+					showcurrent.shownew();
+
+					cp = (ColorProcessor) (prestack.getProcessor(Z).duplicate());
+					cp.reset();
+
+					resultimp.setOverlay(resultoverlay);
+
+					OvalRoi selectedRoi = new OvalRoi(Util.round(IntersectionX - radius),
+							Util.round(IntersectionY - radius), Util.round(2 * radius), Util.round(2 * radius));
+					resultoverlay.add(selectedRoi);
+
+					cp.setColor(colorresult);
+					cp.setLineWidth(4);
+					cp.draw(selectedRoi);
+
+					if (prestack != null)
+						prestack.setPixels(cp.getPixels(), Z);
+
+				}
+				
+			}
 			new ImagePlus("Overlays", prestack).show();
 			resultimp.close();
 
@@ -1482,7 +1514,6 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		this.dataset.addSeries(utility.ChartMaker.drawPoints(currentresultAngle));
 		utility.ChartMaker.setColor(chart, 0, new Color(255, 64, 64));
 		utility.ChartMaker.setStroke(chart, 0, 2f);
-		if (fourthDimensionSize > 0)
 			updatePreview(ValueChange.RESULT);
 
 	}

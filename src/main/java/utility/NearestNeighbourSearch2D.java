@@ -50,7 +50,6 @@ public class NearestNeighbourSearch2D implements IntersectionTracker {
 		while (it.hasNext()) {
 
 			int t = it.next().getValue();
-
 			while (it.hasNext()) {
 				int nextt = it.next().getValue();
 			String uniqueID =  Integer.toString(t) + Integer.toString(1);
@@ -59,7 +58,6 @@ public class NearestNeighbourSearch2D implements IntersectionTracker {
 			ArrayList<Intersectionobject> baseobject = ALLIntersections.get(uniqueID);
 			ArrayList<Intersectionobject> targetobject = ALLIntersections.get(uniqueIDnext);
 			
-		System.out.println(t + " " + nextt + " " + targetobject.size() );
 			
 			if(targetobject!=null && targetobject.size() > 0) {
 
@@ -79,7 +77,6 @@ public class NearestNeighbourSearch2D implements IntersectionTracker {
 
 
 			}
-			System.out.println(t + " " + nextt + " " + targetobject.size() + " " + targetCoords.size() + " " + targetNodes.size() );
 			if (targetNodes.size() > 0 && targetCoords.size() > 0) {
 
 				final KDTree<FlagNode<Intersectionobject>> Tree = new KDTree<FlagNode<Intersectionobject>>(targetNodes,
@@ -96,8 +93,7 @@ public class NearestNeighbourSearch2D implements IntersectionTracker {
 						Search.search(sourceCoords);
 						final double squareDist = Search.getSquareDistance();
 						final FlagNode<Intersectionobject> targetNode = Search.getSampler().get();
-						if (squareDist > maxdistance)
-							continue;
+						
 
 						targetNode.setVisited(true);
 

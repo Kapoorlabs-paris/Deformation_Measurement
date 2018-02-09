@@ -17,7 +17,13 @@ final int Z;
 		this.Z = Z;
 		
 	}
-	
+public ShowResultView(final InteractiveEllipseFit parent, final int Z) {
+		
+		this.parent = parent;
+		this.time = 0;
+		this.Z = Z;
+		
+	}
 	
 	public void shownew() {
 
@@ -31,6 +37,6 @@ final int Z;
 		
 	}
 	
-	
+
 	
 }
