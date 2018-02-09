@@ -99,7 +99,7 @@ public class EllipseTrack {
 				
 				for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
 					
-					
+					percent++;
 			    utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.thirdDimensionSize),
 							"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
 				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
@@ -112,7 +112,7 @@ public class EllipseTrack {
 				parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
 				Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, 0, z);
 				compute.ParallelRansac();
-					
+					System.out.println(z);
 					
 					
 				}
@@ -217,6 +217,66 @@ public class EllipseTrack {
 
 		int z = parent.thirdDimension;
 		int t = parent.fourthDimension;
+if(parent.automode) {
+			
+			if(parent.originalimg.numDimensions() > 3) {
+				
+					
+						
+						percent++;
+							utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
+									"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize
+											+ " Z = " + z + "/" + parent.thirdDimensionSize);
+				
+
+							
+							
+						RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
+								parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+
+						WatershedBinary segmentimage = new WatershedBinary(CurrentView);
+						segmentimage.process();
+					
+						
+						RandomAccessibleInterval<IntType> CurrentViewInt = segmentimage.getResult();
+						
+						parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
+						Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z);
+						compute.ParallelRansac();
+						
+						
+			
+			
+		}
+			
+
+			else {
+				
+					
+					percent++;
+			    utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.thirdDimensionSize),
+							"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
+				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
+						parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
+				WatershedBinary segmentimage = new WatershedBinary(CurrentView);
+				segmentimage.process();
+			
+				
+				RandomAccessibleInterval<IntType> CurrentViewInt = segmentimage.getResult();
+				parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
+				Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, 0, z);
+				compute.ParallelRansac();
+					System.out.println(z);
+					
+					
+				
+				
+			}
+			
+		}
+		else {
+		
+		
 		if (parent.fourthDimensionSize != 0)
 			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.Accountedframes.entrySet().size()),
 					"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z
@@ -249,6 +309,7 @@ public class EllipseTrack {
 		parent.updatePreview(ValueChange.FOURTHDIMmouse);
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
 
+	}
 	}
 
 }

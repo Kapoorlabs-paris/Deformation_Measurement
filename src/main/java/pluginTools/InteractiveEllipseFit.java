@@ -487,7 +487,6 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 				
 			}
 			
-			System.out.println(rect.x);
 			
 		}
 
