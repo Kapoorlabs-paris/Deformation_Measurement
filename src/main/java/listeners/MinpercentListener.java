@@ -4,13 +4,13 @@ import java.awt.TextComponent;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 
-import pluginTools.InteractiveEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit;
 
 public class MinpercentListener implements TextListener {
 
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 
-	public MinpercentListener(final InteractiveEllipseFit parent) {
+	public MinpercentListener(final InteractiveSimpleEllipseFit parent) {
 
 		this.parent = parent;
 

@@ -10,7 +10,6 @@ import java.util.List;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
-import distanceTransform.WatershedBinary;
 import ellipsoidDetector.Intersectionobject;
 import ij.gui.Overlay;
 import ij.gui.Roi;
@@ -27,15 +26,15 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
-import pluginTools.InteractiveEllipseFit;
-import pluginTools.InteractiveEllipseFit.ValueChange;
+import pluginTools.InteractiveSimpleEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.Roiobject;
 
 public class AngleListener implements ActionListener {
 
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 
-	public AngleListener(final InteractiveEllipseFit parent) {
+	public AngleListener(final InteractiveSimpleEllipseFit parent) {
 
 		this.parent = parent;
 	}

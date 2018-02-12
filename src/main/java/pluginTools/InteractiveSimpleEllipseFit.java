@@ -117,7 +117,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
-import pluginTools.InteractiveEllipseFit.ValueChange;
+import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 
 import utility.NearestRoi;
 import utility.Roiobject;
@@ -126,7 +126,7 @@ import utility.ShowView;
 import utility.Slicer;
 import utility.TrackModel;
 
-public class InteractiveEllipseFit extends JPanel implements PlugIn {
+public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	/**
 	 * 
@@ -207,6 +207,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	public JTable table;
 	public ArrayList<Roi> Allrois;
 	public HashMap<String, Roiobject> ZTRois;
+	public HashMap<String, Roiobject> AutoZTRois;
 	public HashMap<String, Roiobject> DefaultZTRois;
 	public HashMap<String, Roiobject> IntersectionZTRois;
 	public ImagePlus imp;
@@ -318,7 +319,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 			final int scrollbarSize) {
 		return Util.round(((sigma - min) / (max - min)) * scrollbarSize);
 	}
-	public InteractiveEllipseFit() {
+	public InteractiveSimpleEllipseFit() {
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(3);
 		this.dataset = new XYSeriesCollection();
@@ -328,7 +329,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		this.automode = false;
 	}
 
-	public InteractiveEllipseFit(RandomAccessibleInterval<FloatType> originalimg, File file) {
+	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, File file) {
 		this.inputfile = file;
 		this.inputdirectory = file.getParent();
 		this.originalimg = originalimg;
@@ -342,7 +343,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		this.automode = false;
 	}
 
-	public InteractiveEllipseFit(RandomAccessibleInterval<FloatType> originalimg) {
+	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg) {
 		this.inputfile = null;
 		this.inputdirectory = null;
 		this.originalimg = originalimg;
@@ -357,7 +358,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 	}
 
 
-	public InteractiveEllipseFit(RandomAccessibleInterval<FloatType> originalimg, boolean automode) {
+	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, boolean automode) {
 		this.inputfile = null;
 		this.inputdirectory = null;
 		this.originalimg = originalimg;
@@ -382,6 +383,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 		jpb = new JProgressBar();
 		Allrois = new ArrayList<Roi>();
 		ZTRois = new HashMap<String, Roiobject>();
+		AutoZTRois = new HashMap<String, Roiobject>();
 		DefaultZTRois = new HashMap<String, Roiobject>();
 		IntersectionZTRois = new HashMap<String, Roiobject>();
 		Clickedpoints = new int[ndims];
@@ -663,10 +665,12 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 			}
 
+			if(!automode) {
 			if (ZTRois.get(uniqueID) == null)
 				DisplayDefault();
 			else
 				Display();
+			}
 			imp.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 			
 		}
@@ -691,11 +695,13 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 
 			}
 
-			if (ZTRois.get(uniqueID) == null) {
-				DisplayDefault();
-
-			} else
-				Display();
+			
+			if(!automode) {
+				if (ZTRois.get(uniqueID) == null)
+					DisplayDefault();
+				else
+					Display();
+				}
 			imp.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 
 		}
@@ -1001,7 +1007,7 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 					currentobject = ZTRois.get(uniqueID);
 
 				}
-				nearestRoiCurr = NearestRoi.getNearestRois(currentobject, loc.get(0), InteractiveEllipseFit.this);
+				nearestRoiCurr = NearestRoi.getNearestRois(currentobject, loc.get(0), InteractiveSimpleEllipseFit.this);
 
 				if (nearestRoiCurr != null) {
 					nearestRoiCurr.setStrokeColor(colorChange);
@@ -1313,7 +1319,11 @@ public class InteractiveEllipseFit extends JPanel implements PlugIn {
 			timeslider.setEnabled(false);
 			inputFieldT.setEnabled(false);
 		}
+		if (ndims < 3) {
 
+			zslider.setEnabled(false);
+			inputFieldZ.setEnabled(false);
+		}
 		
 		if(!automode) {
 		Roiselect.add(rText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,

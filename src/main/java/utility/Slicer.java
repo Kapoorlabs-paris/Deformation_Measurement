@@ -15,7 +15,7 @@ import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
-import pluginTools.InteractiveEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit;
 
 public class Slicer {
 	
@@ -201,7 +201,7 @@ public class Slicer {
 	}
 	
 	
-	public static void Slice(InteractiveEllipseFit parent, RandomAccessibleInterval<BitType> current, ArrayList<int[]> pointlist, int z, int t) {
+	public static void Slice(InteractiveSimpleEllipseFit parent, RandomAccessibleInterval<BitType> current, ArrayList<int[]> pointlist, int z, int t) {
 
 		final RandomAccess<BitType> ranac = current.randomAccess();
 		for (int[] point : pointlist) {
@@ -227,7 +227,7 @@ public class Slicer {
 		}
 	}
 
-	public static void Paint(InteractiveEllipseFit parent, RandomAccessibleInterval<BitType> current, String id, int z, int t) {
+	public static void Paint(InteractiveSimpleEllipseFit parent, RandomAccessibleInterval<BitType> current, String id, int z, int t) {
 
 		Roiobject currentobject = parent.ZTRois.get(id);
 

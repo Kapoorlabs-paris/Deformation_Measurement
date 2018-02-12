@@ -3,13 +3,13 @@ package listeners;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import pluginTools.InteractiveEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit;
 
 public class IlastikListener implements ItemListener {
 	
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 	
-	public IlastikListener(final InteractiveEllipseFit parent) {
+	public IlastikListener(final InteractiveSimpleEllipseFit parent) {
 		
 		this.parent = parent;
 	}

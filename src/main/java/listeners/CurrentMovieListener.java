@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import ij.IJ;
 import ij.WindowManager;
 import pluginTools.EllipseFileChooser;
-import pluginTools.InteractiveEllipseFit;
 
 public class CurrentMovieListener implements ActionListener {
 

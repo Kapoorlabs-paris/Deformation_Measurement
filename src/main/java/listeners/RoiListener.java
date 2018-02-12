@@ -17,18 +17,18 @@ import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
-import pluginTools.InteractiveEllipseFit;
-import pluginTools.InteractiveEllipseFit.ValueChange;
+import pluginTools.InteractiveSimpleEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import preProcessing.Otsu;
 import utility.Roiobject;
 
 public class RoiListener implements ActionListener{
 	
 	
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 	
 	
-	public RoiListener (final InteractiveEllipseFit parent) {
+	public RoiListener (final InteractiveSimpleEllipseFit parent) {
 		
 		this.parent = parent;
 	}
@@ -71,10 +71,12 @@ public class RoiListener implements ActionListener{
 
 		final Cursor<IntType> cursor = Views.iterable(current).localizingCursor();
 		final RandomAccess<IntType> ranacsec;
-		if(parent.originalimg.numDimensions() > 3)
-		ranacsec = Views.hyperSlice(Views.hyperSlice(parent.emptyWater, 2, z - 1), 2, t - 1).randomAccess();
-		else
-		ranacsec = Views.hyperSlice(parent.emptyWater, 2, z - 1).randomAccess();
+		if (parent.originalimg.numDimensions() > 3)
+			ranacsec = Views.hyperSlice(Views.hyperSlice(parent.emptyWater, 2, z - 1), 2, t - 1).randomAccess();
+		else if (parent.originalimg.numDimensions() > 2 && parent.originalimg.numDimensions() < 4 )
+			ranacsec = Views.hyperSlice(parent.emptyWater, 2, z - 1).randomAccess();
+			else
+				ranacsec = parent.emptyWater.randomAccess();
 		while (cursor.hasNext()) {
 
 			cursor.fwd();
@@ -152,10 +154,12 @@ public class RoiListener implements ActionListener{
 
 		final Cursor<BitType> cursor = Views.iterable(current).localizingCursor();
 		final RandomAccess<BitType> ranacsec;
-		if (parent.originalimg.numDimensions() >3)
+		if (parent.originalimg.numDimensions() > 3)
 		ranacsec = Views.hyperSlice(Views.hyperSlice(parent.empty, 2, z - 1), 2, t - 1).randomAccess();
-		else
+		else if (parent.originalimg.numDimensions() > 2 && parent.originalimg.numDimensions() < 4 )
 		ranacsec = Views.hyperSlice(parent.empty, 2, z - 1).randomAccess();
+		else
+			ranacsec = parent.empty.randomAccess();
 		while (cursor.hasNext()) {
 
 			cursor.fwd();

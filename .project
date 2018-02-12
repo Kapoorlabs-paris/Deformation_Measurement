@@ -3,6 +3,9 @@
 	<name>Bubbleator</name>
 	<comment></comment>
 	<projects>
+		<project>imglib2-algorithm</project>
+		<project>imglib2-roi</project>
+		<project>Preprocessing</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

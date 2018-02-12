@@ -7,12 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.swing.JProgressBar;
+
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import ellipsoidDetector.Tangentobject;
 import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
+import ij.gui.Roi;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.ransac.RansacModels.*;
@@ -21,11 +24,11 @@ import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
-import pluginTools.InteractiveEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit;
 
 public class LabelRansac implements Runnable {
 
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 	final RandomAccessibleInterval<BitType> ActualRoiimg;
 	List<Pair<RealLocalizable, BitType>> truths;
 	final int t;
@@ -37,8 +40,9 @@ public class LabelRansac implements Runnable {
 	final ArrayList<Intersectionobject> Allintersection;
 
 	final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial;
+	final JProgressBar jpb;
 
-	public LabelRansac(final InteractiveEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,
+	public LabelRansac(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,
 			List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, ArrayList<EllipseRoi> resultroi,
 			ArrayList<OvalRoi> resultovalroi, ArrayList<Line> resultlineroi,
 			final ArrayList<Tangentobject> AllPointsofIntersect, final ArrayList<Intersectionobject> Allintersection,
@@ -55,6 +59,27 @@ public class LabelRansac implements Runnable {
 		this.Allintersection = Allintersection;
 		this.AllPointsofIntersect = AllPointsofIntersect;
 		this.fitmapspecial = fitmapspecial;
+		this.jpb = null;
+	}
+
+	public LabelRansac(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,
+			List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, ArrayList<EllipseRoi> resultroi,
+			ArrayList<OvalRoi> resultovalroi, ArrayList<Line> resultlineroi,
+			final ArrayList<Tangentobject> AllPointsofIntersect, final ArrayList<Intersectionobject> Allintersection,
+			final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial, final JProgressBar jpb) {
+
+		this.parent = parent;
+		this.ActualRoiimg = ActualRoiimg;
+		this.truths = truths;
+		this.t = t;
+		this.z = z;
+		this.resultroi = resultroi;
+		this.resultovalroi = resultovalroi;
+		this.resultlineroi = resultlineroi;
+		this.Allintersection = Allintersection;
+		this.AllPointsofIntersect = AllPointsofIntersect;
+		this.fitmapspecial = fitmapspecial;
+		this.jpb = jpb;
 	}
 
 	@Override
@@ -68,60 +93,58 @@ public class LabelRansac implements Runnable {
 		ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> Reducedsamples = RansacEllipsoid.Allsamples(
 				truths, parent.outsideCutoff, parent.insideCutoff, parent.minpercent, numsol, parent.maxtry, ndims);
 
-		if(Reducedsamples!=null) {
-		SortSegments.Sort(Reducedsamples);
-		for (int i = 0; i < Reducedsamples.size() - 1; ++i) {
+		if (Reducedsamples != null) {
+			System.out.println("Reduced sample not null");
+			SortSegments.Sort(Reducedsamples);
+			for (int i = 0; i < Reducedsamples.size() - 1; ++i) {
 
-			double[] center = Reducedsamples.get(i).getA().getCenter();
+				double[] center = Reducedsamples.get(i).getA().getCenter();
 
-			double[] centernext = Reducedsamples.get(i + 1).getA().getCenter();
+				double[] centernext = Reducedsamples.get(i + 1).getA().getCenter();
 
-			double dist = Distance.DistanceSq(center, centernext);
+				double dist = Distance.DistanceSq(center, centernext);
 
-			if (dist < parent.minSeperation * parent.minSeperation)
-				Reducedsamples.remove(Reducedsamples.get(i));
+				if (dist < parent.minSeperation * parent.minSeperation)
+					Reducedsamples.remove(Reducedsamples.get(i));
 
-		}
+			}
 
-		for (int i = 0; i < Reducedsamples.size(); ++i) {
+			for (int i = 0; i < Reducedsamples.size(); ++i) {
 
-			EllipseRoi ellipse = DisplayasROI.create2DEllipse(Reducedsamples.get(i).getA().getCenter(),
-					new double[] { Reducedsamples.get(i).getA().getCovariance()[0][0],
-							Reducedsamples.get(i).getA().getCovariance()[0][1],
-							Reducedsamples.get(i).getA().getCovariance()[1][1] });
+				EllipseRoi ellipse = DisplayasROI.create2DEllipse(Reducedsamples.get(i).getA().getCenter(),
+						new double[] { Reducedsamples.get(i).getA().getCovariance()[0][0],
+								Reducedsamples.get(i).getA().getCovariance()[0][1],
+								Reducedsamples.get(i).getA().getCovariance()[1][1] });
 
-			resultroi.add(ellipse);
+				resultroi.add(ellipse);
 
-			System.out.println("Center :" + Reducedsamples.get(i).getA().getCenter()[0] + " "
-					+ Reducedsamples.get(i).getA().getCenter()[1] + " " + " Radius "
-					+ Reducedsamples.get(i).getA().getRadii()[0] + " " + Reducedsamples.get(i).getA().getRadii()[1]
-					+ "time " + "  " + t + " " + "Z" + " " + z);
+				System.out.println("Center :" + Reducedsamples.get(i).getA().getCenter()[0] + " "
+						+ Reducedsamples.get(i).getA().getCenter()[1] + " " + " Radius "
+						+ Reducedsamples.get(i).getA().getRadii()[0] + " " + Reducedsamples.get(i).getA().getRadii()[1]
+						+ "time " + "  " + t + " " + "Z" + " " + z);
 
-		}
+			}
 
-		int count = 0;
-		ArrayList<Integer> ellipsepairlist = new ArrayList<Integer>();
-		for (int i = 0; i < Reducedsamples.size(); ++i) {
+			int count = 0;
+			ArrayList<Integer> ellipsepairlist = new ArrayList<Integer>();
+			for (int i = 0; i < Reducedsamples.size(); ++i) {
 
-			for (int j = 0; j < Reducedsamples.size() - 1; ++j) {
+				for (int j = 0; j < Reducedsamples.size() - 1; ++j) {
 
-				if (j != i) {
+					if (j != i) {
 
-					ellipsepairlist.add(count);
-					fitmapspecial.add(new ValuePair<Ellipsoid, Ellipsoid>(Reducedsamples.get(i).getA(),
-							Reducedsamples.get(j).getA()));
+						ellipsepairlist.add(count);
+						fitmapspecial.add(new ValuePair<Ellipsoid, Ellipsoid>(Reducedsamples.get(i).getA(),
+								Reducedsamples.get(j).getA()));
 
-					count++;
+						count++;
+					}
 				}
 			}
-		}
 
+			for (int i = 0; i < fitmapspecial.size(); ++i) {
 
-		for(int i = 0; i< fitmapspecial.size(); ++i) {
-
-			Pair<Ellipsoid, Ellipsoid> ellipsepair = fitmapspecial.get(i);
-
-		
+				Pair<Ellipsoid, Ellipsoid> ellipsepair = fitmapspecial.get(i);
 
 				ArrayList<double[]> pos = Intersections.PointsofIntersection(ellipsepair);
 
@@ -136,19 +159,17 @@ public class LabelRansac implements Runnable {
 					resultovalroi.add(intersectionsRoi);
 
 					double[] lineparamA = Tangent2D.GetTangent(ellipsepair.getA(), pos.get(j));
-					
 
 					double[] lineparamB = Tangent2D.GetTangent(ellipsepair.getB(), pos.get(j));
-				
 
 					Angleobject angleobject = Tangent2D.GetTriAngle(lineparamA, lineparamB, pos.get(j), ellipsepair);
-							resultlineroi.add(angleobject.lineA);
-							resultlineroi.add(angleobject.lineB);
-							//GetAngle(lineparamA, lineparamB);
-							//GetTriAngle(lineparamA, lineparamB, pos.get(j), ellipsepair);
+					resultlineroi.add(angleobject.lineA);
+					resultlineroi.add(angleobject.lineB);
+					// GetAngle(lineparamA, lineparamB);
+					// GetTriAngle(lineparamA, lineparamB, pos.get(j), ellipsepair);
 
-					Intersectionobject currentintersection = new Intersectionobject(pos.get(j), angleobject.angle, ellipsepair, t,
-							z);
+					Intersectionobject currentintersection = new Intersectionobject(pos.get(j), angleobject.angle,
+							ellipsepair, t, z);
 
 					Allintersection.add(currentintersection);
 
@@ -162,37 +183,42 @@ public class LabelRansac implements Runnable {
 
 			}
 
-		
+			System.out.println("Made map" + parent.automode);
 
-		String uniqueID = Integer.toString(z) + Integer.toString(t);
-		if (parent.ALLIntersections.get(uniqueID) == null) {
+			String uniqueID = Integer.toString(z) + Integer.toString(t);
+			if (parent.ALLIntersections.get(uniqueID) == null) {
 
-			parent.ALLIntersections.put(uniqueID, Allintersection);
-		}
-
-		else {
-
-			parent.ALLIntersections.remove(uniqueID);
-			parent.ALLIntersections.put(uniqueID, Allintersection);
-		}
-
-		// Add new result rois to ZTRois
-		for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
-
-			Roiobject currentobject = entry.getValue();
-
-			if (currentobject.fourthDimension == t && currentobject.thirdDimension == z) {
-
-				currentobject.resultroi = resultroi;
-				currentobject.resultovalroi = resultovalroi;
-				currentobject.resultlineroi = resultlineroi;
-
+				parent.ALLIntersections.put(uniqueID, Allintersection);
 			}
 
-		}
+			else {
 
+				parent.ALLIntersections.remove(uniqueID);
+				parent.ALLIntersections.put(uniqueID, Allintersection);
+			}
+			
+
+				// Add new result rois to ZTRois
+				for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
+
+					Roiobject currentobject = entry.getValue();
+
+					if (currentobject.fourthDimension == t && currentobject.thirdDimension == z) {
+
+						currentobject.resultroi = resultroi;
+						currentobject.resultovalroi = resultovalroi;
+						currentobject.resultlineroi = resultlineroi;
+
+					}
+
+				}
+
+			
+
+			System.out.println("AllIntersect" + parent.ALLIntersections.size());
+
+		} else
+			return;
 	}
-		else return;
-	}
-	
+
 }

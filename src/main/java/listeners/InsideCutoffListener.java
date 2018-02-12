@@ -7,20 +7,20 @@ import java.awt.event.AdjustmentListener;
 
 import javax.swing.JScrollBar;
 
-import pluginTools.InteractiveEllipseFit;
-import pluginTools.InteractiveEllipseFit.ValueChange;
+import pluginTools.InteractiveSimpleEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.ShowView;
 
 public class InsideCutoffListener implements AdjustmentListener {
 	final Label label;
 	final String string;
-	InteractiveEllipseFit parent;
+	InteractiveSimpleEllipseFit parent;
 	final float min, max;
 	final int scrollbarSize;
 
 	final JScrollBar deltaScrollbar;
 
-	public InsideCutoffListener(final InteractiveEllipseFit parent, final Label label, final String string, final float min, final float max,
+	public InsideCutoffListener(final InteractiveSimpleEllipseFit parent, final Label label, final String string, final float min, final float max,
 			final int scrollbarSize, final JScrollBar deltaScrollbar) {
 		this.label = label;
 		this.parent = parent;

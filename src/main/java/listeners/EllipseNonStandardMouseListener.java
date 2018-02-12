@@ -3,16 +3,16 @@ package listeners;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
-import pluginTools.InteractiveEllipseFit;
-import pluginTools.InteractiveEllipseFit.ValueChange;
+import pluginTools.InteractiveSimpleEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 
 
 public class EllipseNonStandardMouseListener implements MouseMotionListener
 {
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 	final ValueChange change;
 
-	public EllipseNonStandardMouseListener( final InteractiveEllipseFit parent, final ValueChange change )
+	public EllipseNonStandardMouseListener( final InteractiveSimpleEllipseFit parent, final ValueChange change )
 	{
 		this.parent = parent;
 		this.change = change;

@@ -3,10 +3,12 @@ package pluginTools;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
 import ellipsoidDetector.Intersectionobject;
@@ -14,6 +16,7 @@ import ellipsoidDetector.Tangentobject;
 import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
+import ij.gui.Roi;
 import net.imglib2.Cursor;
 import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccess;
@@ -29,25 +32,38 @@ import net.imglib2.util.Pair;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import utility.LabelRansac;
+import utility.Roiobject;
 
 public class Computeinwater   {
 	
 	
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 	final RandomAccessibleInterval<BitType> CurrentView;
 	final RandomAccessibleInterval<IntType> CurrentViewInt;
 	final int t;
 	final int z;
-	
-	public Computeinwater (final InteractiveEllipseFit parent, final RandomAccessibleInterval<BitType> CurrentView, final RandomAccessibleInterval<IntType> CurrentViewInt, final int t, final int z ) {
+	int percent;
+	final JProgressBar jpb;	
+	public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> CurrentView, final RandomAccessibleInterval<IntType> CurrentViewInt, final int t, final int z ) {
 		
 		this.parent = parent;
 		this.CurrentView = CurrentView;
 		this.CurrentViewInt = CurrentViewInt;
 		this.t = t;
 		this.z = z;
+		this.percent = 0;
+		this.jpb = null;
 	}
-
+public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> CurrentView, final RandomAccessibleInterval<IntType> CurrentViewInt, final int t, final int z, JProgressBar jpb, int percent ) {
+		
+		this.parent = parent;
+		this.CurrentView = CurrentView;
+		this.CurrentViewInt = CurrentViewInt;
+		this.t = t;
+		this.z = z;
+		this.jpb = jpb;
+		this.percent = percent;
+	}
 
 
 	public void ParallelRansac() {
@@ -67,7 +83,9 @@ public class Computeinwater   {
 
 			ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
 		     for (int label = 1; label< parent.maxlabel; ++label) {
-			
+		    	 percent++;
+		    	 utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.maxlabel),
+							"Fitting ellipses and computing angles " );
 			 RandomAccessibleInterval<BitType> ActualRoiimg = CurrentLabelImage(CurrentViewInt, CurrentView, label);
 			 List<Pair<RealLocalizable, BitType>> truths =  new ArrayList<Pair<RealLocalizable, BitType>>();
 			 tasks.add(Executors.callable(new LabelRansac(parent, ActualRoiimg, truths, t, z, resultroi, resultovalroi, resultlineroi,AllPointsofIntersect,Allintersection,fitmapspecial )));
@@ -76,6 +94,18 @@ public class Computeinwater   {
 		}
 		try {
 			taskExecutor.invokeAll(tasks);
+			
+			if (parent.automode) {
+				System.out.println("Made map" + resultroi.size() + " " + resultovalroi.size() + " " + resultlineroi.size());
+			
+				String uniqueID = Integer.toString(z) + Integer.toString(t);
+				Roiobject currentobject = new Roiobject(resultroi,resultovalroi,resultlineroi, z, t, true);
+				System.out.println(resultroi.size());
+				parent.ZTRois.put(uniqueID, currentobject);
+				System.out.println("ZTRoi" + parent.ZTRois.size());
+
+				Display();
+			}
 			
 		} catch (InterruptedException e1) {
 
@@ -86,7 +116,63 @@ public class Computeinwater   {
 		
 		
 	}
-	
+	public void Display() {
+
+		parent.overlay.clear();
+
+		if (parent.ZTRois.size() > 0) {
+
+			for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
+
+				Roiobject currentobject = entry.getValue();
+				if (currentobject.fourthDimension == parent.fourthDimension
+						&& currentobject.thirdDimension == parent.thirdDimension) {
+
+					System.out.println("In löoop");
+					if (currentobject.resultroi != null) {
+						for (int i = 0; i < currentobject.resultroi.size(); ++i) {
+
+							EllipseRoi ellipse = currentobject.resultroi.get(i);
+							ellipse.setStrokeColor(parent.colorInChange);
+							parent.overlay.add(ellipse);
+
+						}
+
+					}
+
+					if (currentobject.resultovalroi != null) {
+						for (int i = 0; i < currentobject.resultovalroi.size(); ++i) {
+
+							OvalRoi ellipse = currentobject.resultovalroi.get(i);
+							ellipse.setStrokeColor(parent.colorDet);
+							parent.overlay.add(ellipse);
+
+						}
+
+					}
+
+					if (currentobject.resultlineroi != null) {
+						for (int i = 0; i < currentobject.resultlineroi.size(); ++i) {
+
+							Line ellipse = currentobject.resultlineroi.get(i);
+							ellipse.setStrokeColor(parent.colorLineA);
+
+							parent.overlay.add(ellipse);
+
+						}
+
+					}
+
+					break;
+				}
+
+			}
+			parent.imp.setOverlay(parent.overlay);
+			parent.imp.updateAndDraw();
+
+
+		}
+	}
 	
 	public static RandomAccessibleInterval<BitType> CurrentLabelImage(RandomAccessibleInterval<IntType> Intimg,
 			RandomAccessibleInterval<BitType> currentimg, int currentLabel) {

@@ -1,15 +1,15 @@
 package utility;
 
 import ij.IJ;
-import pluginTools.InteractiveEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit;
 
 public class ShowView {
 
 	
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 	
 	
-	public ShowView(final InteractiveEllipseFit parent) {
+	public ShowView(final InteractiveSimpleEllipseFit parent) {
 		
 		this.parent = parent;
 		

@@ -10,20 +10,20 @@ import ij.IJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.type.logic.BitType;
-import pluginTools.InteractiveEllipseFit;
-import pluginTools.InteractiveEllipseFit.ValueChange;
+import pluginTools.InteractiveSimpleEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.ShowView;
 
 public class ZListener implements AdjustmentListener {
 		final Label label;
 		final String string;
-		InteractiveEllipseFit parent;
+		InteractiveSimpleEllipseFit parent;
 		final float min, max;
 		final int scrollbarSize;
 
 		final JScrollBar deltaScrollbar;
 
-		public ZListener(final InteractiveEllipseFit parent, final Label label, final String string, final float min, final float max,
+		public ZListener(final InteractiveSimpleEllipseFit parent, final Label label, final String string, final float min, final float max,
 				final int scrollbarSize, final JScrollBar deltaScrollbar) {
 			this.label = label;
 			this.parent = parent;

@@ -22,18 +22,18 @@ import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
-import pluginTools.InteractiveEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit;
 
 public class LabelRansacMistake implements Runnable {
 
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 	final RandomAccessibleInterval<BitType> ActualRoiimg;
 	final Rectangle rect;
 	final int t;
 	final int z;
 
 
-	public LabelRansacMistake(final InteractiveEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,
+	public LabelRansacMistake(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,
 			final int t, final int z, Rectangle rect) {
 
 		this.parent = parent;

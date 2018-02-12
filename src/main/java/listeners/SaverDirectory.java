@@ -7,14 +7,14 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import ij.IJ;
-import pluginTools.InteractiveEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit;
 
 
 public class SaverDirectory implements ActionListener {
 	
-    InteractiveEllipseFit parent;
+    InteractiveSimpleEllipseFit parent;
     
-	public SaverDirectory(InteractiveEllipseFit parent) {
+	public SaverDirectory(InteractiveSimpleEllipseFit parent) {
 
 		this.parent = parent;
 

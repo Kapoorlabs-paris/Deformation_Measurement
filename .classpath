@@ -22,8 +22,8 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/imglib2-algorithm"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/imglib2-roi"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/Preprocessing"/>
+	<classpathentry kind="src" path="/imglib2-algorithm"/>
+	<classpathentry kind="src" path="/Preprocessing"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/imglib2-roi"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

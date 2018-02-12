@@ -11,7 +11,6 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import pluginTools.IlastikEllipseFileChooser;
-import pluginTools.InteractiveEllipseFit;
 
 public class ChooseProbMap implements ActionListener {
 

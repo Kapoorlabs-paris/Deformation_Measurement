@@ -7,15 +7,15 @@ import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 
 import ij.IJ;
-import pluginTools.InteractiveEllipseFit;
-import pluginTools.InteractiveEllipseFit.ValueChange;
+import pluginTools.InteractiveSimpleEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.ShowView;
 
 public class MaxTryListener implements TextListener {
 
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 
-	public MaxTryListener(final InteractiveEllipseFit parent) {
+	public MaxTryListener(final InteractiveSimpleEllipseFit parent) {
 
 		this.parent = parent;
 

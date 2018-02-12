@@ -10,17 +10,17 @@ import ij.IJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.type.logic.BitType;
-import pluginTools.InteractiveEllipseFit;
-import pluginTools.InteractiveEllipseFit.ValueChange;
+import pluginTools.InteractiveSimpleEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.ShowView;
 
 public class TlocListener implements TextListener {
 	
 	
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 	
 	boolean pressed;
-	public TlocListener(final InteractiveEllipseFit parent, final boolean pressed) {
+	public TlocListener(final InteractiveSimpleEllipseFit parent, final boolean pressed) {
 		
 		this.parent = parent;
 		this.pressed = pressed;

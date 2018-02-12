@@ -11,13 +11,13 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import ellipsoidDetector.Intersectionobject;
-import pluginTools.InteractiveEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit;
 
 public class SaveListener implements ActionListener {
 
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 
-	public SaveListener(final InteractiveEllipseFit parent) {
+	public SaveListener(final InteractiveSimpleEllipseFit parent) {
 
 		this.parent = parent;
 	}

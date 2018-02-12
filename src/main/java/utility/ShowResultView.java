@@ -1,23 +1,23 @@
 package utility;
 
 import ij.IJ;
-import pluginTools.InteractiveEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit;
 
 public class ShowResultView {
 
 	
-final InteractiveEllipseFit parent;
+final InteractiveSimpleEllipseFit parent;
 final int time;
 final int Z;
 	
-	public ShowResultView(final InteractiveEllipseFit parent, final int time, final int Z) {
+	public ShowResultView(final InteractiveSimpleEllipseFit parent, final int time, final int Z) {
 		
 		this.parent = parent;
 		this.time = time;
 		this.Z = Z;
 		
 	}
-public ShowResultView(final InteractiveEllipseFit parent, final int Z) {
+public ShowResultView(final InteractiveSimpleEllipseFit parent, final int Z) {
 		
 		this.parent = parent;
 		this.time = 0;

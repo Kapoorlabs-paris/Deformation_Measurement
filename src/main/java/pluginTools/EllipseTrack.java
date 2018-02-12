@@ -37,16 +37,16 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
-import pluginTools.InteractiveEllipseFit.ValueChange;
+import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.Roiobject;
 
 public class EllipseTrack {
 
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 	final JProgressBar jpb;
 	Pair<Boolean, String> isVisited;
 
-	public EllipseTrack(final InteractiveEllipseFit parent, final JProgressBar jpb) {
+	public EllipseTrack(final InteractiveSimpleEllipseFit parent, final JProgressBar jpb) {
 
 		this.parent = parent;
 
@@ -95,7 +95,7 @@ public class EllipseTrack {
 		}
 			
 
-			else {
+			else if (parent.originalimg.numDimensions() > 2) {
 				
 				for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
 					
@@ -119,9 +119,30 @@ public class EllipseTrack {
 				
 				
 			}
+			else {
+				int z = parent.thirdDimension;
+				int t = parent.fourthDimension;
+				percent++;
+			   
+				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
+						parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+				WatershedBinary segmentimage = new WatershedBinary(CurrentView);
+				segmentimage.process();
+				
+				RandomAccessibleInterval<IntType> CurrentViewInt = segmentimage.getResult();
+				parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
+				Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, jpb, (int)percent);
+				compute.ParallelRansac();
+				
+				System.out.println(z + " " + t);
+			}
+			
 			
 		}
 		else {
+			
+			if  (parent.originalimg.numDimensions() > 3) {
+			
 		for (Map.Entry<String, Integer> entry : parent.Accountedframes.entrySet()) {
 
 			int t = entry.getValue();
@@ -148,8 +169,63 @@ public class EllipseTrack {
 				compute.ParallelRansac();
 
 			}
+		}
+		
+		
 
 		}
+			else if (parent.originalimg.numDimensions() > 2) {
+				
+				int t =  parent.fourthDimension;
+
+				for (Map.Entry<String, Integer> entryZ : parent.AccountedZ.entrySet()) {
+
+					int z = entryZ.getValue();
+					percent++;
+					if (parent.fourthDimensionSize != 0)
+						utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.Accountedframes.entrySet().size()),
+								"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize
+										+ " Z = " + z + "/" + parent.thirdDimensionSize);
+					else
+						utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.AccountedZ.entrySet().size()),
+								"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
+
+					RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
+							parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+
+					RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.emptyWater,
+							z, parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+					parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
+					Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z);
+					compute.ParallelRansac();
+
+				}
+				
+				
+				
+			}
+			
+			
+			else {
+				
+				int z = parent.thirdDimension;
+				int t = parent.fourthDimension;
+				percent++;
+			   
+				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
+						parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+				WatershedBinary segmentimage = new WatershedBinary(CurrentView);
+				segmentimage.process();
+				
+				RandomAccessibleInterval<IntType> CurrentViewInt = segmentimage.getResult();
+				parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
+				Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, jpb, (int)percent);
+				compute.ParallelRansac();
+				
+				System.out.println(z + " " + t);
+				
+			}
+			
 		
 		}
 
@@ -250,7 +326,7 @@ if(parent.automode) {
 		}
 			
 
-			else {
+			else if (parent.originalimg.numDimensions() > 2) {
 				
 					
 					percent++;
@@ -266,11 +342,25 @@ if(parent.automode) {
 				parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
 				Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, 0, z);
 				compute.ParallelRansac();
-					System.out.println(z);
-					
 					
 				
 				
+			}
+			else {
+			
+				percent++;
+			   
+				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
+						parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+				WatershedBinary segmentimage = new WatershedBinary(CurrentView);
+				segmentimage.process();
+				
+				RandomAccessibleInterval<IntType> CurrentViewInt = segmentimage.getResult();
+				parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
+				Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, jpb, (int)percent);
+				compute.ParallelRansac();
+				
+				System.out.println(z + " " + t);
 			}
 			
 		}

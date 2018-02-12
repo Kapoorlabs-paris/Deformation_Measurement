@@ -5,8 +5,8 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JScrollBar;
 
-import pluginTools.InteractiveEllipseFit;
-import pluginTools.InteractiveEllipseFit.ValueChange;
+import pluginTools.InteractiveSimpleEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 
 
 
@@ -19,10 +19,10 @@ import pluginTools.InteractiveEllipseFit.ValueChange;
  */
 public class EllipseStandardMouseListener implements MouseListener
 {
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 	final ValueChange change;
 
-	public EllipseStandardMouseListener( final InteractiveEllipseFit parent, final ValueChange change)
+	public EllipseStandardMouseListener( final InteractiveSimpleEllipseFit parent, final ValueChange change)
 	{
 		this.parent = parent;
 		this.change = change;

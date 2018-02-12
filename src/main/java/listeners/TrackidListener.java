@@ -4,15 +4,15 @@ import java.awt.TextComponent;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 
-import pluginTools.InteractiveEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit;
 
 
 public class TrackidListener  implements TextListener {
 
 	
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 	
-	public TrackidListener(final InteractiveEllipseFit parent){
+	public TrackidListener(final InteractiveSimpleEllipseFit parent){
 		
 		this.parent = parent;
 		

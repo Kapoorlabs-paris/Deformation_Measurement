@@ -8,14 +8,14 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import ellipsoidDetector.Intersectionobject;
-import pluginTools.InteractiveEllipseFit;
-import pluginTools.InteractiveEllipseFit.ValueChange;
+import pluginTools.InteractiveSimpleEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 
 public class RedoListener implements ActionListener {
 
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 
-	public RedoListener(final InteractiveEllipseFit parent) {
+	public RedoListener(final InteractiveSimpleEllipseFit parent) {
 
 		this.parent = parent;
 	}

@@ -6,15 +6,15 @@ import java.util.ArrayList;
 
 import ellipsoidDetector.Intersectionobject;
 import net.imglib2.util.Pair;
-import pluginTools.InteractiveEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit;
 
 public class DisplayResults implements ActionListener {
 
 	
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 	final String ID;
 	
-	public DisplayResults(final InteractiveEllipseFit parent, final String ID) {
+	public DisplayResults(final InteractiveSimpleEllipseFit parent, final String ID) {
 		
 		this.parent = parent;
 		this.ID = ID;

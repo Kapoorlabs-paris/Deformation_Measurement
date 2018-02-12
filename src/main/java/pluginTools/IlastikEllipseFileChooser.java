@@ -79,7 +79,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 		    
 			RandomAccessibleInterval<FloatType> image = ImageJFunctions.convertFloat(impA);
 			WindowManager.closeAllWindows();
-			new InteractiveEllipseFit(image, true).run(null);
+			new InteractiveSimpleEllipseFit(image, true).run(null);
 			close(parent);
 			
 			

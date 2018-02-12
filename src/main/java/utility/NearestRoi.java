@@ -10,12 +10,12 @@ import ij.gui.Roi;
 
 import net.imglib2.KDTree;
 import net.imglib2.RealPoint;
-import pluginTools.InteractiveEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit;
 
 public class NearestRoi {
 
 	
-	public static Roi getNearestRois(Roiobject roi, double[] Clickedpoint, final InteractiveEllipseFit parent ) {
+	public static Roi getNearestRois(Roiobject roi, double[] Clickedpoint, final InteractiveSimpleEllipseFit parent ) {
 		
 
 		
@@ -58,7 +58,7 @@ public class NearestRoi {
 	}
 	
 	
-	public static OvalRoi getNearestIntersectionRois(Roiobject roi, double[] Clickedpoint, final InteractiveEllipseFit parent ) {
+	public static OvalRoi getNearestIntersectionRois(Roiobject roi, double[] Clickedpoint, final InteractiveSimpleEllipseFit parent ) {
 		
 
 		ArrayList<OvalRoi> Allrois = roi.resultovalroi;

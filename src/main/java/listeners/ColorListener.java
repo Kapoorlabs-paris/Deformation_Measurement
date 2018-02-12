@@ -7,14 +7,14 @@ import java.awt.event.ActionListener;
 import javax.swing.JComboBox;
 
 import ij.IJ;
-import pluginTools.InteractiveEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit;
 
 public class ColorListener implements ActionListener {
 
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 	final JComboBox<String> choice;
 
-	public ColorListener(final InteractiveEllipseFit parent, final JComboBox<String> choice) {
+	public ColorListener(final InteractiveSimpleEllipseFit parent, final JComboBox<String> choice) {
 
 		this.parent = parent;
 		this.choice = choice;

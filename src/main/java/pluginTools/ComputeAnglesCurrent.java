@@ -40,10 +40,10 @@ import utility.TrackModel;
 
 public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 	final JProgressBar jpb;
 
-	public ComputeAnglesCurrent(final InteractiveEllipseFit parent, final JProgressBar jpb) {
+	public ComputeAnglesCurrent(final InteractiveSimpleEllipseFit parent, final JProgressBar jpb) {
 
 		this.parent = parent;
 

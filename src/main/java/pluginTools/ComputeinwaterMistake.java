@@ -33,14 +33,14 @@ import utility.LabelRansacMistake;
 public class ComputeinwaterMistake   {
 	
 	
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 	
 	final RandomAccessibleInterval<BitType> CurrentView;
 	final RandomAccessibleInterval<IntType> CurrentViewInt;
 	final int t;
 	final int z;
 	
-	public ComputeinwaterMistake (final InteractiveEllipseFit parent, final RandomAccessibleInterval<BitType> CurrentView, final RandomAccessibleInterval<IntType> CurrentViewInt, final int t, final int z ) {
+	public ComputeinwaterMistake (final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> CurrentView, final RandomAccessibleInterval<IntType> CurrentViewInt, final int t, final int z ) {
 		
 		this.parent = parent;
 		this.CurrentView = CurrentView;

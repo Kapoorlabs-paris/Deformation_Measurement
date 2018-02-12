@@ -5,14 +5,14 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
 
-import pluginTools.InteractiveEllipseFit;
+import pluginTools.InteractiveSimpleEllipseFit;
 
 public class DrawListener implements ActionListener {
 	
-	final InteractiveEllipseFit parent;
+	final InteractiveSimpleEllipseFit parent;
 	final JComboBox<String> choice;
 	
-	public DrawListener(final InteractiveEllipseFit parent, final JComboBox<String> choice ) {
+	public DrawListener(final InteractiveSimpleEllipseFit parent, final JComboBox<String> choice ) {
 		
 		
 		this.parent = parent;
