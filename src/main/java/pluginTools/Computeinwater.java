@@ -87,22 +87,24 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 		    	 utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.maxlabel),
 							"Fitting ellipses and computing angles " );
 			 RandomAccessibleInterval<BitType> ActualRoiimg = CurrentLabelImage(CurrentViewInt, CurrentView, label);
+			 
+			 long size = ActualRoiimg.dimension(0) * ActualRoiimg.dimension(1);
+			 
+			 if (size > parent.maxsize * parent.maxsize) {
+			 
 			 List<Pair<RealLocalizable, BitType>> truths =  new ArrayList<Pair<RealLocalizable, BitType>>();
 			 tasks.add(Executors.callable(new LabelRansac(parent, ActualRoiimg, truths, t, z, resultroi, resultovalroi, resultlineroi,AllPointsofIntersect,Allintersection,fitmapspecial )));
-			
+			 }
 			
 		}
 		try {
 			taskExecutor.invokeAll(tasks);
 			
 			if (parent.automode) {
-				System.out.println("Made map" + resultroi.size() + " " + resultovalroi.size() + " " + resultlineroi.size());
 			
 				String uniqueID = Integer.toString(z) + Integer.toString(t);
 				Roiobject currentobject = new Roiobject(resultroi,resultovalroi,resultlineroi, z, t, true);
-				System.out.println(resultroi.size());
 				parent.ZTRois.put(uniqueID, currentobject);
-				System.out.println("ZTRoi" + parent.ZTRois.size());
 
 				Display();
 			}
@@ -128,7 +130,6 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 				if (currentobject.fourthDimension == parent.fourthDimension
 						&& currentobject.thirdDimension == parent.thirdDimension) {
 
-					System.out.println("In löoop");
 					if (currentobject.resultroi != null) {
 						for (int i = 0; i < currentobject.resultroi.size(); ++i) {
 
@@ -167,8 +168,8 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 				}
 
 			}
-			parent.imp.setOverlay(parent.overlay);
-			parent.imp.updateAndDraw();
+			parent.impOrig.setOverlay(parent.overlay);
+			parent.impOrig.updateAndDraw();
 
 
 		}

@@ -153,6 +153,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float insideCutoff = 5;
 	public float outsideCutoff = 5;
 	
+	
+	public long maxsize = 100;
+	public int span = 15;
+	
 	public float lowprob = 0f;
 	public float highprob = 1f;
 	
@@ -172,7 +176,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int thirdDimension;
 	public int thirdDimensionSize;
 	public int fourthDimensionSize;
-	public ImagePlus impA;
+	public ImagePlus impA, impOrig;
 	public boolean isDone;
 	public int MIN_SLIDER = 0;
 	public int MAX_SLIDER = 500;
@@ -190,6 +194,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public XYSeriesCollection dataset;
 	public JFreeChart chart;
 	public RandomAccessibleInterval<FloatType> originalimg;
+	public RandomAccessibleInterval<FloatType> originalimgbefore;
 	ResultsTable rtAll;
 	public File inputfile;
 	public String inputdirectory;
@@ -216,6 +221,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public ImagePlus emptyimp;
 	public int ndims;
 	public RandomAccessibleInterval<FloatType> CurrentView;
+	public RandomAccessibleInterval<FloatType> CurrentViewOrig;
 	public RandomAccessibleInterval<FloatType> CurrentResultView;
 	public Color confirmedRois = Color.BLUE;
 	public Color defaultRois = Color.YELLOW;
@@ -371,7 +377,20 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		nf.setMaximumFractionDigits(3);
 		this.automode = true;
 	}
-	
+	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,RandomAccessibleInterval<FloatType> originalimgbefore, boolean automode) {
+		this.inputfile = null;
+		this.inputdirectory = null;
+		this.originalimg = originalimg;
+		this.originalimgbefore = originalimgbefore;
+		this.ndims = originalimg.numDimensions();
+		this.dataset = new XYSeriesCollection();
+		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
+		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
+		this.jFreeChartFrame.setVisible(false);
+		nf = NumberFormat.getInstance(Locale.ENGLISH);
+		nf.setMaximumFractionDigits(3);
+		this.automode = true;
+	}
 	public void run(String arg0) {
 		
 	FloatType minval = new FloatType(0);
@@ -435,21 +454,27 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		setZ(thirdDimension);
 		CurrentView = utility.Slicer.getCurrentView(originalimg, fourthDimension, thirdDimensionSize, thirdDimension,
 				fourthDimensionSize);
+		CurrentViewOrig = utility.Slicer.getCurrentView(originalimgbefore, fourthDimension, thirdDimensionSize, thirdDimension,
+				fourthDimensionSize);
 
 		imp = ImageJFunctions.show(CurrentView);
 		imp.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
-
+		impOrig = ImageJFunctions.show(CurrentViewOrig);
+		impOrig.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
+		
+		
 		// Create empty Hyperstack
 
 		empty = new ArrayImgFactory<BitType>().create(originalimg, new BitType());
 		emptyWater = new ArrayImgFactory<IntType>().create(originalimg, new IntType());
 
+		if(!automode) {
 		roimanager = RoiManager.getInstance();
 
 		if (roimanager == null) {
 			roimanager = new RoiManager();
 		}
-
+		}
 		updatePreview(ValueChange.ALL);
 
 		Cardframe.repaint();
@@ -461,11 +486,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	}
 
 	public void updatePreview(final ValueChange change) {
-
+		if(!automode) {
 		roimanager = RoiManager.getInstance();
 
 		if (roimanager == null) {
 			roimanager = new RoiManager();
+		}
 		}
 		
 		if (change == ValueChange.RectRoi) {
@@ -507,6 +533,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		if (change == ValueChange.INSIDE || change == ValueChange.OUTSIDE) {
 
+			if (automode) {
+				
+				empty = CreateBinaryBit(originalimg, lowprob, highprob);
+				
+				
+			}
+				
+			
 			StartComputing();
 
 		}
@@ -646,8 +680,32 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		if (change == ValueChange.THIRDDIMmouse) {
 
-			if(automode)
+			if(automode) {
 				updatePreview(ValueChange.SEG);
+			
+				
+				CurrentViewOrig = utility.Slicer.getCurrentView(originalimgbefore, fourthDimension, thirdDimensionSize, thirdDimension,
+						fourthDimensionSize);
+				
+				if (impOrig == null || !impOrig.isVisible()) {
+					impOrig = ImageJFunctions.show(CurrentViewOrig);
+
+				}
+
+				else {
+
+					final float[] pixels = (float[]) impOrig.getProcessor().getPixels();
+					final Cursor<FloatType> c = Views.iterable(CurrentViewOrig).cursor();
+
+					for (int i = 0; i < pixels.length; ++i)
+						pixels[i] = c.next().get();
+
+					impOrig.updateAndDraw();
+
+				}
+				
+				
+			}
 			if (imp == null || !imp.isVisible()) {
 				imp = ImageJFunctions.show(CurrentView);
 
@@ -676,8 +734,32 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 
 		if (change == ValueChange.FOURTHDIMmouse) {
-			if(automode)
+			if(automode) {
 				updatePreview(ValueChange.SEG);
+			
+				
+				CurrentViewOrig = utility.Slicer.getCurrentView(originalimgbefore, fourthDimension, thirdDimensionSize, thirdDimension,
+						fourthDimensionSize);
+				
+				if (impOrig == null || !impOrig.isVisible()) {
+					impOrig = ImageJFunctions.show(CurrentViewOrig);
+
+				}
+
+				else {
+
+					final float[] pixels = (float[]) impOrig.getProcessor().getPixels();
+					final Cursor<FloatType> c = Views.iterable(CurrentViewOrig).cursor();
+
+					for (int i = 0; i < pixels.length; ++i)
+						pixels[i] = c.next().get();
+
+					impOrig.updateAndDraw();
+
+				}
+				
+				
+			}
 			if (imp == null|| !imp.isVisible()) {
 				imp = ImageJFunctions.show(CurrentView);
 
@@ -717,7 +799,34 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		compute.execute();
 
 	}
-	
+	 public RandomAccessibleInterval<BitType> CreateBinaryBit(RandomAccessibleInterval<FloatType> source, double lowprob, double highprob) {
+			
+			
+			RandomAccessibleInterval<BitType> copyoriginal = new ArrayImgFactory<BitType>().create(source, new BitType());
+			
+			final RandomAccess<BitType> ranac =  copyoriginal.randomAccess();
+			final Cursor<FloatType> cursor = Views.iterable(source).localizingCursor();
+			
+			while(cursor.hasNext()) {
+				
+				cursor.fwd();
+				
+				ranac.setPosition(cursor);
+				if(cursor.get().getRealDouble() > lowprob && cursor.get().getRealDouble() < highprob) {
+					
+					ranac.get().setOne();
+				}
+				else {
+					ranac.get().setZero();
+				}
+				
+				
+			}
+			
+			
+			return copyoriginal;
+			
+		}
       public RandomAccessibleInterval<FloatType> CreateBinary(RandomAccessibleInterval<FloatType> source, double lowprob, double highprob) {
 		
 		
@@ -741,6 +850,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			
 			
 		}
+		
+	
+		
 		
 		return copyoriginal;
 		
@@ -1356,6 +1468,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			Probselect.add(highprobslider, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			
+			Probselect.add(ChooseMethod, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			
 			Probselect.setBorder(probborder);
 

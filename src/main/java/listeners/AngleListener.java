@@ -45,11 +45,10 @@ public class AngleListener implements ActionListener {
 		if (parent.automode) {
 		
 			
-			parent.empty = CreateBinary(parent.originalimg, parent.lowprob, parent.highprob);
+			parent.empty = CreateBinaryBit(parent.originalimg, parent.lowprob, parent.highprob);
 			
 			
 
-			
 			
 			parent.parentgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 			parent.parentgraphZ =  new 
@@ -74,7 +73,7 @@ public class AngleListener implements ActionListener {
 	}
 
 	
-	 public RandomAccessibleInterval<BitType> CreateBinary(RandomAccessibleInterval<FloatType> source, double lowprob, double highprob) {
+	 public RandomAccessibleInterval<BitType> CreateBinaryBit(RandomAccessibleInterval<FloatType> source, double lowprob, double highprob) {
 			
 			
 			RandomAccessibleInterval<BitType> copyoriginal = new ArrayImgFactory<BitType>().create(source, new BitType());

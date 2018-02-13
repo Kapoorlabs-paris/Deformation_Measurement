@@ -94,7 +94,6 @@ public class LabelRansac implements Runnable {
 				truths, parent.outsideCutoff, parent.insideCutoff, parent.minpercent, numsol, parent.maxtry, ndims);
 
 		if (Reducedsamples != null) {
-			System.out.println("Reduced sample not null");
 			SortSegments.Sort(Reducedsamples);
 			for (int i = 0; i < Reducedsamples.size() - 1; ++i) {
 
@@ -165,8 +164,7 @@ public class LabelRansac implements Runnable {
 					Angleobject angleobject = Tangent2D.GetTriAngle(lineparamA, lineparamB, pos.get(j), ellipsepair);
 					resultlineroi.add(angleobject.lineA);
 					resultlineroi.add(angleobject.lineB);
-					// GetAngle(lineparamA, lineparamB);
-					// GetTriAngle(lineparamA, lineparamB, pos.get(j), ellipsepair);
+					
 
 					Intersectionobject currentintersection = new Intersectionobject(pos.get(j), angleobject.angle,
 							ellipsepair, t, z);
@@ -183,7 +181,6 @@ public class LabelRansac implements Runnable {
 
 			}
 
-			System.out.println("Made map" + parent.automode);
 
 			String uniqueID = Integer.toString(z) + Integer.toString(t);
 			if (parent.ALLIntersections.get(uniqueID) == null) {
@@ -215,10 +212,74 @@ public class LabelRansac implements Runnable {
 
 			
 
-			System.out.println("AllIntersect" + parent.ALLIntersections.size());
 
+			
+			if (parent.automode) {
+				
+				Roiobject currentobject = new Roiobject(resultroi,resultovalroi,resultlineroi, z, t, true);
+				parent.ZTRois.put(uniqueID, currentobject);
+
+				Display();
+			}
+			
+			
 		} else
 			return;
 	}
+	public void Display() {
 
+		parent.overlay.clear();
+
+		if (parent.ZTRois.size() > 0) {
+
+			for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
+
+				Roiobject currentobject = entry.getValue();
+				if (currentobject.fourthDimension == parent.fourthDimension
+						&& currentobject.thirdDimension == parent.thirdDimension) {
+
+					if (currentobject.resultroi != null) {
+						for (int i = 0; i < currentobject.resultroi.size(); ++i) {
+
+							EllipseRoi ellipse = currentobject.resultroi.get(i);
+							ellipse.setStrokeColor(parent.colorInChange);
+							parent.overlay.add(ellipse);
+
+						}
+
+					}
+
+					if (currentobject.resultovalroi != null) {
+						for (int i = 0; i < currentobject.resultovalroi.size(); ++i) {
+
+							OvalRoi ellipse = currentobject.resultovalroi.get(i);
+							ellipse.setStrokeColor(parent.colorDet);
+							parent.overlay.add(ellipse);
+
+						}
+
+					}
+
+					if (currentobject.resultlineroi != null) {
+						for (int i = 0; i < currentobject.resultlineroi.size(); ++i) {
+
+							Line ellipse = currentobject.resultlineroi.get(i);
+							ellipse.setStrokeColor(parent.colorLineA);
+
+							parent.overlay.add(ellipse);
+
+						}
+
+					}
+
+					break;
+				}
+
+			}
+			parent.impOrig.setOverlay(parent.overlay);
+			parent.impOrig.updateAndDraw();
+
+
+		}
+	}
 }
