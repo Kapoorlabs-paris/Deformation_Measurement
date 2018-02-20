@@ -110,6 +110,8 @@ public class NearestNeighbourSearch2D implements IntersectionTracker {
 
 			}
 			}
+			
+			t = nextt;
 			}
 		}
 

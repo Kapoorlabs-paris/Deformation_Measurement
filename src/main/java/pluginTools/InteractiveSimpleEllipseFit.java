@@ -454,13 +454,17 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		setZ(thirdDimension);
 		CurrentView = utility.Slicer.getCurrentView(originalimg, fourthDimension, thirdDimensionSize, thirdDimension,
 				fourthDimensionSize);
+		if(originalimgbefore!=null) {
 		CurrentViewOrig = utility.Slicer.getCurrentView(originalimgbefore, fourthDimension, thirdDimensionSize, thirdDimension,
 				fourthDimensionSize);
+		
+		impOrig = ImageJFunctions.show(CurrentViewOrig);
+		impOrig.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
+		}
 
 		imp = ImageJFunctions.show(CurrentView);
 		imp.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
-		impOrig = ImageJFunctions.show(CurrentViewOrig);
-		impOrig.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
+		
 		
 		
 		// Create empty Hyperstack

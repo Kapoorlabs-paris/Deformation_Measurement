@@ -121,7 +121,7 @@ public class NearestNeighbourSearch implements IntersectionTracker {
 
 					
 				}
-
+                    t = nextt;
 			}
 		}
 		return true;
