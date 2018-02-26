@@ -7,12 +7,12 @@ import java.awt.event.TextListener;
 import pluginTools.InteractiveSimpleEllipseFit;
 
 
-public class FilenameListener  implements TextListener {
+public class ETrackFilenameListener  implements TextListener {
 
 	
 	final InteractiveSimpleEllipseFit parent;
 	
-	public FilenameListener(final InteractiveSimpleEllipseFit parent){
+	public ETrackFilenameListener(final InteractiveSimpleEllipseFit parent){
 		
 		this.parent = parent;
 		

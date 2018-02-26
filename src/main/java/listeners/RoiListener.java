@@ -12,6 +12,7 @@ import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.Type;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
@@ -46,7 +47,6 @@ public class RoiListener implements ActionListener{
 		Paint(totalimg, parent.uniqueID, (int)parent.thirdDimension, (int)parent.fourthDimension);
 		
 		Segment(totalimg);
-		
 		
 		
 	}

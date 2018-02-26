@@ -42,19 +42,12 @@ public class Computeinwater   {
 	final RandomAccessibleInterval<IntType> CurrentViewInt;
 	final int t;
 	final int z;
+	final int maxlabel;
 	int percent;
 	final JProgressBar jpb;	
-	public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> CurrentView, final RandomAccessibleInterval<IntType> CurrentViewInt, final int t, final int z ) {
-		
-		this.parent = parent;
-		this.CurrentView = CurrentView;
-		this.CurrentViewInt = CurrentViewInt;
-		this.t = t;
-		this.z = z;
-		this.percent = 0;
-		this.jpb = null;
-	}
-public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> CurrentView, final RandomAccessibleInterval<IntType> CurrentViewInt, final int t, final int z, JProgressBar jpb, int percent ) {
+
+public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> CurrentView, final RandomAccessibleInterval<IntType> CurrentViewInt, final int t,
+		final int z, JProgressBar jpb, int percent, final int maxlabel ) {
 		
 		this.parent = parent;
 		this.CurrentView = CurrentView;
@@ -62,6 +55,7 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 		this.t = t;
 		this.z = z;
 		this.jpb = jpb;
+		this.maxlabel = maxlabel;
 		this.percent = percent;
 	}
 
@@ -82,12 +76,16 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 			ArrayList<Intersectionobject> Allintersection = new ArrayList<Intersectionobject>();
 
 			ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
-		     for (int label = 1; label< parent.maxlabel; ++label) {
+			parent.maxlabel = maxlabel;
+		     for (int label = 1; label<= maxlabel; ++label) {
+		    	 
+		    	 System.out.println("label" + " " + label + " " + maxlabel);
+		    	 
 		    	 percent++;
-		    	 utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.maxlabel),
+		    	 utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (maxlabel),
 							"Fitting ellipses and computing angles " );
 			 RandomAccessibleInterval<BitType> ActualRoiimg = CurrentLabelImage(CurrentViewInt, CurrentView, label);
-			 
+
 			 long size = ActualRoiimg.dimension(0) * ActualRoiimg.dimension(1);
 			 
 			 if (size > parent.maxsize * parent.maxsize) {
@@ -211,11 +209,12 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 
 				}
 				
-				
+			
 			
 				imageRA.get().set(inputRA.get());
 			}
-			
+			else
+				imageRA.get().setZero();
 			
 
 		}

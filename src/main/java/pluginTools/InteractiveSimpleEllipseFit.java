@@ -79,8 +79,8 @@ import listeners.AngleListener;
 import listeners.ColorListener;
 import listeners.DisplayRoiListener;
 import listeners.DrawListener;
+import listeners.ETrackFilenameListener;
 import listeners.EllipseNonStandardMouseListener;
-import listeners.FilenameListener;
 import listeners.HighProbListener;
 import listeners.IlastikListener;
 import listeners.InsideCutoffListener;
@@ -1601,7 +1601,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		inputFieldminpercent.addTextListener(new MinpercentListener(this));
 		inputFieldIter.addTextListener(new MaxTryListener(this));
 		ChooseDirectory.addActionListener(new SaverDirectory(this));
-		inputField.addTextListener(new FilenameListener(this));
+		inputField.addTextListener(new ETrackFilenameListener(this));
 		Savebutton.addActionListener(new SaveListener(this));
 		ChooseMethod.addActionListener(new DrawListener(this, ChooseMethod));
 		ChooseColor.addActionListener(new ColorListener(this, ChooseColor));

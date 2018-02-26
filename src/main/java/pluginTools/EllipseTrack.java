@@ -89,7 +89,8 @@ public class EllipseTrack {
 						Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView, span);
 
 						parent.maxlabel = GetMaxlabelsseeded(Current.getA());
-						Computeinwater compute = new Computeinwater(parent, Current.getB(), Current.getA(), t, z);
+						Computeinwater compute = new Computeinwater(parent, Current.getB(), Current.getA(), t, z,jpb,
+								(int) percent, parent.maxlabel);
 						compute.ParallelRansac();
 
 					}
@@ -111,7 +112,8 @@ public class EllipseTrack {
 					Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView, span);
 
 					parent.maxlabel = GetMaxlabelsseeded(Current.getA());
-					Computeinwater compute = new Computeinwater(parent, Current.getB(), Current.getA(), 0, z);
+					Computeinwater compute = new Computeinwater(parent, Current.getB(), Current.getA(), 0, z,jpb,
+							(int) percent, parent.maxlabel);
 					compute.ParallelRansac();
 
 				}
@@ -124,13 +126,12 @@ public class EllipseTrack {
 				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
 						parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 				
-				ImageJFunctions.show(CurrentView);
 
 
 				Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView, span);
 
 				parent.maxlabel = GetMaxlabelsseeded(Current.getA());
-				Computeinwater compute = new Computeinwater(parent, Current.getB(), Current.getA(), t, z, jpb, (int)percent);
+				Computeinwater compute = new Computeinwater(parent, Current.getB(), Current.getA(), t, z, jpb, (int)percent, parent.maxlabel);
 				compute.ParallelRansac();
 
 			}
@@ -164,36 +165,39 @@ public class EllipseTrack {
 						RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(
 								parent.emptyWater, z, parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 						parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
-						Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z);
+						Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z,jpb,
+								(int) percent, parent.maxlabel);
 						compute.ParallelRansac();
 
 					}
 				}
 
-			} else if (parent.originalimg.numDimensions() > 2) {
-
+			} else if (parent.originalimg.numDimensions() > 2 && parent.originalimg.numDimensions() <= 3 ) {
+				
+			
 				int t = parent.fourthDimension;
 
 				for (Map.Entry<String, Integer> entryZ : parent.AccountedZ.entrySet()) {
 
 					int z = entryZ.getValue();
+					System.out.println(z + " " + t + "Z and T" + parent.AccountedZ.size());
+					
 					percent++;
-					if (parent.fourthDimensionSize != 0)
-						utility.ProgressBar.SetProgressBar(jpb,
-								100 * percent / (parent.Accountedframes.entrySet().size()),
-								"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize
-										+ " Z = " + z + "/" + parent.thirdDimensionSize);
-					else
+				
 						utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.AccountedZ.entrySet().size()),
 								"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
 
+					
 					RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
 							parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
 					RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(
 							parent.emptyWater, z, parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 					parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
-					Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z);
+					
+					System.out.println(parent.maxlabel);
+					Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z,jpb,
+							(int) percent, parent.maxlabel);
 					compute.ParallelRansac();
 
 				}
@@ -209,10 +213,10 @@ public class EllipseTrack {
 
 				parent.maxlabel = GetMaxlabelsseeded(parent.emptyWater);
 				Computeinwater compute = new Computeinwater(parent, parent.empty, parent.emptyWater, t, z, jpb,
-						(int) percent);
+						(int) percent, parent.maxlabel);
 				compute.ParallelRansac();
 
-				System.out.println(z + " " + t);
+				System.out.println(z + " " + t + "Z and T");
 
 			}
 
@@ -328,7 +332,8 @@ public class EllipseTrack {
 				RandomAccessibleInterval<IntType> CurrentViewInt = segmentimage.getResult();
 
 				parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
-				Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z);
+				Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z,jpb,
+						(int) percent, parent.maxlabel);
 				compute.ParallelRansac();
 
 			}
@@ -346,7 +351,8 @@ public class EllipseTrack {
 
 				RandomAccessibleInterval<IntType> CurrentViewInt = segmentimage.getResult();
 				parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
-				Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, 0, z);
+				Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, 0, z,jpb,
+						(int) percent, parent.maxlabel);
 				compute.ParallelRansac();
 
 			} else {
@@ -362,7 +368,7 @@ public class EllipseTrack {
 				RandomAccessibleInterval<IntType> CurrentViewInt = segmentimage.getResult();
 				parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
 				Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, jpb,
-						(int) percent);
+						(int) percent, parent.maxlabel);
 				compute.ParallelRansac();
 
 				System.out.println(z + " " + t);
@@ -403,6 +409,16 @@ public class EllipseTrack {
 			parent.updatePreview(ValueChange.THIRDDIMmouse);
 
 		}
+	}
+	
+	public RandomAccessibleInterval<IntType> getIntimg(RandomAccessibleInterval<BitType> CurrentView){
+		
+		DistWatershedBinary segmentimage = new DistWatershedBinary(CurrentView);
+		segmentimage.process();
+
+		RandomAccessibleInterval<IntType> CurrentViewInt = segmentimage.getResult();
+		
+		return CurrentViewInt;
 	}
 
 }
