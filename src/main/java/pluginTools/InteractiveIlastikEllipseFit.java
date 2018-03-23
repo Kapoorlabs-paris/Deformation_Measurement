@@ -15,10 +15,10 @@ public class InteractiveIlastikEllipseFit {
 		new ImageJ();
 		JFrame frame = new JFrame("");
 
-		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/JLMData/IlastikTraining/CentralStackClassiification/SingleImage/C1.tif");
+		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/UnlabelledData/SmoothC1-20171027_boundary_Probabilities.tif");
 		impB.show();
 		
-		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/JLMData/IlastikTraining/CentralStackClassiification/SingleImage/SingleExample.tif");
+		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/UnlabelledData/20171027_stage4.tif");
 		impA.show();
 		IlastikEllipseFileChooser panel = new IlastikEllipseFileChooser();
 

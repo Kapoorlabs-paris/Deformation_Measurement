@@ -156,7 +156,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	
 	public long maxsize = 100;
 	public int span = 15;
-	
+	public int perimeter = 100;
 	public float lowprob = 0f;
 	public float highprob = 1f;
 	
@@ -261,9 +261,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	}
 
 	public void setTime(final int value) {
-		thirdDimensionslider = value;
-		thirdDimensionsliderInit = 1;
-		thirdDimension = 1;
+		
+		fourthDimensionslider = value;
+		fourthDimensionsliderInit = 1;
+		fourthDimension = 1;
 	}
 
 	public int getTimeMax() {
@@ -272,9 +273,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	}
 
 	public void setZ(final int value) {
-		fourthDimensionslider = value;
-		fourthDimensionsliderInit = 1;
-		fourthDimension = 1;
+		thirdDimensionslider = value;
+		thirdDimensionsliderInit = 1;
+		thirdDimension = 1;
 	}
 
 	public void setInsidecut(final int value) {
@@ -682,14 +683,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		}
 
-		if (change == ValueChange.THIRDDIMmouse) {
+		if (change == ValueChange.THIRDDIMmouse || change == ValueChange.FOURTHDIMmouse) {
 
 			if(automode) {
 				updatePreview(ValueChange.SEG);
 			
-				
-				CurrentViewOrig = utility.Slicer.getCurrentView(originalimgbefore, fourthDimension, thirdDimensionSize, thirdDimension,
-						fourthDimensionSize);
+				if(originalimgbefore!=null) {
+				CurrentViewOrig = utility.Slicer.getCurrentView(originalimgbefore, thirdDimension,thirdDimensionSize, thirdDimension,
+						fourthDimensionSize );
 				
 				if (impOrig == null || !impOrig.isVisible()) {
 					impOrig = ImageJFunctions.show(CurrentViewOrig);
@@ -707,8 +708,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					impOrig.updateAndDraw();
 
 				}
-				
-				
+				impOrig.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
+				}
 			}
 			if (imp == null || !imp.isVisible()) {
 				imp = ImageJFunctions.show(CurrentView);
@@ -737,60 +738,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			
 		}
 
-		if (change == ValueChange.FOURTHDIMmouse) {
-			if(automode) {
-				updatePreview(ValueChange.SEG);
-			
-				
-				CurrentViewOrig = utility.Slicer.getCurrentView(originalimgbefore, fourthDimension, thirdDimensionSize, thirdDimension,
-						fourthDimensionSize);
-				
-				if (impOrig == null || !impOrig.isVisible()) {
-					impOrig = ImageJFunctions.show(CurrentViewOrig);
-
-				}
-
-				else {
-
-					final float[] pixels = (float[]) impOrig.getProcessor().getPixels();
-					final Cursor<FloatType> c = Views.iterable(CurrentViewOrig).cursor();
-
-					for (int i = 0; i < pixels.length; ++i)
-						pixels[i] = c.next().get();
-
-					impOrig.updateAndDraw();
-
-				}
-				
-				
-			}
-			if (imp == null|| !imp.isVisible()) {
-				imp = ImageJFunctions.show(CurrentView);
-
-			}
-
-			else {
-
-				final float[] pixels = (float[]) imp.getProcessor().getPixels();
-				final Cursor<FloatType> c = Views.iterable(CurrentView).cursor();
-
-				for (int i = 0; i < pixels.length; ++i)
-					pixels[i] = c.next().get();
-
-				imp.updateAndDraw();
-
-			}
-
-			
-			if(!automode) {
-				if (ZTRois.get(uniqueID) == null)
-					DisplayDefault();
-				else
-					Display();
-				}
-			imp.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
-
-		}
 		
 		
 

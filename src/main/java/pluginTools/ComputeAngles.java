@@ -34,6 +34,7 @@ import ellipsoidDetector.Intersectionobject;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.NearestNeighbourSearch;
 import utility.NearestNeighbourSearch2D;
 import utility.TrackModel;
@@ -63,7 +64,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 
 		EllipseTrack newtrack = new EllipseTrack(parent, jpb);
 		newtrack.IntersectandTrack();
-
+	
 		return null;
 
 	}

@@ -26,13 +26,17 @@ import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
+import net.imglib2.util.RealSum;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
+import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.LabelRansac;
 import utility.Roiobject;
+import utility.Watershedobject;
 
 public class Computeinwater   {
 	
@@ -44,30 +48,30 @@ public class Computeinwater   {
 	final int z;
 	final int maxlabel;
 	int percent;
-	final JProgressBar jpb;	
 
 public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> CurrentView, final RandomAccessibleInterval<IntType> CurrentViewInt, final int t,
-		final int z, JProgressBar jpb, int percent, final int maxlabel ) {
+		final int z, int percent, final int maxlabel ) {
 		
 		this.parent = parent;
 		this.CurrentView = CurrentView;
 		this.CurrentViewInt = CurrentViewInt;
 		this.t = t;
 		this.z = z;
-		this.jpb = jpb;
 		this.maxlabel = maxlabel;
 		this.percent = percent;
 	}
 
 
 	public void ParallelRansac() {
+		
+		
 		int nThreads = Runtime.getRuntime().availableProcessors();
 		// set up executor service
 		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
 		 List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
 		 
 		 
-		 ArrayList<EllipseRoi> resultroi = new ArrayList<EllipseRoi>();
+		    ArrayList<EllipseRoi> resultroi = new ArrayList<EllipseRoi>();
 			ArrayList<OvalRoi> resultovalroi = new ArrayList<OvalRoi>();
 			ArrayList<Line> resultlineroi = new ArrayList<Line>();
 			// Obtain the points of intersections
@@ -77,21 +81,21 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 
 			ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
 			parent.maxlabel = maxlabel;
+			
+			
 		     for (int label = 1; label<= maxlabel; ++label) {
 		    	 
-		    	 System.out.println("label" + " " + label + " " + maxlabel);
-		    	 
 		    	 percent++;
-		    	 utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (maxlabel),
-							"Fitting ellipses and computing angles " );
-			 RandomAccessibleInterval<BitType> ActualRoiimg = CurrentLabelImage(CurrentViewInt, CurrentView, label);
+		    	 
+		    	 long size = CurrentViewInt.dimension(0) * CurrentViewInt.dimension(1);
+		    	
+		    		 Watershedobject current = CurrentLabelImage(CurrentViewInt, CurrentView, label);
 
-			 long size = ActualRoiimg.dimension(0) * ActualRoiimg.dimension(1);
+		    		 if (size > current.Size && current.meanIntensity > parent.perimeter) {
 			 
-			 if (size > parent.maxsize * parent.maxsize) {
 			 
 			 List<Pair<RealLocalizable, BitType>> truths =  new ArrayList<Pair<RealLocalizable, BitType>>();
-			 tasks.add(Executors.callable(new LabelRansac(parent, ActualRoiimg, truths, t, z, resultroi, resultovalroi, resultlineroi,AllPointsofIntersect,Allintersection,fitmapspecial )));
+			 tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi, resultovalroi, resultlineroi,AllPointsofIntersect,Allintersection,fitmapspecial )));
 			 }
 			
 		}
@@ -105,6 +109,7 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 				parent.ZTRois.put(uniqueID, currentobject);
 
 				Display();
+				System.out.println("Here");
 			}
 			
 		} catch (InterruptedException e1) {
@@ -173,7 +178,7 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 		}
 	}
 	
-	public static RandomAccessibleInterval<BitType> CurrentLabelImage(RandomAccessibleInterval<IntType> Intimg,
+	public static Watershedobject CurrentLabelImage(RandomAccessibleInterval<IntType> Intimg,
 			RandomAccessibleInterval<BitType> currentimg, int currentLabel) {
 		int n = currentimg.numDimensions();
 		RandomAccess<BitType> inputRA = currentimg.randomAccess();
@@ -219,10 +224,40 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 
 		}
 		FinalInterval intervalsmall = new FinalInterval(minVal, maxVal) ;
+		
+		
 		RandomAccessibleInterval<BitType> outimgsmall = extractImage(outimg, intervalsmall);
-		return outimgsmall;
+		double meanIntensity = computeAverage(Views.iterable(outimgsmall));
+		double size = (intervalsmall.max(0) - intervalsmall.min(0)) * (intervalsmall.max(1) - intervalsmall.min(1));
+		
+		Watershedobject currentobject = new Watershedobject(outimgsmall, meanIntensity, size);
+		
+		
+		return currentobject;
 
 	}
+	
+	/**
+     * Compute the average intensity for an {@link Iterable}.
+     *
+     * @param input - the input data
+     * @return - the average as double
+     */
+    public static < T extends RealType< T > > double computeAverage( final Iterable< T > input )
+    {
+        // Count all values using the RealSum class.
+        // It prevents numerical instabilities when adding up millions of pixels
+        final RealSum realSum = new RealSum();
+        long count = 0;
+ 
+        for ( final T type : input )
+        {
+            realSum.add( type.getRealDouble() );
+            ++count;
+        }
+ 
+        return realSum.getSum() ;
+    }
 	
 	public static RandomAccessibleInterval<BitType> extractImage(final RandomAccessibleInterval<BitType> intervalView, final FinalInterval interval) {
 

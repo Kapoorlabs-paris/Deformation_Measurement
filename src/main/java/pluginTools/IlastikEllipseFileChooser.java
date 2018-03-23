@@ -69,17 +69,14 @@ public class IlastikEllipseFileChooser extends JPanel {
 			Panelfile.add(ChooseImage, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Panelfile.setBorder(choosefile);
-			Panelfile.setPreferredSize(new Dimension(300, 100));
 			panelFirst.add(Panelfile, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			Panelfileoriginal.add(ChooseoriginalImage, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Panelfileoriginal.setBorder(chooseoriginalfile);
-			Panelfileoriginal.setPreferredSize(new Dimension(300, 100));
 			panelFirst.add(Panelfileoriginal, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-			
 			
 			ChooseImage.addActionListener(new ChooseProbMap(this, ChooseImage));
 			ChooseoriginalImage.addActionListener(new ChooseOrigMap(this, ChooseoriginalImage));
