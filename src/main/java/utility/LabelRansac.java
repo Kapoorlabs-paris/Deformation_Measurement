@@ -167,7 +167,7 @@ public class LabelRansac implements Runnable {
 					
 
 					Intersectionobject currentintersection = new Intersectionobject(pos.get(j), angleobject.angle,
-							ellipsepair, t, z);
+							ellipsepair, resultlineroi, t, z);
 
 					Allintersection.add(currentintersection);
 

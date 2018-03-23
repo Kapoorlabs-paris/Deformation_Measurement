@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import ij.gui.Line;
 import ij.gui.OvalRoi;
 import ij.gui.Roi;
 
 import net.imglib2.KDTree;
+import net.imglib2.Point;
 import net.imglib2.RealPoint;
 import pluginTools.InteractiveSimpleEllipseFit;
 
@@ -99,6 +101,46 @@ public class NearestRoi {
 		
 	}
 	
+public static Line getNearestLineRois(Roiobject roi, int[] clickedpoints, final InteractiveSimpleEllipseFit parent ) {
+		
+
+		ArrayList<Line> Allrois = roi.resultlineroi;
+		
+		Line KDtreeroi = null;
+
+		final List<RealPoint> targetCoords = new ArrayList<RealPoint>(Allrois.size());
+		final List<FlagNode<Line>> targetNodes = new ArrayList<FlagNode<Line>>(Allrois.size());
+		for (int index = 0; index < Allrois.size(); ++index) {
+
+			 Roi r = Allrois.get(index);
+			 Rectangle rect = r.getBounds();
+			 
+			 targetCoords.add( new RealPoint(rect.x + rect.width/2.0, rect.y + rect.height/2.0 ) );
+			 
+
+			targetNodes.add(new FlagNode<Line>(Allrois.get(index)));
+
+		}
+
+		if (targetNodes.size() > 0 && targetCoords.size() > 0) {
+
+			final KDTree<FlagNode<Line>> Tree = new KDTree<FlagNode<Line>>(targetNodes, targetCoords);
+
+			final NNFlagsearchKDtree<Line> Search = new NNFlagsearchKDtree<Line>(Tree);
+
+
+				final int[] source = clickedpoints;
+				final Point sourceCoords = new Point(source);
+				Search.search(sourceCoords);
+				final FlagNode<Line> targetNode = Search.getSampler().get();
+
+				KDtreeroi = targetNode.getValue();
+
+		}
+
+		return KDtreeroi;
+		
+	}
 	
 	
 }

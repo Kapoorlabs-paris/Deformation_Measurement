@@ -1,7 +1,9 @@
 package ellipsoidDetector;
 
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
+import ij.gui.Line;
 import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
 import net.imglib2.util.Pair;
 
@@ -14,14 +16,16 @@ public class Intersectionobject {
 	public final Pair<Ellipsoid, Ellipsoid> ellipsepair;
 	public final int t;
 	public final int z;
+	public final ArrayList<Line> linerois;
 	private final ConcurrentHashMap< String, Double > features = new ConcurrentHashMap< String, Double >();
 	
 	
-	public Intersectionobject(final double[] Intersectionpoint, final double angle, final Pair<Ellipsoid, Ellipsoid> ellipsepair,  final int t, final int z) {
+	public Intersectionobject(final double[] Intersectionpoint, final double angle, final Pair<Ellipsoid, Ellipsoid> ellipsepair, final ArrayList<Line> linerois,  final int t, final int z) {
 		putFeature(FRAME, Double.valueOf(t));
 		putFeature(Z, Double.valueOf(z));
 		this.Intersectionpoint = Intersectionpoint;
 		this.angle = angle;
+		this.linerois = linerois;
 		this.ellipsepair = ellipsepair;
 		this.t = t;
 		this.z = z;

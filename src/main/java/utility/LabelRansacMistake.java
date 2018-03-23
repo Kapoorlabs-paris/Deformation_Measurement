@@ -127,7 +127,7 @@ public class LabelRansacMistake implements Runnable {
 
 					double angle = Tangent2D.GetAngle(lineparamA, lineparamB);
 
-					Intersectionobject currentintersectionobject = new Intersectionobject(pos.get(j), angle, ellipsepair, t,
+					Intersectionobject currentintersectionobject = new Intersectionobject(pos.get(j), angle, ellipsepair,currentlines, t,
 							z);
 
 					IntersectionlistChange.add(currentintersectionobject);

@@ -109,7 +109,6 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 				parent.ZTRois.put(uniqueID, currentobject);
 
 				Display();
-				System.out.println("Here");
 			}
 			
 		} catch (InterruptedException e1) {
