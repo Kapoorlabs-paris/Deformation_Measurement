@@ -259,6 +259,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public RandomAccessibleInterval<BitType> empty;
 	public RandomAccessibleInterval<IntType> emptyWater;
 	public boolean automode;
+	public boolean supermode;
 
 	public static enum ValueChange {
 		ROI, ALL, THIRDDIMmouse, FOURTHDIMmouse, DISPLAYROI, RADIUS, INSIDE, OUTSIDE, RESULT, RectRoi, SEG
@@ -365,6 +366,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(3);
 		this.automode = false;
+		this.supermode = false;
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, boolean automode) {
@@ -379,6 +381,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(3);
 		this.automode = true;
+		this.supermode = false;
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
@@ -394,10 +397,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(3);
-		this.automode = true;
+		this.automode = automode;
+		this.supermode = false;
 	}
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
-			RandomAccessibleInterval<FloatType> originalimgbefore,RandomAccessibleInterval<IntType> originalimgsuper, boolean automode) {
+			RandomAccessibleInterval<FloatType> originalimgbefore,RandomAccessibleInterval<IntType> originalimgsuper, boolean automode, boolean supermode) {
 		this.inputfile = null;
 		this.inputdirectory = null;
 		this.originalimg = originalimg;
@@ -410,7 +414,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(3);
-		this.automode = true;
+		this.automode = automode;
+		this.supermode = supermode;
 	}
 	public void run(String arg0) {
 
