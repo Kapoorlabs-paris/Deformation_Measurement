@@ -38,7 +38,6 @@ public class ChooseOrigMap implements ActionListener {
 	    	if(parent.impOrig==null)
 	    	 	parent.impOrig = parent.impA;
 			
-			parent.DoneCurr(parent.Cardframe);
 			
 			
 		

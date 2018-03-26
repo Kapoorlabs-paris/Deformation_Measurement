@@ -2,6 +2,7 @@ package pluginTools;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -37,6 +38,7 @@ import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.DisplayAuto;
 import utility.LabelRansac;
 import utility.Roiobject;
+import utility.SuperIntersection;
 import utility.Watershedobject;
 
 public class Computeinwater   {
@@ -61,7 +63,17 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 		this.maxlabel = maxlabel;
 		this.percent = percent;
 	}
-
+public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> CurrentView, final RandomAccessibleInterval<IntType> CurrentViewInt, final int t,
+		final int z, int percent) {
+		
+		this.parent = parent;
+		this.CurrentView = CurrentView;
+		this.CurrentViewInt = CurrentViewInt;
+		this.t = t;
+		this.z = z;
+		this.maxlabel = 0;
+		this.percent = percent;
+	}
 
 	public void ParallelRansac() {
 		
@@ -81,6 +93,38 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 			ArrayList<Intersectionobject> Allintersection = new ArrayList<Intersectionobject>();
 
 			ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
+			
+			
+			if (parent.automode) {
+				
+					Iterator<Integer> setiter = parent.pixellist.iterator();
+					
+					parent.superReducedSamples =  new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>>();
+					while(setiter.hasNext()) {
+				 	 percent++;
+			    	 
+				 	 int label = setiter.next();
+			    	     long size = CurrentViewInt.dimension(0) * CurrentViewInt.dimension(1);
+			    	
+			    		 Watershedobject current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
+
+			    		 if (size > current.Size && current.meanIntensity > parent.perimeter) {
+				 
+				 
+				 List<Pair<RealLocalizable, BitType>> truths =  new ArrayList<Pair<RealLocalizable, BitType>>();
+				 tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi, resultovalroi, resultlineroi,AllPointsofIntersect,Allintersection,fitmapspecial,parent.jpb )));
+				 }
+				
+					
+				}
+					
+					
+					
+				
+			}
+			
+			else {
+			
 			parent.maxlabel = maxlabel;
 			
 			
@@ -100,16 +144,20 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 			 }
 			
 		}
+			}
 		try {
 			taskExecutor.invokeAll(tasks);
 			
 			if (parent.automode) {
-			
-				String uniqueID = Integer.toString(z) + Integer.toString(t);
-				Roiobject currentobject = new Roiobject(resultroi,resultovalroi,resultlineroi, z, t, true);
-				parent.ZTRois.put(uniqueID, currentobject);
 
-				DisplayAuto.Display(parent);
+				// Get superintersection
+			
+			SuperIntersection newintersect = new SuperIntersection(parent);
+			AllPointsofIntersect = new ArrayList<Tangentobject>();
+			Allintersection = new ArrayList<Intersectionobject>();
+			newintersect.Getsuperintersection(resultroi, resultovalroi, resultlineroi, AllPointsofIntersect, Allintersection, nThreads, nThreads);
+			
+
 			}
 			
 		} catch (InterruptedException e1) {

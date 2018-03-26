@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -155,7 +156,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	public long maxsize = 100;
 	public int span = 15;
-	public int perimeter = 100;
+	public int perimeter = 10;
 	public float lowprob = 0f;
 	public float highprob = 1f;
 
@@ -193,6 +194,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public XYSeriesCollection dataset;
 	public JFreeChart chart;
 	public RandomAccessibleInterval<FloatType> originalimg;
+	public RandomAccessibleInterval<IntType> originalimgsuper;
 	public RandomAccessibleInterval<FloatType> originalimgbefore;
 	ResultsTable rtAll;
 	public File inputfile;
@@ -235,6 +237,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public double maxdistance = 10;
 	ImageStack prestack;
 	public MouseAdapter mouseadapter;
+	 public ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> superReducedSamples;
 	public Rectangle rect;
 	public int[] Clickedpoints;
 	public int starttime;
@@ -247,6 +250,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> parentgraph;
 	public HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> parentgraphZ;
 	public HashMap<String, ArrayList<Intersectionobject>> ALLIntersections;
+	public Set<Integer> pixellist;
 	ColorProcessor cp = null;
 	public HashMap<String, Intersectionobject> Finalresult;
 	public boolean isCreated = false;
@@ -392,13 +396,30 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		nf.setMaximumFractionDigits(3);
 		this.automode = true;
 	}
-
+	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
+			RandomAccessibleInterval<FloatType> originalimgbefore,RandomAccessibleInterval<IntType> originalimgsuper, boolean automode) {
+		this.inputfile = null;
+		this.inputdirectory = null;
+		this.originalimg = originalimg;
+		this.originalimgsuper = originalimgsuper;
+		this.originalimgbefore = originalimgbefore;
+		this.ndims = originalimg.numDimensions();
+		this.dataset = new XYSeriesCollection();
+		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
+		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
+		this.jFreeChartFrame.setVisible(false);
+		nf = NumberFormat.getInstance(Locale.ENGLISH);
+		nf.setMaximumFractionDigits(3);
+		this.automode = true;
+	}
 	public void run(String arg0) {
 
 		FloatType minval = new FloatType(0);
 		FloatType maxval = new FloatType(1);
 		Normalize.normalize(Views.iterable(originalimg), minval, maxval);
 
+		superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>>();
+		pixellist = new HashSet<Integer>();
 		rtAll = new ResultsTable();
 		jpb = new JProgressBar();
 		Allrois = new ArrayList<Roi>();
@@ -499,6 +520,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 
 		if (change == ValueChange.RectRoi) {
+			if(!automode) {
 			RoiManager roim = RoiManager.getInstance();
 			Roi[] allrois = roim.getRoisAsArray();
 
@@ -517,7 +539,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				}
 
 			}
-
+			}
 		}
 
 		//

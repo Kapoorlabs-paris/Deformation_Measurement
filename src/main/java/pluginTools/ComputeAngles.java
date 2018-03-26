@@ -95,7 +95,6 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 		parent.jpb.setIndeterminate(false);
 		parent.Cardframe.validate();
 
-		System.out.println(parent.Accountedframes.size());
 		if (parent.ndims > 3) {
 			Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 			while (itZ.hasNext()) {
@@ -190,7 +189,6 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 					while (Angleiter.hasNext()) {
 
 						Intersectionobject currentangle = Angleiter.next();
-System.out.println(Integer.toString(id) + entryZ.getKey() + " " +  currentangle.z + " " + "ID and angle");
 						parent.Tracklist.add(new ValuePair<String, Intersectionobject>(
 								Integer.toString(id) + entryZ.getKey(), currentangle));
 					}

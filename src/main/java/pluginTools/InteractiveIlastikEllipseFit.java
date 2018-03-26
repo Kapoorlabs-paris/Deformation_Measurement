@@ -18,6 +18,9 @@ public class InteractiveIlastikEllipseFit {
 		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/UnlabelledData/SmoothC1-20171027_boundary_Probabilities.tif");
 		impB.show();
 		
+		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/UnlabelledData/20171027_stage4_Multicut Segmentation.tif");
+		impC.show();
+		
 		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/UnlabelledData/20171027_stage4.tif");
 		impA.show();
 		IlastikEllipseFileChooser panel = new IlastikEllipseFileChooser();

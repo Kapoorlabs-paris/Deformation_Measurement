@@ -12,13 +12,13 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import pluginTools.IlastikEllipseFileChooser;
 
-public class ChooseProbMap implements ActionListener {
+public class ChoosesuperProbMap implements ActionListener {
 
 	
 	final IlastikEllipseFileChooser parent;
 	final JComboBox<String> choice;
 	
-	public ChooseProbMap(final IlastikEllipseFileChooser parent, final JComboBox<String> choice) {
+	public ChoosesuperProbMap(final IlastikEllipseFileChooser parent, final JComboBox<String> choice) {
 		
 		this.parent = parent;
 		this.choice = choice;
@@ -27,11 +27,13 @@ public class ChooseProbMap implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
+
 		String imagename = (String) choice.getSelectedItem();
 		
 	
 		
-	    	parent.impA = WindowManager.getImage(imagename);
+	    	parent.impsuper = WindowManager.getImage(imagename);
+			
 		
 			
 			

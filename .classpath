@@ -25,5 +25,6 @@
 	<classpathentry kind="src" path="/imglib2-algorithm"/>
 	<classpathentry kind="src" path="/Preprocessing"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/imglib2-roi"/>
+	<classpathentry kind="src" path="/scifio"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

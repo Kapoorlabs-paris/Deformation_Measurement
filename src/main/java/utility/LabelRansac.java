@@ -40,13 +40,14 @@ public class LabelRansac implements Runnable {
 	final ArrayList<Intersectionobject> Allintersection;
 
 	final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial;
+	
+	
 	final JProgressBar jpb;
 
 	public LabelRansac(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,
 			List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, ArrayList<EllipseRoi> resultroi,
 			ArrayList<OvalRoi> resultovalroi, ArrayList<Line> resultlineroi,
-			final ArrayList<Tangentobject> AllPointsofIntersect, final ArrayList<Intersectionobject> Allintersection,
-			final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial) {
+			final ArrayList<Tangentobject> AllPointsofIntersect, final ArrayList<Intersectionobject> Allintersection,final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial) {
 
 		this.parent = parent;
 		this.ActualRoiimg = ActualRoiimg;
@@ -82,6 +83,8 @@ public class LabelRansac implements Runnable {
 		this.jpb = jpb;
 	}
 
+	
+
 	@Override
 	public void run() {
 
@@ -93,6 +96,7 @@ public class LabelRansac implements Runnable {
 		ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> Reducedsamples = RansacEllipsoid.Allsamples(
 				truths, parent.outsideCutoff, parent.insideCutoff, parent.minpercent, numsol, parent.maxtry, ndims);
 
+		
 		if (Reducedsamples != null) {
 			SortSegments.Sort(Reducedsamples);
 			for (int i = 0; i < Reducedsamples.size() - 1; ++i) {
@@ -140,7 +144,7 @@ public class LabelRansac implements Runnable {
 					}
 				}
 			}
-
+			parent.superReducedSamples.addAll(Reducedsamples);
 			for (int i = 0; i < fitmapspecial.size(); ++i) {
 
 				Pair<Ellipsoid, Ellipsoid> ellipsepair = fitmapspecial.get(i);
