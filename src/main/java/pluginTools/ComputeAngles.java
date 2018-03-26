@@ -57,7 +57,6 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 		parent.table.removeAll();
 		HashMap<String, Integer> map = sortByValues(parent.Accountedframes);
 		parent.Accountedframes = map;
-		parent.Tracklist.clear();
 
 		HashMap<String, Integer> mapZ = sortByValues(parent.AccountedZ);
 		parent.AccountedZ = mapZ;
@@ -96,6 +95,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 		parent.jpb.setIndeterminate(false);
 		parent.Cardframe.validate();
 
+		System.out.println(parent.Accountedframes.size());
 		if (parent.ndims > 3) {
 			Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 			while (itZ.hasNext()) {
@@ -118,6 +118,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 			SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = NNsearch.getResult();
 			parent.parentgraphZ.put(Integer.toString(1), simplegraph);
 			Lineage();
+			System.out.println(parent.parentgraphZ.size());
 		}
 
 		try {

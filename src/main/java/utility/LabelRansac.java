@@ -183,16 +183,11 @@ public class LabelRansac implements Runnable {
 
 
 			String uniqueID = Integer.toString(z) + Integer.toString(t);
-			if (parent.ALLIntersections.get(uniqueID) == null) {
+		
 
 				parent.ALLIntersections.put(uniqueID, Allintersection);
-			}
+			
 
-			else {
-
-				parent.ALLIntersections.remove(uniqueID);
-				parent.ALLIntersections.put(uniqueID, Allintersection);
-			}
 			
 
 				// Add new result rois to ZTRois
@@ -219,67 +214,12 @@ public class LabelRansac implements Runnable {
 				Roiobject currentobject = new Roiobject(resultroi,resultovalroi,resultlineroi, z, t, true);
 				parent.ZTRois.put(uniqueID, currentobject);
 
-				Display();
+				DisplayAuto.Display(parent);
 			}
 			
 			
 		} else
 			return;
 	}
-	public void Display() {
-
-		parent.overlay.clear();
-
-		if (parent.ZTRois.size() > 0) {
-
-			for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
-
-				Roiobject currentobject = entry.getValue();
-				if (currentobject.fourthDimension == parent.fourthDimension
-						&& currentobject.thirdDimension == parent.thirdDimension) {
-
-					if (currentobject.resultroi != null) {
-						for (int i = 0; i < currentobject.resultroi.size(); ++i) {
-
-							EllipseRoi ellipse = currentobject.resultroi.get(i);
-							ellipse.setStrokeColor(parent.colorInChange);
-							parent.overlay.add(ellipse);
-
-						}
-
-					}
-
-					if (currentobject.resultovalroi != null) {
-						for (int i = 0; i < currentobject.resultovalroi.size(); ++i) {
-
-							OvalRoi ellipse = currentobject.resultovalroi.get(i);
-							ellipse.setStrokeColor(parent.colorDet);
-							parent.overlay.add(ellipse);
-
-						}
-
-					}
-
-					if (currentobject.resultlineroi != null) {
-						for (int i = 0; i < currentobject.resultlineroi.size(); ++i) {
-
-							Line ellipse = currentobject.resultlineroi.get(i);
-							ellipse.setStrokeColor(parent.colorLineA);
-
-							parent.overlay.add(ellipse);
-
-						}
-
-					}
-
-					break;
-				}
-
-			}
-			parent.impOrig.setOverlay(parent.overlay);
-			parent.impOrig.updateAndDraw();
-
-
-		}
-	}
+	
 }

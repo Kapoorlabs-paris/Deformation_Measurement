@@ -53,10 +53,7 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 	@Override
 	protected Void doInBackground() throws Exception {
 	
-		
-		parent.Tracklist.clear();
-		
-		
+		parent.table.removeAll();
 		EllipseTrack newtrack = new EllipseTrack(parent, jpb);
 		newtrack.IntersectandTrackCurrent();
 
@@ -112,7 +109,7 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 		
 		
 		}
-		Lineage();
+		LineageRedo();
 		}
 		
 		else {
@@ -121,8 +118,8 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 					(int)parent.thirdDimensionSize, parent.maxdistance, parent.AccountedZ);
 			NNsearch.process();
 			 SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>	simplegraph =  NNsearch.getResult();
-			
-			Lineage2D(simplegraph);
+			 parent.parentgraphZ.put(Integer.toString(1), simplegraph);
+			LineageRedo();
 		}
 		
 	
@@ -137,10 +134,10 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 
 	}
 
-	public void Lineage() {
+	
+	public void LineageRedo() {
 
 		parent.Tracklist.clear();
-		
 		for(Map.Entry<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> entryZ : parent.parentgraphZ.entrySet()){
 		
 		TrackModel model = new TrackModel(entryZ.getValue());
@@ -161,7 +158,6 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 		}
 		
 		
-		System.out.println("MinMax" + minid + " " + maxid + " " + entryZ.getKey());
 		
 		if (minid!=Integer.MAX_VALUE){
 		
@@ -204,9 +200,14 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 				
 				Intersectionobject currentangle = Angleiter.next();
 				
-				parent.Tracklist.add(new ValuePair<String, Intersectionobject>( Integer.toString(id) + entryZ.getKey(), currentangle));
+			
+				System.out.println(Integer.toString(id) + entryZ.getKey() + " " +  currentangle.z + " " + "ID and angle");
+				
+						parent.Tracklist.add(new ValuePair<String, Intersectionobject>( Integer.toString(id) + entryZ.getKey(), currentangle));
+				
+				
+				
 			}
-			System.out.println("In loop" + Integer.toString(id) + entryZ.getKey());
 			Collections.sort(parent.Tracklist, ThirdDimcomparison);
 			if (parent.fourthDimensionSize > 1)
 				Collections.sort(parent.Tracklist, FourthDimcomparison);
@@ -247,7 +248,6 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 						bestangle = currentangle;
 					if (bestangle.t > currentangle.t)
 						bestangle = currentangle;
-					System.out.println(currentangle.t + " " + bestangle.t);
 					
 				}
 				parent.Finalresult.put(Integer.toString(id) + entryZ.getKey() , bestangle);
@@ -258,115 +258,13 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 		}
 		}
 		}
-		CreateTable();
-
-	}
-
-	public void Lineage2D(SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> entryZ) {
-		parent.Tracklist.clear();
-		
-		TrackModel model = new TrackModel(entryZ);
-		
-		
-	
-		int minid = Integer.MAX_VALUE;
-		int maxid = Integer.MIN_VALUE;
-		
-		for (final Integer id : model.trackIDs(true)) {
-			
-			if (id > maxid)
-				maxid = id;
-			
-			if(id < minid)
-				minid = id;
-			
-		}
-		
-		
-		System.out.println("MinMax" + minid + " " + maxid + " " + entryZ);
-		
-		if (minid!=Integer.MAX_VALUE){
-		
-		for (final Integer id : model.trackIDs(true)) {
-
-			
-
-			
-			Comparator<Pair<String,Intersectionobject>> ThirdDimcomparison = new Comparator<Pair<String,Intersectionobject>>() {
-
-				@Override
-				public int compare(final Pair<String,Intersectionobject> A, final Pair<String,Intersectionobject> B) {
-
-					return A.getB().z - B.getB().z;
-
-				}
-
-			};
-
-		
-			
-			
-			model.setName(id, "Track" + id  );
-
-			
-		
-			
-			final HashSet<Intersectionobject> Angleset = model.trackIntersectionobjects(id);
-
-			Iterator<Intersectionobject> Angleiter = Angleset.iterator();
-			
-			
-			while(Angleiter.hasNext()) {
-				
-				Intersectionobject currentangle = Angleiter.next();
-			
-				parent.Tracklist.add(new ValuePair<String, Intersectionobject>( Integer.toString(id) , currentangle));
-			}
-			System.out.println("In loop" + Integer.toString(id) );
-			Collections.sort(parent.Tracklist, ThirdDimcomparison);
-
-			
-		}
-		
-		
-		
-		for (int id = minid; id <= maxid; ++id) {
-			Intersectionobject bestangle = null;
-			if(model.trackIntersectionobjects(id)!=null){
-			
-				List<Intersectionobject> sortedList = new ArrayList<Intersectionobject>(model.trackIntersectionobjects(id));
-				
-			
-				
-				Iterator<Intersectionobject> iterator = sortedList.iterator(); 
-				
-				int count = 0;
-				while(iterator.hasNext()){
-				
-				
-					Intersectionobject currentangle = iterator.next();
-					
-					    if (count == 0)
-						bestangle = currentangle;
-					if (bestangle.z > currentangle.z)
-						bestangle = currentangle;
-					System.out.println(currentangle.z + " " + bestangle.z);
-					
-				}
-				parent.Finalresult.put(Integer.toString(id), bestangle);
-				
-			
-			}
-			
-		}
-		
-		}
-		CreateTable();
+		CreateTableCurrent();
 
 	}
 
 	
-	public void CreateTable() {
+	
+	public void CreateTableCurrent() {
 
 	
 		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Last Angle", "End time",
@@ -375,17 +273,19 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 Object[][] rowvalues = new Object[0][colnames.length];
 
 	rowvalues = new Object[parent.Finalresult.size()][colnames.length];
-	parent.resultAngle = new ArrayList<Pair<String, double[]>>();
 
 	parent.resultAngle.clear();
 	
 	for (Pair<String, Intersectionobject> currentangle : parent.Tracklist) {
 		
+		
+		
 			parent.resultAngle.add(new ValuePair<String, double[]>(currentangle.getA(),
-					new double[] { currentangle.getB().t, currentangle.getB().angle }));
+					new double[] { currentangle.getB().z, currentangle.getB().angle }));
 
+			
+		
 	}
-
 	parent.table = new JTable(rowvalues, colnames);
 		parent.row = 0;
 		NumberFormat f = NumberFormat.getInstance();

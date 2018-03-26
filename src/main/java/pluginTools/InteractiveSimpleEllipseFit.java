@@ -1603,6 +1603,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			if (ID.equals(currentangle.getA())) {
 
 				currentresultAngle.add(currentangle);
+				
 			}
 
 		}
