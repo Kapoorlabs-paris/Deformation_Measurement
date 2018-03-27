@@ -70,8 +70,10 @@ public class EllipseTrack {
 		// Main method for computing intersections and tangents and angles between
 		// tangents
 		double percent = 0;
-		if (parent.automode) {
-
+		
+		
+		if(parent.supermode && parent.automode) {
+			
 			if (parent.originalimg.numDimensions() > 3) {
 
 				for (int t = 1; t <= parent.fourthDimensionSize; ++t) {
@@ -147,8 +149,101 @@ public class EllipseTrack {
 				compute.ParallelRansac();
 
 			}
+			
+			
+			
+		
+		
+		
+		
+		
+		
 
+		}
+		
+		
+		if (parent.automode && !parent.supermode) {
+
+
+			int span = parent.span;
+			if (parent.originalimg.numDimensions() > 3) {
+			for (int t = 1; t <= parent.fourthDimensionSize; ++t) {
+
+				for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
+					
+					parent.thirdDimension = z;
+					parent.fourthDimension = t;
+					
+					
+					parent.updatePreview(ValueChange.THIRDDIMmouse);
+					
+					percent++;
+					utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
+							"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize
+									+ " Z = " + z + "/" + parent.thirdDimensionSize);
+
+					RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty,
+							z, parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+
+
+					Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView, span);
+
+					parent.maxlabel = GetMaxlabelsseeded(Current.getA());
+					Computeinwater compute = new Computeinwater(parent, Current.getB(), Current.getA(), t, z,
+							(int) percent, parent.maxlabel);	
+					compute.ParallelRansac();
+
+				}
+			}
+
+			}
+
+		else if (parent.originalimg.numDimensions() > 2) {
+
+			for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
+				
+				parent.thirdDimension = z;
+				parent.updatePreview(ValueChange.THIRDDIMmouse);
+				
+				System.out.println(z + " " + parent.thirdDimension);
+				percent++;
+				utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.thirdDimensionSize),
+						"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
+				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
+						parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
+
+
+				Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView, parent.span);
+
+				parent.maxlabel = GetMaxlabelsseeded(Current.getA());
+				Computeinwater compute = new Computeinwater(parent, Current.getB(), Current.getA(), 1, z,
+						(int) percent, parent.maxlabel);
+				compute.ParallelRansac();
+
+			}
+		
 		} else {
+			int z = parent.thirdDimension;
+			int t = parent.fourthDimension;
+			parent.updatePreview(ValueChange.THIRDDIMmouse);
+			percent++;
+
+			RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
+					parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+			
+
+
+			Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView, parent.span);
+
+			parent.maxlabel = GetMaxlabelsseeded(Current.getA());
+			Computeinwater compute = new Computeinwater(parent, Current.getB(), Current.getA(), t, z, (int)percent, parent.maxlabel);
+			compute.ParallelRansac();
+
+		}
+		}
+		
+		
+		else if (!parent.automode && !parent.supermode) {
 
 			if (parent.originalimg.numDimensions() > 3) {
 
@@ -228,7 +323,6 @@ public class EllipseTrack {
 						(int) percent, parent.maxlabel);
 				compute.ParallelRansac();
 
-				System.out.println(z + " " + t + "Z and T");
 
 			}
 
@@ -250,7 +344,7 @@ public class EllipseTrack {
 				new BitType());
 
 		newCurrentView = Kernels.CannyEdgeandMeanBit(CurrentView, parent.span);
-		newthinCurrentView = thinit.compute(CurrentView, newthinCurrentView);
+		newthinCurrentView = thinit.compute(newCurrentView, newthinCurrentView);
 
 		// ImageJFunctions.show(newthinCurrentView).setTitle("Thinned image");
 
@@ -321,34 +415,12 @@ public class EllipseTrack {
 
 	public int GetMaxlabelsseeded(RandomAccessibleInterval<IntType> intimg) {
 
-		// To get maximum Labels on the image
-		Cursor<IntType> intCursor = Views.iterable(intimg).cursor();
-		
 		IntType min = new IntType();
         IntType max = new IntType();
         computeMinMax( Views.iterable(intimg), min, max );
-        
-		int currentLabel = min.get();
 		
-		boolean anythingFound = true;
-		while (anythingFound) {
-			anythingFound = false;
-			intCursor.reset();
-			
-			while (intCursor.hasNext()) {
-				intCursor.fwd();
-				int i = intCursor.get().get();
-				if (i == currentLabel) {
-
-					anythingFound = true;
-
-					
-				}
-			}
-			currentLabel++;
-		}
-
-		return currentLabel;
+		
+		return max.get();
 
 	}
 	

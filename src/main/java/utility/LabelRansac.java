@@ -94,7 +94,7 @@ public class LabelRansac implements Runnable {
 		final NumericalSolvers numsol = new BisectorEllipsoid();
 		// Using the ellipse model to do the fitting
 		ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> Reducedsamples = RansacEllipsoid.Allsamples(
-				truths, parent.outsideCutoff, parent.insideCutoff, parent.minpercent, numsol, parent.maxtry, ndims);
+				truths, parent.outsideCutoff, parent.insideCutoff, parent.minpercent, parent.minperimeter, parent.maxperimeter, numsol, parent.maxtry, ndims);
 
 		
 		if (Reducedsamples != null) {

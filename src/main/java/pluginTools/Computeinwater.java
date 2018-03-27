@@ -95,7 +95,7 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 			ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
 			
 			
-			if (parent.automode) {
+			if (parent.supermode) {
 				
 					Iterator<Integer> setiter = parent.pixellist.iterator();
 					
@@ -104,21 +104,18 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 				 	 percent++;
 			    	 
 				 	 int label = setiter.next();
-			    	     long size = CurrentViewInt.dimension(0) * CurrentViewInt.dimension(1);
 			    	
 			    		 Watershedobject current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
 
-			    		 if (size > current.Size && current.meanIntensity > parent.perimeter) {
-				 
+				 if(current.Size > parent.minperimeter * parent.minperimeter / 12) {
 				 
 				 List<Pair<RealLocalizable, BitType>> truths =  new ArrayList<Pair<RealLocalizable, BitType>>();
 				 tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi, resultovalroi, resultlineroi,AllPointsofIntersect,Allintersection,fitmapspecial,parent.jpb )));
-				 }
 				
 					
 				}
 					
-					
+					}
 					
 				
 			}
@@ -136,19 +133,17 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 		    	
 		    		 Watershedobject current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
 
-		    		 if (size > current.Size && current.meanIntensity > parent.perimeter) {
 			 
 			 
 			 List<Pair<RealLocalizable, BitType>> truths =  new ArrayList<Pair<RealLocalizable, BitType>>();
 			 tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi, resultovalroi, resultlineroi,AllPointsofIntersect,Allintersection,fitmapspecial )));
-			 }
 			
 		}
 			}
 		try {
 			taskExecutor.invokeAll(tasks);
 			
-			if (parent.automode) {
+			if (parent.supermode) {
 
 				// Get superintersection
 			
@@ -158,6 +153,14 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 			newintersect.Getsuperintersection(resultroi, resultovalroi, resultlineroi, AllPointsofIntersect, Allintersection, nThreads, nThreads);
 			
 
+			}
+			if (parent.automode) {
+				
+				String uniqueID = Integer.toString(z) + Integer.toString(t);
+				Roiobject currentobject = new Roiobject(resultroi,resultovalroi,resultlineroi, z, t, true);
+				parent.ZTRois.put(uniqueID, currentobject);
+
+				DisplayAuto.Display(parent);
 			}
 			
 		} catch (InterruptedException e1) {

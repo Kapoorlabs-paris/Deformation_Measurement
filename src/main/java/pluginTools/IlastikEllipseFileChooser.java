@@ -181,13 +181,17 @@ public class IlastikEllipseFileChooser extends JPanel {
 			
 			// Tracking and Measurement is done with imageA 
 	        
-		    
+		  org.apache.log4j.BasicConfigurator.configure();
 			RandomAccessibleInterval<FloatType> image = new ImgOpener().openImgs(impA.getOriginalFileInfo().directory + impA.getOriginalFileInfo().fileName , new FloatType()).iterator().next();
 			RandomAccessibleInterval<FloatType> imagebefore = new ImgOpener().openImgs(impOrig.getOriginalFileInfo().directory + impOrig.getOriginalFileInfo().fileName, new FloatType()).iterator().next();
-			RandomAccessibleInterval<IntType> imagesuper = new ImgOpener().openImgs(impsuper.getOriginalFileInfo().directory + impsuper.getOriginalFileInfo().fileName, new IntType()).iterator().next();
+			
 			WindowManager.closeAllWindows();
-			if(superpixel)
-			new InteractiveSimpleEllipseFit(image, imagebefore, imagesuper, simple, superpixel).run(null);
+			if(superpixel) {
+			
+				RandomAccessibleInterval<IntType> imagesuper = new ImgOpener().openImgs(impsuper.getOriginalFileInfo().directory + impsuper.getOriginalFileInfo().fileName, new IntType()).iterator().next();
+				new InteractiveSimpleEllipseFit(image, imagebefore, imagesuper, simple, superpixel).run(null);
+			
+			}
 			else
 			new InteractiveSimpleEllipseFit(image, imagebefore, simple).run(null);
 			close(parent);
