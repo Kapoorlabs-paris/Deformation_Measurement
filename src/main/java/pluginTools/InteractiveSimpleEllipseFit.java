@@ -148,7 +148,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int rowchoice;
 	public int radiusdetection = 5;
 	public int maxtry = 30;
-	public float minpercent = 0.65f;
+	public float minpercent = 0.45f;
 	public float minpercentINI = 0.65f;
 	public float minpercentINIArc = 0.25f;
 	public final double minSeperation = 5;
@@ -157,7 +157,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float outsideCutoff = 5;
 
 	public long maxsize = 100;
-	public int span = 15;
+	public int span = 2;
 	public int minperimeter = 100;
 	public int maxperimeter = 1000;
 	public float lowprob = 0f;
@@ -419,7 +419,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(3);
-		this.automode = automode;
+		this.automode = true;
 		this.supermode = supermode;
 	}
 
@@ -493,11 +493,15 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					thirdDimension, fourthDimensionSize);
 
 			impOrig = ImageJFunctions.show(CurrentViewOrig);
+			impOrig.setTitle("Raw Image");
 			impOrig.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 		}
 
+		if(originalimgsuper!=null)
+			ImageJFunctions.show(originalimgsuper).setTitle("Super Pixel Segmentation");
 		imp = ImageJFunctions.show(CurrentView);
-		imp.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
+	
+		imp.setTitle("Active ProbabilityMap" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 
 		// Create empty Hyperstack
 
@@ -512,6 +516,17 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			}
 		}
 		updatePreview(ValueChange.ALL);
+		if(automode) {
+		
+			lowprobslider.setValue(computeScrollbarPositionFromValue(lowprob, lowprobmin, lowprobmax, scrollbarSize));
+			highprobslider.setValue(computeScrollbarPositionFromValue(highprob, highprobmin, highprobmax, scrollbarSize));
+			lowprob = utility.Slicer.computeValueFromScrollbarPosition(lowprobslider.getValue(), lowprobmin, lowprobmax, scrollbarSize);
+			highprob = utility.Slicer.computeValueFromScrollbarPosition(highprobslider.getValue(), highprobmin, highprobmax, scrollbarSize);
+			
+			updatePreview(ValueChange.SEG);
+			
+		}
+		System.out.println(lowprob + " " + highprob);
 
 		Cardframe.repaint();
 		Cardframe.validate();
@@ -519,6 +534,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		panelFirst.validate();
 
 		Card();
+		
+		
 	}
 
 	public void updatePreview(final ValueChange change) {
@@ -599,7 +616,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			}
 
 			localimp.setTitle(
-					"Copy of Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
+					"Candidate Points" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 
 		}
 
@@ -1255,8 +1272,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			Label.CENTER);
 	final Label outsideText = new Label("Cutoff distance for points outside ellipse = " + outsideCutoff, Label.CENTER);
 
-	final Label minperiText = new Label("Minimum ellipse perimeter" , Label.CENTER);
-	final Label maxperiText = new Label("Maximum ellipse perimeter" , Label.CENTER);
+	final Label minperiText = new Label("Minimum ellipse perimeter" );
+	final Label maxperiText = new Label("Maximum ellipse perimeter" );
 
 	final Label lowprobText = new Label("Lower probability level = " + lowprob, Label.CENTER);
 	final Label highporbText = new Label("Higher probability level = " + highprob, Label.CENTER);
@@ -1304,8 +1321,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	public void Card() {
 
-		lowprobslider.setValue(computeScrollbarPositionFromValue(lowprob, lowprobmin, lowprobmax, scrollbarSize));
-		highprobslider.setValue(computeScrollbarPositionFromValue(highprob, highprobmin, highprobmax, scrollbarSize));
+		
+		
 		CardLayout cl = new CardLayout();
 
 		c.insets = new Insets(5, 5, 5, 5);
@@ -1323,7 +1340,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		Original.setLayout(layout);
 		Roiselect.setLayout(layout);
 		Probselect.setLayout(layout);
-
 		Angleselect.setLayout(layout);
 
 		inputFieldZ = new TextField(5);
@@ -1484,13 +1500,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		}
 
-		Angleselect.add(minperiText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,
+		Angleselect.add(minperiText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		Angleselect.add(minperimeterField, new GridBagConstraints(4, 0, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.RELATIVE, insets, 0, 0));
 
-		Angleselect.add(maxperiText, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,
+		Angleselect.add(maxperiText, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		Angleselect.add(maxperimeterField, new GridBagConstraints(4, 2, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
@@ -1633,6 +1649,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		Cardframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		Cardframe.pack();
 		Cardframe.setVisible(true);
+		
 	}
 
 	public void displayclicked(int trackindex) {

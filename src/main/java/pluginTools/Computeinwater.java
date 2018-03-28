@@ -107,10 +107,11 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 			    	
 			    		 Watershedobject current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
 
-				 if(current.Size > parent.minperimeter * parent.minperimeter / 12) {
+			    	
+			    		 if(current.Size > parent.minperimeter * parent.minperimeter / 12 && current.Size < parent.maxperimeter * parent.maxperimeter / 12 ) {
 				 
 				 List<Pair<RealLocalizable, BitType>> truths =  new ArrayList<Pair<RealLocalizable, BitType>>();
-				 tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi, resultovalroi, resultlineroi,AllPointsofIntersect,Allintersection,fitmapspecial,parent.jpb )));
+				 tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi, resultovalroi, resultlineroi,AllPointsofIntersect,Allintersection,fitmapspecial,parent.jpb, parent.supermode )));
 				
 					
 				}
@@ -129,15 +130,14 @@ public Computeinwater (final InteractiveSimpleEllipseFit parent, final RandomAcc
 		    	 
 		    	 percent++;
 		    	 
-		    	 long size = CurrentViewInt.dimension(0) * CurrentViewInt.dimension(1);
 		    	
 		    		 Watershedobject current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
 
 			 
-			 
+		    		 if(current.Size > parent.minperimeter * parent.minperimeter / 12 && current.Size < parent.maxperimeter * parent.maxperimeter / 12 ) {
 			 List<Pair<RealLocalizable, BitType>> truths =  new ArrayList<Pair<RealLocalizable, BitType>>();
-			 tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi, resultovalroi, resultlineroi,AllPointsofIntersect,Allintersection,fitmapspecial )));
-			
+			 tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi, resultovalroi, resultlineroi,AllPointsofIntersect,Allintersection,fitmapspecial, parent.supermode )));
+		    		 }
 		}
 			}
 		try {

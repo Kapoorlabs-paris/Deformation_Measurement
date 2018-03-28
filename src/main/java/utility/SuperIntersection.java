@@ -38,7 +38,7 @@ public class SuperIntersection {
 		final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
 		for (int index = 0; index < parent.superReducedSamples.size(); ++index) {
 			
-			for (int indexx = 0; indexx < parent.superReducedSamples.size() - 1; ++indexx) {
+			for (int indexx = 0; indexx < parent.superReducedSamples.size() ; ++indexx) {
 			
 			if (index!=indexx) {
 				

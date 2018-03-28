@@ -40,14 +40,14 @@ public class LabelRansac implements Runnable {
 	final ArrayList<Intersectionobject> Allintersection;
 
 	final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial;
-	
+	final boolean supermode;
 	
 	final JProgressBar jpb;
 
 	public LabelRansac(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,
 			List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, ArrayList<EllipseRoi> resultroi,
 			ArrayList<OvalRoi> resultovalroi, ArrayList<Line> resultlineroi,
-			final ArrayList<Tangentobject> AllPointsofIntersect, final ArrayList<Intersectionobject> Allintersection,final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial) {
+			final ArrayList<Tangentobject> AllPointsofIntersect, final ArrayList<Intersectionobject> Allintersection,final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial, final boolean supermode) {
 
 		this.parent = parent;
 		this.ActualRoiimg = ActualRoiimg;
@@ -61,13 +61,14 @@ public class LabelRansac implements Runnable {
 		this.AllPointsofIntersect = AllPointsofIntersect;
 		this.fitmapspecial = fitmapspecial;
 		this.jpb = null;
+		this.supermode = supermode;
 	}
 
 	public LabelRansac(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,
 			List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, ArrayList<EllipseRoi> resultroi,
 			ArrayList<OvalRoi> resultovalroi, ArrayList<Line> resultlineroi,
 			final ArrayList<Tangentobject> AllPointsofIntersect, final ArrayList<Intersectionobject> Allintersection,
-			final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial, final JProgressBar jpb) {
+			final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial, final JProgressBar jpb, final boolean supermode) {
 
 		this.parent = parent;
 		this.ActualRoiimg = ActualRoiimg;
@@ -81,6 +82,7 @@ public class LabelRansac implements Runnable {
 		this.AllPointsofIntersect = AllPointsofIntersect;
 		this.fitmapspecial = fitmapspecial;
 		this.jpb = jpb;
+		this.supermode = supermode;
 	}
 
 	
@@ -96,7 +98,7 @@ public class LabelRansac implements Runnable {
 		ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> Reducedsamples = RansacEllipsoid.Allsamples(
 				truths, parent.outsideCutoff, parent.insideCutoff, parent.minpercent, parent.minperimeter, parent.maxperimeter, numsol, parent.maxtry, ndims);
 
-		
+		String uniqueID = Integer.toString(z) + Integer.toString(t);
 		if (Reducedsamples != null) {
 			SortSegments.Sort(Reducedsamples);
 			for (int i = 0; i < Reducedsamples.size() - 1; ++i) {
@@ -129,10 +131,11 @@ public class LabelRansac implements Runnable {
 			}
 
 			int count = 0;
+			if(!supermode) {
 			ArrayList<Integer> ellipsepairlist = new ArrayList<Integer>();
 			for (int i = 0; i < Reducedsamples.size(); ++i) {
 
-				for (int j = 0; j < Reducedsamples.size() - 1; ++j) {
+				for (int j = 0; j < Reducedsamples.size(); ++j) {
 
 					if (j != i) {
 
@@ -144,7 +147,7 @@ public class LabelRansac implements Runnable {
 					}
 				}
 			}
-			parent.superReducedSamples.addAll(Reducedsamples);
+
 			for (int i = 0; i < fitmapspecial.size(); ++i) {
 
 				Pair<Ellipsoid, Ellipsoid> ellipsepair = fitmapspecial.get(i);
@@ -184,31 +187,36 @@ public class LabelRansac implements Runnable {
 				fitmapspecial.remove(ellipsepair);
 
 			}
-
-
-			String uniqueID = Integer.toString(z) + Integer.toString(t);
-		
-
-				parent.ALLIntersections.put(uniqueID, Allintersection);
+			parent.ALLIntersections.put(uniqueID, Allintersection);
 			
 
 			
 
-				// Add new result rois to ZTRois
-				for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
+			// Add new result rois to ZTRois
+			for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
 
-					Roiobject currentobject = entry.getValue();
+				Roiobject currentobject = entry.getValue();
 
-					if (currentobject.fourthDimension == t && currentobject.thirdDimension == z) {
+				if (currentobject.fourthDimension == t && currentobject.thirdDimension == z) {
 
-						currentobject.resultroi = resultroi;
-						currentobject.resultovalroi = resultovalroi;
-						currentobject.resultlineroi = resultlineroi;
-
-					}
+					currentobject.resultroi = resultroi;
+					currentobject.resultovalroi = resultovalroi;
+					currentobject.resultlineroi = resultlineroi;
 
 				}
 
+			}
+
+			
+			}
+			parent.superReducedSamples.addAll(Reducedsamples);
+			
+			
+
+		
+		
+
+				
 			
 
 

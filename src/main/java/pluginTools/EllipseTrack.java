@@ -95,8 +95,10 @@ public class EllipseTrack {
 						RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(
 								parent.originalimgsuper, z, parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
+						RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
+						
 						GetPixelList(CurrentViewInt);
-						Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z,
+						Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentViewInt, t, z,
 								(int) percent);
 						compute.ParallelRansac();
 
@@ -120,9 +122,13 @@ public class EllipseTrack {
 							parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
 					RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(
 							parent.originalimgsuper, z, parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
+					
+					
+
+					RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
 					GetPixelList(CurrentViewInt);
 
-					Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, 1, z,
+					Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentViewInt, 1, z,
 							(int) percent);
 
 					compute.ParallelRansac();
@@ -140,11 +146,12 @@ public class EllipseTrack {
 
 				RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(
 						parent.originalimgsuper, z, parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
+				RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
+				ImageJFunctions.show(CurrentViewthin);
+				GetPixelList(CurrentViewInt);
 
-				parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
-
-				Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, 1, z, (int) percent,
-						parent.maxlabel);
+				Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z,
+						(int) percent);
 
 				compute.ParallelRansac();
 
@@ -205,7 +212,6 @@ public class EllipseTrack {
 				parent.thirdDimension = z;
 				parent.updatePreview(ValueChange.THIRDDIMmouse);
 				
-				System.out.println(z + " " + parent.thirdDimension);
 				percent++;
 				utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.thirdDimensionSize),
 						"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
@@ -222,7 +228,7 @@ public class EllipseTrack {
 
 			}
 		
-		} else {
+		} else  {
 			int z = parent.thirdDimension;
 			int t = parent.fourthDimension;
 			parent.updatePreview(ValueChange.THIRDDIMmouse);
@@ -230,7 +236,6 @@ public class EllipseTrack {
 
 			RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
 					parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-			
 
 
 			Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView, parent.span);
@@ -332,6 +337,22 @@ public class EllipseTrack {
 
 	}
 
+	
+	public RandomAccessibleInterval<BitType> getThin(RandomAccessibleInterval<BitType> CurrentView){
+		
+		ThinningStrategyFactory fact = new ThinningStrategyFactory(true);
+		ThinningStrategy strat = fact.getStrategy(Strategy.HILDITCH);
+		
+		ThinningOp thinit = new ThinningOp(strat, true, new ArrayImgFactory<BitType>());
+		RandomAccessibleInterval<BitType> newCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
+				new BitType());
+		RandomAccessibleInterval<BitType> newthinCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
+				new BitType());
+		newthinCurrentView = thinit.compute(CurrentView, newthinCurrentView);
+		
+		return newthinCurrentView;
+	}
+	
 	public Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> getAutoint(
 			RandomAccessibleInterval<BitType> CurrentView, int span) {
 
