@@ -65,15 +65,83 @@ public class EllipseTrack {
 		this.jpb = jpb;
 	}
 
+	public void BlockRepeat(double percent, int z, int t) {
+
+		parent.updatePreview(ValueChange.THIRDDIMmouse);
+
+		percent++;
+		utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
+				"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
+						+ parent.thirdDimensionSize);
+
+		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
+				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.originalimgsuper, z,
+				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+
+		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
+
+		GetPixelList(CurrentViewInt);
+		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentViewInt, t, z, (int) percent);
+		compute.ParallelRansac();
+	}
+
+	public void BlockRepeatAuto(double percent, int z, int t) {
+
+		parent.updatePreview(ValueChange.THIRDDIMmouse);
+
+		percent++;
+		utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
+				"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
+						+ parent.thirdDimensionSize);
+
+		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
+				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+
+		Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView,
+				parent.span);
+
+		parent.maxlabel = GetMaxlabelsseeded(Current.getA());
+		Computeinwater compute = new Computeinwater(parent, Current.getB(), Current.getA(), t, z, (int) percent,
+				parent.maxlabel);
+		compute.ParallelRansac();
+
+	}
+
+	public void BlockRepeatManual(double percent, int z, int t) {
+
+		parent.updatePreview(ValueChange.THIRDDIMmouse);
+		percent++;
+		if (parent.fourthDimensionSize != 0)
+			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.Accountedframes.entrySet().size()),
+					"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z
+							+ "/" + parent.thirdDimensionSize);
+		else
+			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.AccountedZ.entrySet().size()),
+					"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
+
+		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
+				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+
+		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.emptyWater, z,
+				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+
+		parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
+
+		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent,
+				parent.maxlabel);
+		compute.ParallelRansac();
+
+	}
+
 	public void IntersectandTrack() {
 
 		// Main method for computing intersections and tangents and angles between
 		// tangents
 		double percent = 0;
-		
-		
-		if(parent.supermode && parent.automode) {
-			
+
+		if (parent.supermode && parent.automode) {
+
 			if (parent.originalimg.numDimensions() > 3) {
 
 				for (int t = 1; t <= parent.fourthDimensionSize; ++t) {
@@ -83,24 +151,43 @@ public class EllipseTrack {
 						parent.thirdDimension = z;
 						parent.fourthDimension = t;
 
-						parent.updatePreview(ValueChange.THIRDDIMmouse);
+						BlockRepeat(percent, z, t);
+					}
+				}
 
-						percent++;
-						utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
-								"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize
-										+ " Z = " + z + "/" + parent.thirdDimensionSize);
+			}
 
-						RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty,
-								z, parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-						RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(
-								parent.originalimgsuper, z, parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+			else if (parent.originalimg.numDimensions() > 2) {
 
-						RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
-						
-						GetPixelList(CurrentViewInt);
-						Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentViewInt, t, z,
-								(int) percent);
-						compute.ParallelRansac();
+				for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
+
+					parent.thirdDimension = z;
+
+					BlockRepeat(percent, z, 1);
+
+				}
+
+			} else {
+				int z = parent.thirdDimension;
+				int t = parent.fourthDimension;
+
+				BlockRepeat(percent, z, t);
+
+			}
+
+		}
+
+		if (parent.automode && !parent.supermode) {
+
+			if (parent.originalimg.numDimensions() > 3) {
+				for (int t = 1; t <= parent.fourthDimensionSize; ++t) {
+
+					for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
+
+						parent.thirdDimension = z;
+						parent.fourthDimension = t;
+
+						BlockRepeatAuto(percent, z, t);
 
 					}
 				}
@@ -111,143 +198,20 @@ public class EllipseTrack {
 
 				for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
 
-				
 					parent.thirdDimension = z;
-					parent.updatePreview(ValueChange.THIRDDIMmouse);
 
-					percent++;
-					utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.thirdDimensionSize),
-							"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
-					RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
-							parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
-					RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(
-							parent.originalimgsuper, z, parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
-					
-					
-
-					RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
-					GetPixelList(CurrentViewInt);
-
-					Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentViewInt, 1, z,
-							(int) percent);
-
-					compute.ParallelRansac();
+					BlockRepeatAuto(percent, z, 1);
 
 				}
 
 			} else {
 				int z = parent.thirdDimension;
 				int t = parent.fourthDimension;
-				parent.updatePreview(ValueChange.THIRDDIMmouse);
-				percent++;
-
-				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
-						parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
-				RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(
-						parent.originalimgsuper, z, parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
-				RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
-				ImageJFunctions.show(CurrentViewthin);
-				GetPixelList(CurrentViewInt);
-
-				Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z,
-						(int) percent);
-
-				compute.ParallelRansac();
+				BlockRepeatAuto(percent, z, t);
 
 			}
-			
-			
-			
-		
-		
-		
-		
-		
-		
-
 		}
-		
-		
-		if (parent.automode && !parent.supermode) {
 
-
-			int span = parent.span;
-			if (parent.originalimg.numDimensions() > 3) {
-			for (int t = 1; t <= parent.fourthDimensionSize; ++t) {
-
-				for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
-					
-					parent.thirdDimension = z;
-					parent.fourthDimension = t;
-					
-					
-					parent.updatePreview(ValueChange.THIRDDIMmouse);
-					
-					percent++;
-					utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
-							"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize
-									+ " Z = " + z + "/" + parent.thirdDimensionSize);
-
-					RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty,
-							z, parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
-
-					Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView, span);
-
-					parent.maxlabel = GetMaxlabelsseeded(Current.getA());
-					Computeinwater compute = new Computeinwater(parent, Current.getB(), Current.getA(), t, z,
-							(int) percent, parent.maxlabel);	
-					compute.ParallelRansac();
-
-				}
-			}
-
-			}
-
-		else if (parent.originalimg.numDimensions() > 2) {
-
-			for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
-				
-				parent.thirdDimension = z;
-				parent.updatePreview(ValueChange.THIRDDIMmouse);
-				
-				percent++;
-				utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.thirdDimensionSize),
-						"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
-				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
-						parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
-
-
-				Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView, parent.span);
-
-				parent.maxlabel = GetMaxlabelsseeded(Current.getA());
-				Computeinwater compute = new Computeinwater(parent, Current.getB(), Current.getA(), 1, z,
-						(int) percent, parent.maxlabel);
-				compute.ParallelRansac();
-
-			}
-		
-		} else  {
-			int z = parent.thirdDimension;
-			int t = parent.fourthDimension;
-			parent.updatePreview(ValueChange.THIRDDIMmouse);
-			percent++;
-
-			RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
-					parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
-
-			Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView, parent.span);
-
-			parent.maxlabel = GetMaxlabelsseeded(Current.getA());
-			Computeinwater compute = new Computeinwater(parent, Current.getB(), Current.getA(), t, z, (int)percent, parent.maxlabel);
-			compute.ParallelRansac();
-
-		}
-		}
-		
-		
 		else if (!parent.automode && !parent.supermode) {
 
 			if (parent.originalimg.numDimensions() > 3) {
@@ -259,31 +223,8 @@ public class EllipseTrack {
 					for (Map.Entry<String, Integer> entryZ : parent.AccountedZ.entrySet()) {
 
 						int z = entryZ.getValue();
-						parent.updatePreview(ValueChange.THIRDDIMmouse);
-						percent++;
-						if (parent.fourthDimensionSize != 0)
-							utility.ProgressBar.SetProgressBar(jpb,
-									100 * percent / (parent.Accountedframes.entrySet().size()),
-									"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize
-											+ " Z = " + z + "/" + parent.thirdDimensionSize);
-						else
-							utility.ProgressBar.SetProgressBar(jpb,
-									100 * percent / (parent.AccountedZ.entrySet().size()),
-									"Fitting ellipses and computing angles T/Z = " + z + "/"
-											+ parent.thirdDimensionSize);
 
-						RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty,
-								z, parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
-						RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(
-								parent.emptyWater, z, parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
-						parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
-
-						Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z,
-								(int) percent, parent.maxlabel);
-						compute.ParallelRansac();
-
+						BlockRepeatManual(percent, z, t);
 					}
 				}
 
@@ -294,23 +235,7 @@ public class EllipseTrack {
 				for (Map.Entry<String, Integer> entryZ : parent.AccountedZ.entrySet()) {
 
 					int z = entryZ.getValue();
-					System.out.println(z + " " + t + "Z and T" + parent.AccountedZ.size());
-					parent.updatePreview(ValueChange.THIRDDIMmouse);
-					percent++;
-
-					utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.AccountedZ.entrySet().size()),
-							"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
-
-					RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
-							parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
-					RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(
-							parent.emptyWater, z, parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-					parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
-
-					Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z,
-							(int) percent, parent.maxlabel);
-					compute.ParallelRansac();
+					BlockRepeatManual(percent, z, t);
 
 				}
 
@@ -328,7 +253,6 @@ public class EllipseTrack {
 						(int) percent, parent.maxlabel);
 				compute.ParallelRansac();
 
-
 			}
 
 		}
@@ -337,22 +261,21 @@ public class EllipseTrack {
 
 	}
 
-	
-	public RandomAccessibleInterval<BitType> getThin(RandomAccessibleInterval<BitType> CurrentView){
-		
+	public RandomAccessibleInterval<BitType> getThin(RandomAccessibleInterval<BitType> CurrentView) {
+
 		ThinningStrategyFactory fact = new ThinningStrategyFactory(true);
 		ThinningStrategy strat = fact.getStrategy(Strategy.HILDITCH);
-		
+
 		ThinningOp thinit = new ThinningOp(strat, true, new ArrayImgFactory<BitType>());
 		RandomAccessibleInterval<BitType> newCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
 				new BitType());
 		RandomAccessibleInterval<BitType> newthinCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
 				new BitType());
 		newthinCurrentView = thinit.compute(CurrentView, newthinCurrentView);
-		
+
 		return newthinCurrentView;
 	}
-	
+
 	public Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> getAutoint(
 			RandomAccessibleInterval<BitType> CurrentView, int span) {
 
@@ -407,140 +330,74 @@ public class EllipseTrack {
 		return copyoriginal;
 
 	}
-	
-	
+
 	public void GetPixelList(RandomAccessibleInterval<IntType> intimg) {
-		
+
 		IntType min = new IntType();
-        IntType max = new IntType();
-        computeMinMax( Views.iterable(intimg), min, max );
-        Cursor<IntType> intCursor = Views.iterable(intimg).cursor();
+		IntType max = new IntType();
+		computeMinMax(Views.iterable(intimg), min, max);
+		Cursor<IntType> intCursor = Views.iterable(intimg).cursor();
 		int currentLabel = min.get();
-		  parent.pixellist.add(currentLabel);
+		parent.pixellist.add(currentLabel);
 		while (intCursor.hasNext()) {
 			intCursor.fwd();
 			int i = intCursor.get().get();
-		   if (i!=currentLabel) {
-			   
-			   
-			   parent.pixellist.add(i);
-			   
-			   currentLabel = i;
-			   
-		   }
-			
-			
+			if (i != currentLabel) {
+
+				parent.pixellist.add(i);
+
+				currentLabel = i;
+
+			}
+
 		}
-		
+
 	}
 
 	public int GetMaxlabelsseeded(RandomAccessibleInterval<IntType> intimg) {
 
 		IntType min = new IntType();
-        IntType max = new IntType();
-        computeMinMax( Views.iterable(intimg), min, max );
-		
-		
+		IntType max = new IntType();
+		computeMinMax(Views.iterable(intimg), min, max);
+
 		return max.get();
 
 	}
-	
-    public < T extends Comparable< T > & Type< T > > void computeMinMax(
-        final Iterable< T > input, final T min, final T max )
-    {
-        // create a cursor for the image (the order does not matter)
-        final Iterator< T > iterator = input.iterator();
- 
-        // initialize min and max with the first image value
-        T type = iterator.next();
- 
-        min.set( type );
-        max.set( type );
- 
-        // loop over the rest of the data and determine min and max value
-        while ( iterator.hasNext() )
-        {
-            // we need this type more than once
-            type = iterator.next();
- 
-            if ( type.compareTo( min ) < 0 )
-                min.set( type );
- 
-            if ( type.compareTo( max ) > 0 )
-                max.set( type );
-        }
-    }
+
+	public <T extends Comparable<T> & Type<T>> void computeMinMax(final Iterable<T> input, final T min, final T max) {
+		// create a cursor for the image (the order does not matter)
+		final Iterator<T> iterator = input.iterator();
+
+		// initialize min and max with the first image value
+		T type = iterator.next();
+
+		min.set(type);
+		max.set(type);
+
+		// loop over the rest of the data and determine min and max value
+		while (iterator.hasNext()) {
+			// we need this type more than once
+			type = iterator.next();
+
+			if (type.compareTo(min) < 0)
+				min.set(type);
+
+			if (type.compareTo(max) > 0)
+				max.set(type);
+		}
+	}
+
 	public void IntersectandTrackCurrent() {
 
 		// Main method for computing intersections and tangents and angles between
 		// tangents
 		double percent = 0;
-		int span = parent.span;
-		if (parent.automode) {
+		if (parent.automode || parent.supermode) {
 
-			if (parent.originalimg.numDimensions() > 3) {
+			int z = parent.thirdDimension;
+			int t = parent.fourthDimension;
 
-				int z = parent.thirdDimension;
-				int t = parent.fourthDimension;
-
-				parent.updatePreview(ValueChange.THIRDDIMmouse);
-
-				percent++;
-				utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
-						"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize + " Z = "
-								+ z + "/" + parent.thirdDimensionSize);
-
-				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
-						parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
-				Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(
-						CurrentView, span);
-
-				parent.maxlabel = GetMaxlabelsseeded(Current.getA());
-				Computeinwater compute = new Computeinwater(parent, Current.getB(), Current.getA(), t, z, (int) percent,
-						parent.maxlabel);
-				compute.ParallelRansac();
-
-			}
-
-			else if (parent.originalimg.numDimensions() > 2) {
-
-				int z = parent.thirdDimension;
-				parent.updatePreview(ValueChange.THIRDDIMmouse);
-
-				System.out.println(z + " " + parent.thirdDimension);
-				percent++;
-				utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.thirdDimensionSize),
-						"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
-				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
-						parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
-
-				Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(
-						CurrentView, span);
-
-				parent.maxlabel = GetMaxlabelsseeded(Current.getA());
-				Computeinwater compute = new Computeinwater(parent, Current.getB(), Current.getA(), 1, z, (int) percent,
-						parent.maxlabel);
-				compute.ParallelRansac();
-
-			} else {
-				int z = parent.thirdDimension;
-				int t = parent.fourthDimension;
-				parent.updatePreview(ValueChange.THIRDDIMmouse);
-				percent++;
-
-				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
-						parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
-				Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(
-						CurrentView, span);
-
-				parent.maxlabel = GetMaxlabelsseeded(Current.getA());
-				Computeinwater compute = new Computeinwater(parent, Current.getB(), Current.getA(), t, z, (int) percent,
-						parent.maxlabel);
-				compute.ParallelRansac();
-
-			}
+			BlockRepeat(percent, z, t);
 
 		} else {
 
@@ -548,51 +405,14 @@ public class EllipseTrack {
 
 				int z = parent.thirdDimension;
 				int t = parent.fourthDimension;
-
-				parent.updatePreview(ValueChange.THIRDDIMmouse);
-				percent++;
-				if (parent.fourthDimensionSize != 0)
-					utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.Accountedframes.entrySet().size()),
-							"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize
-									+ " Z = " + z + "/" + parent.thirdDimensionSize);
-				else
-					utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.AccountedZ.entrySet().size()),
-							"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
-
-				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
-						parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
-				RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.emptyWater,
-						z, parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-				parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
-				Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent,
-						parent.maxlabel);
-				compute.ParallelRansac();
+				BlockRepeatManual(percent, z, t);
 
 			} else if (parent.originalimg.numDimensions() > 2 && parent.originalimg.numDimensions() <= 3) {
 
 				int z = parent.thirdDimension;
 				int t = parent.fourthDimension;
 
-				System.out.println(z + " " + t + "Z and T" + parent.AccountedZ.size());
-				parent.updatePreview(ValueChange.THIRDDIMmouse);
-				percent++;
-
-				utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.AccountedZ.entrySet().size()),
-						"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
-
-				RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
-						parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
-				RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.emptyWater,
-						z, parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-				parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
-
-				System.out.println(parent.maxlabel);
-				Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent,
-						parent.maxlabel);
-				compute.ParallelRansac();
-
+				BlockRepeatManual(percent, z, t);
 			}
 
 			else {
@@ -606,8 +426,6 @@ public class EllipseTrack {
 				Computeinwater compute = new Computeinwater(parent, parent.empty, parent.emptyWater, t, z,
 						(int) percent, parent.maxlabel);
 				compute.ParallelRansac();
-
-				System.out.println(z + " " + t + "Z and T");
 
 			}
 
