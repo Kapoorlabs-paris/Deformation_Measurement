@@ -166,6 +166,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float lowprobmin = 0f;
 	public float highprobmin = 0f;
 
+	public boolean redoing;
 	public float lowprobmax = 1.0f;
 	public float highprobmax = 1.0f;
 
@@ -429,6 +430,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		FloatType maxval = new FloatType(1);
 		Normalize.normalize(Views.iterable(originalimg), minval, maxval);
 
+		redoing = false;
 		superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>>();
 		pixellist = new HashSet<Integer>();
 		rtAll = new ResultsTable();
@@ -548,8 +550,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 
 		if (change == ValueChange.RectRoi) {
-			if (!automode) {
-				RoiManager roim = RoiManager.getInstance();
+			
+			RoiManager roim = null;
+			if (RoiManager.getInstance()!=null)
+			roim = RoiManager.getInstance();
+			else
+			roim = new RoiManager();	
+					
 				Roi[] allrois = roim.getRoisAsArray();
 
 				for (int i = 0; i < allrois.length; ++i) {
@@ -568,7 +575,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 				}
 			}
-		}
+		
 
 		//
 		uniqueID = Integer.toString(thirdDimension) + Integer.toString(fourthDimension);
@@ -888,10 +895,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	public void StartComputingCurrent() {
 
+		redoing = true;
 		ComputeAnglesCurrent compute = new ComputeAnglesCurrent(this, jpb);
 
 		compute.execute();
-
 	}
 
 	public void Display() {

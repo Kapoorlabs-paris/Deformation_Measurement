@@ -213,15 +213,7 @@ public class LabelRansac implements Runnable {
 			
 			
 
-		
-		
-
-				
-			
-
-
-			
-			if (parent.automode) {
+			if (parent.automode || parent.supermode && !parent.redoing) {
 				
 				Roiobject currentobject = new Roiobject(resultroi,resultovalroi,resultlineroi, z, t, true);
 				parent.ZTRois.put(uniqueID, currentobject);

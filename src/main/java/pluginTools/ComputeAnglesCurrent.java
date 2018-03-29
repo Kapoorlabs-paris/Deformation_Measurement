@@ -53,7 +53,6 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 	@Override
 	protected Void doInBackground() throws Exception {
 	
-		parent.table.removeAll();
 		EllipseTrack newtrack = new EllipseTrack(parent, jpb);
 		newtrack.IntersectandTrackCurrent();
 

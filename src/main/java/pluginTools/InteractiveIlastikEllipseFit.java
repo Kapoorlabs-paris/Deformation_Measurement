@@ -18,7 +18,7 @@ public class InteractiveIlastikEllipseFit {
 		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/Stage3Training/TestEtrack/TestSingleTime/RawData.tif");
 		impB.show();
 		
-		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/Stage3Training/TestEtrack/TestSingleTime/SmoothMulticut.tif");
+		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/Stage3Training/TestEtrack/TestSingleTime/SmoothMulticutsigma2beta0.6.tif");
 		impC.show();
 		
 		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/Stage3Training/TestEtrack/TestSingleTime/ProbabilityMap.tif");

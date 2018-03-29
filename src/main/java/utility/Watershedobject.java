@@ -5,6 +5,7 @@ import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.ImgFactory;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.IntType;
@@ -61,7 +62,6 @@ public class Watershedobject {
 					}
 
 				}
-				
 			
 			
 				imageRA.get().set(inputRA.get());
@@ -72,7 +72,6 @@ public class Watershedobject {
 
 		}
 		FinalInterval intervalsmall = new FinalInterval(minVal, maxVal) ;
-		
 		
 		RandomAccessibleInterval<BitType> outimgsmall = extractImage(outimg, intervalsmall);
 		double meanIntensity = computeAverage(Views.iterable(outimgsmall));

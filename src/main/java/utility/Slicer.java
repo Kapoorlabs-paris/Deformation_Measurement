@@ -130,9 +130,11 @@ public class Slicer {
 		long[] dim = { originalimg.dimension(0), originalimg.dimension(1) };
 		final ImgFactory<BitType> factory = net.imglib2.util.Util.getArrayOrCellImgFactory(originalimg, type);
 		RandomAccessibleInterval<BitType> totalimg = factory.create(dim, type);
+		RandomAccessibleInterval<BitType> totalimgout = factory.create(dim, type);	
+		
 
      long maxY = (long)rect.getMaxY();
-	 long maxX = (long)rect.getMaxY();
+	 long maxX = (long)rect.getMaxX();
 	 long minY = (long)rect.getMinY();
 	 long minX = (long)rect.getMinX();
 	 
@@ -156,9 +158,22 @@ public class Slicer {
 		
 		  RandomAccessibleInterval< BitType > view =
 	                Views.interval( totalimg, new long[] { minX, minY }, new long[]{ maxX, maxY } );
+		  
+		  RandomAccess<BitType> ranout = totalimgout.randomAccess();
+		  Cursor<BitType> viewcursor = Views.iterable(view).localizingCursor();
+		  
+		  while(viewcursor.hasNext()) {
+			  
+			  
+			  viewcursor.next();
+			  ranout.setPosition(viewcursor);
+			  ranout.get().set(viewcursor.get());
+			  
+			  
+		  }
 		
 		
-		return view;
+		return totalimgout;
 
 	}
 	
@@ -168,9 +183,9 @@ public class Slicer {
 		long[] dim = { originalimg.dimension(0), originalimg.dimension(1) };
 		final ImgFactory<IntType> factory = net.imglib2.util.Util.getArrayOrCellImgFactory(originalimg, type);
 		RandomAccessibleInterval<IntType> totalimg = factory.create(dim, type);
-           
+		RandomAccessibleInterval<IntType> totalimgout = factory.create(dim, type);
 		     long maxY = (long)rect.getMaxY();
-			 long maxX = (long)rect.getMaxY();
+			 long maxX = (long)rect.getMaxX();
 			 long minY = (long)rect.getMinY();
 			 long minX = (long)rect.getMinX();
 		
@@ -194,9 +209,20 @@ public class Slicer {
 		
 		 RandomAccessibleInterval< IntType > view =
 	                Views.interval( totalimg, new long[] { minX, minY }, new long[]{ maxX, maxY } );
+		  RandomAccess<IntType> ranout = totalimgout.randomAccess();
+		  Cursor<IntType> viewcursor = Views.iterable(view).localizingCursor();
+		  
+		  while(viewcursor.hasNext()) {
+			  
+			  
+			  viewcursor.next();
+			  ranout.setPosition(viewcursor);
+			  ranout.get().set(viewcursor.get());
+			  
+			  
+		  }
 		
-		
-		return view;
+		return totalimgout;
 
 	}
 	

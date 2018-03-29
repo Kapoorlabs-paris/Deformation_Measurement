@@ -65,6 +65,64 @@ public class EllipseTrack {
 		this.jpb = jpb;
 	}
 
+	public void BlockRepeatRect(double percent, int z, int t) {
+
+		parent.updatePreview(ValueChange.THIRDDIMmouse);
+
+		percent++;
+
+		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBitRectangle(parent.empty, z,
+				parent.thirdDimensionSize, t, parent.fourthDimensionSize, parent.rect);
+		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewIntRectangle(
+				parent.originalimgsuper, z, parent.thirdDimensionSize, t, parent.fourthDimensionSize, parent.rect);
+
+		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
+		
+		GetPixelList(CurrentViewInt);
+
+		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentViewInt, t, z, (int) percent);
+		compute.ParallelRansac();
+
+	}
+
+	public void BlockRepeatAutoRect(double percent, int z, int t) {
+
+		parent.updatePreview(ValueChange.THIRDDIMmouse);
+
+		percent++;
+
+		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBitRectangle(parent.empty, z,
+				parent.thirdDimensionSize, t, parent.fourthDimensionSize, parent.rect);
+
+		Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView,
+				parent.span);
+
+		parent.maxlabel = GetMaxlabelsseeded(Current.getA());
+		Computeinwater compute = new Computeinwater(parent, Current.getB(), Current.getA(), t, z, (int) percent,
+				parent.maxlabel);
+		compute.ParallelRansac();
+
+	}
+
+	public void BlockRepeatManualRect(double percent, int z, int t) {
+
+		parent.updatePreview(ValueChange.THIRDDIMmouse);
+		percent++;
+
+		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBitRectangle(parent.empty, z,
+				parent.thirdDimensionSize, t, parent.fourthDimensionSize, parent.rect);
+
+		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewIntRectangle(parent.emptyWater,
+				z, parent.thirdDimensionSize, t, parent.fourthDimensionSize, parent.rect);
+
+		parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
+
+		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent,
+				parent.maxlabel);
+		compute.ParallelRansac();
+
+	}
+
 	public void BlockRepeat(double percent, int z, int t) {
 
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
@@ -338,6 +396,7 @@ public class EllipseTrack {
 		computeMinMax(Views.iterable(intimg), min, max);
 		Cursor<IntType> intCursor = Views.iterable(intimg).cursor();
 		int currentLabel = min.get();
+		parent.pixellist.clear();
 		parent.pixellist.add(currentLabel);
 		while (intCursor.hasNext()) {
 			intCursor.fwd();
@@ -397,7 +456,7 @@ public class EllipseTrack {
 			int z = parent.thirdDimension;
 			int t = parent.fourthDimension;
 
-			BlockRepeat(percent, z, t);
+			BlockRepeatRect(percent, z, t);
 
 		} else {
 
@@ -405,14 +464,14 @@ public class EllipseTrack {
 
 				int z = parent.thirdDimension;
 				int t = parent.fourthDimension;
-				BlockRepeatManual(percent, z, t);
+				BlockRepeatManualRect(percent, z, t);
 
 			} else if (parent.originalimg.numDimensions() > 2 && parent.originalimg.numDimensions() <= 3) {
 
 				int z = parent.thirdDimension;
 				int t = parent.fourthDimension;
 
-				BlockRepeatManual(percent, z, t);
+				BlockRepeatManualRect(percent, z, t);
 			}
 
 			else {

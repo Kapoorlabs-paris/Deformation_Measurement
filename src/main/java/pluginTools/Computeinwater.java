@@ -103,12 +103,14 @@ public class Computeinwater {
 
 				int label = setiter.next();
 
+				
 				Watershedobject current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
-
 				if (current.Size > parent.minperimeter * parent.minperimeter / 12
 						&& current.Size < parent.maxperimeter * parent.maxperimeter / 12) {
-
+					
 					List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
+					
+					
 					tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi,
 							resultovalroi, resultlineroi, AllPointsofIntersect, Allintersection, fitmapspecial,
 							parent.jpb, parent.supermode)));
@@ -152,7 +154,7 @@ public class Computeinwater {
 						Allintersection, nThreads, nThreads);
 
 			}
-			if (parent.automode) {
+			if (parent.automode && !parent.supermode && !parent.redoing) {
 
 				String uniqueID = Integer.toString(z) + Integer.toString(t);
 				Roiobject currentobject = new Roiobject(resultroi, resultovalroi, resultlineroi, z, t, true);
