@@ -77,7 +77,7 @@ public class EllipseTrack {
 				parent.originalimgsuper, z, parent.thirdDimensionSize, t, parent.fourthDimensionSize, parent.rect);
 
 		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
-		
+
 		GetPixelList(CurrentViewInt);
 
 		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentViewInt, t, z, (int) percent);
@@ -455,8 +455,10 @@ public class EllipseTrack {
 
 			int z = parent.thirdDimension;
 			int t = parent.fourthDimension;
-
-			BlockRepeatRect(percent, z, t);
+			if (parent.rect != null)
+				BlockRepeatRect(percent, z, t);
+			else
+				BlockRepeat(percent, z, t);
 
 		} else {
 
@@ -464,14 +466,19 @@ public class EllipseTrack {
 
 				int z = parent.thirdDimension;
 				int t = parent.fourthDimension;
-				BlockRepeatManualRect(percent, z, t);
+				if (parent.rect != null)
+					BlockRepeatManualRect(percent, z, t);
+				else
+					BlockRepeatManual(percent, z, t);
 
 			} else if (parent.originalimg.numDimensions() > 2 && parent.originalimg.numDimensions() <= 3) {
 
 				int z = parent.thirdDimension;
 				int t = parent.fourthDimension;
-
-				BlockRepeatManualRect(percent, z, t);
+				if (parent.rect != null)
+					BlockRepeatManualRect(percent, z, t);
+				else
+					BlockRepeatManual(percent, z, t);
 			}
 
 			else {

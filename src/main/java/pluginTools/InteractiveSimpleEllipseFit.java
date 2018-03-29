@@ -552,10 +552,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		if (change == ValueChange.RectRoi) {
 			
 			RoiManager roim = null;
-			if (RoiManager.getInstance()!=null)
+			if (RoiManager.getInstance()!=null) {
 			roim = RoiManager.getInstance();
-			else
-			roim = new RoiManager();	
+			
 					
 				Roi[] allrois = roim.getRoisAsArray();
 
@@ -567,14 +566,16 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 						rect = imp.getRoi().getBounds();
 					}
 
-					else {
-
-						rect = new Rectangle(0, 0, (int) originalimg.dimension(0), (int) originalimg.dimension(1));
-						imp.setRoi(rect);
-					}
+				}
 
 				}
-			}
+			
+				
+			
+			
+			
+		}
+		
 		
 
 		//

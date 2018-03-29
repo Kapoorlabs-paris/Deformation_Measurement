@@ -20,10 +20,10 @@ public class DisplayAuto {
 
 			for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
 
+				
 				Roiobject currentobject = entry.getValue();
 				if (currentobject.fourthDimension == parent.fourthDimension
 						&& currentobject.thirdDimension == parent.thirdDimension) {
-
 					if (currentobject.resultroi != null) {
 						for (int i = 0; i < currentobject.resultroi.size(); ++i) {
 

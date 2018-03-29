@@ -111,6 +111,7 @@ public class SuperIntersection {
 
 		}
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
+		
 		if (!parent.redoing) {
 			
 
@@ -137,8 +138,7 @@ public class SuperIntersection {
 			DisplayAuto.Display(parent);
 		}
 
-		if (parent.redoing) {
-			
+		else {
 			ArrayList<Intersectionobject> target = parent.ALLIntersections.get(uniqueID);
 			
 			// Change the entry for a give ZT
@@ -156,7 +156,7 @@ public class SuperIntersection {
 			}
 			
 			// Change the Rois
-			
+		
 			for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
 
 				Roiobject currentobject = entry.getValue();
@@ -165,20 +165,23 @@ public class SuperIntersection {
 
 					
 					// Find the closest resultroi
+					/*
+					System.out.println("Size" + resultroi.size());
 					for(EllipseRoi current: resultroi) {
 						
 						double[] center = current.getContourCentroid();
-						
+						System.out.println(center[0]);
 						EllipseRoi changeroi = utility.NearestRoi.getNearestRois(currentobject, center, parent); 
-						
+						System.out.println(changeroi.getContourCentroid()[0]);
+						if(changeroi!=null) {
 						currentobject.resultroi.remove(changeroi);
 						currentobject.resultroi.add(current);
-						
+						}
 						
 						
 					}
 					
-					
+					/*
 					for (Line current: resultlineroi) {
 						
 						double[] center = current.getContourCentroid();
@@ -199,21 +202,21 @@ public class SuperIntersection {
 						
 						
 					}
+					*/
 					
-					resultroi = currentobject.resultroi;
-					resultovalroi = currentobject.resultovalroi;
-					resultlineroi = currentobject.resultlineroi;
 					
 					
 				}
 				
-				
+			//	resultroi = currentobject.resultroi;
+			//	resultovalroi = currentobject.resultovalroi;
+			//	resultlineroi = currentobject.resultlineroi;
 			}
 			
-			
+			System.out.println("I did it");
 			Roiobject currentobject = new Roiobject(resultroi, resultovalroi, resultlineroi, z, t, true);
-			parent.ZTRois.put(uniqueID, currentobject);
-			parent.ALLIntersections.put(uniqueID, target);
+			//parent.ZTRois.put(uniqueID, currentobject);
+			//parent.ALLIntersections.put(uniqueID, target);
 			DisplayAuto.Display(parent);
 		}
 

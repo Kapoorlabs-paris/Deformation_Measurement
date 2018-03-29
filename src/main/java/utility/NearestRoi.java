@@ -51,6 +51,7 @@ public class NearestRoi {
 				final double[] source = Clickedpoint;
 				final RealPoint sourceCoords = new RealPoint(source);
 				Search.search(sourceCoords);
+				
 				final FlagNode<EllipseRoi> targetNode = Search.getSampler().get();
 
 				KDtreeroi = targetNode.getValue();
