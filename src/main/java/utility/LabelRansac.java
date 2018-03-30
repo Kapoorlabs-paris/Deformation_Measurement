@@ -92,6 +92,9 @@ public class LabelRansac implements Runnable {
 
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
 
+		if(parent.fourthDimensionSize > 1)
+		parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension, parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
+		parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension, parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
 		final int ndims = ActualRoiimg.numDimensions();
 		final NumericalSolvers numsol = new BisectorEllipsoid();
 		// Using the ellipse model to do the fitting
@@ -152,6 +155,8 @@ public class LabelRansac implements Runnable {
 			}
 			final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecialred = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
 			fitmapspecialred.addAll(fitmapspecial);
+			
+			
 			for (int i = 0; i < fitmapspecialred.size(); ++i) {
 
 				Pair<Ellipsoid, Ellipsoid> ellipsepairA = fitmapspecialred.get(i);

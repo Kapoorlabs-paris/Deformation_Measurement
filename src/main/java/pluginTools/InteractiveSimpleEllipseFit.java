@@ -242,7 +242,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	ImageStack prestack;
 	public MouseAdapter mouseadapter;
 	public ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> superReducedSamples;
-	public Rectangle rect;
 	public int[] Clickedpoints;
 	public int starttime;
 	public int endtime;
@@ -553,32 +552,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			}
 		}
 
-		if (change == ValueChange.RectRoi) {
-			
-			RoiManager roim = null;
-			if (RoiManager.getInstance()!=null) {
-			roim = RoiManager.getInstance();
-			
-					
-				Roi[] allrois = roim.getRoisAsArray();
-
-				for (int i = 0; i < allrois.length; ++i) {
-
-					if (allrois[i].getType() == Roi.RECTANGLE) {
-
-						imp.setRoi(allrois[i]);
-						rect = imp.getRoi().getBounds();
-					}
-
-				}
-
-				}
-			
-				
-			
-			
-			
-		}
 		
 		
 
@@ -808,7 +781,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					impOrig.setTitle(
 							"Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 				}
-				DisplayAuto.Display(this);
 			}
 			if (imp == null || !imp.isVisible()) {
 				imp = ImageJFunctions.show(CurrentView);
@@ -1268,7 +1240,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Label inputLabelIter, inputtrackLabel;
 	public JPanel Original = new JPanel();
 	public int SizeX = 400;
-	public int SizeY = 300;
+	public int SizeY = 200;
 
 	public int smallSizeX = 200;
 	public int smallSizeY = 200;
@@ -1325,14 +1297,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JScrollBar lowprobslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
 	public JScrollBar highprobslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
 
-	JPanel PanelSelectFile = new JPanel();
-	Border selectfile = new CompoundBorder(new TitledBorder("Select Track"), new EmptyBorder(c.insets));
+	public JPanel PanelSelectFile = new JPanel();
+	public Border selectfile = new CompoundBorder(new TitledBorder("Select Track"), new EmptyBorder(c.insets));
 	public JLabel inputLabel = new JLabel("Filename:");
 	public TextField inputField = new TextField();
-	final JButton ChooseDirectory = new JButton("Choose Directory to save results in");
+	public final JButton ChooseDirectory = new JButton("Choose Directory to save results in");
 	public JComboBox<String> ChooseMethod;
 	public JComboBox<String> ChooseColor;
-	Border origborder = new CompoundBorder(new TitledBorder("Enter filename for results files"),
+	public Border origborder = new CompoundBorder(new TitledBorder("Enter filename for results files"),
 			new EmptyBorder(c.insets));
 	
 	public void Card() {
@@ -1442,6 +1414,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		Timeselect.setBorder(timeborder);
 	
+		Timeselect.setPreferredSize(new Dimension(SizeX, SizeY));
 		panelFirst.add(Timeselect, new GridBagConstraints(xcounter, ycounter, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
@@ -1457,7 +1430,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		Zselect.add(inputFieldZ, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
+		Zselect.setPreferredSize(new Dimension(SizeX, SizeY));
 		Zselect.setBorder(zborder);
 		
 		panelFirst.add(Zselect, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
@@ -1486,7 +1459,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 			Roiselect.setBorder(roitools);
-
+			Roiselect.setPreferredSize(new Dimension(SizeX, SizeY));
 			panelFirst.add(Roiselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 		}
@@ -1506,7 +1479,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			Probselect.add(ChooseMethod, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-
+			Probselect.setPreferredSize(new Dimension(SizeX, SizeY));
 			Probselect.setBorder(probborder);
 
 			panelFirst.add(Probselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
@@ -1552,23 +1525,22 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		Angleselect.setBorder(ellipsetools);
-		Angleselect.setMinimumSize(new Dimension(SizeX, SizeY));
+		Angleselect.setPreferredSize(new Dimension(SizeX, SizeY+100));
 		panelFirst.add(Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-		table = new JTable(rowvalues, colnames);
 
+		
 		table.setFillsViewportHeight(true);
 
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 		scrollPane = new JScrollPane(table);
 
 		scrollPane.getViewport().add(table);
 		scrollPane.setAutoscrolls(true);
 
-
+		scrollPane.setPreferredSize(new Dimension(SizeX, SizeY));
 		PanelSelectFile.add(scrollPane, BorderLayout.CENTER);
 
 		PanelSelectFile.setBorder(selectfile);
@@ -1592,11 +1564,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		Original.add(Savebutton, new GridBagConstraints(0, 8, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-
+		Original.setPreferredSize(new Dimension(SizeX, SizeY));
 		Original.setBorder(origborder);
 
-		Original.setMinimumSize(new Dimension(SizeX + 10, SizeY + 10));
-		Original.setPreferredSize(new Dimension(SizeX + 10, SizeY + 10));
+		
 		inputField.setEnabled(false);
 		inputtrackField.setEnabled(false);
 		ChooseDirectory.setEnabled(false);

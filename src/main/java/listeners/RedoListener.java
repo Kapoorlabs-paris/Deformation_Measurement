@@ -24,6 +24,7 @@ public class RedoListener implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		
 		parent.updatePreview(ValueChange.RectRoi);
+		parent.superReducedSamples.clear();
 		parent.StartComputingCurrent();
 		
 		

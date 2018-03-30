@@ -71,10 +71,10 @@ public class EllipseTrack {
 
 		percent++;
 
-		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBitRectangle(parent.empty, z,
-				parent.thirdDimensionSize, t, parent.fourthDimensionSize, parent.rect);
-		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewIntRectangle(
-				parent.originalimgsuper, z, parent.thirdDimensionSize, t, parent.fourthDimensionSize, parent.rect);
+		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
+				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(
+				parent.originalimgsuper, z, parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
 		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
 
@@ -91,8 +91,8 @@ public class EllipseTrack {
 
 		percent++;
 
-		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBitRectangle(parent.empty, z,
-				parent.thirdDimensionSize, t, parent.fourthDimensionSize, parent.rect);
+		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
+				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
 		Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView,
 				parent.span);
@@ -109,11 +109,11 @@ public class EllipseTrack {
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
 		percent++;
 
-		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBitRectangle(parent.empty, z,
-				parent.thirdDimensionSize, t, parent.fourthDimensionSize, parent.rect);
+		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
+				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
-		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewIntRectangle(parent.emptyWater,
-				z, parent.thirdDimensionSize, t, parent.fourthDimensionSize, parent.rect);
+		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.emptyWater,
+				z, parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
 		parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
 
@@ -455,9 +455,7 @@ public class EllipseTrack {
 
 			int z = parent.thirdDimension;
 			int t = parent.fourthDimension;
-			if (parent.rect != null)
-				BlockRepeatRect(percent, z, t);
-			else
+		
 				BlockRepeat(percent, z, t);
 
 		} else {
@@ -466,18 +464,14 @@ public class EllipseTrack {
 
 				int z = parent.thirdDimension;
 				int t = parent.fourthDimension;
-				if (parent.rect != null)
-					BlockRepeatManualRect(percent, z, t);
-				else
+			
 					BlockRepeatManual(percent, z, t);
 
 			} else if (parent.originalimg.numDimensions() > 2 && parent.originalimg.numDimensions() <= 3) {
 
 				int z = parent.thirdDimension;
 				int t = parent.fourthDimension;
-				if (parent.rect != null)
-					BlockRepeatManualRect(percent, z, t);
-				else
+			
 					BlockRepeatManual(percent, z, t);
 			}
 

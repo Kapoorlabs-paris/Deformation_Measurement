@@ -34,6 +34,7 @@ import ellipsoidDetector.Intersectionobject;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import utility.CreateTable;
 import utility.NearestNeighbourSearch;
 import utility.NearestNeighbourSearch2D;
 import utility.TrackModel;
@@ -256,108 +257,11 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 		}
 		}
 		}
-		CreateTableCurrent();
+		CreateTable.CreateTableView(parent);
 
 	}
 
 	
-	
-	public void CreateTableCurrent() {
 
-	
-		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y",
-		"End Z" };
-
-Object[][] rowvalues = new Object[0][colnames.length];
-
-	rowvalues = new Object[parent.Finalresult.size()][colnames.length];
-
-	parent.resultAngle.clear();
-	
-	for (Pair<String, Intersectionobject> currentangle : parent.Tracklist) {
-		
-		
-		
-			parent.resultAngle.add(new ValuePair<String, double[]>(currentangle.getA(),
-					new double[] { currentangle.getB().z, currentangle.getB().angle }));
-
-			
-		
-	}
-	parent.table = new JTable(rowvalues, colnames);
-		parent.row = 0;
-		NumberFormat f = NumberFormat.getInstance();
-		for (Map.Entry<String, Intersectionobject> entry : parent.Finalresult.entrySet()) {
-
-			Intersectionobject currentangle = entry.getValue();
-			parent.table.getModel().setValueAt(entry.getKey(),
-					parent.row, 0);
-			parent.table.getModel().setValueAt(f.format(currentangle.Intersectionpoint[0]),
-					parent.row, 1);
-			parent.table.getModel().setValueAt(f.format(currentangle.Intersectionpoint[1]),
-					parent.row, 2);
-			parent.table.getModel().setValueAt(f.format(currentangle.angle), parent.row, 3);
-		
-
-			parent.row++;
-			
-			parent.tablesize = parent.row;
-		}
-
-			parent.PanelSelectFile.removeAll();
-			
-			parent.table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-
-			
-			parent.scrollPane = new JScrollPane(parent.table);
-		
-
-			parent.scrollPane.getViewport().add(parent.table);
-			parent.scrollPane.setAutoscrolls(true);
-			parent.PanelSelectFile.add(parent.scrollPane, BorderLayout.CENTER);
-
-			parent.PanelSelectFile.setBorder(parent.selectfile);
-
-			parent.panelFirst.add(parent.PanelSelectFile, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
-			
-			parent.Original.add(parent.inputLabel, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-			
-			
-			parent.Original.add(parent.inputField, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-			
-			parent.Original.add(parent.inputtrackLabel, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-			
-			
-			parent.Original.add(parent.inputtrackField, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-			
-			
-			parent.Original.add(parent.ChooseDirectory, new GridBagConstraints(0, 7, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
-					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-			parent.Original.add(parent.Savebutton, new GridBagConstraints(0, 8, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
-					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-
-			parent.Original.setBorder(parent.origborder);
-
-			parent.Original.setMinimumSize(new Dimension(parent.SizeX + 10, parent.SizeY + 10));
-			parent.Original.setPreferredSize(new Dimension(parent.SizeX + 10, parent.SizeY + 10));
-			parent.panelFirst.add(parent.Original, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
-
-			parent.Original.repaint();
-			parent.Original.validate();
-
-			parent.PanelSelectFile.repaint();
-			parent.PanelSelectFile.validate();
-	
-			parent.panelFirst.repaint();
-			parent.panelFirst.validate();
-			parent.Cardframe.repaint();
-			parent.Cardframe.validate();
-	}
 
 }
