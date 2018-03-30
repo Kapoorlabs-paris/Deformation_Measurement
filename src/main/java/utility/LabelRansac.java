@@ -208,7 +208,6 @@ public class LabelRansac implements Runnable {
 
 				AllPointsofIntersect.add(PointsIntersect);
 
-				fitmapspecial.remove(ellipsepair);
 
 			}
 			parent.ALLIntersections.put(uniqueID, Allintersection);

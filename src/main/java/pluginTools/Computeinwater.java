@@ -152,6 +152,7 @@ public class Computeinwater {
 				Allintersection = new ArrayList<Intersectionobject>();
 				newintersect.Getsuperintersection(resultroi, resultovalroi, resultlineroi, AllPointsofIntersect,
 						Allintersection, t, z);
+			
 
 			}
 			if (parent.automode && !parent.supermode && !parent.redoing) {
@@ -161,6 +162,7 @@ public class Computeinwater {
 				parent.ZTRois.put(uniqueID, currentobject);
 
 				DisplayAuto.Display(parent);
+			
 			}
 
 		} catch (InterruptedException e1) {

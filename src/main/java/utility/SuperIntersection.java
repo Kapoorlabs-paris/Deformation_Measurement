@@ -69,6 +69,7 @@ public class SuperIntersection {
 							if (parent.rect.contains((int) center[0], (int) center[1])){
 								
 								preresultovalroi.remove(currentoval);
+								System.out.println("removing");
 							}
 							
 						}

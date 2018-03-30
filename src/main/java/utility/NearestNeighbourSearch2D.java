@@ -21,13 +21,15 @@ public class NearestNeighbourSearch2D implements IntersectionTracker {
 	private final int fourthDimSize;
 	private final double maxdistance;
 	private HashMap<String, Integer> Accountedframes;
+	public final double mindistance;
 	public NearestNeighbourSearch2D(final HashMap<String, ArrayList<Intersectionobject>> ALLIntersections ,
-			final int fourthDimSize, final double maxdistance,  HashMap<String, Integer> Accountedframes) {
+			final int fourthDimSize, final double maxdistance,  HashMap<String, Integer> Accountedframes, double mindistance) {
 
 		this.ALLIntersections = ALLIntersections;
 		this.fourthDimSize = fourthDimSize;
 		this.maxdistance = maxdistance;
         this.Accountedframes = Accountedframes;
+        this.mindistance = mindistance;
 	}
 
 	@Override
@@ -57,7 +59,7 @@ public class NearestNeighbourSearch2D implements IntersectionTracker {
 
 			ArrayList<Intersectionobject> baseobject = ALLIntersections.get(uniqueID);
 			ArrayList<Intersectionobject> targetobject = ALLIntersections.get(uniqueIDnext);
-			
+
 			
 			if(targetobject!=null && targetobject.size() > 0) {
 
@@ -92,6 +94,7 @@ public class NearestNeighbourSearch2D implements IntersectionTracker {
 						final RealPoint sourceCoords = new RealPoint(source.Intersectionpoint);
 						Search.search(sourceCoords);
 						final double squareDist = Search.getSquareDistance();
+					
 						final FlagNode<Intersectionobject> targetNode = Search.getSampler().get();
 						
 

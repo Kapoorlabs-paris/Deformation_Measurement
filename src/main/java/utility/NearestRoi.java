@@ -19,40 +19,40 @@ import pluginTools.InteractiveSimpleEllipseFit;
 public class NearestRoi {
 
 	
-	public static EllipseRoi getNearestRois(Roiobject roi, double[] Clickedpoint, final InteractiveSimpleEllipseFit parent ) {
+	public static Roi getNearestRois(Roiobject roi, double[] Clickedpoint, final InteractiveSimpleEllipseFit parent ) {
 		
 
 		
-		EllipseRoi[] Allrois = (EllipseRoi[]) roi.roilist;
+		Roi[] Allrois =roi.roilist;
 		
-		EllipseRoi KDtreeroi = null;
+		Roi KDtreeroi = null;
 
 		final List<RealPoint> targetCoords = new ArrayList<RealPoint>(Allrois.length);
-		final List<FlagNode<EllipseRoi>> targetNodes = new ArrayList<FlagNode<EllipseRoi>>(Allrois.length);
+		final List<FlagNode<Roi>> targetNodes = new ArrayList<FlagNode<Roi>>(Allrois.length);
 		for (int index = 0; index < Allrois.length; ++index) {
 
-			EllipseRoi r = Allrois[index];
+			Roi r = Allrois[index];
 			 Rectangle rect = r.getBounds();
 			 
 			 targetCoords.add( new RealPoint(rect.x + rect.width/2.0, rect.y + rect.height/2.0 ) );
 			 
 
-			targetNodes.add(new FlagNode<EllipseRoi>(Allrois[index]));
+			targetNodes.add(new FlagNode<Roi>(Allrois[index]));
 
 		}
 
 		if (targetNodes.size() > 0 && targetCoords.size() > 0) {
 
-			final KDTree<FlagNode<EllipseRoi>> Tree = new KDTree<FlagNode<EllipseRoi>>(targetNodes, targetCoords);
+			final KDTree<FlagNode<Roi>> Tree = new KDTree<FlagNode<Roi>>(targetNodes, targetCoords);
 
-			final NNFlagsearchKDtree<EllipseRoi> Search = new NNFlagsearchKDtree<EllipseRoi>(Tree);
+			final NNFlagsearchKDtree<Roi> Search = new NNFlagsearchKDtree<Roi>(Tree);
 
 
 				final double[] source = Clickedpoint;
 				final RealPoint sourceCoords = new RealPoint(source);
 				Search.search(sourceCoords);
 				
-				final FlagNode<EllipseRoi> targetNode = Search.getSampler().get();
+				final FlagNode<Roi> targetNode = Search.getSampler().get();
 
 				KDtreeroi = targetNode.getValue();
 

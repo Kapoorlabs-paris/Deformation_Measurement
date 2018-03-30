@@ -31,6 +31,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import ellipsoidDetector.Intersectionobject;
+import ij.ImageStack;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -95,6 +96,10 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 		parent.jpb.setIndeterminate(false);
 		parent.Cardframe.validate();
 
+		parent.prestack =  new ImageStack((int) parent.originalimg.dimension(0), (int) parent.originalimg.dimension(1),
+				java.awt.image.ColorModel.getRGBdefault());
+		parent.resultDraw.clear();
+		parent.Tracklist.clear();
 		if (parent.ndims > 3) {
 			Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 			while (itZ.hasNext()) {
@@ -112,12 +117,11 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 		else {
 
 			NearestNeighbourSearch2D NNsearch = new NearestNeighbourSearch2D(parent.ALLIntersections,
-					(int) parent.thirdDimensionSize, parent.maxdistance, parent.AccountedZ);
+					(int) parent.thirdDimensionSize, parent.maxdistance, parent.AccountedZ, parent.mindistance);
 			NNsearch.process();
 			SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = NNsearch.getResult();
 			parent.parentgraphZ.put(Integer.toString(1), simplegraph);
 			Lineage();
-			System.out.println(parent.parentgraphZ.size());
 		}
 
 		try {
@@ -333,7 +337,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 						new double[] { currentangle.getB().z, currentangle.getB().angle }));
 
 		}
-		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Last Angle", "End time", "End Z" };
+		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "End Z" };
 
 		Object[][] rowvalues = new Object[0][colnames.length];
 
@@ -349,8 +353,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 			parent.table.getModel().setValueAt(f.format(currentangle.Intersectionpoint[0]), parent.row, 1);
 			parent.table.getModel().setValueAt(f.format(currentangle.Intersectionpoint[1]), parent.row, 2);
 			parent.table.getModel().setValueAt(f.format(currentangle.angle), parent.row, 3);
-			parent.table.getModel().setValueAt(f.format(currentangle.t), parent.row, 4);
-			parent.table.getModel().setValueAt(f.format(currentangle.z), parent.row, 5);
+			
 
 			parent.row++;
 

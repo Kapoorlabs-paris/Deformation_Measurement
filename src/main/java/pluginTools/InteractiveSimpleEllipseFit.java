@@ -121,7 +121,7 @@ import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
-
+import utility.DisplayAuto;
 import utility.NearestRoi;
 import utility.Roiobject;
 import utility.ShowResultView;
@@ -148,13 +148,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int rowchoice;
 	public int radiusdetection = 5;
 	public int maxtry = 30;
-	public float minpercent = 0.45f;
+	public float minpercent = 0.5f;
 	public float minpercentINI = 0.65f;
 	public float minpercentINIArc = 0.25f;
 	public final double minSeperation = 5;
 	public String selectedID;
-	public float insideCutoff = 5;
-	public float outsideCutoff = 5;
+	public float insideCutoff = 15;
+	public float outsideCutoff = insideCutoff;
 
 	public long maxsize = 100;
 	public int span = 2;
@@ -264,6 +264,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public RandomAccessibleInterval<IntType> emptyWater;
 	public boolean automode;
 	public boolean supermode;
+	public double mindistance = 200;
 
 	public static enum ValueChange {
 		ROI, ALL, THIRDDIMmouse, FOURTHDIMmouse, DISPLAYROI, RADIUS, INSIDE, OUTSIDE, RESULT, RectRoi, SEG
@@ -287,9 +288,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		thirdDimension = 1;
 	}
 
-	public void setInsidecut(final int value) {
+	public void setInsidecut(final float insideCutoff) {
 
-		insideCutoff = value;
+		insideslider
+		.setValue(utility.Slicer.computeScrollbarPositionFromValue(insideCutoff, insideCutoffmin, insideCutoffmax, scrollbarSize));
 	}
 
 	public void setOutsidecut(final int value) {
@@ -451,6 +453,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		setlowprob(lowprob);
 		sethighprob(highprob);
+		setInsidecut(insideCutoff);
+		
 
 		if (ndims < 3) {
 
@@ -720,7 +724,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					for (Line currentline : resultDraw.get(ID).getB()) {
 						cp.setColor(colorLineA);
 						cp.setLineWidth(4);
-						Line nearest = utility.NearestRoi.getNearestLineRois(currentobject, Clickedpoints, this);
+						Line nearest = utility.NearestRoi.getNearestLineRois(currentobject, new double[] {IntersectionX, IntersectionY}, this);
 						if (nearest == currentline) {
 							cp.draw(currentline);
 							nearestline = currentline;
@@ -732,7 +736,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					for (Line currentline : resultDraw.get(ID).getB()) {
 						cp.setColor(colorLineA);
 						cp.setLineWidth(4);
-						Line nearest = utility.NearestRoi.getNearestLineRois(currentobject, Clickedpoints, this);
+						Line nearest = utility.NearestRoi.getNearestLineRois(currentobject, new double[] {IntersectionX, IntersectionY}, this);
 						if (nearest == currentline) {
 							cp.draw(currentline);
 						}
@@ -768,7 +772,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			AccountedZ.put(ZID, thirdDimension);
 
-			System.out.println(AccountedZ.size());
 			ZTRois.put(uniqueID, CurrentRoi);
 
 			Display();
@@ -779,7 +782,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			if (automode) {
 				updatePreview(ValueChange.SEG);
+				Accountedframes.put(TID, fourthDimension);
 
+				AccountedZ.put(ZID, thirdDimension);
 				if (originalimgbefore != null) {
 					CurrentViewOrig = utility.Slicer.getCurrentView(originalimgbefore, thirdDimension,
 							thirdDimensionSize, thirdDimension, fourthDimensionSize);
@@ -803,6 +808,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					impOrig.setTitle(
 							"Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 				}
+				DisplayAuto.Display(this);
 			}
 			if (imp == null || !imp.isVisible()) {
 				imp = ImageJFunctions.show(CurrentView);
@@ -1068,6 +1074,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	public void select() {
 
+		
 		if (mvl != null)
 			imp.getCanvas().removeMouseListener(mvl);
 		imp.getCanvas().addMouseListener(mvl = new MouseListener() {
@@ -1079,7 +1086,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 				int x = canvas.offScreenX(e.getX());
 				int y = canvas.offScreenY(e.getY());
-
 				Clickedpoints[0] = x;
 				Clickedpoints[1] = y;
 				if (SwingUtilities.isLeftMouseButton(e) && !e.isShiftDown() && e.isAltDown()) {
@@ -1125,6 +1131,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	}
 
 	public void mark() {
+
+		
 		if (ml != null)
 			imp.getCanvas().removeMouseMotionListener(ml);
 		imp.getCanvas().addMouseMotionListener(ml = new MouseMotionListener() {
@@ -1175,7 +1183,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 						String CordX = (String) table.getValueAt(row, 1);
 						String CordY = (String) table.getValueAt(row, 2);
 
-						String CordZ = (String) table.getValueAt(row, 5);
+						String CordZ = (String) table.getValueAt(row, 3);
 
 						double dCordX = 0, dCordZ = 0, dCordY = 0;
 						try {
@@ -1326,7 +1334,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JComboBox<String> ChooseColor;
 	Border origborder = new CompoundBorder(new TitledBorder("Enter filename for results files"),
 			new EmptyBorder(c.insets));
-
+	
 	public void Card() {
 
 		
@@ -1387,7 +1395,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		inputLabelminpercent = new Label("Min. percent points to lie on ellipse");
 
-		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Starting Angle", "Start time",
+		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y",
 				"Start Z" };
 
 		Object[][] rowvalues = new Object[0][colnames.length];
@@ -1433,8 +1441,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		Timeselect.setBorder(timeborder);
-		Timeselect.setMinimumSize(new Dimension(smallSizeX, smallSizeY));
-		Timeselect.setPreferredSize(new Dimension(smallSizeX, smallSizeY));
+	
 		panelFirst.add(Timeselect, new GridBagConstraints(xcounter, ycounter, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
@@ -1452,8 +1459,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		Zselect.setBorder(zborder);
-		Zselect.setMinimumSize(new Dimension(smallSizeX, smallSizeY));
-		Zselect.setPreferredSize(new Dimension(smallSizeX, smallSizeY));
+		
 		panelFirst.add(Zselect, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
@@ -1554,29 +1560,15 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		table.setFillsViewportHeight(true);
 
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
-		table.setMinimumSize(new Dimension(500, 300));
-		table.setPreferredSize(new Dimension(500, 200));
 
 		scrollPane = new JScrollPane(table);
-		scrollPane.setMinimumSize(new Dimension(300, 200));
-		scrollPane.setPreferredSize(new Dimension(300, 200));
 
 		scrollPane.getViewport().add(table);
 		scrollPane.setAutoscrolls(true);
 
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-		table.setMinimumSize(new Dimension(500, 300));
-		table.setPreferredSize(new Dimension(500, 200));
-
-		scrollPane = new JScrollPane(table);
-		scrollPane.setMinimumSize(new Dimension(300, 200));
-		scrollPane.setPreferredSize(new Dimension(300, 200));
-
-		scrollPane.getViewport().add(table);
-		scrollPane.setAutoscrolls(true);
 		PanelSelectFile.add(scrollPane, BorderLayout.CENTER);
 
 		PanelSelectFile.setBorder(selectfile);

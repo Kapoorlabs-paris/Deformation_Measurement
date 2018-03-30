@@ -114,7 +114,7 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 		else {
 			
 			NearestNeighbourSearch2D NNsearch = new NearestNeighbourSearch2D(parent.ALLIntersections, 
-					(int)parent.thirdDimensionSize, parent.maxdistance, parent.AccountedZ);
+					(int)parent.thirdDimensionSize, parent.maxdistance, parent.AccountedZ, parent.mindistance);
 			NNsearch.process();
 			 SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>	simplegraph =  NNsearch.getResult();
 			 parent.parentgraphZ.put(Integer.toString(1), simplegraph);
@@ -200,7 +200,6 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 				Intersectionobject currentangle = Angleiter.next();
 				
 			
-				System.out.println(Integer.toString(id) + entryZ.getKey() + " " +  currentangle.z + " " + "ID and angle");
 				
 						parent.Tracklist.add(new ValuePair<String, Intersectionobject>( Integer.toString(id) + entryZ.getKey(), currentangle));
 				
@@ -266,7 +265,7 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 	public void CreateTableCurrent() {
 
 	
-		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Last Angle", "End time",
+		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y",
 		"End Z" };
 
 Object[][] rowvalues = new Object[0][colnames.length];
@@ -298,8 +297,7 @@ Object[][] rowvalues = new Object[0][colnames.length];
 			parent.table.getModel().setValueAt(f.format(currentangle.Intersectionpoint[1]),
 					parent.row, 2);
 			parent.table.getModel().setValueAt(f.format(currentangle.angle), parent.row, 3);
-			parent.table.getModel().setValueAt(f.format(currentangle.t), parent.row, 4);
-			parent.table.getModel().setValueAt(f.format(currentangle.z), parent.row, 5);
+		
 
 			parent.row++;
 			
@@ -308,14 +306,11 @@ Object[][] rowvalues = new Object[0][colnames.length];
 
 			parent.PanelSelectFile.removeAll();
 			
-			parent.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			parent.table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
-			parent.table.setMinimumSize(new Dimension(500, 300));
-			parent.table.setPreferredSize(new Dimension(500, 200));
 			
 			parent.scrollPane = new JScrollPane(parent.table);
-			parent.scrollPane.setMinimumSize(new Dimension(300, 200));
-			parent.scrollPane.setPreferredSize(new Dimension(300, 200));
+		
 
 			parent.scrollPane.getViewport().add(parent.table);
 			parent.scrollPane.setAutoscrolls(true);
