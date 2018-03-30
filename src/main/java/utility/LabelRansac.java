@@ -132,7 +132,10 @@ public class LabelRansac implements Runnable {
 
 			int count = 0;
 			if(!supermode) {
+				
 			ArrayList<Integer> ellipsepairlist = new ArrayList<Integer>();
+			
+			
 			for (int i = 0; i < Reducedsamples.size(); ++i) {
 
 				for (int j = 0; j < Reducedsamples.size(); ++j) {
@@ -147,10 +150,31 @@ public class LabelRansac implements Runnable {
 					}
 				}
 			}
+			final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecialred = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
+			fitmapspecialred.addAll(fitmapspecial);
+			for (int i = 0; i < fitmapspecialred.size(); ++i) {
 
-			for (int i = 0; i < fitmapspecial.size(); ++i) {
+				Pair<Ellipsoid, Ellipsoid> ellipsepairA = fitmapspecialred.get(i);
 
-				Pair<Ellipsoid, Ellipsoid> ellipsepair = fitmapspecial.get(i);
+				for (int j = 0; j < fitmapspecialred.size(); ++j) {
+
+					if (i != j) {
+						Pair<Ellipsoid, Ellipsoid> ellipsepairB = fitmapspecialred.get(j);
+
+						if (ellipsepairA.getA().hashCode() == (ellipsepairB.getB().hashCode())
+								&& ellipsepairA.getB().hashCode() == (ellipsepairB.getA().hashCode())) {
+							fitmapspecialred.remove(ellipsepairB);
+							break;
+						}
+
+					}
+
+				}
+
+			}
+			for (int i = 0; i < fitmapspecialred.size(); ++i) {
+
+				Pair<Ellipsoid, Ellipsoid> ellipsepair = fitmapspecialred.get(i);
 
 				ArrayList<double[]> pos = Intersections.PointsofIntersection(ellipsepair);
 

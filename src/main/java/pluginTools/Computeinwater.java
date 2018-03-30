@@ -151,7 +151,7 @@ public class Computeinwater {
 				AllPointsofIntersect = new ArrayList<Tangentobject>();
 				Allintersection = new ArrayList<Intersectionobject>();
 				newintersect.Getsuperintersection(resultroi, resultovalroi, resultlineroi, AllPointsofIntersect,
-						Allintersection, nThreads, nThreads);
+						Allintersection, t, z);
 
 			}
 			if (parent.automode && !parent.supermode && !parent.redoing) {

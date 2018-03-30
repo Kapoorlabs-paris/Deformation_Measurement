@@ -1,5 +1,6 @@
 package utility;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import ellipsoidDetector.Tangentobject;
 import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
+import net.imglib2.Point;
 import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.ransac.RansacModels.Angleobject;
 import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
@@ -34,7 +36,76 @@ public class SuperIntersection {
 			final ArrayList<Intersectionobject> Allintersection, int t, int z) {
 
 		System.out.println("Super fitting post loop");
+		String uniqueID = Integer.toString(z) + Integer.toString(t);
+		System.out.println("ID "+ " " +Integer.toString(z) + " " + Integer.toString(t) + " " +  uniqueID );
+		ArrayList<EllipseRoi> preresultroi = new ArrayList<EllipseRoi>();
+		ArrayList<OvalRoi> preresultovalroi = new ArrayList<OvalRoi>();
+		ArrayList<Line> preresultlineroi = new ArrayList<Line>();
+		if(parent.rect==null) {
+			
+			parent.rect = new Rectangle((int)parent.originalimg.min(0),(int) parent.originalimg.min(1), (int)parent.originalimg.max(0), (int)parent.originalimg.max(1));
+			
+		}
+		
+		if(parent.redoing) {
+		// Change the Rois
+		
+		
+					for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
 
+						Roiobject currentobject = entry.getValue();
+
+						preresultovalroi.addAll(currentobject.resultovalroi);
+						preresultroi.addAll(currentobject.resultroi);
+						preresultlineroi.addAll(currentobject.resultlineroi);
+						
+						if (currentobject.fourthDimension == t && currentobject.thirdDimension == z) {
+
+							for( OvalRoi currentoval: currentobject.resultovalroi) {
+								
+								double[] center = currentoval.getContourCentroid();
+								
+								
+							if (parent.rect.contains((int) center[0], (int) center[1])){
+								
+								preresultovalroi.remove(currentoval);
+							}
+							
+						}
+							
+							
+							for (EllipseRoi currentellipse: currentobject.resultroi) {
+								
+								double[] center = currentellipse.getContourCentroid();
+								
+								if (parent.rect.contains((int) center[0], (int) center[1])){
+									
+									preresultroi.remove(currentellipse);
+								}
+								
+							}
+							
+							for (Line currentline: currentobject.resultlineroi) {
+                                 
+								double[] center = currentline.getContourCentroid();
+								
+								if (parent.rect.contains((int) center[0], (int) center[1])){
+									
+									preresultlineroi.remove(currentline);
+								}
+								
+							}
+							
+							
+			
+					}
+					}
+					
+					Roiobject precurrentobject = new Roiobject(preresultroi, preresultovalroi, preresultlineroi, z, t, true);
+					parent.ZTRois.put(uniqueID, precurrentobject);
+					DisplayAuto.Display(parent);
+	}
+					
 		final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
 
 		for (int index = 0; index < parent.superReducedSamples.size(); ++index) {
@@ -110,7 +181,7 @@ public class SuperIntersection {
 			AllPointsofIntersect.add(PointsIntersect);
 
 		}
-		String uniqueID = Integer.toString(z) + Integer.toString(t);
+	
 		
 		if (!parent.redoing) {
 			
@@ -155,68 +226,15 @@ public class SuperIntersection {
 				
 			}
 			
-			// Change the Rois
-		
-			for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
-
-				Roiobject currentobject = entry.getValue();
-
-				if (currentobject.fourthDimension == t && currentobject.thirdDimension == z) {
-
-					
-					// Find the closest resultroi
-					/*
-					System.out.println("Size" + resultroi.size());
-					for(EllipseRoi current: resultroi) {
-						
-						double[] center = current.getContourCentroid();
-						System.out.println(center[0]);
-						EllipseRoi changeroi = utility.NearestRoi.getNearestRois(currentobject, center, parent); 
-						System.out.println(changeroi.getContourCentroid()[0]);
-						if(changeroi!=null) {
-						currentobject.resultroi.remove(changeroi);
-						currentobject.resultroi.add(current);
-						}
-						
-						
-					}
-					
-					/*
-					for (Line current: resultlineroi) {
-						
-						double[] center = current.getContourCentroid();
-						Line changeline = utility.NearestRoi.getNearestLineRois(currentobject, center, parent);
-						
-						currentobject.resultlineroi.remove(changeline);
-						currentobject.resultlineroi.add(current);
-					}
-					
-					for (OvalRoi current: resultovalroi) {
-						
-						double[] center = current.getContourCentroid();
-						
-						OvalRoi changeroi = utility.NearestRoi.getNearestIntersectionRois(currentobject, center, parent);
-						
-						currentobject.resultovalroi.remove(changeroi);
-						currentobject.resultovalroi.add(current);
-						
-						
-					}
-					*/
-					
-					
-					
-				}
-				
-			//	resultroi = currentobject.resultroi;
-			//	resultovalroi = currentobject.resultovalroi;
-			//	resultlineroi = currentobject.resultlineroi;
-			}
+			
 			
 			System.out.println("I did it");
-			Roiobject currentobject = new Roiobject(resultroi, resultovalroi, resultlineroi, z, t, true);
-			//parent.ZTRois.put(uniqueID, currentobject);
-			//parent.ALLIntersections.put(uniqueID, target);
+			preresultroi.addAll(resultroi);
+			preresultlineroi.addAll(resultlineroi);
+			preresultovalroi.addAll(resultovalroi);
+			Roiobject currentobject = new Roiobject(preresultroi, preresultovalroi, preresultlineroi, z, t, true);
+			parent.ZTRois.put(uniqueID, currentobject);
+			parent.ALLIntersections.put(uniqueID, target);
 			DisplayAuto.Display(parent);
 		}
 
