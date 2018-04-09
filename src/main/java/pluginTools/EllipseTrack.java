@@ -202,28 +202,38 @@ public class EllipseTrack {
 
 			if (parent.originalimg.numDimensions() > 3) {
 
-				for (int t = 1; t <= parent.fourthDimensionSize; ++t) {
-
+				for (int t = parent.AutostartTime; t <= parent.AutoendTime; ++t) {
+					parent.TID = Integer.toString(t);
+					parent.Accountedframes.put(parent.TID, t);
 					for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
 
 						parent.thirdDimension = z;
 						parent.fourthDimension = t;
 
 						BlockRepeat(percent, z, t);
+						
+												
 					}
 				}
 
+				
+			
+				
 			}
+			
+			
 
 			else if (parent.originalimg.numDimensions() > 2) {
 
-				for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
+				for (int z = parent.AutostartTime; z <= parent.AutoendTime; ++z) {
 
 					parent.thirdDimension = z;
-
+					parent.ZID = Integer.toString(z);
+					parent.AccountedZ.put(parent.ZID, z);
 					BlockRepeat(percent, z, 1);
 
 				}
+                
 
 			} else {
 				int z = parent.thirdDimension;
@@ -238,8 +248,9 @@ public class EllipseTrack {
 		if (parent.automode && !parent.supermode) {
 
 			if (parent.originalimg.numDimensions() > 3) {
-				for (int t = 1; t <= parent.fourthDimensionSize; ++t) {
-
+				for (int t = parent.AutostartTime; t <= parent.AutoendTime; ++t) {
+					parent.TID = Integer.toString(t);
+					parent.Accountedframes.put(parent.TID, t);
 					for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
 
 						parent.thirdDimension = z;
@@ -253,11 +264,12 @@ public class EllipseTrack {
 			}
 
 			else if (parent.originalimg.numDimensions() > 2) {
-
-				for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
+				
+				for (int z = parent.AutostartTime; z <= parent.AutoendTime; ++z) {
 
 					parent.thirdDimension = z;
-
+					parent.ZID = Integer.toString(z);
+					parent.AccountedZ.put(parent.ZID, z);
 					BlockRepeatAuto(percent, z, 1);
 
 				}

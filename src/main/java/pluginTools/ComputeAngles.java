@@ -180,7 +180,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 
 			}
 
-			System.out.println("MinMax" + minid + " " + maxid + " " + entryZ.getKey());
+			//System.out.println("MinMax" + minid + " " + maxid + " " + entryZ.getKey());
 
 			if (minid != Integer.MAX_VALUE) {
 
@@ -256,7 +256,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 								bestangle = currentangle;
 							if (bestangle.t > currentangle.t)
 								bestangle = currentangle;
-							System.out.println(currentangle.t + " " + bestangle.t);
+						//	System.out.println(currentangle.t + " " + bestangle.t);
 
 						}
 						parent.Finalresult.put(Integer.toString(id) + entryZ.getKey(), bestangle);

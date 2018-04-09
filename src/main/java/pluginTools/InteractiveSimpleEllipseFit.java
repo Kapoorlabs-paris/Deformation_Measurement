@@ -84,6 +84,8 @@ import ij.plugin.frame.RoiManager;
 import ij.process.ColorProcessor;
 
 import listeners.AngleListener;
+import listeners.AutoEndListener;
+import listeners.AutoStartListener;
 import listeners.ColorListener;
 import listeners.DisplayRoiListener;
 import listeners.DrawListener;
@@ -183,6 +185,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float insideCutoffmin = 5;
 	public float outsideCutoffmin = 5;
 
+	public int AutostartTime, AutoendTime;
 	public float insideCutoffmax = 50;
 	public float outsideCutoffmax = 50;
 	public int roiindex;
@@ -504,6 +507,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		FloatType maxval = new FloatType(1);
 		Normalize.normalize(Views.iterable(originalimg), minval, maxval);
 
+		
 		redoing = false;
 		superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>>();
 		pixellist = new HashSet<Integer>();
@@ -541,6 +545,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			fourthDimensionSize = 0;
 
 			thirdDimensionSize = (int) originalimg.dimension(2);
+			AutostartTime = thirdDimension;
+			AutoendTime = thirdDimensionSize;
 
 		}
 
@@ -551,7 +557,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			thirdDimensionSize = (int) originalimg.dimension(2);
 			fourthDimensionSize = (int) originalimg.dimension(3);
-
+			AutostartTime = thirdDimension;
+			AutoendTime = thirdDimensionSize;
 			prestack = new ImageStack((int) originalimg.dimension(0), (int) originalimg.dimension(1),
 					java.awt.image.ColorModel.getRGBdefault());
 		}
@@ -788,6 +795,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 						}
 
 					}
+					currentobject.resultlineroi.add(nearestline);
 
 					cp.setColor(colorresult);
 					cp.setLineWidth(4);
@@ -828,9 +836,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			if (automode) {
 				updatePreview(ValueChange.SEG);
-				Accountedframes.put(TID, fourthDimension);
-
-				AccountedZ.put(ZID, thirdDimension);
+			
 				if (originalimgbefore != null) {
 					CurrentViewOrig = utility.Slicer.getCurrentView(originalimgbefore, thirdDimension,
 							thirdDimensionSize, thirdDimension, fourthDimensionSize);
@@ -1305,7 +1311,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JCheckBox IlastikAuto = new JCheckBox("Ilastik Automated run", automode);
 
 	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField;
-	public TextField inputFieldZ;
+	public TextField inputFieldZ, startT, endT;
 	public TextField inputFieldmaxtry;
 	public TextField inputFieldminpercent;
 	public TextField inputFieldmaxellipse;
@@ -1322,7 +1328,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	public JButton Roibutton = new JButton("Confirm current roi selection");
 	public JButton DisplayRoibutton = new JButton("Display roi selection");
-	public JButton Anglebutton = new JButton("Intersection points and angles");
+	public JButton Anglebutton = new JButton("Fit Ellipses and track angles");
 	public JButton Savebutton = new JButton("Save Track");
 	public JButton Redobutton = new JButton("Recompute for current view");
 
@@ -1379,7 +1385,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public final JButton ChooseDirectory = new JButton("Choose Directory to save results in");
 	public JComboBox<String> ChooseMethod;
 	public JComboBox<String> ChooseColor;
-	public Label lostlabel;
+	public Label lostlabel, autoTstart, autoTend;
 	public TextField lostframe;
 	public Border origborder = new CompoundBorder(new TitledBorder("Enter filename for results files"),
 			new EmptyBorder(c.insets));
@@ -1397,9 +1403,19 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	Label alphaText = new Label(alphastring + " = " + alphaInit, Label.CENTER);
 	Label betaText = new Label(betastring + " = " + betaInit, Label.CENTER);
 	public void Card() {
-		lostlabel = new Label("Allow link loosing for #frames");
+		lostlabel = new Label("Number of frames for loosing the track");
 		lostframe = new TextField(1);
 		lostframe.setText(Integer.toString(maxframegap));
+		
+		autoTstart = new Label("Start time for automation");
+		startT = new TextField(1);
+		startT.setText(Integer.toString(AutostartTime));
+		
+		autoTend = new Label("End time for automation");
+		endT = new TextField(1);
+		endT.setText(Integer.toString(AutoendTime));
+		
+		
 		CardLayout cl = new CardLayout();
 
 		c.insets = new Insets(5, 5, 5, 5);
@@ -1579,8 +1595,20 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			Probselect.add(highprobslider, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Probselect.add(ChooseMethod, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Probselect.add(autoTstart, new GridBagConstraints(2, 6, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Probselect.add(startT, new GridBagConstraints(2, 8, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			
+
+			Probselect.add(autoTend, new GridBagConstraints(2, 10, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Probselect.add(endT, new GridBagConstraints(2, 12, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			
+			
+//			Probselect.add(ChooseMethod, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			//		GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Probselect.setPreferredSize(new Dimension(SizeX, SizeY));
 			Probselect.setBorder(probborder);
 
@@ -1645,7 +1673,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			}
 		}));
 		
-		panelSecond.add(controlprev, new GridBagConstraints(3, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		panelSecond.add(controlprev, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
 		
 		KalmanPanel.add(iniSearchText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
@@ -1658,6 +1686,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		KalmanPanel.add(lostframe, new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		
+	
 		KalmanPanel.add(maxSearchText, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		KalmanPanel.add(maxSearchS, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
@@ -1737,6 +1767,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				outsideCutoffmin, outsideCutoffmax, scrollbarSize, outsideslider));
 		
 		Anglebutton.addActionListener(new AngleListener(this));
+		startT.addTextListener(new AutoStartListener(this));
+		endT.addTextListener(new AutoEndListener(this));
 		Redobutton.addActionListener(new RedoListener(this));
 		Roibutton.addActionListener(new RoiListener(this));
 		inputFieldZ.addTextListener(new ZlocListener(this, false));

@@ -63,12 +63,10 @@ public class CreateTable {
 
 		parent.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-		parent.table.setMinimumSize(new Dimension(500, 300));
-		parent.table.setPreferredSize(new Dimension(500, 200));
+		
 
 		parent.scrollPane = new JScrollPane(parent.table);
-		parent.scrollPane.setMinimumSize(new Dimension(300, 200));
-		parent.scrollPane.setPreferredSize(new Dimension(300, 200));
+	
 
 		parent.scrollPane.getViewport().add(parent.table);
 		parent.scrollPane.setAutoscrolls(true);
@@ -76,8 +74,8 @@ public class CreateTable {
 
 		parent.PanelSelectFile.setBorder(parent.selectfile);
 
-		parent.panelSecond.add(parent.PanelSelectFile, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0,
-				GridBagConstraints.WEST, GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
+		parent.panelSecond.add(parent.PanelSelectFile, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
 
 		parent.Original.add(parent.inputLabel, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
@@ -98,8 +96,6 @@ public class CreateTable {
 
 		parent.Original.setBorder(parent.origborder);
 
-		parent.Original.setMinimumSize(new Dimension(parent.SizeX + 10, parent.SizeY + 10));
-		parent.Original.setPreferredSize(new Dimension(parent.SizeX + 10, parent.SizeY + 10));
 		parent.panelSecond.add(parent.Original, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 		parent.inputField.setEnabled(true);

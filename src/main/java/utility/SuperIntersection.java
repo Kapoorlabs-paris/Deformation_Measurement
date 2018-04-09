@@ -35,7 +35,6 @@ public class SuperIntersection {
 			ArrayList<Line> resultlineroi, final ArrayList<Tangentobject> AllPointsofIntersect,
 			final ArrayList<Intersectionobject> Allintersection, int t, int z) {
 
-		System.out.println("Super fitting post loop");
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
 	
 		
@@ -110,7 +109,7 @@ public class SuperIntersection {
 
 				Allintersection.add(currentintersection);
 
-				System.out.println("Angle: " + angleobject.angle + " " + pos.get(j)[0]);
+			//	System.out.println("Angle: " + angleobject.angle + " " + pos.get(j)[0]);
 
 			}
 
@@ -138,7 +137,6 @@ public class SuperIntersection {
 
 			}
 
-			System.out.println(uniqueID + "" + "ID IN LOOP");
 			Roiobject currentobject = new Roiobject(resultroi, resultovalroi, resultlineroi, z, t, true);
 			parent.ZTRois.put(uniqueID, currentobject);
 

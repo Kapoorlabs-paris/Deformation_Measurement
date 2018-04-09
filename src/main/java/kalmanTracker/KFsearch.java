@@ -129,9 +129,10 @@ public class KFsearch implements IntersectionTracker {
 			itSec.next();
 		while (itSec.hasNext()) {
 			percent++;
-			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (Accountedframes.size() - 1),
-					"Kalman Filter Search for " + " T = " + uniqueID);
 			int currentT = itSec.next().getValue();
+			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (Accountedframes.size() - 1),
+					"Kalman Filter Search for " + " T = " + currentT);
+			
 			uniqueID = Integer.toString(currentT) + Integer.toString(1);
 
 			SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> subgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(
