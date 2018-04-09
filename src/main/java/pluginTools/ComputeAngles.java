@@ -160,7 +160,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 
 	}
 
-	public void Lineage() {
+	public  void Lineage() {
 
 		for (Map.Entry<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> entryZ : parent.parentgraphZ
 				.entrySet()) {
@@ -180,7 +180,6 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 
 			}
 
-			//System.out.println("MinMax" + minid + " " + maxid + " " + entryZ.getKey());
 
 			if (minid != Integer.MAX_VALUE) {
 
@@ -254,8 +253,22 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 
 							if (count == 0)
 								bestangle = currentangle;
-							if (bestangle.t > currentangle.t)
+							if(parent.originalimg.numDimensions() > 3) {
+							if (currentangle.t  == parent.fourthDimension) {
 								bestangle = currentangle;
+							    break;	
+							}
+							}
+							else if (parent.originalimg.numDimensions() == 3){
+								if (currentangle.z  == parent.thirdDimension) {
+									bestangle = currentangle;
+									   System.out.println(bestangle.z + " " + parent.thirdDimension + " " + bestangle.angle);
+								    break;	
+								 
+								}
+								
+								
+							}
 						//	System.out.println(currentangle.t + " " + bestangle.t);
 
 						}

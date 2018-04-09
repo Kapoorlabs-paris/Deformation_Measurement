@@ -25,7 +25,6 @@ public class AutoEndListener implements TextListener {
 		if (s.length() > 0)
 			parent.AutoendTime = Integer.parseInt(s);
 		
-		System.out.println(parent.AutoendTime);
 		
 	}
 

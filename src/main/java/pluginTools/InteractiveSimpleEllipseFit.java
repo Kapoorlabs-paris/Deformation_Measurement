@@ -834,6 +834,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		if (change == ValueChange.THIRDDIMmouse || change == ValueChange.FOURTHDIMmouse) {
 
+			if(Tracklist.size() > 0) {
+				ComputeAngles current = new ComputeAngles(this, null);
+			
+				current.Lineage();
+				
+			}
 			if (automode) {
 				updatePreview(ValueChange.SEG);
 			
