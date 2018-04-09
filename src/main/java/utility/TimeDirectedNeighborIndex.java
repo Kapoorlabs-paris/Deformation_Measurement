@@ -193,10 +193,10 @@ public class TimeDirectedNeighborIndex extends NeighborIndex< Intersectionobject
 		{
 			final List< Intersectionobject > nl = Graphs.neighborListOf( graph, v );
 			final List< Intersectionobject > bnl = new ArrayList< Intersectionobject >();
-			final int ts = v.getFeature( Intersectionobject.FRAME ).intValue();
+			final int ts = v.getFeature( Intersectionobject.Time ).intValue();
 			for ( final Intersectionobject Intersectionobject : nl )
 			{
-				final int tt = Intersectionobject.getFeature( Intersectionobject.FRAME ).intValue();
+				final int tt = Intersectionobject.getFeature( Intersectionobject.Time ).intValue();
 				if ( tt < ts )
 				{
 					bnl.add( Intersectionobject );
@@ -215,10 +215,10 @@ public class TimeDirectedNeighborIndex extends NeighborIndex< Intersectionobject
 		{
 			final List< Intersectionobject > nl = Graphs.neighborListOf( graph, v );
 			final List< Intersectionobject > bnl = new ArrayList< Intersectionobject >();
-			final int ts = v.getFeature( Intersectionobject.FRAME ).intValue();
+			final int ts = v.getFeature( Intersectionobject.Time ).intValue();
 			for ( final Intersectionobject Intersectionobject : nl )
 			{
-				final int tt = Intersectionobject.getFeature( Intersectionobject.FRAME ).intValue();
+				final int tt = Intersectionobject.getFeature( Intersectionobject.Time ).intValue();
 				if ( tt > ts )
 				{
 					bnl.add( Intersectionobject );

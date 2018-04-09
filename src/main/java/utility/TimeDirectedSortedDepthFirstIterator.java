@@ -33,11 +33,11 @@ public class TimeDirectedSortedDepthFirstIterator extends SortedDepthFirstIterat
     	// Keep a map of matching edges so that we can retrieve them in the same order
     	final Map<Intersectionobject, DefaultWeightedEdge> localEdges = new HashMap<Intersectionobject, DefaultWeightedEdge>();
 
-    	final int ts = vertex.getFeature(Intersectionobject.FRAME).intValue();
+    	final int ts = vertex.getFeature(Intersectionobject.Time).intValue();
         for (final DefaultWeightedEdge edge : specifics.edgesOf(vertex)) {
 
         	final Intersectionobject oppositeV = Graphs.getOppositeVertex(graph, edge, vertex);
-        	final int tt = oppositeV.getFeature(Intersectionobject.FRAME).intValue();
+        	final int tt = oppositeV.getFeature(Intersectionobject.Time).intValue();
         	if (tt <= ts) {
         		continue;
         	}

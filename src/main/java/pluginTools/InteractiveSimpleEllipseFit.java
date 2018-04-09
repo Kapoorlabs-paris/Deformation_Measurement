@@ -12,11 +12,13 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Label;
 import java.awt.Rectangle;
 import java.awt.Scrollbar;
 import java.awt.TextField;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -34,6 +36,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.AbstractAction;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -45,6 +49,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
@@ -58,6 +63,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
+import costMatrix.CostFunction;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import ellipsoidDetector.Tangentobject;
@@ -76,11 +82,14 @@ import ij.measure.ResultsTable;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.RoiManager;
 import ij.process.ColorProcessor;
+
 import listeners.AngleListener;
 import listeners.ColorListener;
 import listeners.DisplayRoiListener;
 import listeners.DrawListener;
 import listeners.ETrackFilenameListener;
+import listeners.ETrackIniSearchListener;
+import listeners.ETrackMaxSearchListener;
 import listeners.EllipseNonStandardMouseListener;
 import listeners.HighProbListener;
 import listeners.IlastikListener;
@@ -127,6 +136,7 @@ import utility.Roiobject;
 import utility.ShowResultView;
 import utility.ShowView;
 import utility.Slicer;
+import utility.ThreeDRoiobject;
 import utility.TrackModel;
 
 public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
@@ -225,6 +235,23 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public ImagePlus resultimp;
 	public ImagePlus emptyimp;
 	public int ndims;
+	public float initialSearchradius = 10;
+	public float maxSearchradius = 15;
+	public float maxSearchradiusS = 15;
+	public int missedframes = 20;
+	public int initialSearchradiusInit = (int) initialSearchradius;
+	public CostFunction<Intersectionobject, Intersectionobject> UserchosenCostFunction;
+	public float initialSearchradiusMin = 1;
+	public float initialSearchradiusMax = 1000;
+	public float alphaMin = 0;
+	public float alphaMax = 1;
+	public float betaMin = 0;
+	public float betaMax = 1;
+	public int maxSearchradiusInit = (int) maxSearchradius;
+	public float maxSearchradiusMin = 1;
+	public float maxSearchradiusMax = 1000;
+	public float maxSearchradiusMinS = 1;
+	public float maxSearchradiusMaxS = 1000;
 	public RandomAccessibleInterval<FloatType> CurrentView;
 	public RandomAccessibleInterval<FloatType> CurrentViewOrig;
 	public RandomAccessibleInterval<FloatType> CurrentResultView;
@@ -239,6 +266,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Color colorLineB = Color.YELLOW;
 	public Color colorresult = Color.magenta;
 	public double maxdistance = 10;
+	public float alpha = 0.5f;
+	public float beta = 0.5f;
 	ImageStack prestack;
 	public MouseAdapter mouseadapter;
 	public ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> superReducedSamples;
@@ -264,7 +293,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public boolean automode;
 	public boolean supermode;
 	public double mindistance = 200;
+	public int alphaInit = 1;
+	public int betaInit = 0;
+	public int minSizeInit = 50;
+	public int maxSizeInit = 500;
 
+	public int maxSearchInit = 100;
+	public int maxframegap = 10;
 	public static enum ValueChange {
 		ROI, ALL, THIRDDIMmouse, FOURTHDIMmouse, DISPLAYROI, RADIUS, INSIDE, OUTSIDE, RESULT, RectRoi, SEG
 	}
@@ -313,6 +348,44 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		return lowprob;
 
 	}
+	public void setInitialsearchradius(final float value) {
+		initialSearchradius = value;
+		initialSearchradiusInit = computeScrollbarPositionFromValue(initialSearchradius, initialSearchradiusMin,
+				initialSearchradiusMax, scrollbarSize);
+	}
+
+	public void setInitialmaxsearchradius(final float value) {
+		maxSearchradius = value;
+		maxSearchradiusInit = computeScrollbarPositionFromValue(maxSearchradius, maxSearchradiusMin, maxSearchradiusMax,
+				scrollbarSize);
+	}
+
+	public double getInitialsearchradius(final float value) {
+
+		return initialSearchradius;
+
+	}
+	public void setInitialAlpha(final float value) {
+		alpha = value;
+		alphaInit = computeScrollbarPositionFromValue(alpha, alphaMin, alphaMax, scrollbarSize);
+	}
+
+	public double getInitialAlpha(final float value) {
+
+		return alpha;
+
+	}
+
+	public void setInitialBeta(final float value) {
+		beta = value;
+		betaInit = computeScrollbarPositionFromValue(beta, betaMin, betaMax, scrollbarSize);
+	}
+
+	public double getInitialBeta(final float value) {
+
+		return beta;
+
+	}
 
 	public void sethighprob(final float value) {
 		highprob = value;
@@ -337,7 +410,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	public InteractiveSimpleEllipseFit() {
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
-		nf.setMaximumFractionDigits(3);
+		nf.setMaximumFractionDigits(2);
 		this.dataset = new XYSeriesCollection();
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
@@ -355,7 +428,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
-		nf.setMaximumFractionDigits(3);
+		nf.setMaximumFractionDigits(2);
 		this.automode = false;
 	}
 
@@ -369,7 +442,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
-		nf.setMaximumFractionDigits(3);
+		nf.setMaximumFractionDigits(2);
 		this.automode = false;
 		this.supermode = false;
 	}
@@ -384,7 +457,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
-		nf.setMaximumFractionDigits(3);
+		nf.setMaximumFractionDigits(2);
 		this.automode = true;
 		this.supermode = false;
 	}
@@ -401,7 +474,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
-		nf.setMaximumFractionDigits(3);
+		nf.setMaximumFractionDigits(2);
 		this.automode = automode;
 		this.supermode = false;
 	}
@@ -420,7 +493,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
-		nf.setMaximumFractionDigits(3);
+		nf.setMaximumFractionDigits(2);
 		this.automode = true;
 		this.supermode = supermode;
 	}
@@ -798,13 +871,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				imp.updateAndDraw();
 
 			}
-
-			if (!automode) {
+			if(!automode){
 				if (ZTRois.get(uniqueID) == null)
 					DisplayDefault();
 				else
 					Display();
 			}
+			else
+				DisplayAuto.Display(this);
 			imp.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 
 		}
@@ -1221,12 +1295,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JFrame Cardframe = new JFrame("Ellipsoid detector");
 	public JPanel panelCont = new JPanel();
 	public JPanel panelFirst = new JPanel();
+	public JPanel panelSecond = new JPanel();
 	public JPanel Timeselect = new JPanel();
 	public JPanel Zselect = new JPanel();
 	public JPanel Roiselect = new JPanel();
 	public JPanel Probselect = new JPanel();
 	public JPanel Angleselect = new JPanel();
-
+	public  JPanel KalmanPanel = new JPanel();
 	public JCheckBox IlastikAuto = new JCheckBox("Ilastik Automated run", automode);
 
 	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField;
@@ -1239,8 +1314,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Label inputLabelminpercent;
 	public Label inputLabelIter, inputtrackLabel;
 	public JPanel Original = new JPanel();
-	public int SizeX = 400;
-	public int SizeY = 200;
+	public int SizeX = 500;
+	public int SizeY = 300;
 
 	public int smallSizeX = 200;
 	public int smallSizeY = 200;
@@ -1304,32 +1379,49 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public final JButton ChooseDirectory = new JButton("Choose Directory to save results in");
 	public JComboBox<String> ChooseMethod;
 	public JComboBox<String> ChooseColor;
+	public Label lostlabel;
+	public TextField lostframe;
 	public Border origborder = new CompoundBorder(new TitledBorder("Enter filename for results files"),
 			new EmptyBorder(c.insets));
-	
-	public void Card() {
+	JPanel controlprev = new JPanel();
+	JPanel controlnext = new JPanel();
+	final String alphastring = "Weightage for distance based cost";
+	final String betastring = "Weightage for pixel ratio based cost";
+	final String maxSearchstring = "Maximum search radius";
+	final String maxSearchstringS = "Maximum search radius";
+	final String initialSearchstring = "Initial search radius";
 
-		
-		
+	Label maxSearchText = new Label(maxSearchstring + " = " + maxSearchInit, Label.CENTER);
+	Label maxSearchTextS = new Label(maxSearchstring + " = " + maxSearchInit, Label.CENTER);
+	Label iniSearchText = new Label(initialSearchstring + " = " + initialSearchradiusInit, Label.CENTER);
+	Label alphaText = new Label(alphastring + " = " + alphaInit, Label.CENTER);
+	Label betaText = new Label(betastring + " = " + betaInit, Label.CENTER);
+	public void Card() {
+		lostlabel = new Label("Allow link loosing for #frames");
+		lostframe = new TextField(1);
+		lostframe.setText(Integer.toString(maxframegap));
 		CardLayout cl = new CardLayout();
 
 		c.insets = new Insets(5, 5, 5, 5);
 		panelCont.setLayout(cl);
 
 		panelCont.add(panelFirst, "1");
-
+		panelCont.add(panelSecond, "2");
 		panelFirst.setName("Angle Tool for ellipsoids");
 
 		panelFirst.setLayout(layout);
 
+		panelSecond.setLayout(layout);
+		
 		Timeselect.setLayout(layout);
-
+		controlprev.setLayout(layout);
+		controlnext.setLayout(layout);
 		Zselect.setLayout(layout);
 		Original.setLayout(layout);
 		Roiselect.setLayout(layout);
 		Probselect.setLayout(layout);
 		Angleselect.setLayout(layout);
-
+		KalmanPanel.setLayout(layout);
 		inputFieldZ = new TextField(5);
 		inputFieldZ.setText(Integer.toString(thirdDimension));
 
@@ -1350,6 +1442,20 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		maxperimeterField.setText(Integer.toString(maxperimeter));
 
 		inputLabelIter = new Label("Max. attempts to find ellipses");
+		final JScrollBar maxSearchS = new JScrollBar(Scrollbar.HORIZONTAL, maxSearchInit, 10, 0, 10 + scrollbarSize);
+		final JScrollBar initialSearchS = new JScrollBar(Scrollbar.HORIZONTAL, initialSearchradiusInit, 10, 0,
+				10 + scrollbarSize);
+		final JScrollBar alphaS = new JScrollBar(Scrollbar.HORIZONTAL, alphaInit, 10, 0, 10 + scrollbarSize);
+		final JScrollBar betaS = new JScrollBar(Scrollbar.HORIZONTAL, betaInit, 10, 0, 10 + scrollbarSize);
+
+		maxSearchradius = utility.ScrollbarUtils.computeValueFromScrollbarPosition(maxSearchS.getValue(),
+				maxSearchradiusMin, maxSearchradiusMax, scrollbarSize);
+		initialSearchradius = utility.ScrollbarUtils.computeValueFromScrollbarPosition(initialSearchS.getValue(),
+				initialSearchradiusMin, initialSearchradiusMax, scrollbarSize);
+		alpha = utility.ScrollbarUtils.computeValueFromScrollbarPosition(alphaS.getValue(), alphaMin, alphaMax,
+				scrollbarSize);
+		beta = utility.ScrollbarUtils.computeValueFromScrollbarPosition(betaS.getValue(), betaMin, betaMax,
+				scrollbarSize);
 
 		String[] DrawType = { "Closed Loops", "Semi-Closed Loops" };
 
@@ -1389,7 +1495,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		Border ellipsetools = new CompoundBorder(new TitledBorder("Ransac and Angle computer"),
 				new EmptyBorder(c.insets));
-
+		Border Kalmanborder = new CompoundBorder(new TitledBorder("Kalman Filter Search for angle tracking"),
+				new EmptyBorder(c.insets));
 		c.anchor = GridBagConstraints.BOTH;
 		c.ipadx = 35;
 
@@ -1398,8 +1505,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		c.gridy = 1;
 		c.gridx = 0;
 
-		int ycounter = 0;
-		int xcounter = 0;
+	
 
 		// Put time slider
 
@@ -1413,9 +1519,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		Timeselect.setBorder(timeborder);
-	
-		Timeselect.setPreferredSize(new Dimension(SizeX, SizeY));
-		panelFirst.add(Timeselect, new GridBagConstraints(xcounter, ycounter, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+		panelFirst.add(Timeselect, new GridBagConstraints(0, 0, 5, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		// Put z slider
@@ -1430,10 +1534,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		Zselect.add(inputFieldZ, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
-		Zselect.setPreferredSize(new Dimension(SizeX, SizeY));
 		Zselect.setBorder(zborder);
-		
-		panelFirst.add(Zselect, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		panelFirst.add(Zselect, new GridBagConstraints(5, 0, 5, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		if (ndims < 4) {
@@ -1518,18 +1620,63 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		Angleselect.add(insideslider, new GridBagConstraints(0, 7, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-		Angleselect.add(Anglebutton, new GridBagConstraints(0, 8, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-		Angleselect.add(Redobutton, new GridBagConstraints(0, 9, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		
 
 		Angleselect.setBorder(ellipsetools);
-		Angleselect.setPreferredSize(new Dimension(SizeX, SizeY+100));
+		Angleselect.setPreferredSize(new Dimension(SizeX, SizeY));
+		
 		panelFirst.add(Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		controlprev.add(new JButton(new AbstractAction("\u22b2Prev") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CardLayout cl = (CardLayout) panelCont.getLayout();
+				cl.previous(panelCont);
+			}
+		}));
+
+		controlnext.add(new JButton(new AbstractAction("Next\u22b3") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CardLayout cl = (CardLayout) panelCont.getLayout();
+				cl.next(panelCont);
+			}
+		}));
+		
+		panelSecond.add(controlprev, new GridBagConstraints(3, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
+		
+		KalmanPanel.add(iniSearchText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		KalmanPanel.add(initialSearchS, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 
 
+		KalmanPanel.add(lostlabel, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		KalmanPanel.add(lostframe, new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		KalmanPanel.add(maxSearchText, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		KalmanPanel.add(maxSearchS, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		
+		KalmanPanel.add(Anglebutton, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+		KalmanPanel.add(Redobutton, new GridBagConstraints(5, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		
+		KalmanPanel.add(controlnext, new GridBagConstraints(5, 6, 10, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
+		KalmanPanel.setBorder(Kalmanborder);
+		
+		KalmanPanel.setPreferredSize(new Dimension(SizeX, SizeY));
+		panelFirst.add(KalmanPanel, new GridBagConstraints(0, 2, 10, 1, 0.0, 0.0, GridBagConstraints.ABOVE_BASELINE,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		
 		
 		table.setFillsViewportHeight(true);
 
@@ -1540,12 +1687,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		scrollPane.getViewport().add(table);
 		scrollPane.setAutoscrolls(true);
 
-		scrollPane.setPreferredSize(new Dimension(SizeX, SizeY));
 		PanelSelectFile.add(scrollPane, BorderLayout.CENTER);
 
 		PanelSelectFile.setBorder(selectfile);
 
-		panelFirst.add(PanelSelectFile, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		panelSecond.add(PanelSelectFile, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
 
 		Original.add(inputLabel, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
@@ -1564,7 +1710,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		Original.add(Savebutton, new GridBagConstraints(0, 8, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-		Original.setPreferredSize(new Dimension(SizeX, SizeY));
 		Original.setBorder(origborder);
 
 		
@@ -1572,7 +1717,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		inputtrackField.setEnabled(false);
 		ChooseDirectory.setEnabled(false);
 		Savebutton.setEnabled(false);
-		panelFirst.add(Original, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+		panelSecond.add(Original, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		timeslider.addAdjustmentListener(new TimeListener(this, timeText, timestring, fourthDimensionsliderInit,
@@ -1590,7 +1735,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				insideCutoffmax, scrollbarSize, insideslider));
 		outsideslider.addAdjustmentListener(new OutsideCutoffListener(this, outsideText, outsidestring,
 				outsideCutoffmin, outsideCutoffmax, scrollbarSize, outsideslider));
-
+		
 		Anglebutton.addActionListener(new AngleListener(this));
 		Redobutton.addActionListener(new RedoListener(this));
 		Roibutton.addActionListener(new RoiListener(this));
@@ -1612,6 +1757,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				lowprobmax, scrollbarSize, lowprobslider));
 		highprobslider.addAdjustmentListener(new HighProbListener(this, highporbText, highprobstring, highprobmin,
 				highprobmax, scrollbarSize, highprobslider));
+	
+		maxSearchS.addAdjustmentListener(new ETrackMaxSearchListener(this, maxSearchText, maxSearchstring,
+				maxSearchradiusMin, maxSearchradiusMax, scrollbarSize, maxSearchS));
+		initialSearchS.addAdjustmentListener(new ETrackIniSearchListener(this, iniSearchText, initialSearchstring,
+				initialSearchradiusMin, initialSearchradiusMax, scrollbarSize, initialSearchS));
 		panelFirst.setVisible(true);
 		cl.show(panelCont, "1");
 		Cardframe.add(panelCont, "Center");

@@ -76,7 +76,7 @@ public class CreateTable {
 
 		parent.PanelSelectFile.setBorder(parent.selectfile);
 
-		parent.panelFirst.add(parent.PanelSelectFile, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0,
+		parent.panelSecond.add(parent.PanelSelectFile, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0,
 				GridBagConstraints.WEST, GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
 
 		parent.Original.add(parent.inputLabel, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
@@ -100,7 +100,7 @@ public class CreateTable {
 
 		parent.Original.setMinimumSize(new Dimension(parent.SizeX + 10, parent.SizeY + 10));
 		parent.Original.setPreferredSize(new Dimension(parent.SizeX + 10, parent.SizeY + 10));
-		parent.panelFirst.add(parent.Original, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+		parent.panelSecond.add(parent.Original, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 		parent.inputField.setEnabled(true);
 		parent.inputtrackField.setEnabled(true);
@@ -111,8 +111,8 @@ public class CreateTable {
 		parent.PanelSelectFile.repaint();
 		parent.PanelSelectFile.validate();
 
-		parent.panelFirst.repaint();
-		parent.panelFirst.validate();
+		parent.panelSecond.repaint();
+		parent.panelSecond.validate();
 		parent.Cardframe.repaint();
 		parent.Cardframe.validate();
 	}

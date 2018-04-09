@@ -37,9 +37,6 @@ public class SuperIntersection {
 
 		System.out.println("Super fitting post loop");
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
-		ArrayList<EllipseRoi> preresultroi = new ArrayList<EllipseRoi>();
-		ArrayList<OvalRoi> preresultovalroi = new ArrayList<OvalRoi>();
-		ArrayList<Line> preresultlineroi = new ArrayList<Line>();
 	
 		
 		
@@ -141,6 +138,7 @@ public class SuperIntersection {
 
 			}
 
+			System.out.println(uniqueID + "" + "ID IN LOOP");
 			Roiobject currentobject = new Roiobject(resultroi, resultovalroi, resultlineroi, z, t, true);
 			parent.ZTRois.put(uniqueID, currentobject);
 

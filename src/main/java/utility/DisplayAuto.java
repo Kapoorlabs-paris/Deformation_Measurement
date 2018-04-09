@@ -211,8 +211,8 @@ public static void select(final InteractiveSimpleEllipseFit parent) {
 
 					parent.table.validate();
 					parent.scrollPane.validate();
-					parent.panelFirst.repaint();
-					parent.panelFirst.validate();
+					parent.panelSecond.repaint();
+					parent.panelSecond.validate();
 
 				}
 

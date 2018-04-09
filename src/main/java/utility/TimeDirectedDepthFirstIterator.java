@@ -17,14 +17,14 @@ public class TimeDirectedDepthFirstIterator extends SortedDepthFirstIterator<Int
 	
     protected void addUnseenChildrenOf(Intersectionobject vertex) {
     	
-    	int ts = vertex.getFeature(Intersectionobject.FRAME).intValue();
+    	int ts = vertex.getFeature(Intersectionobject.Time).intValue();
         for (DefaultWeightedEdge edge : specifics.edgesOf(vertex)) {
             if (nListeners != 0) {
                 fireEdgeTraversed(createEdgeTraversalEvent(edge));
             }
 
             Intersectionobject oppositeV = Graphs.getOppositeVertex(graph, edge, vertex);
-            int tt = oppositeV.getFeature(Intersectionobject.FRAME).intValue();
+            int tt = oppositeV.getFeature(Intersectionobject.Time).intValue();
             if (tt <= ts) {
             	continue;
             }

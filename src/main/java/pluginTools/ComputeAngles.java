@@ -30,8 +30,12 @@ import javax.swing.SwingWorker;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
+import costMatrix.PixelratiowDistCostFunction;
 import ellipsoidDetector.Intersectionobject;
 import ij.ImageStack;
+import kalmanTracker.ETrackCostFunction;
+import kalmanTracker.IntersectionobjectCollection;
+import kalmanTracker.KFsearch;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -39,6 +43,7 @@ import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.CreateTable;
 import utility.NearestNeighbourSearch;
 import utility.NearestNeighbourSearch2D;
+import utility.ThreeDRoiobject;
 import utility.TrackModel;
 
 public class ComputeAngles extends SwingWorker<Void, Void> {
@@ -116,11 +121,31 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 		}
 
 		else {
+			parent.UserchosenCostFunction = new ETrackCostFunction(1, 0);
+			
+			IntersectionobjectCollection coll = new IntersectionobjectCollection();
+			
+			for(Map.Entry<String, ArrayList<Intersectionobject>> entry : parent.ALLIntersections.entrySet()) {
+				
+				String ID = entry.getKey();
+				ArrayList<Intersectionobject> bloblist = entry.getValue();
+				
+				for (Intersectionobject blobs: bloblist) {
+					
+					coll.add(blobs, ID);
+					
+					
+				}
+				
+				
+			}
+			
+			KFsearch Tsearch = new KFsearch(coll, parent.UserchosenCostFunction, parent.maxSearchradius, parent.initialSearchradius, parent.maxframegap, parent.AccountedZ, parent.jpb);
+			Tsearch.process();
+			SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > simplegraph = Tsearch.getResult();
+			
+			
 
-			NearestNeighbourSearch2D NNsearch = new NearestNeighbourSearch2D(parent.ALLIntersections,
-					(int) parent.thirdDimensionSize, parent.maxdistance, parent.AccountedZ, parent.mindistance);
-			NNsearch.process();
-			SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = NNsearch.getResult();
 			parent.parentgraphZ.put(Integer.toString(1), simplegraph);
 			Lineage();
 		}
