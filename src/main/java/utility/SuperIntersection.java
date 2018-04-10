@@ -2,6 +2,7 @@ package utility;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -36,11 +37,7 @@ public class SuperIntersection {
 			final ArrayList<Intersectionobject> Allintersection, int t, int z) {
 
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
-	
-		
-		
-		
-					
+
 		final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
 
 		for (int index = 0; index < parent.superReducedSamples.size(); ++index) {
@@ -60,6 +57,7 @@ public class SuperIntersection {
 
 		final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecialred = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
 		fitmapspecialred.addAll(fitmapspecial);
+		// Remove duplicate pairs
 		for (int i = 0; i < fitmapspecialred.size(); ++i) {
 
 			Pair<Ellipsoid, Ellipsoid> ellipsepairA = fitmapspecialred.get(i);
@@ -87,6 +85,10 @@ public class SuperIntersection {
 
 			ArrayList<double[]> pos = Intersections.PointsofIntersection(ellipsepair);
 
+			// Reject wrong points that are not candidate points
+
+			RejectPoints(pos);
+
 			Tangentobject PointsIntersect = new Tangentobject(pos, ellipsepair, t, z);
 
 			for (int j = 0; j < pos.size(); ++j) {
@@ -109,41 +111,87 @@ public class SuperIntersection {
 
 				Allintersection.add(currentintersection);
 
-			//	System.out.println("Angle: " + angleobject.angle + " " + pos.get(j)[0]);
+				// System.out.println("Angle: " + angleobject.angle + " " + pos.get(j)[0]);
 
 			}
 
 			AllPointsofIntersect.add(PointsIntersect);
 
 		}
-	
-		
-			
 
-			parent.ALLIntersections.put(uniqueID, Allintersection);
+		parent.ALLIntersections.put(uniqueID, Allintersection);
 
-			// Add new result rois to ZTRois
-			for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
+		// Add new result rois to ZTRois
+		for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
 
-				Roiobject currentobject = entry.getValue();
+			Roiobject currentobject = entry.getValue();
 
-				if (currentobject.fourthDimension == t && currentobject.thirdDimension == z) {
+			if (currentobject.fourthDimension == t && currentobject.thirdDimension == z) {
 
-					currentobject.resultroi = resultroi;
-					currentobject.resultovalroi = resultovalroi;
-					currentobject.resultlineroi = resultlineroi;
-
-				}
+				currentobject.resultroi = resultroi;
+				currentobject.resultovalroi = resultovalroi;
+				currentobject.resultlineroi = resultlineroi;
 
 			}
 
-			Roiobject currentobject = new Roiobject(resultroi, resultovalroi, resultlineroi, z, t, true);
-			parent.ZTRois.put(uniqueID, currentobject);
+		}
 
-			DisplayAuto.Display(parent);
+		Roiobject currentobject = new Roiobject(resultroi, resultovalroi, resultlineroi, z, t, true);
+		parent.ZTRois.put(uniqueID, currentobject);
 
-		
-		
+		DisplayAuto.Display(parent);
+
+	}
+
+	public void RejectPoints(ArrayList<double[]> pos) {
+		boolean removeit = true;
+		for (int indexx = 0; indexx < pos.size(); ++indexx) {
+
+			for (int index = 0; index < parent.superReducedSamples.size(); ++index) {
+
+				double[] currentpoint = pos.get(indexx);
+				double[] targetpoint = new double[currentpoint.length];
+
+				Iterator<Pair<RealLocalizable, BitType>> iter = parent.superReducedSamples.get(index).getB().iterator();
+
+				while (iter.hasNext()) {
+
+					Pair<RealLocalizable, BitType> current = iter.next();
+
+					current.getA().localize(targetpoint);
+
+					double currdist = Sqdistance(currentpoint, targetpoint);
+
+					if (currdist < 10) {
+
+						removeit = false;
+						
+					}
+				}
+
+			}
+			
+			if (removeit) {
+				
+				pos.remove(indexx);
+				System.out.println("Removing wrong point");
+				--indexx;
+			}
+
+		}
+
+	}
+
+	public double Sqdistance(double[] sourceLocation, double[] targetLocation) {
+
+		double distance = 0;
+
+		for (int d = 0; d < sourceLocation.length; ++d) {
+
+			distance += (sourceLocation[d] - targetLocation[d]) * (sourceLocation[d] - targetLocation[d]);
+		}
+
+		return distance;
 
 	}
 

@@ -269,7 +269,6 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 								
 								
 							}
-						//	System.out.println(currentangle.t + " " + bestangle.t);
 
 						}
 						parent.Finalresult.put(Integer.toString(id) + entryZ.getKey(), bestangle);

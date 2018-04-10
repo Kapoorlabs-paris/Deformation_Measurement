@@ -183,6 +183,11 @@ public class LabelRansac implements Runnable {
 
 				ArrayList<double[]> pos = Intersections.PointsofIntersection(ellipsepair);
 
+				
+				// Reject wrong points
+				
+				
+				
 				Tangentobject PointsIntersect = new Tangentobject(pos, ellipsepair, t, z);
 
 				for (int j = 0; j < pos.size(); ++j) {

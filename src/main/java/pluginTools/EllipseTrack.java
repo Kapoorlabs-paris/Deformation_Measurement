@@ -93,12 +93,12 @@ public class EllipseTrack {
 
 		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
+		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
 		Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView,
 				parent.span);
 
 		parent.maxlabel = GetMaxlabelsseeded(Current.getA());
-		Computeinwater compute = new Computeinwater(parent, Current.getB(), Current.getA(), t, z, (int) percent,
+		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, Current.getA(), t, z, (int) percent,
 				parent.maxlabel);
 		compute.ParallelRansac();
 
@@ -158,9 +158,9 @@ public class EllipseTrack {
 
 		Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView,
 				parent.span);
-
+		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
 		parent.maxlabel = GetMaxlabelsseeded(Current.getA());
-		Computeinwater compute = new Computeinwater(parent, Current.getB(), Current.getA(), t, z, (int) percent,
+		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, Current.getA(), t, z, (int) percent,
 				parent.maxlabel);
 		compute.ParallelRansac();
 
@@ -334,15 +334,18 @@ public class EllipseTrack {
 	public RandomAccessibleInterval<BitType> getThin(RandomAccessibleInterval<BitType> CurrentView) {
 
 		ThinningStrategyFactory fact = new ThinningStrategyFactory(true);
-		ThinningStrategy strat = fact.getStrategy(Strategy.HILDITCH);
+		ThinningStrategy strat = fact.getStrategy(Strategy.ZHANGSUEN);
 
 		ThinningOp thinit = new ThinningOp(strat, true, new ArrayImgFactory<BitType>());
 		RandomAccessibleInterval<BitType> newCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
 				new BitType());
 		RandomAccessibleInterval<BitType> newthinCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
 				new BitType());
-		newthinCurrentView = thinit.compute(CurrentView, newthinCurrentView);
+		
+		newCurrentView = Kernels.CannyEdgeandMeanBit(CurrentView, 1);
+		thinit.compute(newCurrentView, newthinCurrentView);
 
+		ImageJFunctions.show(newthinCurrentView);
 		return newthinCurrentView;
 	}
 
@@ -357,8 +360,8 @@ public class EllipseTrack {
 		RandomAccessibleInterval<BitType> newthinCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
 				new BitType());
 
-		newCurrentView = Kernels.CannyEdgeandMeanBit(CurrentView, parent.span);
-		newthinCurrentView = thinit.compute(newCurrentView, newthinCurrentView);
+		newCurrentView = Kernels.CannyEdgeandMeanBit(CurrentView, 1);
+		thinit.compute(newCurrentView, newthinCurrentView);
 
 		// ImageJFunctions.show(newthinCurrentView).setTitle("Thinned image");
 
