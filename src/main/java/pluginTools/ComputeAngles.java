@@ -262,7 +262,6 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 							else if (parent.originalimg.numDimensions() == 3){
 								if (currentangle.z  == parent.thirdDimension) {
 									bestangle = currentangle;
-									   System.out.println(bestangle.z + " " + parent.thirdDimension + " " + bestangle.angle);
 								    break;	
 								 
 								}

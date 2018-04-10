@@ -150,6 +150,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public String usefolder = IJ.getDirectory("imagej");
 	public String addToName = "EllipseFits";
 	public final int scrollbarSize = 1000;
+	public double cutoffdist = 10;
 	public int tablesize;
 	public Overlay overlay;
 	public Overlay emptyoverlay;
@@ -686,6 +687,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 
 		if (change == ValueChange.RESULT) {
+			
+			System.out.println("Somebody clicked me");
+			
 			prestack = new ImageStack((int) originalimg.dimension(0), (int) originalimg.dimension(1),
 					java.awt.image.ColorModel.getRGBdefault());
 

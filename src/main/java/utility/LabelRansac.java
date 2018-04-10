@@ -134,7 +134,7 @@ public class LabelRansac implements Runnable {
 			}
 
 			int count = 0;
-			if(!supermode) {
+			if(!parent.automode) {
 				
 			ArrayList<Integer> ellipsepairlist = new ArrayList<Integer>();
 			
@@ -184,7 +184,6 @@ public class LabelRansac implements Runnable {
 				ArrayList<double[]> pos = Intersections.PointsofIntersection(ellipsepair);
 
 				
-				// Reject wrong points
 				
 				
 				
@@ -245,7 +244,7 @@ public class LabelRansac implements Runnable {
 			parent.superReducedSamples.addAll(Reducedsamples);
 			
 			
-
+/*
 			if (parent.automode && !parent.redoing) {
 				
 				Roiobject currentobject = new Roiobject(resultroi,resultovalroi,resultlineroi, z, t, true);
@@ -253,7 +252,7 @@ public class LabelRansac implements Runnable {
 
 				DisplayAuto.Display(parent);
 			}
-			
+			*/
 			
 		} else
 			return;

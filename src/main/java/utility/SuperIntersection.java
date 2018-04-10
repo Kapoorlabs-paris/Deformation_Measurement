@@ -26,6 +26,7 @@ public class SuperIntersection {
 
 	final InteractiveSimpleEllipseFit parent;
 
+	
 	public SuperIntersection(final InteractiveSimpleEllipseFit parent) {
 
 		this.parent = parent;
@@ -139,6 +140,8 @@ public class SuperIntersection {
 		Roiobject currentobject = new Roiobject(resultroi, resultovalroi, resultlineroi, z, t, true);
 		parent.ZTRois.put(uniqueID, currentobject);
 
+		System.out.println("In reject stage");
+		
 		DisplayAuto.Display(parent);
 
 	}
@@ -162,7 +165,7 @@ public class SuperIntersection {
 
 					double currdist = Sqdistance(currentpoint, targetpoint);
 
-					if (currdist < 10) {
+					if (currdist < parent.cutoffdist) {
 
 						removeit = false;
 						

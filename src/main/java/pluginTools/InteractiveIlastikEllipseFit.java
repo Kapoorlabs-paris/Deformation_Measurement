@@ -21,7 +21,7 @@ public class InteractiveIlastikEllipseFit {
 		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/Stage3Training/TestEtrack/TestTimeLapse/Test3_1/MulticutSegmentation.tif");
 		impC.show();
 		
-		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/Stage3Training/TestEtrack/TestTimeLapse/Test3_1/BoundaryProbability-1.tif");
+		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/Stage3Training/TestEtrack/TestTimeLapse/Test3_1/BoundaryProbability.tif");
 		impA.show();
 		IlastikEllipseFileChooser panel = new IlastikEllipseFileChooser();
 

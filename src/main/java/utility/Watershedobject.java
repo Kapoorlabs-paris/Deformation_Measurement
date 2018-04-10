@@ -76,7 +76,6 @@ public class Watershedobject {
 		RandomAccessibleInterval<BitType> outimgsmall = extractImage(outimg, intervalsmall);
 		double meanIntensity = computeAverage(Views.iterable(outimgsmall));
 		double size = (intervalsmall.max(0) - intervalsmall.min(0)) * (intervalsmall.max(1) - intervalsmall.min(1));
-		
 		Watershedobject currentobject = new Watershedobject(outimgsmall, meanIntensity, size);
 		
 		
@@ -102,7 +101,7 @@ public class Watershedobject {
             ++count;
         }
  
-        return realSum.getSum() ;
+        return realSum.getSum();
     }
 	
 	public static RandomAccessibleInterval<BitType> extractImage(final RandomAccessibleInterval<BitType> intervalView, final FinalInterval interval) {

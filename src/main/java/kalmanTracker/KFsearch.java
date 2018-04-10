@@ -91,13 +91,24 @@ public class KFsearch implements IntersectionTracker {
 		// Find first and second non-empty frames.
 		final NavigableSet< String > keySet = Allblobs.keySet();
 		final Iterator< String > frameIterator = keySet.iterator();
-		String uniqueID = frameIterator.next();
-		String uniqueIDnext = frameIterator.next();
 		
-		Collection<Intersectionobject> Firstorphan = generateSpotList(Allblobs, uniqueID);
-
-		Collection<Intersectionobject> Secondorphan = generateSpotList(Allblobs, uniqueIDnext);
-
+		Collection<Intersectionobject> Firstorphan = new ArrayList<>();
+		if ( !frameIterator.hasNext() ) { return true; }
+		String uniqueID = frameIterator.next();
+		while ( Firstorphan.isEmpty() )
+		{
+			Firstorphan = generateSpotList( Allblobs, uniqueID );
+			if ( !frameIterator.hasNext() ) { return true; }
+			uniqueID = frameIterator.next();
+		}
+		Collection<Intersectionobject> Secondorphan = new ArrayList<>();
+		String uniqueIDnext = uniqueID;
+		while ( Secondorphan.isEmpty() )
+		{
+			Secondorphan = generateSpotList( Allblobs, uniqueIDnext );
+			if ( !frameIterator.hasNext() ) { return true; }
+			uniqueIDnext = frameIterator.next();
+		}
 		// Max KF search cost.
 		final double maxCost = maxsearchRadius * maxsearchRadius;
 
@@ -125,8 +136,7 @@ public class KFsearch implements IntersectionTracker {
 		// KalmanFilterMap
 		Iterator<Map.Entry<String, Integer>> itSec = Accountedframes.entrySet().iterator();
 		int percent = 0;
-		if (itSec.hasNext())
-			itSec.next();
+		
 		while (itSec.hasNext()) {
 			percent++;
 			int currentT = itSec.next().getValue();

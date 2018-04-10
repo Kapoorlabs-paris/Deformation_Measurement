@@ -94,8 +94,7 @@ public class EllipseTrack {
 		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
-		Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView,
-				parent.span);
+		Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView);
 
 		parent.maxlabel = GetMaxlabelsseeded(Current.getA());
 		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, Current.getA(), t, z, (int) percent,
@@ -156,13 +155,12 @@ public class EllipseTrack {
 		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
-		Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView,
-				parent.span);
+		Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView);
 		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
-		parent.maxlabel = GetMaxlabelsseeded(Current.getA());
-		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, Current.getA(), t, z, (int) percent,
-				parent.maxlabel);
+		GetPixelList(Current.getA());
+		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, Current.getA(), t, z, (int) percent);
 		compute.ParallelRansac();
+		
 
 	}
 
@@ -334,27 +332,26 @@ public class EllipseTrack {
 	public RandomAccessibleInterval<BitType> getThin(RandomAccessibleInterval<BitType> CurrentView) {
 
 		ThinningStrategyFactory fact = new ThinningStrategyFactory(true);
-		ThinningStrategy strat = fact.getStrategy(Strategy.ZHANGSUEN);
+		ThinningStrategy strat = fact.getStrategy(Strategy.GUOHALL);
 
 		ThinningOp thinit = new ThinningOp(strat, true, new ArrayImgFactory<BitType>());
-		RandomAccessibleInterval<BitType> newCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
-				new BitType());
+	
 		RandomAccessibleInterval<BitType> newthinCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
 				new BitType());
 		
-		newCurrentView = Kernels.CannyEdgeandMeanBit(CurrentView, 1);
-		thinit.compute(newCurrentView, newthinCurrentView);
+		thinit.compute(CurrentView, newthinCurrentView);
 
-		ImageJFunctions.show(newthinCurrentView);
+		
 		return newthinCurrentView;
 	}
 
 	public Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> getAutoint(
-			RandomAccessibleInterval<BitType> CurrentView, int span) {
+			RandomAccessibleInterval<BitType> CurrentView) {
 
 		ThinningStrategyFactory fact = new ThinningStrategyFactory(true);
-		ThinningStrategy strat = fact.getStrategy(Strategy.GUOHALL);
+		ThinningStrategy strat = fact.getStrategy(Strategy.HILDITCH);
 		ThinningOp thinit = new ThinningOp(strat, true, new ArrayImgFactory<BitType>());
+	
 		RandomAccessibleInterval<BitType> newCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
 				new BitType());
 		RandomAccessibleInterval<BitType> newthinCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
@@ -363,7 +360,7 @@ public class EllipseTrack {
 		newCurrentView = Kernels.CannyEdgeandMeanBit(CurrentView, 1);
 		thinit.compute(newCurrentView, newthinCurrentView);
 
-		// ImageJFunctions.show(newthinCurrentView).setTitle("Thinned image");
+		 ImageJFunctions.show(newthinCurrentView).setTitle("Thinned image");
 
 		DistWatershedBinary segmentimage = new DistWatershedBinary(newthinCurrentView);
 
@@ -371,7 +368,7 @@ public class EllipseTrack {
 
 		RandomAccessibleInterval<IntType> CurrentViewInt = segmentimage.getResult();
 
-		// ImageJFunctions.show(CurrentViewInt).setTitle("Segmented image");
+		 ImageJFunctions.show(CurrentViewInt).setTitle("Segmented image");
 
 		return new ValuePair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>>(CurrentViewInt,
 				newthinCurrentView);

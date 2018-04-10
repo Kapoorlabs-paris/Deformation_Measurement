@@ -93,7 +93,7 @@ public class Computeinwater {
 
 		ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
 
-		if (parent.supermode) {
+		if (parent.automode) {
 
 			Iterator<Integer> setiter = parent.pixellist.iterator();
 
@@ -105,8 +105,8 @@ public class Computeinwater {
 
 				
 				Watershedobject current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
-				if (current.Size > parent.minperimeter * parent.minperimeter / 12
-						&& current.Size < parent.maxperimeter * parent.maxperimeter / 12) {
+				if (current.Size > parent.minperimeter / 3 * parent.minperimeter / 3
+						&& current.Size < parent.maxperimeter / 3 *  parent.maxperimeter / 3 && current.meanIntensity > 9) {
 					
 					List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
 					
@@ -126,13 +126,13 @@ public class Computeinwater {
 			parent.maxlabel = maxlabel;
 
 			for (int label = 1; label <= maxlabel; ++label) {
-
 				percent++;
 
 				Watershedobject current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
 
-				if (current.Size > parent.minperimeter * parent.minperimeter / 12
-						&& current.Size < parent.maxperimeter * parent.maxperimeter / 12) {
+				if (current.Size > parent.minperimeter / 3 * parent.minperimeter / 3
+						&& current.Size < parent.maxperimeter / 3 *  parent.maxperimeter / 3 && current.meanIntensity > 9) {
+					
 					List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
 					tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi,
 							resultovalroi, resultlineroi, AllPointsofIntersect, Allintersection, fitmapspecial,
@@ -140,10 +140,11 @@ public class Computeinwater {
 				}
 			}
 		}
+		
 		try {
 			taskExecutor.invokeAll(tasks);
 
-			if (parent.supermode) {
+			if (parent.automode && !parent.redoing ) {
 
 				// Get superintersection
 
@@ -156,6 +157,7 @@ public class Computeinwater {
 			
 
 			}
+			/*
 			if (parent.automode && !parent.supermode && !parent.redoing) {
 
 				String uniqueID = Integer.toString(z) + Integer.toString(t);
@@ -165,7 +167,7 @@ public class Computeinwater {
 				DisplayAuto.Display(parent);
 			
 			}
-
+*/
 		} catch (InterruptedException e1) {
 
 		}
