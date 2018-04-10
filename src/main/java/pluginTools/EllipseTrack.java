@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import distanceTransform.CreateDistanceTransform;
 import distanceTransform.DistWatershed;
 import distanceTransform.DistWatershedBinary;
 import distanceTransform.WatershedBinary;
@@ -22,9 +23,12 @@ import ij.gui.OvalRoi;
 import ij.gui.Overlay;
 import ij.gui.Roi;
 import net.imglib2.Cursor;
+import net.imglib2.KDTree;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
+import net.imglib2.RealPoint;
+import net.imglib2.RealPointSampleList;
 import net.imglib2.algorithm.morphology.table2d.Thin;
 import net.imglib2.algorithm.ransac.RansacModels.BisectorEllipsoid;
 import net.imglib2.algorithm.ransac.RansacModels.ConnectedComponentCoordinates;
@@ -34,13 +38,16 @@ import net.imglib2.algorithm.ransac.RansacModels.Intersections;
 import net.imglib2.algorithm.ransac.RansacModels.NumericalSolvers;
 import net.imglib2.algorithm.ransac.RansacModels.SortSegments;
 import net.imglib2.algorithm.ransac.RansacModels.Tangent2D;
+import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.neighborsearch.NearestNeighborSearchOnKDTree;
 import net.imglib2.type.Type;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
+import net.imglib2.util.Util;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
@@ -73,8 +80,8 @@ public class EllipseTrack {
 
 		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(
-				parent.originalimgsuper, z, parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.originalimgsuper, z,
+				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
 		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
 
@@ -111,8 +118,8 @@ public class EllipseTrack {
 		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
-		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.emptyWater,
-				z, parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.emptyWater, z,
+				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
 		parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
 
@@ -137,7 +144,6 @@ public class EllipseTrack {
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
 		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
-
 		GetPixelList(CurrentViewInt);
 		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentViewInt, t, z, (int) percent);
 		compute.ParallelRansac();
@@ -160,7 +166,6 @@ public class EllipseTrack {
 		GetPixelList(Current.getA());
 		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, Current.getA(), t, z, (int) percent);
 		compute.ParallelRansac();
-		
 
 	}
 
@@ -209,17 +214,11 @@ public class EllipseTrack {
 						parent.fourthDimension = t;
 
 						BlockRepeat(percent, z, t);
-						
-												
+
 					}
 				}
 
-				
-			
-				
 			}
-			
-			
 
 			else if (parent.originalimg.numDimensions() > 2) {
 
@@ -231,7 +230,6 @@ public class EllipseTrack {
 					BlockRepeat(percent, z, 1);
 
 				}
-                
 
 			} else {
 				int z = parent.thirdDimension;
@@ -262,7 +260,7 @@ public class EllipseTrack {
 			}
 
 			else if (parent.originalimg.numDimensions() > 2) {
-				
+
 				for (int z = parent.AutostartTime; z <= parent.AutoendTime; ++z) {
 
 					parent.thirdDimension = z;
@@ -329,19 +327,119 @@ public class EllipseTrack {
 
 	}
 
+	public void DistanceTransformImage(RandomAccessibleInterval<BitType> inputimg,
+			RandomAccessibleInterval<BitType> bitimg, RandomAccessibleInterval<BitType> outimg) {
+		int n = inputimg.numDimensions();
+
+		// make an empty list
+		final RealPointSampleList<BitType> list = new RealPointSampleList<BitType>(n);
+
+		// cursor on the binary image
+		final Cursor<BitType> cursor = Views.iterable(bitimg).localizingCursor();
+
+		// for every pixel that is 1, make a new RealPoint at that location
+		while (cursor.hasNext())
+			if (cursor.next().getInteger() == 1)
+				list.add(new RealPoint(cursor), cursor.get());
+
+		// build the KD-Tree from the list of points that == 1
+		final KDTree<BitType> tree = new KDTree<BitType>(list);
+
+		// Instantiate a nearest neighbor search on the tree (does not modifiy
+		// the tree, just uses it)
+		final NearestNeighborSearchOnKDTree<BitType> search = new NearestNeighborSearchOnKDTree<BitType>(tree);
+
+		// randomaccess on the output
+		final RandomAccess<BitType> ranac = outimg.randomAccess();
+
+		// reset cursor for the input (or make a new one)
+		cursor.reset();
+
+		// for every pixel of the binary image
+		while (cursor.hasNext()) {
+			cursor.fwd();
+
+			// set the randomaccess to the same location
+			ranac.setPosition(cursor);
+
+			// if value == 0, look for the nearest 1-valued pixel
+			if (cursor.get().getInteger() == 0) {
+				// search the nearest 1 to the location of the cursor (the
+				// current 0)
+				search.search(cursor);
+
+				// get the distance (the previous call could return that, this
+				// for generality that it is two calls)
+
+				ranac.get().setReal(search.getDistance());
+
+			} else {
+				// if value == 1, no need to search
+				ranac.get().setZero();
+			}
+		}
+
+	}
+
+	public RandomAccessibleInterval<BitType> getDist(RandomAccessibleInterval<BitType> CurrentView) {
+
+		RandomAccessibleInterval<BitType> copyoriginal = new ArrayImgFactory<BitType>().create(CurrentView,
+				new BitType());
+		final ImgFactory<BitType> factory = Util.getArrayOrCellImgFactory(CurrentView, new BitType());
+		RandomAccessibleInterval<BitType> distimg = factory.create(CurrentView, new BitType());
+		DistanceTransformImage(CurrentView, CurrentView, distimg);
+		final Cursor<BitType> distcursor = Views.iterable(distimg).localizingCursor();
+		final RandomAccess<BitType> distranac = copyoriginal.randomAccess();
+		while (distcursor.hasNext()) {
+
+			distcursor.fwd();
+
+			distranac.setPosition(distcursor);
+			if (distcursor.get().getRealDouble() > parent.lowprob
+					&& distcursor.get().getRealDouble() < parent.highprob) {
+
+				distranac.get().setOne();
+			} else {
+				distranac.get().setZero();
+			}
+
+		}
+
+		return distimg;
+
+	}
+
+	public RandomAccessibleInterval<BitType> getMedian(RandomAccessibleInterval<BitType> CurrentView, double sigma) {
+
+		RandomAccessibleInterval<BitType> newthinCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
+				new BitType());
+		newthinCurrentView = Kernels.MedianFilter(CurrentView, sigma);
+		ImageJFunctions.show(newthinCurrentView);
+		return newthinCurrentView;
+
+	}
+
+	public RandomAccessibleInterval<BitType> getCannyEdge(RandomAccessibleInterval<BitType> CurrentView) {
+
+		RandomAccessibleInterval<BitType> newthinCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
+				new BitType());
+		newthinCurrentView = Kernels.CannyEdgeandMeanBit(CurrentView, 0);
+
+		return newthinCurrentView;
+	}
+
 	public RandomAccessibleInterval<BitType> getThin(RandomAccessibleInterval<BitType> CurrentView) {
 
 		ThinningStrategyFactory fact = new ThinningStrategyFactory(true);
-		ThinningStrategy strat = fact.getStrategy(Strategy.GUOHALL);
+		ThinningStrategy strat = fact.getStrategy(Strategy.ZHANGSUEN);
 
 		ThinningOp thinit = new ThinningOp(strat, true, new ArrayImgFactory<BitType>());
-	
+
 		RandomAccessibleInterval<BitType> newthinCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
 				new BitType());
-		
+
 		thinit.compute(CurrentView, newthinCurrentView);
 
-		
 		return newthinCurrentView;
 	}
 
@@ -351,7 +449,7 @@ public class EllipseTrack {
 		ThinningStrategyFactory fact = new ThinningStrategyFactory(true);
 		ThinningStrategy strat = fact.getStrategy(Strategy.HILDITCH);
 		ThinningOp thinit = new ThinningOp(strat, true, new ArrayImgFactory<BitType>());
-	
+
 		RandomAccessibleInterval<BitType> newCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
 				new BitType());
 		RandomAccessibleInterval<BitType> newthinCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
@@ -360,7 +458,7 @@ public class EllipseTrack {
 		newCurrentView = Kernels.CannyEdgeandMeanBit(CurrentView, 1);
 		thinit.compute(newCurrentView, newthinCurrentView);
 
-		 ImageJFunctions.show(newthinCurrentView).setTitle("Thinned image");
+		// ImageJFunctions.show(newthinCurrentView).setTitle("Thinned image");
 
 		DistWatershedBinary segmentimage = new DistWatershedBinary(newthinCurrentView);
 
@@ -368,7 +466,7 @@ public class EllipseTrack {
 
 		RandomAccessibleInterval<IntType> CurrentViewInt = segmentimage.getResult();
 
-		 ImageJFunctions.show(CurrentViewInt).setTitle("Segmented image");
+		// ImageJFunctions.show(CurrentViewInt).setTitle("Segmented image");
 
 		return new ValuePair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>>(CurrentViewInt,
 				newthinCurrentView);
@@ -467,8 +565,8 @@ public class EllipseTrack {
 
 			int z = parent.thirdDimension;
 			int t = parent.fourthDimension;
-		
-				BlockRepeat(percent, z, t);
+
+			BlockRepeat(percent, z, t);
 
 		} else {
 
@@ -476,15 +574,15 @@ public class EllipseTrack {
 
 				int z = parent.thirdDimension;
 				int t = parent.fourthDimension;
-			
-					BlockRepeatManual(percent, z, t);
+
+				BlockRepeatManual(percent, z, t);
 
 			} else if (parent.originalimg.numDimensions() > 2 && parent.originalimg.numDimensions() <= 3) {
 
 				int z = parent.thirdDimension;
 				int t = parent.fourthDimension;
-			
-					BlockRepeatManual(percent, z, t);
+
+				BlockRepeatManual(percent, z, t);
 			}
 
 			else {

@@ -150,7 +150,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public String usefolder = IJ.getDirectory("imagej");
 	public String addToName = "EllipseFits";
 	public final int scrollbarSize = 1000;
-	public double cutoffdist = 10;
+	public double cutoffdist = 100;
+	public double minellipsepoints = 9;
+	public double mincirclepoints = 3;
 	public int tablesize;
 	public Overlay overlay;
 	public Overlay emptyoverlay;
@@ -293,6 +295,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public RoiManager roimanager;
 	public String uniqueID, tmpID, ZID, TID;
 	public RandomAccessibleInterval<BitType> empty;
+	
 	public RandomAccessibleInterval<IntType> emptyWater;
 	public boolean automode;
 	public boolean supermode;
@@ -811,7 +814,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				}
 
 			}
-			new ImagePlus("Overlays", prestack).show();
+			new ImagePlus("TrackID" + table.getValueAt(row, 0), prestack).show();
 			resultimp.close();
 
 		}
@@ -1500,7 +1503,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		inputLabelminpercent = new Label("Min. percent points to lie on ellipse");
 
 		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y",
-				"Start Z" };
+				"Current Angle" };
 
 		Object[][] rowvalues = new Object[0][colnames.length];
 		if (Finalresult != null && Finalresult.size() > 0) {
@@ -1683,7 +1686,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			}
 		}));
 		
-		panelSecond.add(controlprev, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		panelSecond.add(controlprev, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
 		
 		KalmanPanel.add(iniSearchText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,

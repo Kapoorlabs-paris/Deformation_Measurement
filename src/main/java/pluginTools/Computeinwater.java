@@ -105,8 +105,10 @@ public class Computeinwater {
 
 				
 				Watershedobject current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
+				
+				// Neglect the small watershed regions by choosing only those regions which have more than 9 candidate points for ellipse fitting
 				if (current.Size > parent.minperimeter / 3 * parent.minperimeter / 3
-						&& current.Size < parent.maxperimeter / 3 *  parent.maxperimeter / 3 && current.meanIntensity > 9) {
+						&& current.Size < parent.maxperimeter / 3 *  parent.maxperimeter / 3 && current.meanIntensity > parent.minellipsepoints) {
 					
 					List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
 					
@@ -131,7 +133,7 @@ public class Computeinwater {
 				Watershedobject current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
 
 				if (current.Size > parent.minperimeter / 3 * parent.minperimeter / 3
-						&& current.Size < parent.maxperimeter / 3 *  parent.maxperimeter / 3 && current.meanIntensity > 9) {
+						&& current.Size < parent.maxperimeter / 3 *  parent.maxperimeter / 3 && current.meanIntensity > parent.minellipsepoints) {
 					
 					List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
 					tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi,
@@ -157,17 +159,7 @@ public class Computeinwater {
 			
 
 			}
-			/*
-			if (parent.automode && !parent.supermode && !parent.redoing) {
-
-				String uniqueID = Integer.toString(z) + Integer.toString(t);
-				Roiobject currentobject = new Roiobject(resultroi, resultovalroi, resultlineroi, z, t, true);
-				parent.ZTRois.put(uniqueID, currentobject);
-
-				DisplayAuto.Display(parent);
-			
-			}
-*/
+		
 		} catch (InterruptedException e1) {
 
 		}

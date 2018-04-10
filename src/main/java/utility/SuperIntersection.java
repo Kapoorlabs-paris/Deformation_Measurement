@@ -140,7 +140,6 @@ public class SuperIntersection {
 		Roiobject currentobject = new Roiobject(resultroi, resultovalroi, resultlineroi, z, t, true);
 		parent.ZTRois.put(uniqueID, currentobject);
 
-		System.out.println("In reject stage");
 		
 		DisplayAuto.Display(parent);
 
