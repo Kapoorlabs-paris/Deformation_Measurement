@@ -48,10 +48,10 @@ public class AngleListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		if (parent.automode) {
+		if (parent.automode && parent.supermode) {
 		
 			
-			parent.empty = CreateBinaryBit(parent.originalimg, parent.lowprob, parent.highprob);
+			parent.empty = utility.Binarization.CreateBinaryBit(parent.originalimg, parent.lowprob, parent.highprob);
 			
 			
 
@@ -63,7 +63,22 @@ public class AngleListener implements ActionListener {
 			
 		}
 		
-		else {
+       if (parent.automode && !parent.supermode) {
+		
+			
+			parent.emptysmooth = utility.Binarization.CreateBinaryBit(parent.originalimgsmooth, parent.lowprob, parent.highprob);
+			parent.empty = utility.Binarization.CreateBinaryBit(parent.originalimg, parent.lowprob, parent.highprob);
+
+			
+			parent.parentgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+			parent.parentgraphZ =  new 
+					HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
+			parent.StartComputing();
+			
+		}
+		
+		
+		else if(!parent.automode && !parent.supermode) {
 		parent.parentgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 		parent.parentgraphZ =  new 
 				HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
@@ -79,37 +94,5 @@ public class AngleListener implements ActionListener {
 	}
 
 	
-	 public RandomAccessibleInterval<BitType> CreateBinaryBit(RandomAccessibleInterval<FloatType> source, double lowprob, double highprob) {
-			
-			
-			RandomAccessibleInterval<BitType> copyoriginal = new ArrayImgFactory<BitType>().create(source, new BitType());
-			
-
-			
-			final RandomAccess<BitType> ranac =  copyoriginal.randomAccess();
-			final Cursor<FloatType> cursor = Views.iterable(source).localizingCursor();
-			
-			while(cursor.hasNext()) {
-				
-				cursor.fwd();
-				
-				ranac.setPosition(cursor);
-				if(cursor.get().getRealDouble() > lowprob && cursor.get().getRealDouble() < highprob) {
-					
-					ranac.get().setOne();
-				}
-				else {
-					ranac.get().setZero();
-				}
-				
-				
-			}
-			
-			
-	  
-			
-			
-			return copyoriginal;
-			
-		}
+	
 }

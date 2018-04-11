@@ -89,11 +89,13 @@ import listeners.AutoEndListener;
 import listeners.AutoStartListener;
 import listeners.ColorListener;
 import listeners.DisplayRoiListener;
+import listeners.DoSmoothingListener;
 import listeners.DrawListener;
 import listeners.ETrackFilenameListener;
 import listeners.ETrackIniSearchListener;
 import listeners.ETrackMaxSearchListener;
 import listeners.EllipseNonStandardMouseListener;
+import listeners.GaussRadiusListener;
 import listeners.HighProbListener;
 import listeners.IlastikListener;
 import listeners.InsideCutoffListener;
@@ -119,9 +121,11 @@ import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
+import net.imglib2.algorithm.gauss3.Gauss3;
 import net.imglib2.algorithm.ransac.RansacModels.DisplayasROI;
 import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
 import net.imglib2.algorithm.stats.Normalize;
+import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.Type;
@@ -259,6 +263,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float maxSearchradiusMinS = 1;
 	public float maxSearchradiusMaxS = 1000;
 	public RandomAccessibleInterval<FloatType> CurrentView;
+	public RandomAccessibleInterval<FloatType> CurrentViewSmooth;
 	public RandomAccessibleInterval<FloatType> CurrentViewOrig;
 	public RandomAccessibleInterval<FloatType> CurrentResultView;
 	public Color confirmedRois = Color.BLUE;
@@ -295,7 +300,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public RoiManager roimanager;
 	public String uniqueID, tmpID, ZID, TID;
 	public RandomAccessibleInterval<BitType> empty;
-	
+	public RandomAccessibleInterval<BitType> emptysmooth;
+	public RandomAccessibleInterval<FloatType> originalimgsmooth;
+	public int gaussradius = 2;
 	public RandomAccessibleInterval<IntType> emptyWater;
 	public boolean automode;
 	public boolean supermode;
@@ -510,7 +517,19 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		FloatType minval = new FloatType(0);
 		FloatType maxval = new FloatType(1);
 		Normalize.normalize(Views.iterable(originalimg), minval, maxval);
+        if(automode && !supermode) {
+        	
+        	
+        	originalimgsmooth = new ArrayImgFactory<FloatType>().create(originalimg, new FloatType());
+                try {
+			
+			Gauss3.gauss(gaussradius, Views.extendBorder(originalimg), originalimgsmooth);
 
+		} catch (IncompatibleTypeException es) {
+
+			es.printStackTrace();
+		}
+        }
 		
 		redoing = false;
 		superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>>();
@@ -577,6 +596,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		setZ(thirdDimension);
 		CurrentView = utility.Slicer.getCurrentView(originalimg, fourthDimension, thirdDimensionSize, thirdDimension,
 				fourthDimensionSize);
+		 if(automode && !supermode) 
+		CurrentViewSmooth = utility.Slicer.getCurrentView(originalimgsmooth, fourthDimension, thirdDimensionSize, thirdDimension,
+				fourthDimensionSize);
 		if (originalimgbefore != null) {
 			CurrentViewOrig = utility.Slicer.getCurrentView(originalimgbefore, fourthDimension, thirdDimensionSize,
 					thirdDimension, fourthDimensionSize);
@@ -595,6 +617,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		// Create empty Hyperstack
 
 		empty = new ArrayImgFactory<BitType>().create(originalimg, new BitType());
+		emptysmooth = new ArrayImgFactory<BitType>().create(originalimg, new BitType());
 		emptyWater = new ArrayImgFactory<IntType>().create(originalimg, new IntType());
 
 		if (!automode) {
@@ -665,8 +688,16 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 
 		if (change == ValueChange.SEG) {
-			RandomAccessibleInterval<FloatType> tempview = CreateBinary(CurrentView, lowprob, highprob);
+			RandomAccessibleInterval<FloatType> tempview = null;
 
+				 if(automode && !supermode) 
+					 tempview = utility.Binarization.CreateBinary(CurrentViewSmooth, lowprob, highprob);
+				 else
+					 
+					 tempview = utility.Binarization.CreateBinary(CurrentView, lowprob, highprob);
+			
+			
+			
 			if (localimp == null || !localimp.isVisible() && automode) {
 				localimp = ImageJFunctions.show(tempview);
 
@@ -684,8 +715,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			}
 
+			if(automode && supermode)
 			localimp.setTitle(
 					"Candidate Points" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
+			if(automode)
+				localimp.setTitle(
+						"Seg Image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 
 		}
 
@@ -850,6 +885,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			if (automode) {
 				updatePreview(ValueChange.SEG);
 			
+				if(originalimgsmooth!= null)
+					CurrentViewSmooth =  utility.Slicer.getCurrentView(originalimgsmooth, thirdDimension,
+							thirdDimensionSize, thirdDimension, fourthDimensionSize);
 				if (originalimgbefore != null) {
 					CurrentViewOrig = utility.Slicer.getCurrentView(originalimgbefore, thirdDimension,
 							thirdDimensionSize, thirdDimension, fourthDimensionSize);
@@ -938,32 +976,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	}
 
-	public RandomAccessibleInterval<FloatType> CreateBinary(RandomAccessibleInterval<FloatType> source, double lowprob,
-			double highprob) {
-
-		RandomAccessibleInterval<FloatType> copyoriginal = new ArrayImgFactory<FloatType>().create(source,
-				new FloatType());
-
-		final RandomAccess<FloatType> ranac = copyoriginal.randomAccess();
-		final Cursor<FloatType> cursor = Views.iterable(source).localizingCursor();
-
-		while (cursor.hasNext()) {
-
-			cursor.fwd();
-
-			ranac.setPosition(cursor);
-			if (cursor.get().getRealDouble() > lowprob && cursor.get().getRealDouble() < highprob) {
-
-				ranac.get().set(cursor.get());
-			} else {
-				ranac.get().set(0);
-			}
-
-		}
-
-		return copyoriginal;
-
-	}
+	
 
 	public void StartComputingCurrent() {
 
@@ -1323,7 +1336,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public  JPanel KalmanPanel = new JPanel();
 	public JCheckBox IlastikAuto = new JCheckBox("Ilastik Automated run", automode);
 
-	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField;
+	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField, gaussfield;
 	public TextField inputFieldZ, startT, endT;
 	public TextField inputFieldmaxtry;
 	public TextField inputFieldminpercent;
@@ -1344,6 +1357,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JButton Anglebutton = new JButton("Fit Ellipses and track angles");
 	public JButton Savebutton = new JButton("Save Track");
 	public JButton Redobutton = new JButton("Recompute for current view");
+	public JButton Smoothbutton = new JButton("Do Gaussian Smoothing");
 
 	public Label timeText = new Label("Current T = " + 1, Label.CENTER);
 	public Label zText = new Label("Current Z = " + 1, Label.CENTER);
@@ -1469,6 +1483,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		maxperimeterField = new TextField(5);
 		maxperimeterField.setText(Integer.toString(maxperimeter));
+		
+		gaussfield = new TextField(5);
+		gaussfield.setText(Integer.toString(gaussradius));
 
 		inputLabelIter = new Label("Max. attempts to find ellipses");
 		final JScrollBar maxSearchS = new JScrollBar(Scrollbar.HORIZONTAL, maxSearchInit, 10, 0, 10 + scrollbarSize);
@@ -1657,6 +1674,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			
 			
+			Probselect.add(Smoothbutton, new GridBagConstraints(4, 8, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+			Probselect.add(gaussfield, new GridBagConstraints(4, 10, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			
 //			Probselect.add(ChooseMethod, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 			//		GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Probselect.setPreferredSize(new Dimension(SizeX, SizeY));
@@ -1817,6 +1840,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		outsideslider.addAdjustmentListener(new OutsideCutoffListener(this, outsideText, outsidestring,
 				outsideCutoffmin, outsideCutoffmax, scrollbarSize, outsideslider));
 		
+		
+		gaussfield.addTextListener(new GaussRadiusListener(this));
+		Smoothbutton.addActionListener(new DoSmoothingListener(this));
 		Anglebutton.addActionListener(new AngleListener(this));
 		startT.addTextListener(new AutoStartListener(this));
 		endT.addTextListener(new AutoEndListener(this));

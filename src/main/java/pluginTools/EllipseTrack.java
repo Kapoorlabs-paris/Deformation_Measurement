@@ -160,11 +160,15 @@ public class EllipseTrack {
 
 		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
-		Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView);
+		RandomAccessibleInterval<BitType> CurrentViewSmooth = utility.Slicer.getCurrentViewBit(parent.emptysmooth, z,
+				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+		
+		
+		// Use smoothed image for segmentation and non smooth image for getting the candidate points for fitting ellipses
+		RandomAccessibleInterval<IntType> CurrentInt = getSeg(CurrentViewSmooth);
 		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
-		GetPixelList(Current.getA());
-		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, Current.getA(), t, z, (int) percent);
+		GetPixelList(CurrentInt);
+		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentInt, t, z, (int) percent);
 		compute.ParallelRansac();
 
 	}
@@ -443,6 +447,53 @@ public class EllipseTrack {
 		return newthinCurrentView;
 	}
 
+	
+	public RandomAccessibleInterval<IntType> getSeg(
+			RandomAccessibleInterval<BitType> CurrentView) {
+		ThinningStrategyFactory fact = new ThinningStrategyFactory(true);
+		ThinningStrategy strat = fact.getStrategy(Strategy.HILDITCH);
+		ThinningOp thinit = new ThinningOp(strat, true, new ArrayImgFactory<BitType>());
+
+		RandomAccessibleInterval<BitType> newCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
+				new BitType());
+		RandomAccessibleInterval<BitType> newthinCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
+				new BitType());
+
+		newCurrentView = Kernels.CannyEdgeandMeanBit(CurrentView, 1);
+		thinit.compute(newCurrentView, newthinCurrentView);
+		DistWatershedBinary segmentimage = new DistWatershedBinary(newthinCurrentView);
+
+		segmentimage.process();
+
+		RandomAccessibleInterval<IntType> CurrentViewInt = segmentimage.getResult();
+
+		// ImageJFunctions.show(CurrentViewInt).setTitle("Segmented image");
+
+		return CurrentViewInt;
+
+	}
+	
+	public RandomAccessibleInterval<BitType> getCand(
+			RandomAccessibleInterval<BitType> CurrentView) {
+
+
+		ThinningStrategyFactory fact = new ThinningStrategyFactory(true);
+		ThinningStrategy strat = fact.getStrategy(Strategy.HILDITCH);
+		ThinningOp thinit = new ThinningOp(strat, true, new ArrayImgFactory<BitType>());
+
+		RandomAccessibleInterval<BitType> newCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
+				new BitType());
+		RandomAccessibleInterval<BitType> newthinCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
+				new BitType());
+
+		newCurrentView = Kernels.CannyEdgeandMeanBit(CurrentView, 1);
+		thinit.compute(newCurrentView, newthinCurrentView);
+
+
+		return newthinCurrentView;
+
+	}
+	
 	public Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> getAutoint(
 			RandomAccessibleInterval<BitType> CurrentView) {
 
