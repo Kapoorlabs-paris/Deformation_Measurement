@@ -204,10 +204,18 @@ public class LabelRansac implements Runnable {
 					Angleobject angleobject = Tangent2D.GetTriAngle(lineparamA, lineparamB, pos.get(j), ellipsepair);
 					resultlineroi.add(angleobject.lineA);
 					resultlineroi.add(angleobject.lineB);
-					
+					Intersectionobject currentintersection = null;
+					if(parent.originalimg.numDimensions() > 3) {
 
-					Intersectionobject currentintersection = new Intersectionobject(pos.get(j), angleobject.angle,
+					currentintersection = new Intersectionobject(pos.get(j), angleobject.angle,
 							ellipsepair, resultlineroi, t, z);
+					
+					}
+					else {
+						currentintersection = new Intersectionobject(pos.get(j), angleobject.angle,
+								ellipsepair, resultlineroi, z);
+						
+					}
 
 					Allintersection.add(currentintersection);
 

@@ -21,7 +21,6 @@ import linkers.CVMKalmanFilter;
 import linkers.JaqamanLinker;
 import linkers.Logger;
 import net.imglib2.RealPoint;
-import utility.IntersectionTracker;
 
 
 public class KFsearch implements IntersectionTracker {
@@ -98,17 +97,20 @@ public class KFsearch implements IntersectionTracker {
 		while ( Firstorphan.isEmpty() )
 		{
 			Firstorphan = generateSpotList( Allblobs, uniqueID );
-			if ( !frameIterator.hasNext() ) { return true; }
-			uniqueID = frameIterator.next();
+			
 		}
 		Collection<Intersectionobject> Secondorphan = new ArrayList<>();
 		String uniqueIDnext = uniqueID;
 		while ( Secondorphan.isEmpty() )
 		{
-			Secondorphan = generateSpotList( Allblobs, uniqueIDnext );
 			if ( !frameIterator.hasNext() ) { return true; }
 			uniqueIDnext = frameIterator.next();
+			Secondorphan = generateSpotList( Allblobs, uniqueIDnext );
+			
 		}
+		final NavigableSet< String > keySetcopy = Allblobs.keySet();
+		final Iterator< String > frameIteratorcopy = keySet.iterator();
+		frameIteratorcopy.next();
 		// Max KF search cost.
 		final double maxCost = maxsearchRadius * maxsearchRadius;
 
@@ -135,20 +137,16 @@ public class KFsearch implements IntersectionTracker {
 		// Loop from the second frame to the last frame and build
 		// KalmanFilterMap
 		Iterator<Map.Entry<String, Integer>> itSec = Accountedframes.entrySet().iterator();
-		int percent = 0;
 		
-		while (itSec.hasNext()) {
-			percent++;
-			int currentT = itSec.next().getValue();
-			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (Accountedframes.size() - 1),
-					"Kalman Filter Search for " + " T = " + currentT);
+		while(frameIteratorcopy.hasNext()) {
 			
-			uniqueID = Integer.toString(currentT) + Integer.toString(1);
+		uniqueIDnext = frameIteratorcopy.next();
+			
+			
 
-			SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> subgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(
-					DefaultWeightedEdge.class);
+		System.out.println(uniqueIDnext + "Update");
 
-			List<Intersectionobject> measurements = generateSpotList(Allblobs, uniqueID);
+			List<Intersectionobject> measurements = generateSpotList(Allblobs, uniqueIDnext);
 
 			// Make the preditiction map
 			final Map<ComparableRealPoint, CVMKalmanFilter> predictionMap = new HashMap<ComparableRealPoint, CVMKalmanFilter>(
@@ -182,7 +180,7 @@ public class KFsearch implements IntersectionTracker {
 				final JaqamanLinker<ComparableRealPoint, Intersectionobject> linker = new JaqamanLinker<ComparableRealPoint, Intersectionobject>(
 						crm);
 				if (!linker.checkInput() || !linker.process()) {
-					errorMessage = BASE_ERROR_MSG + "Error linking candidates in frame " + currentT + ": "
+					errorMessage = BASE_ERROR_MSG + "Error linking candidates in frame " + uniqueIDnext + ": "
 							+ linker.getErrorMessage();
 					return false;
 				}
@@ -204,10 +202,7 @@ public class KFsearch implements IntersectionTracker {
 					final double cost = costs.get(cm);
 					graph.setEdgeWeight(edge, cost);
 
-					subgraph.addVertex(source);
-					subgraph.addVertex(target);
-					final DefaultWeightedEdge subedge = subgraph.addEdge(source, target);
-					subgraph.setEdgeWeight(subedge, cost);
+					
 
 					// Update Kalman filter
 					kf.update(MeasureBlob(target));
@@ -236,8 +231,8 @@ public class KFsearch implements IntersectionTracker {
 				final JaqamanLinker<Intersectionobject, Intersectionobject> newLinker = new JaqamanLinker<Intersectionobject, Intersectionobject>(
 						ic);
 				if (!newLinker.checkInput() || !newLinker.process()) {
-					errorMessage = BASE_ERROR_MSG + "Error linking Blobs from frame " + (currentT - 1) + " to frame "
-							+ currentT + ": " + newLinker.getErrorMessage();
+					errorMessage = BASE_ERROR_MSG + "Error linking Blobs from frame " + (uniqueIDnext) + " to next frame "
+							+ ": " + newLinker.getErrorMessage();
 					return false;
 				}
 				final Map<Intersectionobject, Intersectionobject> newAssignments = newLinker.getResult();
@@ -265,10 +260,6 @@ public class KFsearch implements IntersectionTracker {
 						final double cost = assignmentCosts.get(source);
 						graph.setEdgeWeight(edge, cost);
 
-						subgraph.addVertex(source);
-						subgraph.addVertex(target);
-						final DefaultWeightedEdge subedge = subgraph.addEdge(source, target);
-						subgraph.setEdgeWeight(subedge, cost);
 					}
 
 				}
@@ -286,8 +277,8 @@ public class KFsearch implements IntersectionTracker {
 					kalmanFiltersMap.remove(kf);
 				}
 			}
-
-		}
+		
+		};
 		return true;
 	}
 

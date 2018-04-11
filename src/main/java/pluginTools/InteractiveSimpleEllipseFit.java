@@ -82,7 +82,8 @@ import ij.measure.ResultsTable;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.RoiManager;
 import ij.process.ColorProcessor;
-
+import kalmanTracker.NearestRoi;
+import kalmanTracker.TrackModel;
 import listeners.AngleListener;
 import listeners.AutoEndListener;
 import listeners.AutoStartListener;
@@ -133,13 +134,11 @@ import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.DisplayAuto;
-import utility.NearestRoi;
 import utility.Roiobject;
 import utility.ShowResultView;
 import utility.ShowView;
 import utility.Slicer;
 import utility.ThreeDRoiobject;
-import utility.TrackModel;
 
 public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
@@ -784,7 +783,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					for (Line currentline : resultDraw.get(ID).getB()) {
 						cp.setColor(colorLineA);
 						cp.setLineWidth(4);
-						Line nearest = utility.NearestRoi.getNearestLineRois(currentobject, new double[] {IntersectionX, IntersectionY}, this);
+						Line nearest = kalmanTracker.NearestRoi.getNearestLineRois(currentobject, new double[] {IntersectionX, IntersectionY}, this);
 						if (nearest == currentline) {
 							cp.draw(currentline);
 							nearestline = currentline;
@@ -796,7 +795,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					for (Line currentline : resultDraw.get(ID).getB()) {
 						cp.setColor(colorLineA);
 						cp.setLineWidth(4);
-						Line nearest = utility.NearestRoi.getNearestLineRois(currentobject, new double[] {IntersectionX, IntersectionY}, this);
+						Line nearest = kalmanTracker.NearestRoi.getNearestLineRois(currentobject, new double[] {IntersectionX, IntersectionY}, this);
 						if (nearest == currentline) {
 							cp.draw(currentline);
 						}
@@ -1594,7 +1593,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			panelFirst.add(Roiselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 		}
-		if (automode) {
+		if (automode && supermode) {
 
 			Probselect.add(lowprobText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
@@ -1628,6 +1627,44 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			panelFirst.add(Probselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
+		}
+		
+		if(automode && !supermode) {
+			
+
+			Probselect.add(lowprobText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+			Probselect.add(lowprobslider, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+			Probselect.add(highporbText, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+			Probselect.add(highprobslider, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+			Probselect.add(autoTstart, new GridBagConstraints(2, 6, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Probselect.add(startT, new GridBagConstraints(2, 8, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			
+
+			Probselect.add(autoTend, new GridBagConstraints(2, 10, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Probselect.add(endT, new GridBagConstraints(2, 12, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			
+			
+//			Probselect.add(ChooseMethod, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			//		GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Probselect.setPreferredSize(new Dimension(SizeX, SizeY));
+			Probselect.setBorder(probborder);
+
+			panelFirst.add(Probselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			
+			
 		}
 
 		Angleselect.add(minperiText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,

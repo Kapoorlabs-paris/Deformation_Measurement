@@ -36,15 +36,15 @@ import ij.ImageStack;
 import kalmanTracker.ETrackCostFunction;
 import kalmanTracker.IntersectionobjectCollection;
 import kalmanTracker.KFsearch;
+import kalmanTracker.NearestNeighbourSearch;
+import kalmanTracker.NearestNeighbourSearch2D;
+import kalmanTracker.TrackModel;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.CreateTable;
-import utility.NearestNeighbourSearch;
-import utility.NearestNeighbourSearch2D;
 import utility.ThreeDRoiobject;
-import utility.TrackModel;
 
 public class ComputeAngles extends SwingWorker<Void, Void> {
 

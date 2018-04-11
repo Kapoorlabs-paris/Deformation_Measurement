@@ -146,7 +146,7 @@ public class Computeinwater {
 		try {
 			taskExecutor.invokeAll(tasks);
 
-			if (parent.automode && !parent.redoing ) {
+			if (parent.automode ) {
 
 				// Get superintersection
 

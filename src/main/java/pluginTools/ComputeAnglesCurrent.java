@@ -31,13 +31,13 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import ellipsoidDetector.Intersectionobject;
+import kalmanTracker.NearestNeighbourSearch;
+import kalmanTracker.NearestNeighbourSearch2D;
+import kalmanTracker.TrackModel;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import utility.CreateTable;
-import utility.NearestNeighbourSearch;
-import utility.NearestNeighbourSearch2D;
-import utility.TrackModel;
 
 public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 

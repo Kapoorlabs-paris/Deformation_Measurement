@@ -26,7 +26,6 @@ public class SaveListener implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		
 		String ID = parent.selectedID;
-		System.out.println(ID);
 		try {
 			File fichier = new File(
 					 parent.chooserA.getSelectedFile() + "//" + parent.addToName + "TrackID" +ID + ".txt");
@@ -36,12 +35,11 @@ public class SaveListener implements ActionListener {
 			
 			bw.write(
 					"\tTime (px)\t AngleT \n");
-		
+		System.out.println(parent.resultAngle.size() + " Size of write");
 		for (int index = 0; index< parent.resultAngle.size(); ++index) {
 			
 			
 			if (ID.equals(parent.resultAngle.get(index).getA() )) {
-				System.out.print("Now I am saving");
 				
 				// Save result sin file
 			

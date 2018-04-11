@@ -35,8 +35,9 @@ public class CreateTable {
 				parent.resultAngle.add(new ValuePair<String, double[]>(currentangle.getA(),
 						new double[] { currentangle.getB().z, currentangle.getB().angle }));
 
+			System.out.println(currentangle.getA() + " " + currentangle.getB().z + " " + currentangle.getB().angle + " In the file");
 		}
-		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Current Angle", "" };
+		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Current Angle"};
 
 		Object[][] rowvalues = new Object[0][colnames.length];
 

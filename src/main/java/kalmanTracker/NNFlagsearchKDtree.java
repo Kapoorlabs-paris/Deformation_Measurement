@@ -1,10 +1,11 @@
-package utility;
+package kalmanTracker;
 
 import net.imglib2.KDTree;
 import net.imglib2.KDTreeNode;
 import net.imglib2.RealLocalizable;
 import net.imglib2.Sampler;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
+import utility.FlagNode;
 
 public class NNFlagsearchKDtree<T>  implements NearestNeighborSearch< FlagNode<T> > {
 
