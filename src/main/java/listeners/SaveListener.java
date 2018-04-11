@@ -28,7 +28,7 @@ public class SaveListener implements ActionListener {
 		String ID = parent.selectedID;
 		try {
 			File fichier = new File(
-					 parent.chooserA.getSelectedFile() + "//" + parent.addToName + "TrackID" +ID + ".txt");
+					parent.saveFile + "//" + parent.addToName + "TrackID" +ID + ".txt");
 
 			FileWriter fw = new FileWriter(fichier);
 			BufferedWriter bw = new BufferedWriter(fw);

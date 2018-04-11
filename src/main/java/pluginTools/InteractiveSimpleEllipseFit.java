@@ -208,6 +208,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int Progressmax = 100;
 	public int max = Progressmax;
 	public File userfile;
+	public File saveFile;
 	public Frame jFreeChartFrame;
 	public NumberFormat nf;
 	public XYSeriesCollection dataset;
