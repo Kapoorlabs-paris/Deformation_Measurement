@@ -22,15 +22,18 @@ public class SimplemodeListener implements ItemListener {
 		
 		if(e.getStateChange() == ItemEvent.DESELECTED) {
 			
-			parent.superpixel = true;;
+			parent.superpixel = false;
 			parent.simple = false;
-			
+			parent.curvesuper = false;
+			parent.curvesimple = false;
 		}
 		
 		else if (e.getStateChange() == ItemEvent.SELECTED) {
 			
 			parent.superpixel = false;
 			parent.simple = true;
+			parent.curvesuper = false;
+			parent.curvesimple = false;
 			
 			parent.Panelsuperfile.setEnabled(false);
 			parent.ChoosesuperImage.setEnabled(false);

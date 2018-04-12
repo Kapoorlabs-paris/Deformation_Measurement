@@ -468,7 +468,6 @@ public class EllipseTrack {
 		RandomAccessibleInterval<BitType> newthinCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
 				new BitType());
 		newthinCurrentView = Kernels.MedianFilter(CurrentView, sigma);
-		ImageJFunctions.show(newthinCurrentView);
 		return newthinCurrentView;
 
 	}

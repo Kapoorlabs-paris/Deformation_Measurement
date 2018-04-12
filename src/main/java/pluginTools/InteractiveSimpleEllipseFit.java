@@ -308,6 +308,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public RandomAccessibleInterval<IntType> emptyWater;
 	public boolean automode;
 	public boolean supermode;
+	public boolean curveautomode;
+	public boolean curvesupermode;
 	public double mindistance = 200;
 	public int alphaInit = 1;
 	public int betaInit = 0;
@@ -432,6 +434,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
 		this.automode = false;
+		this.supermode = false;
+		this.curveautomode = false;
+		this.curvesupermode = false;
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, File file) {
@@ -446,6 +451,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(2);
 		this.automode = false;
+		this.supermode = false;
+		this.curveautomode = false;
+		this.curvesupermode = false;
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg) {
@@ -461,6 +469,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		nf.setMaximumFractionDigits(2);
 		this.automode = false;
 		this.supermode = false;
+		this.curveautomode = false;
+		this.curvesupermode = false;
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, boolean automode) {
@@ -474,8 +484,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(2);
-		this.automode = true;
+		this.automode = automode;
 		this.supermode = false;
+		this.curveautomode = false;
+		this.curvesupermode = false;
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
@@ -493,6 +505,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		nf.setMaximumFractionDigits(2);
 		this.automode = automode;
 		this.supermode = false;
+		this.curveautomode = false;
+		this.curvesupermode = false;
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
@@ -510,16 +524,58 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(2);
-		this.automode = true;
+		this.automode = automode;
 		this.supermode = supermode;
+		this.curveautomode = false;
+		this.curvesupermode = false;
+	}
+	
+	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
+			RandomAccessibleInterval<FloatType> originalimgbefore, 
+			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode) {
+		this.inputfile = null;
+		this.inputdirectory = null;
+		this.originalimg = originalimg;
+		this.originalimgbefore = originalimgbefore;
+		this.ndims = originalimg.numDimensions();
+		this.dataset = new XYSeriesCollection();
+		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
+		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
+		this.jFreeChartFrame.setVisible(false);
+		nf = NumberFormat.getInstance(Locale.ENGLISH);
+		nf.setMaximumFractionDigits(2);
+		this.automode = automode;
+		this.supermode = supermode;
+		this.curveautomode = curveautomode;
+		this.curvesupermode = curvesupermode;
+	}
+	
+	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
+			RandomAccessibleInterval<FloatType> originalimgbefore, RandomAccessibleInterval<IntType> originalimgsuper,
+			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode) {
+		this.inputfile = null;
+		this.inputdirectory = null;
+		this.originalimg = originalimg;
+		this.originalimgsuper = originalimgsuper;
+		this.originalimgbefore = originalimgbefore;
+		this.ndims = originalimg.numDimensions();
+		this.dataset = new XYSeriesCollection();
+		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
+		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
+		this.jFreeChartFrame.setVisible(false);
+		nf = NumberFormat.getInstance(Locale.ENGLISH);
+		nf.setMaximumFractionDigits(2);
+		this.automode = automode;
+		this.supermode = supermode;
+		this.curveautomode = curveautomode;
+		this.curvesupermode = curvesupermode;
 	}
 
 	public void run(String arg0) {
-
 		FloatType minval = new FloatType(0);
 		FloatType maxval = new FloatType(1);
 		Normalize.normalize(Views.iterable(originalimg), minval, maxval);
-        if(automode && !supermode) {
+        if((automode) || (curveautomode)) {
         	
         	
         	originalimgsmooth = new ArrayImgFactory<FloatType>().create(originalimg, new FloatType());
@@ -598,7 +654,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		setZ(thirdDimension);
 		CurrentView = utility.Slicer.getCurrentView(originalimg, fourthDimension, thirdDimensionSize, thirdDimension,
 				fourthDimensionSize);
-		 if(automode && !supermode) 
+		 if(automode) 
 		CurrentViewSmooth = utility.Slicer.getCurrentView(originalimgsmooth, fourthDimension, thirdDimensionSize, thirdDimension,
 				fourthDimensionSize);
 		if (originalimgbefore != null) {
@@ -630,7 +686,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			}
 		}
 		updatePreview(ValueChange.ALL);
-		if(automode) {
+		if(automode || supermode || curveautomode || curvesupermode) {
 		
 			lowprobslider.setValue(computeScrollbarPositionFromValue(lowprob, lowprobmin, lowprobmax, scrollbarSize));
 			highprobslider.setValue(computeScrollbarPositionFromValue(highprob, highprobmin, highprobmax, scrollbarSize));
@@ -694,9 +750,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		if (change == ValueChange.SEG) {
 			RandomAccessibleInterval<FloatType> tempview = null;
 
-				 if(automode && !supermode) 
+				 if(automode || curveautomode) 
 					 tempview = utility.Binarization.CreateBinary(CurrentViewSmooth, lowprob, highprob);
-				 else
+				 else if (supermode || curvesupermode)
 					 
 					 tempview = utility.Binarization.CreateBinary(CurrentView, lowprob, highprob);
 			
@@ -719,10 +775,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			}
 
-			if(automode && supermode)
+			if(supermode || curvesupermode)
 			localimp.setTitle(
 					"Candidate Points" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
-			if(automode)
+			if(automode || curveautomode)
 				localimp.setTitle(
 						"Seg Image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 
@@ -1599,7 +1655,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			inputFieldZ.setEnabled(false);
 		}
 
-		if (!automode) {
+		if (!automode && !supermode && !curveautomode && !curvesupermode) {
 			Roiselect.add(rText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			Roiselect.add(ChooseMethod, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
@@ -1615,7 +1671,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			panelFirst.add(Roiselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 		}
-		if (automode && supermode) {
+		if (( supermode) || ( curvesupermode)) {
 
 			Probselect.add(lowprobText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
@@ -1651,7 +1707,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		}
 		
-		if(automode && !supermode) {
+		if((automode )  ||    (curveautomode )  ) {
 			
 
 			Probselect.add(lowprobText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,

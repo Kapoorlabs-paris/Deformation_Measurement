@@ -1,28 +1,26 @@
 package listeners;
 
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import pluginTools.IlastikEllipseFileChooser;
-import pluginTools.InteractiveSimpleEllipseFit;
 
-public class SupermodeListener implements ItemListener {
+public class CurveSimplemodeListener implements ItemListener {
 
 	
 	public final IlastikEllipseFileChooser parent;
 	
-	public SupermodeListener(final IlastikEllipseFileChooser parent) {
+	public CurveSimplemodeListener(final IlastikEllipseFileChooser parent) {
 		
+           this.parent = parent;
 		
-		this.parent = parent;
 	}
-
+	
+	
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-		
-		if(e.getStateChange() == ItemEvent.DESELECTED) {
+	
+      if(e.getStateChange() == ItemEvent.DESELECTED) {
 			
 			parent.superpixel = false;
 			parent.simple = false;
@@ -32,18 +30,18 @@ public class SupermodeListener implements ItemListener {
 		
 		else if (e.getStateChange() == ItemEvent.SELECTED) {
 			
-			parent.superpixel = true;
+			parent.superpixel = false;
 			parent.simple = false;
 			parent.curvesuper = false;
-			parent.curvesimple = false;
+			parent.curvesimple = true;
 			
-			parent.Panelsuperfile.setEnabled(true);
-			parent.ChoosesuperImage.setEnabled(true);
-		
+			parent.Panelsuperfile.setEnabled(false);
+			parent.ChoosesuperImage.setEnabled(false);
+			parent.panelFirst.validate();
+			parent.panelFirst.repaint();
 			
 			
 		}
-		
 		
 		
 		
@@ -51,5 +49,5 @@ public class SupermodeListener implements ItemListener {
 	
 	
 	
-	
+
 }

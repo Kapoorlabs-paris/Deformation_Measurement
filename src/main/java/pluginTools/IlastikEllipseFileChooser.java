@@ -29,6 +29,8 @@ import io.scif.img.ImgOpener;
 import listeners.ChooseOrigMap;
 import listeners.ChooseProbMap;
 import listeners.ChoosesuperProbMap;
+import listeners.CurveSimplemodeListener;
+import listeners.CurveSupermodeListener;
 import listeners.SimplemodeListener;
 import listeners.SupermodeListener;
 import net.imglib2.RandomAccessibleInterval;
@@ -62,21 +64,26 @@ public class IlastikEllipseFileChooser extends JPanel {
 	  public JButton Done =  new JButton("Finished choosing files, start ETrack");
 	  public boolean superpixel = false;
 	  public boolean simple = true;
+	  public boolean curvesuper = false;
+	  public boolean curvesimple = false;
 	  public CheckboxGroup runmode = new CheckboxGroup();
-	  public Checkbox Gosuper = new Checkbox("Input Multicut Trained segmentation", superpixel, runmode);
-	  public Checkbox Gosimple = new Checkbox("Input Pixel Classification output only", simple, runmode);
-	  Border choosefile = new CompoundBorder(new TitledBorder("Probability Map chooser"),
+	  public Checkbox Gosuper = new Checkbox("Angle tracking with Multicut Trained segmentation", superpixel, runmode);
+	  public Checkbox Gosimple = new Checkbox("Angle tracking with Pixel Classification output only", simple, runmode);
+	  
+	  public Checkbox Gocurvesuper = new Checkbox("Curvature Measurment with Pixel + Multi", curvesuper, runmode);
+	  public Checkbox Gocurvesimple = new Checkbox("Curvature Measurment with Pixel only", curvesimple, runmode);
+	  
+	  public Border choosefile = new CompoundBorder(new TitledBorder("Probability Map chooser"),
 				new EmptyBorder(c.insets));
 	  public Border choosesuperfile = new CompoundBorder(new TitledBorder("Superpixel SegMap chooser"),
 				new EmptyBorder(c.insets));
-	  
 	  public Border chooseoriginalfile = new CompoundBorder(new TitledBorder("Choose original Image"),
 				new EmptyBorder(c.insets));
-	  
 	  public Border LoadEtrack = new CompoundBorder(new TitledBorder("Done Selection"),
 				new EmptyBorder(c.insets));
 	  public Border runmodetrack = new CompoundBorder(new TitledBorder("Runmode"),
 				new EmptyBorder(c.insets));
+	  
 	  public IlastikEllipseFileChooser() {
 		
 		
@@ -104,6 +111,10 @@ public class IlastikEllipseFileChooser extends JPanel {
 			Panelrun.add(Gosuper, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Panelrun.add(Gosimple, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Panelrun.add(Gocurvesuper, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Panelrun.add(Gocurvesimple, new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Panelrun.setBorder(runmodetrack);
 			panelFirst.add(Panelrun, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
@@ -150,6 +161,9 @@ public class IlastikEllipseFileChooser extends JPanel {
 			ChoosesuperImage.setEnabled(false);
 			Gosuper.addItemListener(new SupermodeListener(this));
 			Gosimple.addItemListener(new SimplemodeListener(this) );
+			
+			Gocurvesimple.addItemListener(new CurveSimplemodeListener(this));
+			Gocurvesuper.addItemListener(new CurveSupermodeListener(this));
 			Cardframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			Cardframe.pack();
 			Cardframe.setVisible(true);
@@ -192,8 +206,22 @@ public class IlastikEllipseFileChooser extends JPanel {
 				new InteractiveSimpleEllipseFit(image, imagebefore, imagesuper, simple, superpixel).run(null);
 			
 			}
-			else
+			if (simple)
 			new InteractiveSimpleEllipseFit(image, imagebefore, simple).run(null);
+			
+			if (curvesimple) {
+				// Activate curvature measurment simple
+				new InteractiveSimpleEllipseFit(image, imagebefore, simple, superpixel, curvesimple, curvesuper).run(null);
+				
+			}
+			if(curvesuper) {
+				// Activate curvature measurment super
+			
+				RandomAccessibleInterval<IntType> imagesuper = new ImgOpener().openImgs(impsuper.getOriginalFileInfo().directory + impsuper.getOriginalFileInfo().fileName, new IntType()).iterator().next();
+				new InteractiveSimpleEllipseFit(image, imagebefore, imagesuper, simple, superpixel, curvesimple, curvesuper).run(null);
+			}
+			
+			
 			close(parent);
 			
 			
