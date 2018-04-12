@@ -28,7 +28,7 @@ public class GaussRadiusListener implements TextListener {
 		String s = tc.getText();
 		
 		if(s.length() > 0)
-			parent.gaussradius = Integer.parseInt(s);
+			parent.gaussradius = Double.parseDouble(s);
 		
 	}
 	

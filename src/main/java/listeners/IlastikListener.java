@@ -19,19 +19,15 @@ public class IlastikListener implements ItemListener {
 		
 		if (arg0.getStateChange() == ItemEvent.DESELECTED) {
 	        
-			parent.automode = false;
-			parent.ChooseMethod.setEnabled(true);
-			parent.ChooseColor.setEnabled(true);
-			parent.Roibutton.setEnabled(true);
+			parent.showWater = false;
+			
 		}
 		
         else if (arg0.getStateChange() == ItemEvent.SELECTED) {
 		
-		parent.automode = true;
+		parent.showWater = true;
 		
-		parent.ChooseMethod.setEnabled(false);
-		parent.ChooseColor.setEnabled(false);
-		parent.Roibutton.setEnabled(false);
+		
 		
 	}
 	

@@ -16,6 +16,7 @@ import javax.swing.JProgressBar;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import ellipsoidDetector.Tangentobject;
+import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.EllipseRoi;
 import ij.gui.Line;
@@ -45,6 +46,7 @@ import net.imglib2.neighborsearch.NearestNeighborSearchOnKDTree;
 import net.imglib2.type.Type;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
+import net.imglib2.type.numeric.integer.ShortType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.Util;
@@ -134,6 +136,7 @@ public class EllipseTrack {
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
 
 		percent++;
+		if(jpb!=null)
 		utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
 				"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
 						+ parent.thirdDimensionSize);
@@ -148,12 +151,30 @@ public class EllipseTrack {
 		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentViewInt, t, z, (int) percent);
 		compute.ParallelRansac();
 	}
+	public void TestAuto(int z, int t) {
+		
+		parent.updatePreview(ValueChange.THIRDDIMmouse);
 
+
+		RandomAccessibleInterval<BitType> CurrentViewSmooth = utility.Slicer.getCurrentViewBit(parent.emptysmooth, z,
+				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+
+		// Use smoothed image for segmentation and non smooth image for getting the
+		// candidate points for fitting ellipses
+		RandomAccessibleInterval<IntType> CurrentInt = getSeg(CurrentViewSmooth);
+		if (parent.showWater) {
+
+			Watershow(CurrentInt);
+
+		}
+		
+	}
 	public void BlockRepeatAuto(double percent, int z, int t) {
 
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
 
 		percent++;
+		if(jpb!=null)
 		utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
 				"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
 						+ parent.thirdDimensionSize);
@@ -162,14 +183,43 @@ public class EllipseTrack {
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 		RandomAccessibleInterval<BitType> CurrentViewSmooth = utility.Slicer.getCurrentViewBit(parent.emptysmooth, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-		
-		
-		// Use smoothed image for segmentation and non smooth image for getting the candidate points for fitting ellipses
+
+		// Use smoothed image for segmentation and non smooth image for getting the
+		// candidate points for fitting ellipses
 		RandomAccessibleInterval<IntType> CurrentInt = getSeg(CurrentViewSmooth);
 		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
+		if (parent.showWater) {
+
+			Watershow(CurrentInt);
+
+		}
+
 		GetPixelList(CurrentInt);
 		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentInt, t, z, (int) percent);
 		compute.ParallelRansac();
+
+	}
+
+	public void Watershow(RandomAccessibleInterval<IntType> CurrentInt) {
+
+		if (parent.localwaterimp == null || !parent.localwaterimp.isVisible()) {
+			parent.localwaterimp = ImageJFunctions.show(CurrentInt);
+
+		}
+
+		else {
+
+			final short[] pixels = (short[]) parent.localwaterimp.getProcessor().getPixels();
+			final Cursor<IntType> c = Views.iterable(CurrentInt).cursor();
+
+			for (int i = 0; i < pixels.length; ++i)
+				pixels[i] = (short) c.next().get();
+
+			parent.localwaterimp.updateAndDraw();
+			parent.localwaterimp.setTitle("Watershed Image" + " " + "time point : " + parent.fourthDimension + " "
+					+ " Z: " + parent.thirdDimension);
+
+		}
 
 	}
 
@@ -447,9 +497,7 @@ public class EllipseTrack {
 		return newthinCurrentView;
 	}
 
-	
-	public RandomAccessibleInterval<IntType> getSeg(
-			RandomAccessibleInterval<BitType> CurrentView) {
+	public RandomAccessibleInterval<IntType> getSeg(RandomAccessibleInterval<BitType> CurrentView) {
 		ThinningStrategyFactory fact = new ThinningStrategyFactory(true);
 		ThinningStrategy strat = fact.getStrategy(Strategy.HILDITCH);
 		ThinningOp thinit = new ThinningOp(strat, true, new ArrayImgFactory<BitType>());
@@ -472,10 +520,8 @@ public class EllipseTrack {
 		return CurrentViewInt;
 
 	}
-	
-	public RandomAccessibleInterval<BitType> getCand(
-			RandomAccessibleInterval<BitType> CurrentView) {
 
+	public RandomAccessibleInterval<BitType> getCand(RandomAccessibleInterval<BitType> CurrentView) {
 
 		ThinningStrategyFactory fact = new ThinningStrategyFactory(true);
 		ThinningStrategy strat = fact.getStrategy(Strategy.HILDITCH);
@@ -489,11 +535,10 @@ public class EllipseTrack {
 		newCurrentView = Kernels.CannyEdgeandMeanBit(CurrentView, 1);
 		thinit.compute(newCurrentView, newthinCurrentView);
 
-
 		return newthinCurrentView;
 
 	}
-	
+
 	public Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> getAutoint(
 			RandomAccessibleInterval<BitType> CurrentView) {
 
@@ -609,46 +654,29 @@ public class EllipseTrack {
 
 	public void IntersectandTrackCurrent() {
 
-		// Main method for computing intersections and tangents and angles between
-		// tangents
 		double percent = 0;
-		if (parent.automode || parent.supermode) {
 
-			int z = parent.thirdDimension;
-			int t = parent.fourthDimension;
+		int z = parent.thirdDimension;
+		int t = parent.fourthDimension;
+		if (parent.supermode && parent.automode) {
+
+		
 
 			BlockRepeat(percent, z, t);
 
-		} else {
+		}
 
-			if (parent.originalimg.numDimensions() > 3) {
+		if (parent.automode && !parent.supermode) {
 
-				int z = parent.thirdDimension;
-				int t = parent.fourthDimension;
+			
 
-				BlockRepeatManual(percent, z, t);
+			BlockRepeatAuto(percent, z, t);
 
-			} else if (parent.originalimg.numDimensions() > 2 && parent.originalimg.numDimensions() <= 3) {
+		}
 
-				int z = parent.thirdDimension;
-				int t = parent.fourthDimension;
+		else if (!parent.automode && !parent.supermode) {
 
-				BlockRepeatManual(percent, z, t);
-			}
-
-			else {
-
-				int z = parent.thirdDimension;
-				int t = parent.fourthDimension;
-				percent++;
-				parent.updatePreview(ValueChange.THIRDDIMmouse);
-
-				parent.maxlabel = GetMaxlabelsseeded(parent.emptyWater);
-				Computeinwater compute = new Computeinwater(parent, parent.empty, parent.emptyWater, t, z,
-						(int) percent, parent.maxlabel);
-				compute.ParallelRansac();
-
-			}
+			BlockRepeatManual(percent, z, t);
 
 		}
 

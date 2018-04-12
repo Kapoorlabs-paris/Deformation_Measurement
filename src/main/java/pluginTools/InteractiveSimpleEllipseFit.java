@@ -185,6 +185,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float highprobmin = 0f;
 
 	public boolean redoing;
+	public boolean showWater = false;
 	public float lowprobmax = 1.0f;
 	public float highprobmax = 1.0f;
 
@@ -242,6 +243,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public HashMap<String, Roiobject> IntersectionZTRois;
 	public ImagePlus imp;
 	public ImagePlus localimp;
+	public ImagePlus localwaterimp;
 	public ImagePlus resultimp;
 	public ImagePlus emptyimp;
 	public int ndims;
@@ -302,7 +304,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public RandomAccessibleInterval<BitType> empty;
 	public RandomAccessibleInterval<BitType> emptysmooth;
 	public RandomAccessibleInterval<FloatType> originalimgsmooth;
-	public int gaussradius = 2;
+	public double gaussradius = 2;
 	public RandomAccessibleInterval<IntType> emptyWater;
 	public boolean automode;
 	public boolean supermode;
@@ -315,7 +317,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int maxSearchInit = 100;
 	public int maxframegap = 10;
 	public static enum ValueChange {
-		ROI, ALL, THIRDDIMmouse, FOURTHDIMmouse, DISPLAYROI, RADIUS, INSIDE, OUTSIDE, RESULT, RectRoi, SEG
+		ROI, ALL, THIRDDIMmouse, FOURTHDIMmouse, DISPLAYROI, RADIUS, INSIDE, OUTSIDE, RESULT, RectRoi, SEG, Watershow
 	}
 
 	public void setTime(final int value) {
@@ -675,6 +677,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			imp.setOverlay(overlay);
 		}
 
+		
+		
 		if (change == ValueChange.INSIDE || change == ValueChange.OUTSIDE) {
 
 			if (automode) {
@@ -1333,8 +1337,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JPanel Roiselect = new JPanel();
 	public JPanel Probselect = new JPanel();
 	public JPanel Angleselect = new JPanel();
-	public  JPanel KalmanPanel = new JPanel();
-	public JCheckBox IlastikAuto = new JCheckBox("Ilastik Automated run", automode);
+	public JPanel KalmanPanel = new JPanel();
+	public JCheckBox IlastikAuto = new JCheckBox("Show Watershed Image", showWater);
 
 	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField, gaussfield;
 	public TextField inputFieldZ, startT, endT;
@@ -1423,7 +1427,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final String maxSearchstring = "Maximum search radius";
 	final String maxSearchstringS = "Maximum search radius";
 	final String initialSearchstring = "Initial search radius";
-
+   
 	Label maxSearchText = new Label(maxSearchstring + " = " + maxSearchInit, Label.CENTER);
 	Label maxSearchTextS = new Label(maxSearchstring + " = " + maxSearchInit, Label.CENTER);
 	Label iniSearchText = new Label(initialSearchstring + " = " + initialSearchradiusInit, Label.CENTER);
@@ -1485,7 +1489,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		maxperimeterField.setText(Integer.toString(maxperimeter));
 		
 		gaussfield = new TextField(5);
-		gaussfield.setText(Integer.toString(gaussradius));
+		gaussfield.setText(Double.toString(gaussradius));
 
 		inputLabelIter = new Label("Max. attempts to find ellipses");
 		final JScrollBar maxSearchS = new JScrollBar(Scrollbar.HORIZONTAL, maxSearchInit, 10, 0, 10 + scrollbarSize);
@@ -1680,8 +1684,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			Probselect.add(gaussfield, new GridBagConstraints(4, 10, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
-//			Probselect.add(ChooseMethod, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-			//		GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Probselect.add(IlastikAuto, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Probselect.setPreferredSize(new Dimension(SizeX, SizeY));
 			Probselect.setBorder(probborder);
 
