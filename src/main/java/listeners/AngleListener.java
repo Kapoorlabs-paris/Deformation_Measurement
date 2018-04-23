@@ -48,7 +48,8 @@ public class AngleListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		if (parent.automode && parent.supermode) {
+		
+		if (parent.supermode) {
 		
 			
 			parent.empty = utility.Binarization.CreateBinaryBit(parent.originalimg, parent.lowprob, parent.highprob);
@@ -63,7 +64,7 @@ public class AngleListener implements ActionListener {
 			
 		}
 		
-       if (parent.automode && !parent.supermode) {
+       if (parent.automode) {
 		
 			
 			parent.emptysmooth = utility.Binarization.CreateBinaryBit(parent.originalimgsmooth, parent.lowprob, parent.highprob);

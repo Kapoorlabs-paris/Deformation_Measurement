@@ -255,7 +255,7 @@ public class EllipseTrack {
 		// tangents
 		double percent = 0;
 
-		if (parent.supermode && parent.automode) {
+		if (parent.supermode) {
 
 			if (parent.originalimg.numDimensions() > 3) {
 
@@ -295,7 +295,7 @@ public class EllipseTrack {
 
 		}
 
-		if (parent.automode && !parent.supermode) {
+		if (parent.automode) {
 
 			if (parent.originalimg.numDimensions() > 3) {
 				for (int t = parent.AutostartTime; t <= parent.AutoendTime; ++t) {

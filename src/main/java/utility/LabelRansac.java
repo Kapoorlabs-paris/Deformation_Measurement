@@ -134,7 +134,7 @@ public class LabelRansac implements Runnable {
 			}
 
 			int count = 0;
-			if(!parent.automode) {
+			if(!parent.automode || !parent.supermode) {
 				
 			ArrayList<Integer> ellipsepairlist = new ArrayList<Integer>();
 			
@@ -253,7 +253,7 @@ public class LabelRansac implements Runnable {
 			
 			
 
-			if (parent.automode && !parent.redoing) {
+			if (parent.automode || parent.supermode && !parent.redoing) {
 				
 				Roiobject currentobject = new Roiobject(resultroi,resultovalroi,resultlineroi, z, t, true);
 				parent.ZTRois.put(uniqueID, currentobject);

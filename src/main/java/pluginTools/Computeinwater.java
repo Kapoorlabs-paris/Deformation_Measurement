@@ -93,7 +93,7 @@ public class Computeinwater {
 
 		ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
 
-		if (parent.automode) {
+		if (parent.automode || parent.supermode) {
 
 			Iterator<Integer> setiter = parent.pixellist.iterator();
 
@@ -123,7 +123,7 @@ public class Computeinwater {
 
 		}
 
-		else {
+		else if (!parent.automode || !parent.supermode) {
 
 			parent.maxlabel = maxlabel;
 
@@ -146,7 +146,7 @@ public class Computeinwater {
 		try {
 			taskExecutor.invokeAll(tasks);
 
-			if (parent.automode ) {
+			if (parent.supermode ) {
 
 				// Get superintersection
 

@@ -138,6 +138,7 @@ import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
+import utility.Curvatureobject;
 import utility.DisplayAuto;
 import utility.Roiobject;
 import utility.ShowResultView;
@@ -239,6 +240,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public TextField inputFieldIter;
 	public JTable table;
 	public ArrayList<Roi> Allrois;
+	public ArrayList<Curvatureobject> CellCurvature;
 	public HashMap<String, Roiobject> ZTRois;
 	public HashMap<String, Roiobject> AutoZTRois;
 	public HashMap<String, Roiobject> DefaultZTRois;
@@ -610,6 +612,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		Accountedframes = new HashMap<String, Integer>();
 		AccountedZ = new HashMap<String, Integer>();
 
+		CellCurvature = new ArrayList<Curvatureobject>();
 		setlowprob(lowprob);
 		sethighprob(highprob);
 		setInsidecut(insideCutoff);
@@ -943,7 +946,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				current.Lineage();
 				
 			}
-			if (automode) {
+			if (automode || supermode) {
 				updatePreview(ValueChange.SEG);
 			
 				if(originalimgsmooth!= null)
@@ -989,13 +992,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				imp.updateAndDraw();
 
 			}
-			if(!automode){
+			if(!automode && !supermode){
 				if (ZTRois.get(uniqueID) == null)
 					DisplayDefault();
 				else
 					Display();
 			}
-			else
+			else if (automode || supermode)
 				DisplayAuto.Display(this);
 			imp.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 
