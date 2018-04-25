@@ -37,6 +37,7 @@ import net.imglib2.view.Views;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.DisplayAuto;
 import utility.LabelRansac;
+import utility.NormalIntersection;
 import utility.Roiobject;
 import utility.SuperIntersection;
 import utility.Watershedobject;
@@ -107,8 +108,7 @@ public class Computeinwater {
 				Watershedobject current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
 				
 				// Neglect the small watershed regions by choosing only those regions which have more than 9 candidate points for ellipse fitting
-				if (current.Size > parent.minperimeter / 3 * parent.minperimeter / 3
-						&& current.Size < parent.maxperimeter / 3 *  parent.maxperimeter / 3 && current.meanIntensity > parent.minellipsepoints) {
+				if (current.meanIntensity > parent.minellipsepoints) {
 					
 					List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
 					
@@ -131,22 +131,17 @@ public class Computeinwater {
 				percent++;
 
 				Watershedobject current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
-
-				if (current.Size > parent.minperimeter / 3 * parent.minperimeter / 3
-						&& current.Size < parent.maxperimeter / 3 *  parent.maxperimeter / 3 && current.meanIntensity > parent.minellipsepoints) {
-					
 					List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
 					tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi,
 							resultovalroi, resultlineroi, AllPointsofIntersect, Allintersection, fitmapspecial,
 							parent.supermode)));
-				}
 			}
 		}
 		
 		try {
 			taskExecutor.invokeAll(tasks);
 
-			if (parent.supermode ) {
+			if (parent.supermode || parent.automode) {
 
 				// Get superintersection
 
@@ -158,6 +153,15 @@ public class Computeinwater {
 						Allintersection, t, z);
 			
 
+			}
+			
+			else {
+				
+				NormalIntersection newintersect = new NormalIntersection(parent);
+				AllPointsofIntersect = new ArrayList<Tangentobject>();
+				Allintersection = new ArrayList<Intersectionobject>();
+				newintersect.Getsuperintersection(resultroi, resultovalroi, resultlineroi, AllPointsofIntersect,
+						Allintersection, t, z);
 			}
 		
 		} catch (InterruptedException e1) {

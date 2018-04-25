@@ -78,9 +78,14 @@ public class DisplayAuto {
 				}
 
 			}
+			
+			parent.imp.setOverlay(parent.overlay);
+			parent.imp.updateAndDraw();
+			
+			if(parent.impOrig!=null) {
 			parent.impOrig.setOverlay(parent.overlay);
 			parent.impOrig.updateAndDraw();
-
+			}
 			mark(parent);
 			select(parent);
 

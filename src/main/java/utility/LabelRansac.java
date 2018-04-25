@@ -134,17 +134,18 @@ public class LabelRansac implements Runnable {
 			}
 
 			int count = 0;
+			/*
 			if(!parent.automode || !parent.supermode) {
 				
 			ArrayList<Integer> ellipsepairlist = new ArrayList<Integer>();
 			
 			
-			for (int i = 0; i < Reducedsamples.size(); ++i) {
-
-				for (int j = 0; j < Reducedsamples.size(); ++j) {
-
+			for (int i = 0; i <= Reducedsamples.size(); ++i) {
+				
+				for (int j = 0; j <= Reducedsamples.size(); ++j) {
+					
 					if (j != i) {
-
+						System.out.println(count + "count" + i + " " + j + "size" + Reducedsamples.size());
 						ellipsepairlist.add(count);
 						fitmapspecial.add(new ValuePair<Ellipsoid, Ellipsoid>(Reducedsamples.get(i).getA(),
 								Reducedsamples.get(j).getA()));
@@ -153,12 +154,14 @@ public class LabelRansac implements Runnable {
 					}
 				}
 			}
+			System.out.println(count + "count");
 			final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecialred = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
 			fitmapspecialred.addAll(fitmapspecial);
 			
 			
 			for (int i = 0; i < fitmapspecialred.size(); ++i) {
 
+				System.out.println(fitmapspecialred.size() + "my size");
 				Pair<Ellipsoid, Ellipsoid> ellipsepairA = fitmapspecialred.get(i);
 
 				for (int j = 0; j < fitmapspecialred.size(); ++j) {
@@ -230,7 +233,7 @@ public class LabelRansac implements Runnable {
 			parent.ALLIntersections.put(uniqueID, Allintersection);
 			
 
-			
+		
 
 			// Add new result rois to ZTRois
 			for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
@@ -249,6 +252,7 @@ public class LabelRansac implements Runnable {
 
 			
 			}
+			*/
 			parent.superReducedSamples.addAll(Reducedsamples);
 			
 			
@@ -260,6 +264,7 @@ public class LabelRansac implements Runnable {
 
 				DisplayAuto.Display(parent);
 			}
+			
 			
 			
 		} else

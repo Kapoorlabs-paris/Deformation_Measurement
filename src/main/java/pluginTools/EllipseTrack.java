@@ -365,13 +365,7 @@ public class EllipseTrack {
 
 				int z = parent.thirdDimension;
 				int t = parent.fourthDimension;
-				percent++;
-				parent.updatePreview(ValueChange.THIRDDIMmouse);
-
-				parent.maxlabel = GetMaxlabelsseeded(parent.emptyWater);
-				Computeinwater compute = new Computeinwater(parent, parent.empty, parent.emptyWater, t, z,
-						(int) percent, parent.maxlabel);
-				compute.ParallelRansac();
+				BlockRepeatManual(percent, z, t);
 
 			}
 

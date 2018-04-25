@@ -659,7 +659,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		setZ(thirdDimension);
 		CurrentView = utility.Slicer.getCurrentView(originalimg, fourthDimension, thirdDimensionSize, thirdDimension,
 				fourthDimensionSize);
-		 if(automode) 
+		 if(automode || curveautomode ) 
 		CurrentViewSmooth = utility.Slicer.getCurrentView(originalimgsmooth, fourthDimension, thirdDimensionSize, thirdDimension,
 				fourthDimensionSize);
 		if (originalimgbefore != null) {
@@ -1764,8 +1764,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			Angleselect.add(deltasepText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(deltasepField, new GridBagConstraints(4, 0, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-					GridBagConstraints.RELATIVE, insets, 0, 0));
+			Angleselect.add(deltasepField, new GridBagConstraints(4, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			Angleselect.setBorder(circletools);
 			Angleselect.setPreferredSize(new Dimension(SizeX, SizeY));
 			
