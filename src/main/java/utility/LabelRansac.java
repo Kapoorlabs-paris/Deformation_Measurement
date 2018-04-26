@@ -41,13 +41,14 @@ public class LabelRansac implements Runnable {
 
 	final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial;
 	final boolean supermode;
-	
+
 	final JProgressBar jpb;
 
 	public LabelRansac(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,
 			List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, ArrayList<EllipseRoi> resultroi,
 			ArrayList<OvalRoi> resultovalroi, ArrayList<Line> resultlineroi,
-			final ArrayList<Tangentobject> AllPointsofIntersect, final ArrayList<Intersectionobject> Allintersection,final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial, final boolean supermode) {
+			final ArrayList<Tangentobject> AllPointsofIntersect, final ArrayList<Intersectionobject> Allintersection,
+			final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial, final boolean supermode) {
 
 		this.parent = parent;
 		this.ActualRoiimg = ActualRoiimg;
@@ -68,7 +69,8 @@ public class LabelRansac implements Runnable {
 			List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, ArrayList<EllipseRoi> resultroi,
 			ArrayList<OvalRoi> resultovalroi, ArrayList<Line> resultlineroi,
 			final ArrayList<Tangentobject> AllPointsofIntersect, final ArrayList<Intersectionobject> Allintersection,
-			final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial, final JProgressBar jpb, final boolean supermode) {
+			final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial, final JProgressBar jpb,
+			final boolean supermode) {
 
 		this.parent = parent;
 		this.ActualRoiimg = ActualRoiimg;
@@ -85,21 +87,22 @@ public class LabelRansac implements Runnable {
 		this.supermode = supermode;
 	}
 
-	
-
 	@Override
 	public void run() {
 
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
 
-		if(parent.fourthDimensionSize > 1)
-		parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension, parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
-		parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension, parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
+		if (parent.fourthDimensionSize > 1)
+			parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension,
+					parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
+		parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension,
+				parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
 		final int ndims = ActualRoiimg.numDimensions();
 		final NumericalSolvers numsol = new BisectorEllipsoid();
 		// Using the ellipse model to do the fitting
 		ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> Reducedsamples = RansacEllipsoid.Allsamples(
-				truths, parent.outsideCutoff, parent.insideCutoff, parent.minpercent, parent.minperimeter, parent.maxperimeter, numsol, parent.maxtry, ndims);
+				truths, parent.outsideCutoff, parent.insideCutoff, parent.minpercent, parent.minperimeter,
+				parent.maxperimeter, numsol, parent.maxtry, ndims);
 
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
 		if (Reducedsamples != null) {
@@ -117,7 +120,7 @@ public class LabelRansac implements Runnable {
 
 			}
 
-			for (int i = 0; i < Reducedsamples.size(); ++i) {
+			for (int i = 0; i <= Reducedsamples.size(); ++i) {
 
 				EllipseRoi ellipse = DisplayasROI.create2DEllipse(Reducedsamples.get(i).getA().getCenter(),
 						new double[] { Reducedsamples.get(i).getA().getCovariance()[0][0],
@@ -133,142 +136,18 @@ public class LabelRansac implements Runnable {
 
 			}
 
-			int count = 0;
-			/*
-			if(!parent.automode || !parent.supermode) {
-				
-			ArrayList<Integer> ellipsepairlist = new ArrayList<Integer>();
-			
-			
-			for (int i = 0; i <= Reducedsamples.size(); ++i) {
-				
-				for (int j = 0; j <= Reducedsamples.size(); ++j) {
-					
-					if (j != i) {
-						System.out.println(count + "count" + i + " " + j + "size" + Reducedsamples.size());
-						ellipsepairlist.add(count);
-						fitmapspecial.add(new ValuePair<Ellipsoid, Ellipsoid>(Reducedsamples.get(i).getA(),
-								Reducedsamples.get(j).getA()));
-
-						count++;
-					}
-				}
-			}
-			System.out.println(count + "count");
-			final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecialred = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
-			fitmapspecialred.addAll(fitmapspecial);
-			
-			
-			for (int i = 0; i < fitmapspecialred.size(); ++i) {
-
-				System.out.println(fitmapspecialred.size() + "my size");
-				Pair<Ellipsoid, Ellipsoid> ellipsepairA = fitmapspecialred.get(i);
-
-				for (int j = 0; j < fitmapspecialred.size(); ++j) {
-
-					if (i != j) {
-						Pair<Ellipsoid, Ellipsoid> ellipsepairB = fitmapspecialred.get(j);
-
-						if (ellipsepairA.getA().hashCode() == (ellipsepairB.getB().hashCode())
-								&& ellipsepairA.getB().hashCode() == (ellipsepairB.getA().hashCode())) {
-							fitmapspecialred.remove(ellipsepairB);
-							break;
-						}
-
-					}
-
-				}
-
-			}
-			for (int i = 0; i < fitmapspecialred.size(); ++i) {
-
-				Pair<Ellipsoid, Ellipsoid> ellipsepair = fitmapspecialred.get(i);
-
-				ArrayList<double[]> pos = Intersections.PointsofIntersection(ellipsepair);
-
-				
-				
-				
-				
-				Tangentobject PointsIntersect = new Tangentobject(pos, ellipsepair, t, z);
-
-				for (int j = 0; j < pos.size(); ++j) {
-
-					OvalRoi intersectionsRoi = new OvalRoi(pos.get(j)[0] - parent.radiusdetection,
-							pos.get(j)[1] - parent.radiusdetection, 2 * parent.radiusdetection,
-							2 * parent.radiusdetection);
-					intersectionsRoi.setStrokeColor(parent.colorDet);
-					resultovalroi.add(intersectionsRoi);
-
-					double[] lineparamA = Tangent2D.GetTangent(ellipsepair.getA(), pos.get(j));
-
-					double[] lineparamB = Tangent2D.GetTangent(ellipsepair.getB(), pos.get(j));
-
-					Angleobject angleobject = Tangent2D.GetTriAngle(lineparamA, lineparamB, pos.get(j), ellipsepair);
-					resultlineroi.add(angleobject.lineA);
-					resultlineroi.add(angleobject.lineB);
-					Intersectionobject currentintersection = null;
-					if(parent.originalimg.numDimensions() > 3) {
-
-					currentintersection = new Intersectionobject(pos.get(j), angleobject.angle,
-							ellipsepair, resultlineroi, t, z);
-					
-					}
-					else {
-						currentintersection = new Intersectionobject(pos.get(j), angleobject.angle,
-								ellipsepair, resultlineroi, z);
-						
-					}
-
-					Allintersection.add(currentintersection);
-
-					System.out.println("Angle: " + angleobject.angle + " " + pos.get(j)[0]);
-
-				}
-
-				AllPointsofIntersect.add(PointsIntersect);
-
-
-			}
-			parent.ALLIntersections.put(uniqueID, Allintersection);
-			
-
-		
-
-			// Add new result rois to ZTRois
-			for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
-
-				Roiobject currentobject = entry.getValue();
-
-				if (currentobject.fourthDimension == t && currentobject.thirdDimension == z) {
-
-					currentobject.resultroi = resultroi;
-					currentobject.resultovalroi = resultovalroi;
-					currentobject.resultlineroi = resultlineroi;
-
-				}
-
-			}
-
-			
-			}
-			*/
 			parent.superReducedSamples.addAll(Reducedsamples);
-			
-			
 
 			if (parent.automode || parent.supermode && !parent.redoing) {
-				
-				Roiobject currentobject = new Roiobject(resultroi,resultovalroi,resultlineroi, z, t, true);
+
+				Roiobject currentobject = new Roiobject(resultroi, resultovalroi, resultlineroi, z, t, true);
 				parent.ZTRois.put(uniqueID, currentobject);
 
 				DisplayAuto.Display(parent);
 			}
-			
-			
-			
+
 		} else
 			return;
 	}
-	
+
 }

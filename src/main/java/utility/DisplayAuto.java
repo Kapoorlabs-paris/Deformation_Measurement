@@ -20,7 +20,6 @@ import ij.gui.EllipseRoi;
 import ij.gui.ImageCanvas;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
-import ij.gui.Roi;
 import pluginTools.InteractiveSimpleEllipseFit;
 
 public class DisplayAuto {
@@ -48,7 +47,6 @@ public class DisplayAuto {
 							parent.overlay.add(ellipse);
 
 						}
-
 					}
 
 					if (currentobject.resultovalroi != null) {

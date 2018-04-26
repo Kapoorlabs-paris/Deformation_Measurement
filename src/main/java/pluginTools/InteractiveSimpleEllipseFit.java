@@ -1,21 +1,15 @@
 package pluginTools;
 
-import java.awt.BasicStroke;
 import java.awt.BorderLayout;
-import java.awt.Button;
 import java.awt.CardLayout;
-import java.awt.Checkbox;
-import java.awt.CheckboxGroup;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Label;
-import java.awt.Rectangle;
 import java.awt.Scrollbar;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
@@ -30,14 +24,12 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -49,15 +41,12 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -66,7 +55,6 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 import costMatrix.CostFunction;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
-import ellipsoidDetector.Tangentobject;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -77,25 +65,22 @@ import ij.gui.Line;
 import ij.gui.OvalRoi;
 import ij.gui.Overlay;
 import ij.gui.Roi;
-import ij.io.Opener;
 import ij.measure.ResultsTable;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.RoiManager;
 import ij.process.ColorProcessor;
 import kalmanTracker.NearestRoi;
-import kalmanTracker.TrackModel;
 import listeners.AngleListener;
 import listeners.AutoEndListener;
 import listeners.AutoStartListener;
 import listeners.ColorListener;
+import listeners.CurvatureListener;
 import listeners.DeltasepListener;
-import listeners.DisplayRoiListener;
 import listeners.DoSmoothingListener;
 import listeners.DrawListener;
 import listeners.ETrackFilenameListener;
 import listeners.ETrackIniSearchListener;
 import listeners.ETrackMaxSearchListener;
-import listeners.EllipseNonStandardMouseListener;
 import listeners.GaussRadiusListener;
 import listeners.HighProbListener;
 import listeners.IlastikListener;
@@ -118,33 +103,26 @@ import listeners.ZListener;
 import listeners.ZlocListener;
 import mpicbg.imglib.util.Util;
 import net.imglib2.Cursor;
-import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.gauss3.Gauss3;
-import net.imglib2.algorithm.ransac.RansacModels.DisplayasROI;
 import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
 import net.imglib2.algorithm.stats.Normalize;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.type.Type;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
-import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
-import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.Curvatureobject;
 import utility.DisplayAuto;
 import utility.Roiobject;
 import utility.ShowResultView;
-import utility.ShowView;
 import utility.Slicer;
-import utility.ThreeDRoiobject;
 
 public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
@@ -168,7 +146,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int rowchoice;
 	public int radiusdetection = 5;
 	public int maxtry = 30;
-	public float minpercent = 0.5f;
+	public float minpercent = 0.15f;
 	public float minpercentINI = 0.65f;
 	public float minpercentINIArc = 0.25f;
 	public final double minSeperation = 5;
@@ -288,6 +266,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	ImageStack prestack;
 	public MouseAdapter mouseadapter;
 	public ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> superReducedSamples;
+	
 	public int[] Clickedpoints;
 	public int starttime;
 	public int endtime;
@@ -946,7 +925,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				current.Lineage();
 				
 			}
-			if (automode || supermode) {
+			if (automode || supermode || curveautomode || curvesupermode) {
 				updatePreview(ValueChange.SEG);
 			
 				if(originalimgsmooth!= null)
@@ -998,7 +977,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				else
 					Display();
 			}
-			else if (automode || supermode)
+			else if (automode || supermode || curveautomode || curvesupermode )
 				DisplayAuto.Display(this);
 			imp.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 
@@ -1013,6 +992,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		compute.execute();
 
 	}
+	public void StartCurvatureComputing() {
+
+		ComputeCurvature compute = new ComputeCurvature(this, jpb);
+
+		compute.execute();
+
+	}
+	
 
 	public RandomAccessibleInterval<BitType> CreateBinaryBit(RandomAccessibleInterval<FloatType> source, double lowprob,
 			double highprob) {
@@ -1063,11 +1050,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				if (currentobject.fourthDimension == fourthDimension
 						&& currentobject.thirdDimension == thirdDimension) {
 
+					if(currentobject.roilist!=null) {
 					for (int indexx = 0; indexx < currentobject.roilist.length; ++indexx) {
 
 						Roi or = currentobject.roilist[indexx];
 						or.setStrokeColor(confirmedRois);
 						overlay.add(or);
+					}
 					}
 
 					if (currentobject.resultroi != null) {
@@ -1419,6 +1408,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JButton Roibutton = new JButton("Confirm current roi selection");
 	public JButton DisplayRoibutton = new JButton("Display roi selection");
 	public JButton Anglebutton = new JButton("Fit Ellipses and track angles");
+	public JButton Curvaturebutton = new JButton("Measure Local Curvature");
 	public JButton Savebutton = new JButton("Save Track");
 	public JButton Redobutton = new JButton("Recompute for current view");
 	public JButton Smoothbutton = new JButton("Do Gaussian Smoothing");
@@ -1435,7 +1425,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final Label minperiText = new Label("Minimum ellipse perimeter" );
 	final Label maxperiText = new Label("Maximum ellipse perimeter" );
 	
-	final Label deltasepText = new Label("Seperation b/w points" );
+	final Label deltasepText = new Label("Delta seperation" );
 
 	final Label lowprobText = new Label("Lower probability level = " + lowprob, Label.CENTER);
 	final Label highporbText = new Label("Higher probability level = " + highprob, Label.CENTER);
@@ -1766,9 +1756,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			Angleselect.add(deltasepField, new GridBagConstraints(4, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			Angleselect.setBorder(circletools);
 			Angleselect.setPreferredSize(new Dimension(SizeX, SizeY));
 			
+
 			
 			
 			panelFirst.add(Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
@@ -1933,6 +1926,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		gaussfield.addTextListener(new GaussRadiusListener(this));
 		Smoothbutton.addActionListener(new DoSmoothingListener(this));
+		
+		Curvaturebutton.addActionListener(new CurvatureListener(this));
 		Anglebutton.addActionListener(new AngleListener(this));
 		startT.addTextListener(new AutoStartListener(this));
 		endT.addTextListener(new AutoEndListener(this));

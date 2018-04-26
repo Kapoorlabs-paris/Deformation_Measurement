@@ -31,13 +31,13 @@ import strategies.ThinningStrategyFactory;
 import strategies.ThinningStrategyFactory.Strategy;
 import thinning.ThinningOp;
 
-public class EllipseTrack {
+public class CircleCurvature {
 
 	final InteractiveSimpleEllipseFit parent;
 	final JProgressBar jpb;
 	Pair<Boolean, String> isVisited;
 
-	public EllipseTrack(final InteractiveSimpleEllipseFit parent, final JProgressBar jpb) {
+	public CircleCurvature(final InteractiveSimpleEllipseFit parent, final JProgressBar jpb) {
 
 		this.parent = parent;
 
@@ -59,8 +59,8 @@ public class EllipseTrack {
 
 		GetPixelList(CurrentViewInt);
 
-		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentViewInt, t, z, (int) percent);
-		compute.ParallelRansac();
+		Computeincurvature compute = new Computeincurvature(parent, CurrentViewthin, CurrentViewInt, t, z, (int) percent);
+		compute.ParallelFit();
 
 	}
 
@@ -76,30 +76,13 @@ public class EllipseTrack {
 		Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView);
 
 		parent.maxlabel = GetMaxlabelsseeded(Current.getA());
-		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, Current.getA(), t, z, (int) percent,
+		Computeincurvature compute = new Computeincurvature(parent, CurrentViewthin, Current.getA(), t, z, (int) percent,
 				parent.maxlabel);
-		compute.ParallelRansac();
+		compute.ParallelFit();
 
 	}
 
-	public void BlockRepeatManualRect(double percent, int z, int t) {
-
-		parent.updatePreview(ValueChange.THIRDDIMmouse);
-		percent++;
-
-		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
-				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
-		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.emptyWater, z,
-				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
-		parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
-
-		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent,
-				parent.maxlabel);
-		compute.ParallelRansac();
-
-	}
+	
 
 	public void BlockRepeat(double percent, int z, int t) {
 
@@ -118,8 +101,8 @@ public class EllipseTrack {
 
 		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
 		GetPixelList(CurrentViewInt);
-		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentViewInt, t, z, (int) percent);
-		compute.ParallelRansac();
+		Computeincurvature compute = new Computeincurvature(parent, CurrentViewthin, CurrentViewInt, t, z, (int) percent);
+		compute.ParallelFit();
 	}
 	public void TestAuto(int z, int t) {
 		
@@ -165,8 +148,8 @@ public class EllipseTrack {
 		}
 
 		GetPixelList(CurrentInt);
-		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentInt, t, z, (int) percent);
-		compute.ParallelRansac();
+		Computeincurvature compute = new Computeincurvature(parent, CurrentViewthin, CurrentInt, t, z, (int) percent);
+		compute.ParallelFit();
 
 	}
 
@@ -193,39 +176,15 @@ public class EllipseTrack {
 
 	}
 
-	public void BlockRepeatManual(double percent, int z, int t) {
+	
 
-		parent.updatePreview(ValueChange.THIRDDIMmouse);
-		percent++;
-		if (parent.fourthDimensionSize != 0)
-			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.Accountedframes.entrySet().size()),
-					"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z
-							+ "/" + parent.thirdDimensionSize);
-		else
-			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.AccountedZ.entrySet().size()),
-					"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
-
-		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
-				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
-		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.emptyWater, z,
-				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
-		parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
-
-		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent,
-				parent.maxlabel);
-		compute.ParallelRansac();
-
-	}
-
-	public void IntersectandTrack() {
+	public void CurvatureCompute() {
 
 		// Main method for computing intersections and tangents and angles between
 		// tangents
 		double percent = 0;
 
-		if (parent.supermode) {
+		if (parent.curvesupermode) {
 
 			if (parent.originalimg.numDimensions() > 3) {
 
@@ -265,7 +224,7 @@ public class EllipseTrack {
 
 		}
 
-		if (parent.automode) {
+		if (parent.curveautomode) {
 
 			if (parent.originalimg.numDimensions() > 3) {
 				for (int t = parent.AutostartTime; t <= parent.AutoendTime; ++t) {
@@ -302,44 +261,9 @@ public class EllipseTrack {
 			}
 		}
 
-		else if (!parent.automode && !parent.supermode) {
+		
 
-			if (parent.originalimg.numDimensions() > 3) {
-
-				for (Map.Entry<String, Integer> entry : parent.Accountedframes.entrySet()) {
-
-					int t = entry.getValue();
-
-					for (Map.Entry<String, Integer> entryZ : parent.AccountedZ.entrySet()) {
-
-						int z = entryZ.getValue();
-
-						BlockRepeatManual(percent, z, t);
-					}
-				}
-
-			} else if (parent.originalimg.numDimensions() > 2 && parent.originalimg.numDimensions() <= 3) {
-
-				int t = parent.fourthDimension;
-
-				for (Map.Entry<String, Integer> entryZ : parent.AccountedZ.entrySet()) {
-
-					int z = entryZ.getValue();
-					BlockRepeatManual(percent, z, t);
-
-				}
-
-			}
-
-			else {
-
-				int z = parent.thirdDimension;
-				int t = parent.fourthDimension;
-				BlockRepeatManual(percent, z, t);
-
-			}
-
-		}
+		
 
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
 
@@ -615,7 +539,7 @@ public class EllipseTrack {
 		}
 	}
 
-	public void IntersectandTrackCurrent() {
+	public void CurvatureComputeCurrent() {
 
 		double percent = 0;
 
@@ -629,7 +553,7 @@ public class EllipseTrack {
 
 		}
 
-		if (parent.automode) {
+		if (parent.curveautomode) {
 
 			
 
@@ -637,11 +561,7 @@ public class EllipseTrack {
 
 		}
 
-		else if (!parent.automode && !parent.supermode) {
-
-			BlockRepeatManual(percent, z, t);
-
-		}
+		
 
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
 

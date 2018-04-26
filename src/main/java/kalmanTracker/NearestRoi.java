@@ -2,11 +2,9 @@ package kalmanTracker;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import ellipsoidDetector.Intersectionobject;
-import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
 import ij.gui.Roi;

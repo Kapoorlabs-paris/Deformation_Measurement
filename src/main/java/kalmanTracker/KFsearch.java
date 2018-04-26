@@ -108,7 +108,6 @@ public class KFsearch implements IntersectionTracker {
 			Secondorphan = generateSpotList( Allblobs, uniqueIDnext );
 			
 		}
-		final NavigableSet< String > keySetcopy = Allblobs.keySet();
 		final Iterator< String > frameIteratorcopy = keySet.iterator();
 		frameIteratorcopy.next();
 		// Max KF search cost.
@@ -136,7 +135,6 @@ public class KFsearch implements IntersectionTracker {
 
 		// Loop from the second frame to the last frame and build
 		// KalmanFilterMap
-		Iterator<Map.Entry<String, Integer>> itSec = Accountedframes.entrySet().iterator();
 		
 		while(frameIteratorcopy.hasNext()) {
 			
@@ -144,7 +142,6 @@ public class KFsearch implements IntersectionTracker {
 			
 			
 
-		System.out.println(uniqueIDnext + "Update");
 
 			List<Intersectionobject> measurements = generateSpotList(Allblobs, uniqueIDnext);
 
