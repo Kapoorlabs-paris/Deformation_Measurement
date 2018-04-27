@@ -124,18 +124,13 @@ public class Computeincurvature {
 		try {
 			taskExecutor.invokeAll(tasks);
 
-// Change this method
-				// Get superintersection
-/*
-				
-				SuperIntersection newintersect = new SuperIntersection(parent);
-				AllPointsofIntersect = new ArrayList<Tangentobject>();
-				Allintersection = new ArrayList<Intersectionobject>();
-				newintersect.Getsuperintersection(resultroi, resultovalroi, resultlineroi, AllPointsofIntersect,
-						Allintersection, t, z);
-			
+			String uniqueID = Integer.toString(z) + Integer.toString(t);
+			Roiobject currentobject = new Roiobject(resultroi, z, t, true);
+			parent.ZTRois.put(uniqueID, currentobject);
 
-*/			
+			
+			DisplayAuto.Display(parent);
+			
 		
 		} catch (InterruptedException e1) {
 
