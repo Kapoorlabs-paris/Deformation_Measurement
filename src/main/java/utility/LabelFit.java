@@ -41,6 +41,8 @@ public class LabelFit implements Runnable {
 
 	final JProgressBar jpb;
 
+	
+	// Fit
 	public LabelFit(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,
 			List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, ArrayList<EllipseRoi> resultroi,
 			final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial) {

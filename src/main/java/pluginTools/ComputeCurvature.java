@@ -51,6 +51,9 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 	final InteractiveSimpleEllipseFit parent;
 	final JProgressBar jpb;
 
+	
+	
+	// Curvature
 	public ComputeCurvature(final InteractiveSimpleEllipseFit parent, final JProgressBar jpb) {
 
 		this.parent = parent;

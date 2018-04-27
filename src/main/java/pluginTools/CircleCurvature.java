@@ -37,6 +37,7 @@ public class CircleCurvature {
 	final JProgressBar jpb;
 	Pair<Boolean, String> isVisited;
 
+	// Implementing
 	public CircleCurvature(final InteractiveSimpleEllipseFit parent, final JProgressBar jpb) {
 
 		this.parent = parent;

@@ -44,6 +44,8 @@ public class LabelRansac implements Runnable {
 
 	final JProgressBar jpb;
 
+	
+	// Label
 	public LabelRansac(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,
 			List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, ArrayList<EllipseRoi> resultroi,
 			ArrayList<OvalRoi> resultovalroi, ArrayList<Line> resultlineroi,

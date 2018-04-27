@@ -53,6 +53,7 @@ public class Computeincurvature {
 	final int maxlabel;
 	int percent;
 
+	// In curvature
 	public Computeincurvature(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> CurrentView,
 			final RandomAccessibleInterval<IntType> CurrentViewInt, final int t, final int z, int percent,
 			final int maxlabel) {
