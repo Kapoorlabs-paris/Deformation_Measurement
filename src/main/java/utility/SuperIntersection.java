@@ -33,6 +33,7 @@ public class SuperIntersection {
 
 	}
 
+	// Supermode
 	public void Getsuperintersection(ArrayList<EllipseRoi> resultroi, ArrayList<OvalRoi> resultovalroi,
 			ArrayList<Line> resultlineroi, final ArrayList<Tangentobject> AllPointsofIntersect,
 			final ArrayList<Intersectionobject> Allintersection, int t, int z) {

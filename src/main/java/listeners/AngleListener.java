@@ -48,6 +48,7 @@ public class AngleListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
+		// For computing angles
 		parent.superReducedSamples.clear();
 		if (parent.supermode) {
 		
