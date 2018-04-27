@@ -79,7 +79,7 @@ public class LabelFit implements Runnable {
 		// Extract three neighbouring points
 		
 		// Order the list
-		OrderList();
+	//	OrderList();
 		
 		
 		
@@ -94,7 +94,7 @@ public class LabelFit implements Runnable {
 		
 		final NumericalSolvers numsol = new BisectorEllipsoid();
 		// Using the circle model to do the fitting
-		int minpoints = 3;
+		int minpoints = 9;
 		int startindex = 0;
 		int endindex = startindex + minpoints;
 		
@@ -103,7 +103,7 @@ public class LabelFit implements Runnable {
 		
 		endindex = startindex + minpoints;
 	
-		
+		System.out.println(endindex + " " + startindex);
 		
 		List<Pair<RealLocalizable, BitType>> smalltruths = ExtractSublist(skiptruths,startindex, endindex);
 		
@@ -111,7 +111,7 @@ public class LabelFit implements Runnable {
 		
 		
 		ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> Reducedsamples = PointSphere.Allsamples(
-				smalltruths,numsol, parent.maxtry, ndims);
+				smalltruths, numsol, parent.maxtry, ndims);
 
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
 		if (Reducedsamples != null) {
@@ -134,7 +134,7 @@ public class LabelFit implements Runnable {
 			}
 
 			parent.superReducedSamples.addAll(Reducedsamples);
-			Roiobject currentobject = new Roiobject(resultroi, null, null, z, t, true);
+			Roiobject currentobject = new Roiobject(resultroi,z, t, true);
 			parent.ZTRois.put(uniqueID, currentobject);
 			// Put display here
 			DisplayAuto.Display(parent);
@@ -142,8 +142,8 @@ public class LabelFit implements Runnable {
 			return;
 		
 		startindex = endindex;
-		
-		}while(endindex <= truths.size());
+		System.out.println("hhh");
+		}while(endindex <= skiptruths.size());
 	}
 	
 	
@@ -177,7 +177,8 @@ public class LabelFit implements Runnable {
 		
 		int skip = (int) Math.round(parent.deltasep);
 		List<Pair<RealLocalizable, BitType>> skiptruths = new ArrayList<Pair<RealLocalizable, BitType>>();
-		
+		if (skip == 0)
+			skip = 1;
 		
 		for (int index = 0; index < truths.size(); index+=skip) {
 			

@@ -42,6 +42,16 @@ public class Roiobject {
 		this.isCreated = isCreated;
 	}
 	
-	
+	public Roiobject(final ArrayList<EllipseRoi> resultroi,final int thirdDimension, final int fourthDimension, final boolean isCreated)
+
+	{
+		this.resultroi = resultroi;
+		this.resultovalroi = null;
+		this.resultlineroi = null;
+		this.roilist = null;
+		this.fourthDimension = fourthDimension;
+		this.thirdDimension = thirdDimension;
+		this.isCreated = isCreated;
+	}
 
 }
