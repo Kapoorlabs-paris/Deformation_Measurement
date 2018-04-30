@@ -19,7 +19,6 @@ import ij.gui.Roi;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.ransac.RansacModels.*;
-import net.imglib2.algorithm.ransac.RansacModels.CircleFits.PointSphere;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
@@ -42,7 +41,7 @@ public class LabelRansac implements Runnable {
 
 	final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial;
 	final boolean supermode;
-	
+	final int percent;
 	final JProgressBar jpb;
 
 	public LabelRansac(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,
@@ -63,13 +62,14 @@ public class LabelRansac implements Runnable {
 		this.fitmapspecial = fitmapspecial;
 		this.jpb = null;
 		this.supermode = supermode;
+		this.percent = 0;
 	}
 
 	public LabelRansac(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,
 			List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, ArrayList<EllipseRoi> resultroi,
 			ArrayList<OvalRoi> resultovalroi, ArrayList<Line> resultlineroi,
 			final ArrayList<Tangentobject> AllPointsofIntersect, final ArrayList<Intersectionobject> Allintersection,
-			final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial, final JProgressBar jpb, final boolean supermode) {
+			final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial, final JProgressBar jpb, final int percent, final boolean supermode) {
 
 		this.parent = parent;
 		this.ActualRoiimg = ActualRoiimg;
@@ -84,13 +84,28 @@ public class LabelRansac implements Runnable {
 		this.fitmapspecial = fitmapspecial;
 		this.jpb = jpb;
 		this.supermode = supermode;
+		this.percent = percent;
 	}
 
 	
 
 	@Override
 	public void run() {
-
+		if(!parent.automode || !parent.supermode) {
+		if (parent.fourthDimensionSize != 0)
+			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.Accountedframes.entrySet().size()),
+					"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z
+							+ "/" + parent.thirdDimensionSize);
+		else
+			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.AccountedZ.entrySet().size()),
+					"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
+		}
+		else {
+			
+			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
+					"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
+							+ parent.thirdDimensionSize);
+		}
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
 
 		if(parent.fourthDimensionSize > 1)

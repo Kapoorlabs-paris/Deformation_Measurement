@@ -94,7 +94,6 @@ public class Computeinwater {
 
 		ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
 
-		if (parent.automode || parent.supermode) {
 
 			Iterator<Integer> setiter = parent.pixellist.iterator();
 
@@ -108,7 +107,7 @@ public class Computeinwater {
 				Watershedobject current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
 				
 				// Neglect the small watershed regions by choosing only those regions which have more than 9 candidate points for ellipse fitting
-				//System.out.println(current.meanIntensity + " " + current.Size + "Check size");
+				
 				if (current.meanIntensity > parent.minellipsepoints) {
 					
 					List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
@@ -116,28 +115,15 @@ public class Computeinwater {
 					
 					tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi,
 							resultovalroi, resultlineroi, AllPointsofIntersect, Allintersection, fitmapspecial,
-							parent.jpb, parent.supermode)));
+							parent.jpb, percent, parent.supermode)));
 
 				}
 
 			}
 
-		}
+		
 
-		else if (!parent.automode || !parent.supermode) {
-
-			parent.maxlabel = maxlabel;
-
-			for (int label = 1; label <= maxlabel; ++label) {
-				percent++;
-
-				Watershedobject current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
-					List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
-					tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi,
-							resultovalroi, resultlineroi, AllPointsofIntersect, Allintersection, fitmapspecial,
-							parent.supermode)));
-			}
-		}
+	
 		
 		try {
 			taskExecutor.invokeAll(tasks);

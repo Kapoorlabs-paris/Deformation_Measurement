@@ -24,9 +24,6 @@ import pluginTools.InteractiveSimpleEllipseFit;
 
 public class DisplayAuto {
 
-	
-	
-	
 	public static void Display(final InteractiveSimpleEllipseFit parent) {
 
 		parent.overlay.clear();
@@ -35,7 +32,6 @@ public class DisplayAuto {
 
 			for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
 
-				
 				Roiobject currentobject = entry.getValue();
 				if (currentobject.fourthDimension == parent.fourthDimension
 						&& currentobject.thirdDimension == parent.thirdDimension) {
@@ -76,20 +72,20 @@ public class DisplayAuto {
 				}
 
 			}
-			
+
 			parent.imp.setOverlay(parent.overlay);
 			parent.imp.updateAndDraw();
-			
-			if(parent.impOrig!=null) {
-			parent.impOrig.setOverlay(parent.overlay);
-			parent.impOrig.updateAndDraw();
+
+			if (parent.impOrig != null) {
+				parent.impOrig.setOverlay(parent.overlay);
+				parent.impOrig.updateAndDraw();
 			}
 			mark(parent);
 			select(parent);
 
 		}
 	}
-	
+
 	public static void DisplayNOM(final InteractiveSimpleEllipseFit parent) {
 
 		parent.overlay.clear();
@@ -98,7 +94,6 @@ public class DisplayAuto {
 
 			for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
 
-				
 				Roiobject currentobject = entry.getValue();
 				if (currentobject.fourthDimension == parent.fourthDimension
 						&& currentobject.thirdDimension == parent.thirdDimension) {
@@ -143,13 +138,11 @@ public class DisplayAuto {
 			parent.impOrig.setOverlay(parent.overlay);
 			parent.impOrig.updateAndDraw();
 
-		
-
 		}
 	}
-public static void select(final InteractiveSimpleEllipseFit parent) {
 
-		
+	public static void select(final InteractiveSimpleEllipseFit parent) {
+
 		if (parent.mvl != null)
 			parent.impOrig.getCanvas().removeMouseListener(parent.mvl);
 		parent.impOrig.getCanvas().addMouseListener(parent.mvl = new MouseListener() {
@@ -163,7 +156,6 @@ public static void select(final InteractiveSimpleEllipseFit parent) {
 				int y = canvas.offScreenY(e.getY());
 				parent.Clickedpoints[0] = x;
 				parent.Clickedpoints[1] = y;
-			
 
 				if (SwingUtilities.isLeftMouseButton(e) && e.isShiftDown()) {
 					if (!parent.jFreeChartFrame.isVisible())
@@ -199,7 +191,8 @@ public static void select(final InteractiveSimpleEllipseFit parent) {
 
 	public static void mark(final InteractiveSimpleEllipseFit parent) {
 
-		
+		if (parent.impOrig == null)
+			parent.impOrig = parent.imp;
 		if (parent.ml != null)
 			parent.impOrig.getCanvas().removeMouseMotionListener(parent.ml);
 		parent.impOrig.getCanvas().addMouseMotionListener(parent.ml = new MouseMotionListener() {
@@ -216,7 +209,6 @@ public static void select(final InteractiveSimpleEllipseFit parent) {
 
 				loc.put(0, new double[] { x, y });
 
-			
 				double distmin = Double.MAX_VALUE;
 				if (parent.tablesize > 0) {
 					NumberFormat f = NumberFormat.getInstance();
@@ -259,7 +251,7 @@ public static void select(final InteractiveSimpleEllipseFit parent) {
 								boolean hasFocus, int row, int col) {
 
 							super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
-							if (row ==parent. rowchoice) {
+							if (row == parent.rowchoice) {
 								setBackground(Color.green);
 
 							} else {

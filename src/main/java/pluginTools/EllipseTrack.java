@@ -205,16 +205,15 @@ public class EllipseTrack {
 			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.AccountedZ.entrySet().size()),
 					"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
 
+		System.out.println(parent.AccountedZ.entrySet().size() + " " + percent);
 		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
 		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.emptyWater, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
-		parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
-
-		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent,
-				parent.maxlabel);
+		GetPixelList(CurrentViewInt);
+		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent);
 		compute.ParallelRansac();
 
 	}

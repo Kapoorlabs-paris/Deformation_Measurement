@@ -654,7 +654,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			ImageJFunctions.show(originalimgsuper).setTitle("Super Pixel Segmentation");
 		imp = ImageJFunctions.show(CurrentView);
 	
-		imp.setTitle("Active ProbabilityMap" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
+		imp.setTitle("Active Probability Map" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 
 		// Create empty Hyperstack
 
@@ -769,7 +769,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		if (change == ValueChange.RESULT) {
 			
-			System.out.println("Somebody clicked me");
 			
 			prestack = new ImageStack((int) originalimg.dimension(0), (int) originalimg.dimension(1),
 					java.awt.image.ColorModel.getRGBdefault());
@@ -971,7 +970,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				imp.updateAndDraw();
 
 			}
-			if(!automode && !supermode){
+			if(!automode || !supermode){
 				if (ZTRois.get(uniqueID) == null)
 					DisplayDefault();
 				else
@@ -992,6 +991,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		compute.execute();
 
 	}
+	/*
 	public void StartCurvatureComputing() {
 
 		ComputeCurvature compute = new ComputeCurvature(this, jpb);
@@ -999,7 +999,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		compute.execute();
 
 	}
-	
+	*/
 
 	public RandomAccessibleInterval<BitType> CreateBinaryBit(RandomAccessibleInterval<FloatType> source, double lowprob,
 			double highprob) {
@@ -1102,8 +1102,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			}
 			imp.updateAndDraw();
 
-			mark();
-			select();
+			DisplayAuto.mark(this);
+			DisplayAuto.select(this);
 
 		}
 	}
@@ -1197,185 +1197,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			}
 			imp.updateAndDraw();
-			mark();
-			select();
+			DisplayAuto.mark(this);
+			DisplayAuto.select(this);
 
 		}
 	}
 
-	public void select() {
-
-		
-		if (mvl != null)
-			imp.getCanvas().removeMouseListener(mvl);
-		imp.getCanvas().addMouseListener(mvl = new MouseListener() {
-
-			final ImageCanvas canvas = imp.getWindow().getCanvas();
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-
-				int x = canvas.offScreenX(e.getX());
-				int y = canvas.offScreenY(e.getY());
-				Clickedpoints[0] = x;
-				Clickedpoints[1] = y;
-				if (SwingUtilities.isLeftMouseButton(e) && !e.isShiftDown() && e.isAltDown()) {
-
-					roiindex = roimanager.getRoiIndex(nearestRoiCurr);
-					roimanager.select(roiindex);
-					nearestRoiCurr.setStrokeColor(colorChange);
-
-					imp.updateAndDraw();
-
-				}
-
-				if (SwingUtilities.isLeftMouseButton(e) && e.isShiftDown()) {
-					if (!jFreeChartFrame.isVisible())
-						jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
-
-					displayclicked(rowchoice);
-				}
-
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-
-			}
-		});
-
-	}
-
-	public void mark() {
-
-		
-		if (ml != null)
-			imp.getCanvas().removeMouseMotionListener(ml);
-		imp.getCanvas().addMouseMotionListener(ml = new MouseMotionListener() {
-
-			final ImageCanvas canvas = imp.getWindow().getCanvas();
-			Roi lastnearest = null;
-
-			@Override
-			public void mouseMoved(MouseEvent e) {
-
-				int x = canvas.offScreenX(e.getX());
-				int y = canvas.offScreenY(e.getY());
-
-				final HashMap<Integer, double[]> loc = new HashMap<Integer, double[]>();
-
-				loc.put(0, new double[] { x, y });
-
-				Color roicolor;
-				Roiobject currentobject;
-				if (ZTRois.get(uniqueID) == null) {
-					roicolor = defaultRois;
-
-					currentobject = DefaultZTRois.entrySet().iterator().next().getValue();
-
-				} else {
-					roicolor = confirmedRois;
-
-					currentobject = ZTRois.get(uniqueID);
-
-				}
-				nearestRoiCurr = NearestRoi.getNearestRois(currentobject, loc.get(0), InteractiveSimpleEllipseFit.this);
-
-				if (nearestRoiCurr != null) {
-					nearestRoiCurr.setStrokeColor(colorChange);
-
-					if (lastnearest != nearestRoiCurr && lastnearest != null)
-						lastnearest.setStrokeColor(roicolor);
-
-					lastnearest = nearestRoiCurr;
-
-					imp.updateAndDraw();
-				}
-
-				double distmin = Double.MAX_VALUE;
-				if (tablesize > 0) {
-					NumberFormat f = NumberFormat.getInstance();
-					for (int row = 0; row < tablesize; ++row) {
-						String CordX = (String) table.getValueAt(row, 1);
-						String CordY = (String) table.getValueAt(row, 2);
-
-						String CordZ = (String) table.getValueAt(row, 3);
-
-						double dCordX = 0, dCordZ = 0, dCordY = 0;
-						try {
-							dCordX = f.parse(CordX).doubleValue();
-
-							dCordY = f.parse(CordY).doubleValue();
-							dCordZ = f.parse(CordZ).doubleValue();
-						} catch (ParseException e1) {
-
-						}
-						double dist = Distance.DistanceSq(new double[] { dCordX, dCordY }, new double[] { x, y });
-						if (Distance.DistanceSq(new double[] { dCordX, dCordY }, new double[] { x, y }) < distmin
-								&& thirdDimension == (int) dCordZ && ndims > 3) {
-
-							rowchoice = row;
-							distmin = dist;
-
-						}
-						if (Distance.DistanceSq(new double[] { dCordX, dCordY }, new double[] { x, y }) < distmin
-								&& ndims <= 3) {
-
-							rowchoice = row;
-							distmin = dist;
-
-						}
-
-					}
-
-					table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-						@Override
-						public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-								boolean hasFocus, int row, int col) {
-
-							super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
-							if (row == rowchoice) {
-								setBackground(Color.green);
-
-							} else {
-								setBackground(Color.white);
-							}
-							return this;
-						}
-					});
-
-					table.validate();
-					scrollPane.validate();
-					panelFirst.repaint();
-					panelFirst.validate();
-
-				}
-
-			}
-
-			@Override
-			public void mouseDragged(MouseEvent e) {
-
-			}
-
-		});
-
-	}
+	
+	
 
 	public JFrame Cardframe = new JFrame("Ellipsoid detector");
 	public JPanel panelCont = new JPanel();

@@ -24,14 +24,14 @@ public class CurvatureListener implements ActionListener {
 			
 			parent.emptysmooth = utility.Binarization.CreateBinaryBit(parent.originalimgsmooth, parent.lowprob, parent.highprob);
 			parent.empty = utility.Binarization.CreateBinaryBit(parent.originalimg, parent.lowprob, parent.highprob);
-			parent.StartCurvatureComputing();
+		//	parent.StartCurvatureComputing();
 		}
 			
 			if(parent.curvesupermode) {
 				
 				parent.empty = utility.Binarization.CreateBinaryBit(parent.originalimg, parent.lowprob, parent.highprob);
 				
-				parent.StartCurvatureComputing();
+		//		parent.StartCurvatureComputing();
 			}
 				
 				
