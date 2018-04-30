@@ -121,6 +121,28 @@ public class EllipseTrack {
 		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentViewInt, t, z, (int) percent);
 		compute.ParallelRansac();
 	}
+	
+	public void BlockRepeatCurve(double percent, int z, int t) {
+
+		parent.updatePreview(ValueChange.THIRDDIMmouse);
+
+		percent++;
+		if(jpb!=null)
+		utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
+				"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
+						+ parent.thirdDimensionSize);
+
+		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
+				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.originalimgsuper, z,
+				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+
+		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
+		GetPixelList(CurrentViewInt);
+		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentViewInt, t, z, (int) percent);
+		compute.ParallelRansacCurve();
+	}
+	
 	public void TestAuto(int z, int t) {
 		
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
@@ -167,6 +189,38 @@ public class EllipseTrack {
 		GetPixelList(CurrentInt);
 		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentInt, t, z, (int) percent);
 		compute.ParallelRansac();
+
+	}
+	
+	
+	public void BlockRepeatAutoCurve(double percent, int z, int t) {
+
+		parent.updatePreview(ValueChange.THIRDDIMmouse);
+
+		percent++;
+		if(jpb!=null)
+		utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
+				"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
+						+ parent.thirdDimensionSize);
+
+		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
+				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+		RandomAccessibleInterval<BitType> CurrentViewSmooth = utility.Slicer.getCurrentViewBit(parent.emptysmooth, z,
+				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+
+		// Use smoothed image for segmentation and non smooth image for getting the
+		// candidate points for fitting ellipses
+		RandomAccessibleInterval<IntType> CurrentInt = getSeg(CurrentViewSmooth);
+		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
+		if (parent.showWater) {
+
+			Watershow(CurrentInt);
+
+		}
+
+		GetPixelList(CurrentInt);
+		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentInt, t, z, (int) percent);
+		compute.ParallelRansacCurve();
 
 	}
 
@@ -344,6 +398,97 @@ public class EllipseTrack {
 
 	}
 
+	public void ComputeCurvature() {
+
+		// Main method for computing intersections and tangents and angles between
+		// tangents
+		double percent = 0;
+
+		if (parent.curvesupermode) {
+
+			if (parent.originalimg.numDimensions() > 3) {
+
+				for (int t = parent.AutostartTime; t <= parent.AutoendTime; ++t) {
+					parent.TID = Integer.toString(t);
+					parent.Accountedframes.put(parent.TID, t);
+					for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
+
+						parent.thirdDimension = z;
+						parent.fourthDimension = t;
+
+						BlockRepeatCurve(percent, z, t);
+
+					}
+				}
+
+			}
+
+			else if (parent.originalimg.numDimensions() > 2) {
+
+				for (int z = parent.AutostartTime; z <= parent.AutoendTime; ++z) {
+
+					parent.thirdDimension = z;
+					parent.ZID = Integer.toString(z);
+					parent.AccountedZ.put(parent.ZID, z);
+					BlockRepeatCurve(percent, z, 1);
+
+				}
+
+			} else {
+				int z = parent.thirdDimension;
+				int t = parent.fourthDimension;
+
+				BlockRepeatCurve(percent, z, t);
+
+			}
+
+		}
+
+		if (parent.curveautomode) {
+
+			if (parent.originalimg.numDimensions() > 3) {
+				for (int t = parent.AutostartTime; t <= parent.AutoendTime; ++t) {
+					parent.TID = Integer.toString(t);
+					parent.Accountedframes.put(parent.TID, t);
+					for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
+
+						parent.thirdDimension = z;
+						parent.fourthDimension = t;
+
+						BlockRepeatAutoCurve(percent, z, t);
+
+					}
+				}
+
+			}
+
+			else if (parent.originalimg.numDimensions() > 2) {
+
+				for (int z = parent.AutostartTime; z <= parent.AutoendTime; ++z) {
+
+					parent.thirdDimension = z;
+					parent.ZID = Integer.toString(z);
+					parent.AccountedZ.put(parent.ZID, z);
+					BlockRepeatAutoCurve(percent, z, 1);
+
+				}
+
+			} else {
+				int z = parent.thirdDimension;
+				int t = parent.fourthDimension;
+				BlockRepeatAutoCurve(percent, z, t);
+
+			}
+		}
+
+		
+
+		parent.updatePreview(ValueChange.THIRDDIMmouse);
+
+	}
+
+	
+	
 	public void DistanceTransformImage(RandomAccessibleInterval<BitType> inputimg,
 			RandomAccessibleInterval<BitType> bitimg, RandomAccessibleInterval<BitType> outimg) {
 		int n = inputimg.numDimensions();

@@ -36,6 +36,7 @@ import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.DisplayAuto;
+import utility.LabelCurvature;
 import utility.LabelRansac;
 import utility.NormalIntersection;
 import utility.Roiobject;
@@ -156,5 +157,68 @@ public class Computeinwater {
 		}
 
 	}
+	
+	
+	public void ParallelRansacCurve() {
+
+		int nThreads = Runtime.getRuntime().availableProcessors();
+		// set up executor service
+		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
+		List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
+
+		ArrayList<EllipseRoi> resultroi = new ArrayList<EllipseRoi>();
+		ArrayList<OvalRoi> resultovalroi = new ArrayList<OvalRoi>();
+		ArrayList<Line> resultlineroi = new ArrayList<Line>();
+		// Obtain the points of intersections
+
+		ArrayList<Tangentobject> AllPointsofIntersect = new ArrayList<Tangentobject>();
+		ArrayList<Intersectionobject> Allintersection = new ArrayList<Intersectionobject>();
+		ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
+
+
+			Iterator<Integer> setiter = parent.pixellist.iterator();
+
+			parent.superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>>();
+			
+			
+			while (setiter.hasNext()) {
+				
+				
+				percent++;
+
+				int label = setiter.next();
+
+				
+				Watershedobject current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
+				
+				// Neglect the small watershed regions by choosing only those regions which have more than 9 candidate points for ellipse fitting
+				
+				if (current.meanIntensity > parent.minellipsepoints) {
+					
+					List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
+					
+					
+					tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, t, z, 
+							parent.jpb, percent)));
+
+				}
+
+			}
+
+		
+
+	
+		
+		try {
+			taskExecutor.invokeAll(tasks);
+
+			// Put a fancy display at the end
+		
+		} catch (InterruptedException e1) {
+
+		}
+
+	}
+	
 
 }

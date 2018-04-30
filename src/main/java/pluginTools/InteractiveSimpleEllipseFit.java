@@ -991,7 +991,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		compute.execute();
 
 	}
-	/*
+	
 	public void StartCurvatureComputing() {
 
 		ComputeCurvature compute = new ComputeCurvature(this, jpb);
@@ -999,7 +999,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		compute.execute();
 
 	}
-	*/
+	
 
 	public RandomAccessibleInterval<BitType> CreateBinaryBit(RandomAccessibleInterval<FloatType> source, double lowprob,
 			double highprob) {
