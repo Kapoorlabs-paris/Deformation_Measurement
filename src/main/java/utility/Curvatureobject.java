@@ -33,12 +33,14 @@ public class Curvatureobject extends AbstractEuclideanSpace implements RealLocal
 	final double perimeter;
 	final int t;
 	final int z;
-	final String Label;
+	final double[] cord;
+	final int Label;
 	
-	public Curvatureobject(final double radiusCurvature, final double perimeter, final String Label, final int t, final int z) {
+	public Curvatureobject(final double radiusCurvature, final double perimeter, final int Label, final double[] cord, final int t, final int z) {
 		super(3);
 		this.radiusCurvature = radiusCurvature;
 		this.perimeter = perimeter;
+		this.cord = cord;
 		this.t = t;
 		this.z = z;
 		this.ID = IDcounter.incrementAndGet();
@@ -47,7 +49,7 @@ public class Curvatureobject extends AbstractEuclideanSpace implements RealLocal
 		putFeature( Time,Double.valueOf( t ) );
 		putFeature( Radius, Double.valueOf(radiusCurvature ) );
 		putFeature( Perimeter, Double.valueOf( perimeter ) );
-		putFeature( Label, Double.valueOf(Label) );
+		putFeature( Integer.toString(Label), Double.valueOf(Label) );
 	}
 	
 	

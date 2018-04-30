@@ -33,12 +33,12 @@ public class LabelCurvature implements Runnable {
 	List<Pair<RealLocalizable, BitType>> truths;
 	final int t;
 	final int z;
-
+    final int celllabel;
 	final int percent;
 	final JProgressBar jpb;
 
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,
-			List<Pair<RealLocalizable, BitType>> truths, final int t, final int z) {
+			List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, final int celllabel) {
 
 		this.parent = parent;
 		this.ActualRoiimg = ActualRoiimg;
@@ -47,10 +47,11 @@ public class LabelCurvature implements Runnable {
 		this.z = z;
 		this.jpb = null;
 		this.percent = 0;
+		this.celllabel = celllabel;
 	}
 
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,
-			List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, final JProgressBar jpb, final int percent) {
+			List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, final JProgressBar jpb, final int percent, final int celllabel) {
 
 		this.parent = parent;
 		this.ActualRoiimg = ActualRoiimg;
@@ -59,6 +60,7 @@ public class LabelCurvature implements Runnable {
 		this.z = z;
 		this.jpb = jpb;
 		this.percent = percent;
+		this.celllabel = celllabel;
 	}
 
 	
@@ -68,19 +70,21 @@ public class LabelCurvature implements Runnable {
 		if(!parent.automode || !parent.supermode) {
 		if (parent.fourthDimensionSize != 0)
 			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.Accountedframes.entrySet().size()),
-					"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z
+					"Computing Curvature = " + t + "/" + parent.fourthDimensionSize + " Z = " + z
 							+ "/" + parent.thirdDimensionSize);
 		else
 			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.AccountedZ.entrySet().size()),
-					"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
+					"Computing Curvature T/Z = " + z + "/" + parent.thirdDimensionSize);
 		}
 		else {
 			
 			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
-					"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
+					"Computing Curvature T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
 							+ parent.thirdDimensionSize);
 		}
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
+		
+		List<RealLocalizable> orderedtruths = Listordereing.getOrderedList(truths);
 
 		if(parent.fourthDimensionSize > 1)
 		parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension, parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
@@ -94,15 +98,7 @@ public class LabelCurvature implements Runnable {
 	
 	
 	
-	public List<RealLocalizable> getOrderedList(){
-		
-		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
-		
-		
-		
-		
-		return orderedtruths;
-	}
+	
 	
 	
 	

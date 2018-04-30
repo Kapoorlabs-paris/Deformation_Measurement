@@ -199,7 +199,7 @@ public class Computeinwater {
 					
 					
 					tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, t, z, 
-							parent.jpb, percent)));
+							parent.jpb, percent, label)));
 
 				}
 
