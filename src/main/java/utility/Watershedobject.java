@@ -5,6 +5,7 @@ import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.ImgFactory;
+import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
@@ -13,6 +14,8 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.RealSum;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
+import preProcessing.GenericFilters;
+import preProcessing.Kernels;
 
 public class Watershedobject {
 	
@@ -45,6 +48,65 @@ public class Watershedobject {
 		// the currently processed label
 		long[] minVal = { currentimg.max(0), currentimg.max(1) };
 		long[] maxVal = { currentimg.min(0), currentimg.min(1) };
+		
+		while (intCursor.hasNext()) {
+			intCursor.fwd();
+			inputRA.setPosition(intCursor);
+			imageRA.setPosition(inputRA);
+			int i = intCursor.get().get();
+			if (i == currentLabel) {
+				intCursor.localize(position);
+				for (int d = 0; d < n; ++d) {
+					if (position[d] < minVal[d]) {
+						minVal[d] = position[d];
+					}
+					if (position[d] > maxVal[d]) {
+						maxVal[d] = position[d];
+					}
+
+				}
+			
+			
+				imageRA.get().set(inputRA.get());
+			}
+			else
+				imageRA.get().setZero();
+			
+
+		}
+		FinalInterval intervalsmall = new FinalInterval(minVal, maxVal) ;
+		
+		RandomAccessibleInterval<BitType> outimgsmall = extractImage(outimg, intervalsmall);
+		double meanIntensity = computeAverage(Views.iterable(outimgsmall));
+		double size = (intervalsmall.max(0) - intervalsmall.min(0)) * (intervalsmall.max(1) - intervalsmall.min(1));
+		Watershedobject currentobject = new Watershedobject(outimgsmall, meanIntensity, size);
+		
+		
+		return currentobject;
+
+	}
+	
+	
+	public static Watershedobject CurrentLabelBinaryImage(RandomAccessibleInterval<IntType> Intimg,
+			 int currentLabel) {
+		int n = Intimg.numDimensions();
+		long[] position = new long[n];
+		
+		
+		
+		Cursor<IntType> intCursor = Views.iterable(Intimg).cursor();
+	
+		
+		
+		RandomAccessibleInterval<BitType> outimg = new ArrayImgFactory<BitType>().create(Intimg, new BitType());
+		RandomAccess<BitType> imageRA = outimg.randomAccess();
+		RandomAccessibleInterval<BitType> currentimg = GenericFilters.GradientmagnitudeImage(Intimg);
+		currentimg = GenericFilters.AutoThreshold(currentimg);
+		RandomAccess<BitType> inputRA = currentimg.randomAccess();
+		// Go through the whole image and add every pixel, that belongs to
+		// the currently processed label
+		long[] minVal = { Intimg.max(0), Intimg.max(1) };
+		long[] maxVal = { Intimg.min(0), Intimg.min(1) };
 		
 		while (intCursor.hasNext()) {
 			intCursor.fwd();

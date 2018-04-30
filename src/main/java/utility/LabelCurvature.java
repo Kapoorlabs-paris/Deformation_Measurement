@@ -35,10 +35,11 @@ public class LabelCurvature implements Runnable {
 	final int z;
     final int celllabel;
 	final int percent;
+	final ArrayList<Line> resultlineroi;
 	final JProgressBar jpb;
 
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,
-			List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, final int celllabel) {
+			List<Pair<RealLocalizable, BitType>> truths,ArrayList<Line> resultlineroi, final int t, final int z, final int celllabel) {
 
 		this.parent = parent;
 		this.ActualRoiimg = ActualRoiimg;
@@ -47,14 +48,16 @@ public class LabelCurvature implements Runnable {
 		this.z = z;
 		this.jpb = null;
 		this.percent = 0;
+		this.resultlineroi = resultlineroi;
 		this.celllabel = celllabel;
 	}
 
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,
-			List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, final JProgressBar jpb, final int percent, final int celllabel) {
+			List<Pair<RealLocalizable, BitType>> truths, ArrayList<Line> resultlineroi, final int t, final int z, final JProgressBar jpb, final int percent, final int celllabel) {
 
 		this.parent = parent;
 		this.ActualRoiimg = ActualRoiimg;
+		this.resultlineroi = resultlineroi;
 		this.truths = truths;
 		this.t = t;
 		this.z = z;
@@ -67,7 +70,7 @@ public class LabelCurvature implements Runnable {
 
 	@Override
 	public void run() {
-		if(!parent.automode || !parent.supermode) {
+		if(!parent.curveautomode || !parent.curvesupermode) {
 		if (parent.fourthDimensionSize != 0)
 			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.Accountedframes.entrySet().size()),
 					"Computing Curvature = " + t + "/" + parent.fourthDimensionSize + " Z = " + z
@@ -82,17 +85,30 @@ public class LabelCurvature implements Runnable {
 					"Computing Curvature T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
 							+ parent.thirdDimensionSize);
 		}
+		String uniqueID = Integer.toString(z) + Integer.toString(t);
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
 		
-		List<RealLocalizable> orderedtruths = Listordereing.getOrderedList(truths);
+		List<RealLocalizable> orderedtruths = Listordereing.getOrderedList(truths, parent.deltasep);
 
 		if(parent.fourthDimensionSize > 1)
 		parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension, parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
 		parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension, parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
 		final int ndims = ActualRoiimg.numDimensions();
 		
+		ArrayList<Curvatureobject> localCurvature =  CurvatureFunction.getCurvature(orderedtruths, ndims, celllabel, t, z);
 			
+		
+		for (int index = 0; index < localCurvature.size() - 1; ++index ) {
 			
+			Line currentline = new Line(localCurvature.get(index).cord[0],localCurvature.get(index).cord[1] , localCurvature.get(index + 1).cord[0], localCurvature.get(index + 1).cord[1]); 
+			currentline.setStrokeWidth(Math.abs(localCurvature.get(index).radiusCurvature));
+			resultlineroi.add(currentline);
+		}
+		
+		Roiobject currentobject = new Roiobject(null,null,resultlineroi, z, t, true);
+		parent.ZTRois.put(uniqueID, currentobject);
+		
+		DisplayAuto.Display(parent);
 	
 	}
 	

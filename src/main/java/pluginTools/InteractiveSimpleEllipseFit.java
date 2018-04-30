@@ -1254,7 +1254,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final Label minperiText = new Label("Minimum ellipse perimeter" );
 	final Label maxperiText = new Label("Maximum ellipse perimeter" );
 	
-	final Label deltasepText = new Label("Delta seperation" );
 
 	final Label lowprobText = new Label("Lower probability level = " + lowprob, Label.CENTER);
 	final Label highporbText = new Label("Higher probability level = " + highprob, Label.CENTER);
@@ -1580,12 +1579,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 		if (curvesupermode || curveautomode ) {
 			
-			Angleselect.add(deltasepText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		
 
-			Angleselect.add(deltasepField, new GridBagConstraints(4, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			Angleselect.setBorder(circletools);
 			Angleselect.setPreferredSize(new Dimension(SizeX, SizeY));

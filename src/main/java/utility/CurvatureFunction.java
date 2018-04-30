@@ -10,7 +10,7 @@ public class CurvatureFunction {
 	
 	/**
 	 * 
-	 * Take in a  list of ordered co-ordinates and compute a curvature object contianng the curvature informationa t each co-ordinate
+	 * Take in a  list of ordered co-ordinates and compute a curvature object containing the curvature information at each co-ordinate
 	 * 
 	 * 
 	 * @param orderedtruths

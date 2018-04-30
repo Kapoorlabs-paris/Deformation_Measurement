@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import ellipsoidDetector.Distance;
 import mpicbg.models.Point;
 import net.imglib2.KDTree;
 import net.imglib2.RealLocalizable;
@@ -25,11 +26,10 @@ public class Listordereing {
 	 */
 
 	public static <T extends RealType<T> & NativeType<T>> List<RealLocalizable> getOrderedList(
-			List<Pair<RealLocalizable, T>> truths) {
+			List<Pair<RealLocalizable, T>> truths, double deltasep) {
 
 		List<Pair<RealLocalizable, T>> copytruths = copyList(truths);
 		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
-
 		Pair<RealLocalizable, T> minCord = getMinCord(copytruths);
 
 		do {
@@ -40,8 +40,12 @@ public class Listordereing {
 			minCord = nextCord;
 		} while (copytruths.size() > 0);
 
+		
+		
 		return orderedtruths;
 	}
+	
+	
 
 	public static <T extends RealType<T> & NativeType<T>> List<Pair<RealLocalizable, T>> copyList(
 			List<Pair<RealLocalizable, T>> truths) {

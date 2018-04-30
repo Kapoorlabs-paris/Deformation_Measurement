@@ -105,7 +105,9 @@ public class Computeinwater {
 				int label = setiter.next();
 
 				
-				Watershedobject current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
+				Watershedobject current = 
+						utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
+						//utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
 				
 				// Neglect the small watershed regions by choosing only those regions which have more than 9 candidate points for ellipse fitting
 				
@@ -166,14 +168,10 @@ public class Computeinwater {
 		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
 		List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
 
-		ArrayList<EllipseRoi> resultroi = new ArrayList<EllipseRoi>();
-		ArrayList<OvalRoi> resultovalroi = new ArrayList<OvalRoi>();
 		ArrayList<Line> resultlineroi = new ArrayList<Line>();
 		// Obtain the points of intersections
 
-		ArrayList<Tangentobject> AllPointsofIntersect = new ArrayList<Tangentobject>();
-		ArrayList<Intersectionobject> Allintersection = new ArrayList<Intersectionobject>();
-		ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
+	
 
 
 			Iterator<Integer> setiter = parent.pixellist.iterator();
@@ -188,8 +186,12 @@ public class Computeinwater {
 
 				int label = setiter.next();
 
-				
-				Watershedobject current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
+				// Creating a binary image in the integer image region from the boundary probability map
+				Watershedobject current = 
+						
+						utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
+						
+					//	utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
 				
 				// Neglect the small watershed regions by choosing only those regions which have more than 9 candidate points for ellipse fitting
 				
@@ -198,7 +200,7 @@ public class Computeinwater {
 					List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
 					
 					
-					tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, t, z, 
+					tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, t, z, 
 							parent.jpb, percent, label)));
 
 				}
