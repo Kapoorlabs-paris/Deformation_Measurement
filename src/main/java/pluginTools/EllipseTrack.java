@@ -129,7 +129,7 @@ public class EllipseTrack {
 		percent++;
 		if(jpb!=null)
 		utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
-				"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
+				"Computing Curvature = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
 						+ parent.thirdDimensionSize);
 
 		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
@@ -200,7 +200,7 @@ public class EllipseTrack {
 		percent++;
 		if(jpb!=null)
 		utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
-				"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
+				"Computing Curvature = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
 						+ parent.thirdDimensionSize);
 
 		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,

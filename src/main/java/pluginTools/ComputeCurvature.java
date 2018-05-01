@@ -66,6 +66,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 	protected Void doInBackground() throws Exception {
 
 		parent.table.removeAll();
+		parent.localCurvature.clear();
+		parent.AlllocalCurvature.clear();
 		HashMap<String, Integer> map = sortByValues(parent.Accountedframes);
 		parent.Accountedframes = map;
 

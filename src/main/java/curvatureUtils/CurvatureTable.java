@@ -67,7 +67,7 @@ public class CurvatureTable {
 		parent.scrollPane.setAutoscrolls(true);
 		parent.PanelSelectFile.add(parent.scrollPane, BorderLayout.CENTER);
 
-		parent.PanelSelectFile.setBorder(parent.selectfile);
+		parent.PanelSelectFile.setBorder(parent.selectcell);
 
 		parent.panelSecond.add(parent.PanelSelectFile, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0,
 				GridBagConstraints.WEST, GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));

@@ -158,7 +158,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public long maxsize = 100;
 	public int span = 2;
 	public int minperimeter = 100;
-	public double deltasep = 2;
+	public double deltasep = 10;
 	public int maxperimeter = 1000;
 	public float lowprob = 0f;
 	public float highprob = 1f;
@@ -1267,7 +1267,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final Label minperiText = new Label("Minimum ellipse perimeter" );
 	final Label maxperiText = new Label("Maximum ellipse perimeter" );
 	
-
+	final Label deltasepText = new Label("Delta seperation" );
 	final Label lowprobText = new Label("Lower probability level = " + lowprob, Label.CENTER);
 	final Label highporbText = new Label("Higher probability level = " + highprob, Label.CENTER);
 
@@ -1304,6 +1304,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	public JPanel PanelSelectFile = new JPanel();
 	public Border selectfile = new CompoundBorder(new TitledBorder("Select Track"), new EmptyBorder(c.insets));
+	public Border selectcell = new CompoundBorder(new TitledBorder("Select Cell"), new EmptyBorder(c.insets));
 	public JLabel inputLabel = new JLabel("Filename:");
 	public TextField inputField = new TextField();
 	public final JButton ChooseDirectory = new JButton("Choose Directory to save results in");
@@ -1612,9 +1613,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 		if (curvesupermode || curveautomode ) {
 			
-		
+			Angleselect.add(deltasepText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(deltasepField, new GridBagConstraints(4, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			Angleselect.setBorder(circletools);
 			Angleselect.setPreferredSize(new Dimension(SizeX, SizeY));

@@ -16,6 +16,9 @@ import net.imglib2.util.Pair;
 
 public class Listordereing {
 
+	
+	//@VKapoor
+	
 	/**
 	 * Return an ordered list of XY coordinates starting from the min X position to
 	 * the end of the list
@@ -26,17 +29,24 @@ public class Listordereing {
 	 */
 
 	public static <T extends RealType<T> & NativeType<T>> List<RealLocalizable> getOrderedList(
-			List<Pair<RealLocalizable, T>> truths) {
+			List<Pair<RealLocalizable, T>> truths, double deltasep) {
 
 		List<Pair<RealLocalizable, T>> copytruths = copyList(truths);
 		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
 		Pair<RealLocalizable, T> minCord = getMinCord(copytruths);
 
+             orderedtruths.add(minCord.getA());
+             copytruths.remove(minCord);
 		do {
-			orderedtruths.add(minCord.getA());
-			copytruths.remove(minCord);
+		
+			
 			Pair<RealLocalizable, T> nextCord = getNextNearest(minCord.getA(), copytruths);
+			if (Distance.DistanceSqrt(minCord.getA(), nextCord.getA()) > deltasep) {
 			minCord = nextCord;
+			orderedtruths.add(minCord.getA());
+			}
+			copytruths.remove(nextCord);
+			
 		} while (copytruths.size() > 0);
 
 		
@@ -44,7 +54,7 @@ public class Listordereing {
 		return orderedtruths;
 	}
 	
-	
+
 
 	public static <T extends RealType<T> & NativeType<T>> List<Pair<RealLocalizable, T>> copyList(
 			List<Pair<RealLocalizable, T>> truths) {

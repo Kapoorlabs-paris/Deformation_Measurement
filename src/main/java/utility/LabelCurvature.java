@@ -88,7 +88,7 @@ public class LabelCurvature implements Runnable {
 		}
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
 
-		List<RealLocalizable> orderedtruths = Listordereing.getOrderedList(truths);
+		List<RealLocalizable> orderedtruths = Listordereing.getOrderedList(truths, parent.deltasep);
 
 		if (parent.fourthDimensionSize > 1)
 			parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension,
