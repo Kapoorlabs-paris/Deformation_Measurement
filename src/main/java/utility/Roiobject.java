@@ -16,6 +16,7 @@ public class Roiobject {
 	public final int fourthDimension;
 	public final int thirdDimension;
 	public final boolean isCreated;
+	public final int Celllabel;
 
 	public Roiobject(final Roi[] roilist, final int thirdDimension, final int fourthDimension, final boolean isCreated)
 
@@ -27,6 +28,7 @@ public class Roiobject {
 		this.fourthDimension = fourthDimension;
 		this.thirdDimension = thirdDimension;
 		this.isCreated = isCreated;
+		this.Celllabel = 0;
 	}
 
 	public Roiobject(final ArrayList<EllipseRoi> resultroi, ArrayList<OvalRoi> resultovalroi,
@@ -40,6 +42,7 @@ public class Roiobject {
 		this.fourthDimension = fourthDimension;
 		this.thirdDimension = thirdDimension;
 		this.isCreated = isCreated;
+		this.Celllabel = 0;
 	}
 	
 	public Roiobject(final ArrayList<EllipseRoi> resultroi,final int thirdDimension, final int fourthDimension, final boolean isCreated)
@@ -52,6 +55,21 @@ public class Roiobject {
 		this.fourthDimension = fourthDimension;
 		this.thirdDimension = thirdDimension;
 		this.isCreated = isCreated;
+		this.Celllabel = 0;
 	}
 
+	public Roiobject(final ArrayList<EllipseRoi> resultroi, ArrayList<OvalRoi> resultovalroi,
+			ArrayList<Line> resultlineroi, final int thirdDimension, final int fourthDimension, final int Celllabel, final boolean isCreated)
+
+	{
+		this.resultroi = resultroi;
+		this.resultovalroi = resultovalroi;
+		this.resultlineroi = resultlineroi;
+		this.roilist = null;
+		this.fourthDimension = fourthDimension;
+		this.thirdDimension = thirdDimension;
+		this.isCreated = isCreated;
+		this.Celllabel = Celllabel;
+	}
+	
 }

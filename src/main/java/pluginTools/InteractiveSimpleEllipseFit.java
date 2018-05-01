@@ -53,6 +53,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import costMatrix.CostFunction;
+import curvatureUtils.DisplaySelected;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import ij.IJ;
@@ -266,12 +267,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	ImageStack prestack;
 	public MouseAdapter mouseadapter;
 	public ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> superReducedSamples;
-	
+	public ArrayList<Curvatureobject> localCurvature;
+	public ArrayList<ArrayList<Curvatureobject>> AlllocalCurvature;
 	public int[] Clickedpoints;
 	public int starttime;
 	public int endtime;
 	public ArrayList<Pair<String, Intersectionobject>> Tracklist;
 	public ArrayList<Pair<String, double[]>> resultAngle;
+	public ArrayList<Pair<Integer, double[]>> resultCurvature;
 	public HashMap<String, Pair<ArrayList<double[]>, ArrayList<Line>>> resultDraw;
 	public HashMap<String, ArrayList<Line>> resultDrawLine;
 	public KeyListener kl;
@@ -281,6 +284,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Set<Integer> pixellist;
 	ColorProcessor cp = null;
 	public HashMap<String, Intersectionobject> Finalresult;
+	public HashMap<Integer, Curvatureobject> Finalcurvatureresult;
 	public boolean isCreated = false;
 	public RoiManager roimanager;
 	public String uniqueID, tmpID, ZID, TID;
@@ -302,7 +306,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int maxSearchInit = 100;
 	public int maxframegap = 10;
 	public static enum ValueChange {
-		ROI, ALL, THIRDDIMmouse, FOURTHDIMmouse, DISPLAYROI, RADIUS, INSIDE, OUTSIDE, RESULT, RectRoi, SEG, Watershow
+		ROI, ALL, THIRDDIMmouse, FOURTHDIMmouse, DISPLAYROI, RADIUS, INSIDE, OUTSIDE, RESULT, RectRoi, SEG, Watershow, CURVERESULT
 	}
 
 	public void setTime(final int value) {
@@ -558,6 +562,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		FloatType minval = new FloatType(0);
 		FloatType maxval = new FloatType(1);
 		Normalize.normalize(Views.iterable(originalimg), minval, maxval);
+		
+		
+		if (curveautomode || curvesupermode)
+			this.chart = utility.ChartMaker.makeChart(dataset, "Curvature Measurment", "X", "Curvature");
+		
         if((automode) || (curveautomode)) {
         	
         	
@@ -573,6 +582,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
         }
 		
 		redoing = false;
+		localCurvature = new ArrayList<Curvatureobject>();
+		AlllocalCurvature = new ArrayList<ArrayList<Curvatureobject>>();
 		superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>>();
 		pixellist = new HashSet<Integer>();
 		rtAll = new ResultsTable();
@@ -585,6 +596,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		Clickedpoints = new int[2];
 		ALLIntersections = new HashMap<String, ArrayList<Intersectionobject>>();
 		Finalresult = new HashMap<String, Intersectionobject>();
+		Finalcurvatureresult = new HashMap<Integer, Curvatureobject>();
 		Tracklist = new ArrayList<Pair<String, Intersectionobject>>();
 		resultDraw = new HashMap<String, Pair<ArrayList<double[]>, ArrayList<Line>>>();
 		resultDrawLine = new HashMap<String, ArrayList<Line>>();
@@ -662,7 +674,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		emptysmooth = new ArrayImgFactory<BitType>().create(originalimg, new BitType());
 		emptyWater = new ArrayImgFactory<IntType>().create(originalimg, new IntType());
 
-		if (!automode) {
+		if (!automode && !supermode && !curveautomode && !curvesupermode) {
 			roimanager = RoiManager.getInstance();
 
 			if (roimanager == null) {
@@ -692,7 +704,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	}
 
 	public void updatePreview(final ValueChange change) {
-		if (!automode) {
+		if (!automode || !supermode || !curveautomode || !curvesupermode) {
 			roimanager = RoiManager.getInstance();
 
 			if (roimanager == null) {
@@ -700,10 +712,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			}
 		}
 
-		
-		
-
-		//
+	
 		uniqueID = Integer.toString(thirdDimension) + Integer.toString(fourthDimension);
 		ZID = Integer.toString(thirdDimension);
 		TID = Integer.toString(fourthDimension);
@@ -765,6 +774,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				localimp.setTitle(
 						"Seg Image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 
+		}
+		if (change == ValueChange.CURVERESULT) {
+			
+			DisplaySelected.Display(this);
 		}
 
 		if (change == ValueChange.RESULT) {
@@ -970,13 +983,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				imp.updateAndDraw();
 
 			}
-			if(!automode || !supermode){
+			if(!automode || !supermode || !curveautomode || !curvesupermode){
 				if (ZTRois.get(uniqueID) == null)
 					DisplayDefault();
 				else
 					Display();
 			}
-			else if (automode || supermode || curveautomode || curvesupermode )
+			else if (automode || supermode)
 				DisplayAuto.Display(this);
 			imp.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 
@@ -1226,7 +1239,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	public Label inputLabelmaxellipse;
 	public Label inputLabelminpercent;
-	public Label inputLabelIter, inputtrackLabel;
+	public Label inputLabelIter, inputtrackLabel, inputcellLabel;
 	public JPanel Original = new JPanel();
 	public int SizeX = 500;
 	public int SizeY = 300;
@@ -1400,21 +1413,40 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		inputLabelmaxellipse = new Label("Max. number of ellipses");
 		inputtrackLabel = new Label("Enter trackID to save");
-
+		inputcellLabel = new Label("Enter CellLabel to save");
 		inputFieldminpercent = new TextField(5);
 		inputFieldminpercent.setText(Float.toString(minpercent));
 
 		inputLabelminpercent = new Label("Min. percent points to lie on ellipse");
-
-		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y",
+		Object[] colnames;
+		Object[][] rowvalues;
+		if (!curveautomode &&!curvesupermode) {
+		colnames = new Object[] { "Track Id", "Location X", "Location Y",
 				"Current Angle" };
 
-		Object[][] rowvalues = new Object[0][colnames.length];
+		rowvalues = new Object[0][colnames.length];
+		}
+		
+		else {
+			
+			colnames = new Object[] { "Cell Id", "Location X", "Location Y", "Location Z" , "Perimeter", "Curvature"};
+
+			rowvalues = new Object[0][colnames.length];
+			
+		}
+		
 		if (Finalresult != null && Finalresult.size() > 0) {
 
 			rowvalues = new Object[Finalresult.size()][colnames.length];
 
 		}
+		
+		if (Finalcurvatureresult != null && Finalcurvatureresult.size() > 0) {
+
+			rowvalues = new Object[Finalcurvatureresult.size()][colnames.length];
+
+		}
+		
 
 		table = new JTable(rowvalues, colnames);
 		Border timeborder = new CompoundBorder(new TitledBorder("Select time"), new EmptyBorder(c.insets));
@@ -1502,6 +1534,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 		if (( supermode) || ( curvesupermode)) {
 
+			/*
 			Probselect.add(lowprobText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
@@ -1513,7 +1546,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			Probselect.add(highprobslider, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
+*/
 			Probselect.add(autoTstart, new GridBagConstraints(2, 6, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Probselect.add(startT, new GridBagConstraints(2, 8, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
@@ -1536,7 +1569,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		if((automode )  ||    (curveautomode )  ) {
 			
-
+/*
 			Probselect.add(lowprobText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
@@ -1548,7 +1581,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			Probselect.add(highprobslider, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
+*/
 			Probselect.add(autoTstart, new GridBagConstraints(2, 6, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Probselect.add(startT, new GridBagConstraints(2, 8, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
@@ -1585,10 +1618,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			Angleselect.setBorder(circletools);
 			Angleselect.setPreferredSize(new Dimension(SizeX, SizeY));
-			
-
-			
-			
 			panelFirst.add(Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
@@ -1658,6 +1687,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		panelSecond.add(controlprev, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
 		
+		
+	  if(!curveautomode && !curvesupermode) {
 		KalmanPanel.add(iniSearchText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		KalmanPanel.add(initialSearchS, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
@@ -1681,14 +1712,18 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		KalmanPanel.add(Redobutton, new GridBagConstraints(5, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 		
-		KalmanPanel.add(controlnext, new GridBagConstraints(5, 6, 10, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
 		KalmanPanel.setBorder(Kalmanborder);
 		
 		KalmanPanel.setPreferredSize(new Dimension(SizeX, SizeY));
+	  }
+		KalmanPanel.add(controlnext, new GridBagConstraints(5, 6, 10, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
+		
+		
+		
 		panelFirst.add(KalmanPanel, new GridBagConstraints(0, 2, 10, 1, 0.0, 0.0, GridBagConstraints.ABOVE_BASELINE,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
-		
+	  
 		
 		table.setFillsViewportHeight(true);
 
@@ -1793,30 +1828,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 	}
 
-	public void displayclicked(int trackindex) {
 
-		// Make something happen
-		row = trackindex;
-		String ID = (String) table.getValueAt(trackindex, 0);
-		ArrayList<Pair<String, double[]>> currentresultAngle = new ArrayList<Pair<String, double[]>>();
-		for (Pair<String, double[]> currentangle : resultAngle) {
-
-			if (ID.equals(currentangle.getA())) {
-
-				currentresultAngle.add(currentangle);
-
-			}
-
-		}
-
-		this.dataset.removeAllSeries();
-
-		this.dataset.addSeries(utility.ChartMaker.drawPoints(currentresultAngle));
-		utility.ChartMaker.setColor(chart, 0, new Color(255, 64, 64));
-		utility.ChartMaker.setStroke(chart, 0, 2f);
-		updatePreview(ValueChange.RESULT);
-
-	}
 
 	public static int round(double value) {
 		return (int) (value + 0.5D * Math.signum(value));

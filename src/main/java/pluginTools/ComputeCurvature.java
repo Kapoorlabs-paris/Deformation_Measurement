@@ -31,8 +31,10 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import costMatrix.PixelratiowDistCostFunction;
+import curvatureUtils.DisplaySelected;
 import ellipsoidDetector.Intersectionobject;
 import ij.ImageStack;
+import ij.gui.Line;
 import kalmanTracker.ETrackCostFunction;
 import kalmanTracker.IntersectionobjectCollection;
 import kalmanTracker.KFsearch;
@@ -44,6 +46,8 @@ import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.CreateTable;
+import utility.Curvatureobject;
+import utility.Roiobject;
 import utility.ThreeDRoiobject;
 
 public class ComputeCurvature extends SwingWorker<Void, Void> {
@@ -70,7 +74,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		EllipseTrack newtrack = new EllipseTrack(parent, jpb);
 		newtrack.ComputeCurvature();
-	
+
 		return null;
 
 	}
@@ -102,11 +106,11 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		parent.jpb.setIndeterminate(false);
 		parent.Cardframe.validate();
 
-		parent.prestack =  new ImageStack((int) parent.originalimg.dimension(0), (int) parent.originalimg.dimension(1),
+		parent.prestack = new ImageStack((int) parent.originalimg.dimension(0), (int) parent.originalimg.dimension(1),
 				java.awt.image.ColorModel.getRGBdefault());
-		parent.resultDraw.clear();
-		parent.Tracklist.clear();
-		
+
+          
+		CurvedLineage();
 
 		try {
 			get();
@@ -118,6 +122,38 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	}
 
-	
-	
+	public void CurvedLineage() {
+
+		
+
+		DisplaySelected.mark(parent);
+		DisplaySelected.select(parent);
+		
+		for (ArrayList<Curvatureobject> local: parent.AlllocalCurvature) {
+		Iterator<Curvatureobject> iterator = local.iterator();
+
+
+		while (iterator.hasNext()) {
+
+			Curvatureobject currentcurvature = iterator.next();
+
+
+			if (parent.originalimg.numDimensions() > 3) {
+				if (currentcurvature.t == parent.fourthDimension) {
+					parent.Finalcurvatureresult.put(currentcurvature.Label, currentcurvature);
+				}
+			} else if (parent.originalimg.numDimensions() <= 3) {
+				if (currentcurvature.z == parent.thirdDimension) {
+					parent.Finalcurvatureresult.put(currentcurvature.Label, currentcurvature);
+
+				}
+
+			}
+
+		}
+		}
+		curvatureUtils.CurvatureTable.CreateTableView(parent);
+
+	}
+
 }

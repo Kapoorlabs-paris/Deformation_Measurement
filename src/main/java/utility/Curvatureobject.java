@@ -29,12 +29,12 @@ public class Curvatureobject extends AbstractEuclideanSpace implements RealLocal
 	private final int ID;
 	
 	
-	final double radiusCurvature;
-	final double perimeter;
-	final int t;
-	final int z;
-	final double[] cord;
-	final int Label;
+	public final double radiusCurvature;
+	public final double perimeter;
+	public final int t;
+	public final int z;
+	public final double[] cord;
+	public final int Label;
 	
 	public Curvatureobject(final double radiusCurvature, final double perimeter, final int Label, final double[] cord, final int t, final int z) {
 		super(3);
@@ -49,6 +49,8 @@ public class Curvatureobject extends AbstractEuclideanSpace implements RealLocal
 		putFeature( Time,Double.valueOf( t ) );
 		putFeature( Radius, Double.valueOf(radiusCurvature ) );
 		putFeature( Perimeter, Double.valueOf( perimeter ) );
+		putFeature( LocationX, cord[0]);
+		putFeature( LocationY, cord[1]);
 		putFeature( Integer.toString(Label), Double.valueOf(Label) );
 	}
 	
@@ -95,47 +97,43 @@ public class Curvatureobject extends AbstractEuclideanSpace implements RealLocal
 	{
 		features.put( feature, value );
 	}
-	/** The name of the blob X position feature. */
 	public static final String Radius = "Radius";
 
-	/** The name of the blob Y position feature. */
 	public static final String Perimeter = "Perimeter";
 	
-	/** The label of the blob position feature. */
 	public static final String LABEL = "LABEL";
 
-	/** The name of the frame feature. */
 	public static final String Time = "Time";
 	
-	/** The name of the frame feature. */
 	public static final String Z = "Z";
 	
-	/** The position features. */
-	public final static String[] Curvature_features = new String[] { Radius, Perimeter, LABEL };
+	public static final String LocationX = "LocationX";
+	
+	public static final String LocationY = "LocationY";
+	
+	/** The curvature features. */
+	public final static String[] Curvature_features = new String[] { Radius, Perimeter, LABEL, LocationX, LocationY };
 	
 	public final Double getFeature( final String feature )
 	{
 		return features.get( feature );
 	}
 	/**
-	 * The 7 privileged spot features that must be set by a spot detector:
-	 * {@link #QUALITY}, {@link #POSITION_X}, {@link #POSITION_Y},
-	 * {@link #POSITION_Z}, {@link #POSITION_Z}, {@link #RADIUS}, {@link #FRAME}
+	 * The 7 features for curvatrue object include, LocationX and LocationY,
+	 * Radius at that location, Perimeter for the cell label and the Z and T location
+	 * of the cell
 	 * .
 	 */
-	public final static Collection< String > FEATURES = new ArrayList< >( 4 );
+	static int featurenumber = 7;
+	public final static Collection< String > FEATURES = new ArrayList< >( featurenumber );
 
-	/** The 7 privileged spot feature names. */
-	public final static Map< String, String > FEATURE_NAMES = new HashMap< >( 4 );
+	public final static Map< String, String > FEATURE_NAMES = new HashMap< >( featurenumber );
 
-	/** The 7 privileged spot feature short names. */
-	public final static Map< String, String > FEATURE_SHORT_NAMES = new HashMap< >( 4 );
+	public final static Map< String, String > FEATURE_SHORT_NAMES = new HashMap< >( featurenumber );
 
-	/** The 7 privileged spot feature dimensions. */
-	public final static Map< String, linkers.Dimension > FEATURE_DIMENSIONS = new HashMap< >( 4 );
+	public final static Map< String, linkers.Dimension > FEATURE_DIMENSIONS = new HashMap< >( featurenumber );
 
-	/** The 7 privileged spot feature isInt flags. */
-	public final static Map< String, Boolean > IS_INT = new HashMap< >( 4 );
+	public final static Map< String, Boolean > IS_INT = new HashMap< >( featurenumber );
 
 	static
 	{
@@ -144,28 +142,36 @@ public class Curvatureobject extends AbstractEuclideanSpace implements RealLocal
 		FEATURES.add( Z );
 		FEATURES.add( LABEL );
 		FEATURES.add( Time );
+		FEATURES.add( LocationX );
+		FEATURES.add( LocationY );
+		
 
 		FEATURE_NAMES.put( Radius, "R" );
 		FEATURE_NAMES.put( Perimeter, "P" );
 		FEATURE_NAMES.put( Z, "Z" );
 		FEATURE_NAMES.put( LABEL, "L" );
 		FEATURE_NAMES.put( Time, "T" );
-		
+		FEATURE_NAMES.put( LocationX, "LocationX" );
+		FEATURE_NAMES.put( LocationY, "LocationY" );
 
 		FEATURE_SHORT_NAMES.put( Radius, "X" );
 		FEATURE_SHORT_NAMES.put( Perimeter, "Y" );
 		FEATURE_SHORT_NAMES.put( Z, "Z" );
 		FEATURE_SHORT_NAMES.put( LABEL, "S" );
 		FEATURE_SHORT_NAMES.put( Time, "T" );
-		
+		FEATURE_SHORT_NAMES.put( LocationX, "LocationX" );
+		FEATURE_SHORT_NAMES.put( LocationY, "LocationY" );
 
 		
 
 		IS_INT.put( Radius, Boolean.FALSE );
 		IS_INT.put( Perimeter, Boolean.FALSE );
-		IS_INT.put( Z, Boolean.FALSE );
-		IS_INT.put( LABEL, Boolean.FALSE );
-		IS_INT.put( Time, Boolean.FALSE );
+		IS_INT.put( Z, Boolean.TRUE );
+		IS_INT.put( LABEL, Boolean.TRUE );
+		IS_INT.put( Time, Boolean.TRUE );
+
+		IS_INT.put( LocationX, Boolean.FALSE );
+		IS_INT.put( LocationY, Boolean.FALSE );
 		
 	}
 	@Override

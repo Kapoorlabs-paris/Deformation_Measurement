@@ -77,20 +77,26 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 
 	private static HashMap<String, Integer> sortByValues(HashMap<String, Integer> map) {
 		List<Entry<String, Integer>> list = new LinkedList<Entry<String, Integer>>(map.entrySet());
+		
 		// Defined Custom Comparator here
 		Collections.sort(list, new Comparator<Entry<String, Integer>>() {
 
 			@Override
 			public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {
+				
 				return (o1.getValue()).compareTo(o2.getValue());
+			
 			}
 		});
 
 		// Here I am copying the sorted list in HashMap
 		// using LinkedHashMap to preserve the insertion order
 		HashMap<String, Integer> sortedHashMap = new LinkedHashMap<String, Integer>();
+		
 		for (Iterator<Entry<String, Integer>> it = list.iterator(); it.hasNext();) {
+		
 			Map.Entry<String, Integer> entry = (Map.Entry<String, Integer>) it.next();
+			
 			sortedHashMap.put(entry.getKey(), entry.getValue());
 		}
 		return sortedHashMap;
@@ -100,18 +106,26 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 	protected void done() {
 
 		parent.jpb.setIndeterminate(false);
+		
 		parent.Cardframe.validate();
 
 		parent.prestack =  new ImageStack((int) parent.originalimg.dimension(0), (int) parent.originalimg.dimension(1),
 				java.awt.image.ColorModel.getRGBdefault());
+		
 		parent.resultDraw.clear();
+		
 		parent.Tracklist.clear();
+
 		if (parent.ndims > 3) {
+			
 			Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
+			
 			while (itZ.hasNext()) {
 
 				int z = itZ.next().getValue();
+			
 				SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > simplegraph = Trackfunction();
+				
 				parent.parentgraphZ.put(Integer.toString(z), simplegraph);
 			}
 			Lineage();
@@ -124,6 +138,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 			
 
 			parent.parentgraphZ.put(Integer.toString(1), simplegraph);
+			
 			Lineage();
 		}
 
@@ -233,12 +248,14 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 							if(parent.originalimg.numDimensions() > 3) {
 							if (currentangle.t  == parent.fourthDimension) {
 								bestangle = currentangle;
+								count++;
 							    break;	
 							}
 							}
-							else if (parent.originalimg.numDimensions() == 3){
+							else if (parent.originalimg.numDimensions()<= 3){
 								if (currentangle.z  == parent.thirdDimension) {
 									bestangle = currentangle;
+									count++;
 								    break;	
 								 
 								}
@@ -246,6 +263,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 								
 							}
 
+							
 						}
 						parent.Finalresult.put(Integer.toString(id) + entryZ.getKey(), bestangle);
 

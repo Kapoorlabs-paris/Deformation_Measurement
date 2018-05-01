@@ -1,4 +1,4 @@
-package utility;
+package curvatureUtils;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -8,6 +8,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,132 +18,51 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import angleUtils.TableDisplay;
 import ellipsoidDetector.Distance;
-import ij.gui.EllipseRoi;
 import ij.gui.ImageCanvas;
 import ij.gui.Line;
-import ij.gui.OvalRoi;
 import pluginTools.InteractiveSimpleEllipseFit;
+import utility.Curvatureobject;
+import utility.Roiobject;
 
-public class DisplayAuto {
+public class DisplaySelected {
 
+	
 	public static void Display(final InteractiveSimpleEllipseFit parent) {
-
-		System.out.println("Not here");
+		
 		parent.overlay.clear();
+		Integer ID = (Integer) parent.table.getValueAt(parent.rowchoice, 0);
+		final ArrayList<Line> resultlineroi = new ArrayList<Line>();
+		for (ArrayList<Curvatureobject> Allcurrentcurvature : parent.AlllocalCurvature) {
+			for (int index = 0; index < Allcurrentcurvature.size(); ++index) {
 
-		if (parent.ZTRois.size() > 0) {
-
-			for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
-
-				Roiobject currentobject = entry.getValue();
-				if (currentobject.fourthDimension == parent.fourthDimension
-						&& currentobject.thirdDimension == parent.thirdDimension) {
-					if (currentobject.resultroi != null) {
-						for (int i = 0; i < currentobject.resultroi.size(); ++i) {
-
-							EllipseRoi ellipse = currentobject.resultroi.get(i);
-							ellipse.setStrokeColor(parent.colorInChange);
-							parent.overlay.add(ellipse);
-
-						}
-					}
-
-					if (currentobject.resultovalroi != null) {
-						for (int i = 0; i < currentobject.resultovalroi.size(); ++i) {
-
-							OvalRoi ellipse = currentobject.resultovalroi.get(i);
-							ellipse.setStrokeColor(parent.colorDet);
-							parent.overlay.add(ellipse);
-
-						}
-
-					}
-
-					if (currentobject.resultlineroi != null) {
-						for (int i = 0; i < currentobject.resultlineroi.size(); ++i) {
-
-							Line ellipse = currentobject.resultlineroi.get(i);
-							ellipse.setStrokeColor(parent.colorLineA);
-
-							parent.overlay.add(ellipse);
-
-						}
-
-					}
-
-					break;
+				Curvatureobject currentcurvature = Allcurrentcurvature.get(index);
+				
+				if(currentcurvature.Label == ID) {
+					
+					Line currentline = new Line(currentcurvature.cord[0],currentcurvature.cord[1] ,
+							currentcurvature.cord[0], currentcurvature.cord[1]); 
+					resultlineroi.add(currentline);
+					parent.overlay.add(currentline);
 				}
-
+				
 			}
-
-			parent.imp.setOverlay(parent.overlay);
-			parent.imp.updateAndDraw();
-
-			if (parent.impOrig != null) {
-				parent.impOrig.setOverlay(parent.overlay);
-				parent.impOrig.updateAndDraw();
-			}
-			mark(parent);
-			select(parent);
-
+			
 		}
-	}
+		
+		parent.imp.setOverlay(parent.overlay);
+		parent.imp.updateAndDraw();
 
-	public static void DisplayNOM(final InteractiveSimpleEllipseFit parent) {
-
-		parent.overlay.clear();
-
-		if (parent.ZTRois.size() > 0) {
-
-			for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {
-
-				Roiobject currentobject = entry.getValue();
-				if (currentobject.fourthDimension == parent.fourthDimension
-						&& currentobject.thirdDimension == parent.thirdDimension) {
-					if (currentobject.resultroi != null) {
-						for (int i = 0; i < currentobject.resultroi.size(); ++i) {
-
-							EllipseRoi ellipse = currentobject.resultroi.get(i);
-							ellipse.setStrokeColor(parent.colorInChange);
-							parent.overlay.add(ellipse);
-
-						}
-
-					}
-
-					if (currentobject.resultovalroi != null) {
-						for (int i = 0; i < currentobject.resultovalroi.size(); ++i) {
-
-							OvalRoi ellipse = currentobject.resultovalroi.get(i);
-							ellipse.setStrokeColor(parent.colorDet);
-							parent.overlay.add(ellipse);
-
-						}
-
-					}
-
-					if (currentobject.resultlineroi != null) {
-						for (int i = 0; i < currentobject.resultlineroi.size(); ++i) {
-
-							Line ellipse = currentobject.resultlineroi.get(i);
-							ellipse.setStrokeColor(parent.colorLineA);
-
-							parent.overlay.add(ellipse);
-
-						}
-
-					}
-
-					break;
-				}
-
-			}
+		if (parent.impOrig != null) {
 			parent.impOrig.setOverlay(parent.overlay);
 			parent.impOrig.updateAndDraw();
-
 		}
+		
+		
+		
 	}
-
+	
+	
+	
 	public static void select(final InteractiveSimpleEllipseFit parent) {
 
 		if(parent.impOrig == null)
@@ -166,7 +86,7 @@ public class DisplayAuto {
 					if (!parent.jFreeChartFrame.isVisible())
 						parent.jFreeChartFrame = utility.ChartMaker.display(parent.chart, new Dimension(500, 500));
 
-					TableDisplay.displayclicked(parent, parent.rowchoice);
+					CurvatureTableDisplay.displayclicked(parent, parent.rowchoice);
 				}
 
 			}

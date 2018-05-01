@@ -26,7 +26,7 @@ public class Listordereing {
 	 */
 
 	public static <T extends RealType<T> & NativeType<T>> List<RealLocalizable> getOrderedList(
-			List<Pair<RealLocalizable, T>> truths, double deltasep) {
+			List<Pair<RealLocalizable, T>> truths) {
 
 		List<Pair<RealLocalizable, T>> copytruths = copyList(truths);
 		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
@@ -34,9 +34,8 @@ public class Listordereing {
 
 		do {
 			orderedtruths.add(minCord.getA());
-			Pair<RealLocalizable, T> nextCord = getNextNearest(minCord.getA(), copytruths);
 			copytruths.remove(minCord);
-
+			Pair<RealLocalizable, T> nextCord = getNextNearest(minCord.getA(), copytruths);
 			minCord = nextCord;
 		} while (copytruths.size() > 0);
 

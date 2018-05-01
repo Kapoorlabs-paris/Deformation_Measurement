@@ -79,6 +79,30 @@ public class ChartMaker {
 		return series;
 	}
 	
+	public static XYSeries drawPointsInt( final List< Pair< Integer,double[] >> mts ) { return drawPointsInt( mts, "Curvature measurement" ); }
+	public static XYSeries drawPointsInt( final  List< Pair< Integer,double[] >> mts, final String name )
+	{
+		XYSeries series = new XYSeries( name );
+
+		if (mts!=null){
+		for ( final Pair<Integer, double[]> mt : mts )
+			series.add(  mt.getB()[0], mt.getB()[2] );
+		}
+		return series;
+	}
+	
+	public static XYSeries drawPointsIntY( final List< Pair< Integer,double[] >> mts ) { return drawPointsInt( mts, "Curvature measurement" ); }
+	public static XYSeries drawPointsIntY( final  List< Pair< Integer,double[] >> mts, final String name )
+	{
+		XYSeries series = new XYSeries( name );
+
+		if (mts!=null){
+		for ( final Pair<Integer, double[]> mt : mts )
+			series.add(  mt.getB()[0], mt.getB()[3] );
+		}
+		return series;
+	}
+	
 	public static void setColor( final JFreeChart chart, final int seriesIndex, final Color col )
 	{
 		final XYPlot plot = chart.getXYPlot();

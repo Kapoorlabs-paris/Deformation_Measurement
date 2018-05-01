@@ -107,8 +107,6 @@ public class Computeinwater {
 				
 				Watershedobject current = 
 						utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
-						//utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
-				
 				// Neglect the small watershed regions by choosing only those regions which have more than 9 candidate points for ellipse fitting
 				
 				if (current.meanIntensity > parent.minellipsepoints) {
@@ -191,14 +189,12 @@ public class Computeinwater {
 						
 						utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
 						
-					//	utility.Watershedobject.CurrentLabelImage(CurrentViewInt, CurrentView, label);
 				
 				// Neglect the small watershed regions by choosing only those regions which have more than 9 candidate points for ellipse fitting
 				
 				if (current.meanIntensity > parent.minellipsepoints) {
 					
 					List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
-					
 					
 					tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, t, z, 
 							parent.jpb, percent, label)));
