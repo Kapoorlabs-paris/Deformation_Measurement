@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
 
+import org.apache.commons.math3.analysis.interpolation.BicubicInterpolator;
+import org.apache.commons.math3.analysis.interpolation.BicubicSplineInterpolator;
+import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.jfree.data.contour.DefaultContourDataset;
 
 import net.imglib2.util.Pair;
@@ -48,6 +51,7 @@ public class CurvatureTableDisplay {
 		
 		
 
+		
 		
 		
 		Pair<Double, Double> minmaxX = RangePlot(currentresultCurvature, 0);
