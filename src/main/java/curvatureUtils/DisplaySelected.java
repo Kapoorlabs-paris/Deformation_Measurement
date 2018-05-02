@@ -83,10 +83,12 @@ public class DisplaySelected {
 				parent.Clickedpoints[1] = y;
 
 				if (SwingUtilities.isLeftMouseButton(e) && e.isShiftDown()) {
-					if (!parent.jFreeChartFrame.isVisible())
-						parent.jFreeChartFrame = utility.ChartMaker.display(parent.chart, new Dimension(500, 500));
+					
 
 					CurvatureTableDisplay.displayclicked(parent, parent.rowchoice);
+					
+					if (!parent.jFreeChartFrame.isVisible())
+						parent.jFreeChartFrame = utility.ChartMaker.display(parent.chart, new Dimension(500, 500));
 				}
 
 			}

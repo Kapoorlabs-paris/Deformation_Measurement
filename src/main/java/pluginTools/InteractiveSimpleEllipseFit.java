@@ -48,6 +48,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import org.jfree.chart.JFreeChart;
+import org.jfree.data.contour.ContourDataset;
+import org.jfree.data.contour.DefaultContourDataset;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -199,6 +201,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Frame jFreeChartFrame;
 	public NumberFormat nf;
 	public XYSeriesCollection dataset;
+	public DefaultContourDataset contdataset;
+	public double displaymin, displaymax;
 	public JFreeChart chart;
 	public RandomAccessibleInterval<FloatType> originalimg;
 	public RandomAccessibleInterval<IntType> originalimgsuper;
@@ -526,6 +530,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.originalimgbefore = originalimgbefore;
 		this.ndims = originalimg.numDimensions();
 		this.dataset = new XYSeriesCollection();
+		this.contdataset = new DefaultContourDataset();
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
@@ -547,6 +552,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.originalimgbefore = originalimgbefore;
 		this.ndims = originalimg.numDimensions();
 		this.dataset = new XYSeriesCollection();
+		this.contdataset = new DefaultContourDataset();
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
@@ -562,10 +568,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		FloatType minval = new FloatType(0);
 		FloatType maxval = new FloatType(1);
 		Normalize.normalize(Views.iterable(originalimg), minval, maxval);
+		displaymin = 0;
+		displaymax = 1;
 		
-		
-		if (curveautomode || curvesupermode)
-			this.chart = utility.ChartMaker.makeChart(dataset, "Curvature Measurment", "X", "Curvature");
 		
         if((automode) || (curveautomode)) {
         	
