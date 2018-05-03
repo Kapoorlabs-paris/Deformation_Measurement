@@ -417,9 +417,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		return Util.round(((sigma - min) / (max - min)) * scrollbarSize);
 	}
 
+	int decimalplaces = 3;
 	public InteractiveSimpleEllipseFit() {
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
-		nf.setMaximumFractionDigits(2);
+		nf.setMaximumFractionDigits(decimalplaces);
 		this.dataset = new XYSeriesCollection();
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
@@ -440,7 +441,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
-		nf.setMaximumFractionDigits(2);
+		nf.setMaximumFractionDigits(decimalplaces);
 		this.automode = false;
 		this.supermode = false;
 		this.curveautomode = false;
@@ -457,7 +458,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
-		nf.setMaximumFractionDigits(2);
+		nf.setMaximumFractionDigits(decimalplaces);
 		this.automode = false;
 		this.supermode = false;
 		this.curveautomode = false;
@@ -474,7 +475,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
-		nf.setMaximumFractionDigits(2);
+		nf.setMaximumFractionDigits(decimalplaces);
 		this.automode = automode;
 		this.supermode = false;
 		this.curveautomode = false;
@@ -493,7 +494,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
-		nf.setMaximumFractionDigits(2);
+		nf.setMaximumFractionDigits(decimalplaces);
 		this.automode = automode;
 		this.supermode = false;
 		this.curveautomode = false;
@@ -514,7 +515,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
-		nf.setMaximumFractionDigits(2);
+		nf.setMaximumFractionDigits(decimalplaces);
 		this.automode = automode;
 		this.supermode = supermode;
 		this.curveautomode = false;
@@ -535,7 +536,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
-		nf.setMaximumFractionDigits(2);
+		nf.setMaximumFractionDigits(decimalplaces);
 		this.automode = automode;
 		this.supermode = supermode;
 		this.curveautomode = curveautomode;
@@ -557,7 +558,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
-		nf.setMaximumFractionDigits(2);
+		nf.setMaximumFractionDigits(decimalplaces);
 		this.automode = automode;
 		this.supermode = supermode;
 		this.curveautomode = curveautomode;

@@ -83,6 +83,7 @@ public class ChartMaker {
 		yAxis.setRange(minY, maxY);
 		yAxis.setInverted(true);
 		ColorBar colorbar = new ColorBar("Curvature");
+		colorbar.autoAdjustRange();
 		ContourPlot contourplot = new ContourPlot(dataset, xAxis, yAxis, colorbar);
 		JFreeChart chart = new JFreeChart("Curvature Plot", contourplot);
 

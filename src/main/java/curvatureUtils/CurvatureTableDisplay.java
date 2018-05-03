@@ -20,6 +20,7 @@ public class CurvatureTableDisplay {
 
 	public static void displayclicked(InteractiveSimpleEllipseFit parent, int trackindex) {
 
+		parent.overlay.clear();
 		// Make something happen
 		parent.row = trackindex;
 		Integer ID = (Integer) parent.table.getValueAt(trackindex, 0);
