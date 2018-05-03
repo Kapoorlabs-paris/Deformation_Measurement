@@ -10,64 +10,26 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import angleUtils.TableDisplay;
 import ellipsoidDetector.Distance;
 import ij.gui.ImageCanvas;
 import ij.gui.Line;
 import pluginTools.InteractiveSimpleEllipseFit;
 import utility.Curvatureobject;
-import utility.Roiobject;
 
 public class DisplaySelected {
 
 	
-	public static void Display(final InteractiveSimpleEllipseFit parent) {
-		
-		parent.overlay.clear();
-		Integer ID = (Integer) parent.table.getValueAt(parent.rowchoice, 0);
-		final ArrayList<Line> resultlineroi = new ArrayList<Line>();
-		for (ArrayList<Curvatureobject> Allcurrentcurvature : parent.AlllocalCurvature) {
-			for (int index = 0; index < Allcurrentcurvature.size(); ++index) {
 
-				Curvatureobject currentcurvature = Allcurrentcurvature.get(index);
-				
-				if(currentcurvature.Label == ID) {
-					
-					Line currentline = new Line(currentcurvature.cord[0],currentcurvature.cord[1] ,
-							currentcurvature.cord[0], currentcurvature.cord[1]); 
-					resultlineroi.add(currentline);
-					parent.overlay.add(currentline);
-				}
-				
-			}
-			
-		}
-		
-		parent.imp.setOverlay(parent.overlay);
-		parent.imp.updateAndDraw();
-
-		if (parent.impOrig != null) {
-			parent.impOrig.setOverlay(parent.overlay);
-			parent.impOrig.updateAndDraw();
-		}
-		
-		
-		
-	}
-	
-	
-	
 	public static void select(final InteractiveSimpleEllipseFit parent) {
 
-		if(parent.impOrig == null)
+		if (parent.impOrig == null)
 			parent.impOrig = parent.imp;
-		
+
 		if (parent.mvl != null)
 			parent.impOrig.getCanvas().removeMouseListener(parent.mvl);
 		parent.impOrig.getCanvas().addMouseListener(parent.mvl = new MouseListener() {
@@ -83,10 +45,9 @@ public class DisplaySelected {
 				parent.Clickedpoints[1] = y;
 
 				if (SwingUtilities.isLeftMouseButton(e) && e.isShiftDown()) {
-					
 
 					CurvatureTableDisplay.displayclicked(parent, parent.rowchoice);
-					
+
 					if (!parent.jFreeChartFrame.isVisible())
 						parent.jFreeChartFrame = utility.ChartMaker.display(parent.chart, new Dimension(500, 500));
 				}

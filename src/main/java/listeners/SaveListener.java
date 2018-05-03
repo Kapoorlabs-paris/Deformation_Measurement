@@ -6,12 +6,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import ellipsoidDetector.Intersectionobject;
 import pluginTools.InteractiveSimpleEllipseFit;
+import utility.Curvatureobject;
 
 public class SaveListener implements ActionListener {
 
@@ -25,6 +27,8 @@ public class SaveListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
+		
+		
 		String ID = parent.selectedID;
 		try {
 			File fichier = new File(
@@ -32,10 +36,9 @@ public class SaveListener implements ActionListener {
 
 			FileWriter fw = new FileWriter(fichier);
 			BufferedWriter bw = new BufferedWriter(fw);
-			
+			if (!parent.curveautomode && !parent.curvesupermode) {
 			bw.write(
 					"\tTime (px)\t AngleT \n");
-		System.out.println(parent.resultAngle.size() + " Size of write");
 		for (int index = 0; index< parent.resultAngle.size(); ++index) {
 			
 			
@@ -55,6 +58,42 @@ public class SaveListener implements ActionListener {
 			}
 			
 		}
+			}
+			
+			else {
+				
+				bw.write("\tCellLabel\tX-coordinates\tY-coordinates\tCurvature\tPerimeter\tZposition\tTposition\n");
+				for (ArrayList<Curvatureobject> Allcurrentcurvature : parent.AlllocalCurvature) {
+					for (int index = 0; index < Allcurrentcurvature.size(); ++index) {
+						Curvatureobject currentcurvature = Allcurrentcurvature.get(index);
+
+						if (ID.equals(Integer.toString(currentcurvature.Label)) && parent.thirdDimension == currentcurvature.z
+								&& parent.fourthDimension == currentcurvature.t) {
+							
+							
+							int Label = currentcurvature.Label;
+							int t = currentcurvature.t;
+							int z = currentcurvature.z;
+							double curvature = currentcurvature.radiusCurvature;
+							double perimeter = currentcurvature.perimeter;
+							double X = currentcurvature.cord[0];
+							double Y = currentcurvature.cord[1];
+							bw.write("\t" + Label + "\t" + "\t"
+									+ X +  "\t" + "\t" + Y + "\t" + "\t" + parent.nf.format(curvature) + "\t" + "\t" + parent.nf.format(perimeter) +"\t" + "\t" + z + "\t" + "\t" + t + 
+									
+									"\n");
+							
+							
+						}
+					
+						
+						
+					}
+					}
+				
+				
+			}
+			
 		bw.close();
 		fw.close();
 		}

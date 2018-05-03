@@ -33,6 +33,7 @@ public class SaverDirectory implements ActionListener {
 		else
 			parent.chooserA.setCurrentDirectory(parent.saveFile);	
 		
+		
 		parent.chooserA.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		//
 		

@@ -174,7 +174,6 @@ public class Computeinwater {
 
 			Iterator<Integer> setiter = parent.pixellist.iterator();
 
-			parent.superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>>();
 			
 			
 			while (setiter.hasNext()) {

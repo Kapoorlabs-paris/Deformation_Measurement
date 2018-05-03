@@ -20,19 +20,7 @@ public class CurvatureTable {
 
 	public static void CreateTableView(final InteractiveSimpleEllipseFit parent) {
 
-		parent.resultCurvature = new ArrayList<Pair<Integer, double[]>>();
-
-		for (ArrayList<Curvatureobject> Allcurrentcurvature : parent.AlllocalCurvature) {
-			for (int index = 0; index < Allcurrentcurvature.size(); ++index) {
-
-				Curvatureobject currentcurvature = Allcurrentcurvature.get(index);
-				parent.resultCurvature.add(new ValuePair<Integer, double[]>(currentcurvature.Label,
-						new double[] { currentcurvature.cord[0], currentcurvature.cord[1],
-								currentcurvature.radiusCurvature, currentcurvature.perimeter, currentcurvature.z,
-								currentcurvature.t }));
-
-			}
-		}
+	
 		Object[] colnames = new Object[] { "Cell Id", "Location X", "Location Y", "Location Z", "Perimeter",
 				"Curvature" };
 

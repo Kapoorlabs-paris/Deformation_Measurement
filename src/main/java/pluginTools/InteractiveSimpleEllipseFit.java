@@ -56,6 +56,7 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 
 import costMatrix.CostFunction;
 import curvatureUtils.DisplaySelected;
+import curvatureUtils.InterpolateCurvature;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import ij.IJ;
@@ -271,14 +272,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	ImageStack prestack;
 	public MouseAdapter mouseadapter;
 	public ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> superReducedSamples;
-	public ArrayList<Curvatureobject> localCurvature;
+	public ArrayList<Curvatureobject> localCurvature, interpolatedlocalCurvature;
 	public ArrayList<ArrayList<Curvatureobject>> AlllocalCurvature;
 	public int[] Clickedpoints;
 	public int starttime;
 	public int endtime;
 	public ArrayList<Pair<String, Intersectionobject>> Tracklist;
 	public ArrayList<Pair<String, double[]>> resultAngle;
-	public ArrayList<Pair<Integer, double[]>> resultCurvature;
 	public HashMap<String, Pair<ArrayList<double[]>, ArrayList<Line>>> resultDraw;
 	public HashMap<String, ArrayList<Line>> resultDrawLine;
 	public KeyListener kl;
@@ -482,9 +482,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
-			RandomAccessibleInterval<FloatType> originalimgbefore, boolean automode) {
+			RandomAccessibleInterval<FloatType> originalimgbefore, boolean automode, String inputdirectory) {
 		this.inputfile = null;
-		this.inputdirectory = null;
+		this.inputdirectory = inputdirectory;
 		this.originalimg = originalimg;
 		this.originalimgbefore = originalimgbefore;
 		this.ndims = originalimg.numDimensions();
@@ -502,9 +502,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
 			RandomAccessibleInterval<FloatType> originalimgbefore, RandomAccessibleInterval<IntType> originalimgsuper,
-			boolean automode, boolean supermode) {
+			boolean automode, boolean supermode, String inputdirectory) {
 		this.inputfile = null;
-		this.inputdirectory = null;
+		this.inputdirectory = inputdirectory;
 		this.originalimg = originalimg;
 		this.originalimgsuper = originalimgsuper;
 		this.originalimgbefore = originalimgbefore;
@@ -523,9 +523,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
 			RandomAccessibleInterval<FloatType> originalimgbefore, 
-			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode) {
+			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode, String inputdirectory) {
 		this.inputfile = null;
-		this.inputdirectory = null;
+		this.inputdirectory = inputdirectory;
 		this.originalimg = originalimg;
 		this.originalimgbefore = originalimgbefore;
 		this.ndims = originalimg.numDimensions();
@@ -544,9 +544,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
 			RandomAccessibleInterval<FloatType> originalimgbefore, RandomAccessibleInterval<IntType> originalimgsuper,
-			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode) {
+			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode, String inputdirectory) {
 		this.inputfile = null;
-		this.inputdirectory = null;
+		this.inputdirectory = inputdirectory;
 		this.originalimg = originalimg;
 		this.originalimgsuper = originalimgsuper;
 		this.originalimgbefore = originalimgbefore;
@@ -588,6 +588,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		redoing = false;
 		localCurvature = new ArrayList<Curvatureobject>();
+		interpolatedlocalCurvature = new ArrayList<Curvatureobject>();
 		AlllocalCurvature = new ArrayList<ArrayList<Curvatureobject>>();
 		superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>>();
 		pixellist = new HashSet<Integer>();
@@ -667,12 +668,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			impOrig.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 		}
 
-		if(originalimgsuper!=null)
-			ImageJFunctions.show(originalimgsuper).setTitle("Super Pixel Segmentation");
-		imp = ImageJFunctions.show(CurrentView);
+	//	if(originalimgsuper!=null)
+	//		ImageJFunctions.show(originalimgsuper).setTitle("Super Pixel Segmentation");
 	
+		if (!supermode && !automode && !curveautomode && !curvesupermode) {
+		imp = ImageJFunctions.show(CurrentView);
+		
 		imp.setTitle("Active Probability Map" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
-
+		}
 		// Create empty Hyperstack
 
 		empty = new ArrayImgFactory<BitType>().create(originalimg, new BitType());
@@ -708,8 +711,28 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 	}
 
+	public void  repaintView (ImagePlus Activeimp, RandomAccessibleInterval<FloatType> Activeimage) {
+		if (Activeimp == null || !Activeimp.isVisible()) {
+			Activeimp = ImageJFunctions.show(Activeimage);
+
+		}
+
+		else {
+
+			final float[] pixels = (float[]) Activeimp.getProcessor().getPixels();
+			final Cursor<FloatType> c = Views.iterable(Activeimage).cursor();
+
+			for (int i = 0; i < pixels.length; ++i)
+				pixels[i] = c.next().get();
+
+			Activeimp.updateAndDraw();
+
+		}
+		
+		
+	}
 	public void updatePreview(final ValueChange change) {
-		if (!automode || !supermode || !curveautomode || !curvesupermode) {
+		if (!automode && !supermode && !curveautomode && !curvesupermode) {
 			roimanager = RoiManager.getInstance();
 
 			if (roimanager == null) {
@@ -722,6 +745,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		ZID = Integer.toString(thirdDimension);
 		TID = Integer.toString(fourthDimension);
 		tmpID = Float.toString(thirdDimension) + Float.toString(fourthDimension);
+		if (!automode && !supermode && !curveautomode && !curvesupermode) {
 		overlay = imp.getOverlay();
 
 		if (overlay == null) {
@@ -729,7 +753,17 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			overlay = new Overlay();
 			imp.setOverlay(overlay);
 		}
+		}
+		else {
+			overlay = impOrig.getOverlay();
 
+			if (overlay == null) {
+
+				overlay = new Overlay();
+				impOrig.setOverlay(overlay);
+			
+		}
+		}
 		
 		
 		if (change == ValueChange.INSIDE || change == ValueChange.OUTSIDE) {
@@ -754,7 +788,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					 tempview = utility.Binarization.CreateBinary(CurrentView, lowprob, highprob);
 			
 			
-			
+			/*
 			if (localimp == null || !localimp.isVisible() && automode) {
 				localimp = ImageJFunctions.show(tempview);
 
@@ -778,12 +812,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			if(automode || curveautomode)
 				localimp.setTitle(
 						"Seg Image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
-
+*/
 		}
-		if (change == ValueChange.CURVERESULT) {
-			
-			DisplaySelected.Display(this);
-		}
+		
 
 		if (change == ValueChange.RESULT) {
 			
@@ -952,43 +983,18 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					CurrentViewOrig = utility.Slicer.getCurrentView(originalimgbefore, thirdDimension,
 							thirdDimensionSize, thirdDimension, fourthDimensionSize);
 
-					if (impOrig == null || !impOrig.isVisible()) {
-						impOrig = ImageJFunctions.show(CurrentViewOrig);
-
-					}
-
-					else {
-
-						final float[] pixels = (float[]) impOrig.getProcessor().getPixels();
-						final Cursor<FloatType> c = Views.iterable(CurrentViewOrig).cursor();
-
-						for (int i = 0; i < pixels.length; ++i)
-							pixels[i] = c.next().get();
-
-						impOrig.updateAndDraw();
-
-					}
+					repaintView(impOrig, CurrentViewOrig);
+					
+					
 					impOrig.setTitle(
 							"Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 				}
 			}
-			if (imp == null || !imp.isVisible()) {
-				imp = ImageJFunctions.show(CurrentView);
-
+			
+			if (!automode && !supermode && !curveautomode && !curvesupermode) {
+				repaintView(imp, CurrentView);
 			}
-
-			else {
-
-				final float[] pixels = (float[]) imp.getProcessor().getPixels();
-				final Cursor<FloatType> c = Views.iterable(CurrentView).cursor();
-
-				for (int i = 0; i < pixels.length; ++i)
-					pixels[i] = c.next().get();
-
-				imp.updateAndDraw();
-
-			}
-			if(!automode || !supermode || !curveautomode || !curvesupermode){
+			if(!automode && !supermode && !curveautomode && !curvesupermode){
 				if (ZTRois.get(uniqueID) == null)
 					DisplayDefault();
 				else
@@ -996,6 +1002,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			}
 			else if (automode || supermode)
 				DisplayAuto.Display(this);
+			if (!automode && !supermode && !curveautomode && !curvesupermode) 
 			imp.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 
 		}

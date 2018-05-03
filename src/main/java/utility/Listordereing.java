@@ -151,5 +151,49 @@ public class Listordereing {
 		return nextobject;
 
 	}
+	
+	/**
+	 * 
+	 * 
+	 * Get the Next nearest point in the list
+	 * 
+	 * @param minCord
+	 * @param truths
+	 * @return
+	 */
+
+	public static Pair<RealLocalizable, Double> getNextNearestPoint(
+			RealLocalizable minCord, List<Pair<RealLocalizable, Double>> truths) {
+
+		Pair<RealLocalizable, Double> nextobject = null;
+
+		final List<RealPoint> targetCoords = new ArrayList<RealPoint>(truths.size());
+		final List<FlagNode<Pair<RealLocalizable, Double>>> targetNodes = new ArrayList<FlagNode<Pair<RealLocalizable, Double>>>(
+				truths.size());
+
+		for (Pair<RealLocalizable, Double> localcord : truths) {
+
+			targetCoords.add(new RealPoint(localcord.getA()));
+			targetNodes.add(new FlagNode<Pair<RealLocalizable, Double>>(localcord));
+		}
+
+		if (targetNodes.size() > 0 && targetCoords.size() > 0) {
+
+			final KDTree<FlagNode<Pair<RealLocalizable, Double>>> Tree = new KDTree<FlagNode<Pair<RealLocalizable, Double>>>(
+					targetNodes, targetCoords);
+
+			final NNFlagsearchKDtree<Pair<RealLocalizable, Double>> Search = new NNFlagsearchKDtree<Pair<RealLocalizable, Double>>(
+					Tree);
+
+			Search.search(minCord);
+
+			final FlagNode<Pair<RealLocalizable, Double>> targetNode = Search.getSampler().get();
+
+			nextobject = targetNode.getValue();
+		}
+
+		return nextobject;
+
+	}
 
 }

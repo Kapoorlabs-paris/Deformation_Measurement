@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import javax.swing.JProgressBar;
 
 import curvatureUtils.DisplaySelected;
+import curvatureUtils.InterpolateCurvature;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import ellipsoidDetector.Tangentobject;
@@ -88,7 +89,10 @@ public class LabelCurvature implements Runnable {
 		}
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
 
+		// Get the sparse list of points
 		List<RealLocalizable> orderedtruths = Listordereing.getOrderedList(truths, parent.deltasep);
+		
+		
 
 		if (parent.fourthDimensionSize > 1)
 			parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension,
@@ -98,8 +102,10 @@ public class LabelCurvature implements Runnable {
 		final int ndims = ActualRoiimg.numDimensions();
 
 		parent.localCurvature = CurvatureFunction.getCurvature(orderedtruths, ndims, celllabel, t, z);
-
+		
+		
 		parent.AlllocalCurvature.add(parent.localCurvature);
+		
 
 	}
 
