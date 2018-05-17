@@ -57,7 +57,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 	  public final Insets insets = new Insets(10, 0, 0, 0);
 	  public final GridBagLayout layout = new GridBagLayout();
 	  public final GridBagConstraints c = new GridBagConstraints();
-	  public final String[] imageNames;
+	  public final String[] imageNames, blankimageNames;
 	  public JComboBox<String> ChooseImage;
 	  public JComboBox<String> ChoosesuperImage;
 	  public JComboBox<String> ChooseoriginalImage;
@@ -100,13 +100,17 @@ public class IlastikEllipseFileChooser extends JPanel {
 			panelCont.setLayout(cl);
 			panelCont.add(panelFirst, "1");
 			imageNames = WindowManager.getImageTitles();
+			blankimageNames = new String[imageNames.length + 1];
+			blankimageNames[0] = " " ;
 			
+			for(int i = 0; i < imageNames.length; ++i)
+				blankimageNames[i + 1] = imageNames[i];
 			
-			ChooseImage = new JComboBox<String>(imageNames);
+			ChooseImage = new JComboBox<String>(blankimageNames);
 			
-			ChooseoriginalImage = new JComboBox<String>(imageNames);
+			ChooseoriginalImage = new JComboBox<String>(blankimageNames);
 			
-			ChoosesuperImage = new JComboBox<String>(imageNames);
+			ChoosesuperImage = new JComboBox<String>(blankimageNames);
 			
 			Panelrun.add(Gosuper, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
