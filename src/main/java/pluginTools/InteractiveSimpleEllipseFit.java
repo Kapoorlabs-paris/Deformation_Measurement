@@ -185,7 +185,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int thirdDimension;
 	public int thirdDimensionSize;
 	public int fourthDimensionSize;
-	public ImagePlus impA, impOrig;
+	public ImagePlus impA;
 	public boolean isDone;
 	public int MIN_SLIDER = 0;
 	public int MAX_SLIDER = 500;
@@ -664,19 +664,15 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			CurrentViewOrig = utility.Slicer.getCurrentView(originalimgbefore, fourthDimension, thirdDimensionSize,
 					thirdDimension, fourthDimensionSize);
 
-			impOrig = ImageJFunctions.show(CurrentViewOrig);
-			impOrig.setTitle("Raw Image");
-			impOrig.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
+			
 		}
 
 	//	if(originalimgsuper!=null)
 	//		ImageJFunctions.show(originalimgsuper).setTitle("Super Pixel Segmentation");
 	
-		if (!supermode && !automode && !curveautomode && !curvesupermode) {
-		imp = ImageJFunctions.show(CurrentView);
+		imp = ImageJFunctions.show(CurrentViewOrig);
 		
-		imp.setTitle("Active Probability Map" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
-		}
+		imp.setTitle("Active Image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 		// Create empty Hyperstack
 
 		empty = new ArrayImgFactory<BitType>().create(originalimg, new BitType());
@@ -746,7 +742,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		ZID = Integer.toString(thirdDimension);
 		TID = Integer.toString(fourthDimension);
 		tmpID = Float.toString(thirdDimension) + Float.toString(fourthDimension);
-		if (!automode && !supermode && !curveautomode && !curvesupermode) {
 		overlay = imp.getOverlay();
 
 		if (overlay == null) {
@@ -754,17 +749,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			overlay = new Overlay();
 			imp.setOverlay(overlay);
 		}
-		}
-		else {
-			overlay = impOrig.getOverlay();
-
-			if (overlay == null) {
-
-				overlay = new Overlay();
-				impOrig.setOverlay(overlay);
-			
-		}
-		}
+	
 		
 		
 		if (change == ValueChange.INSIDE || change == ValueChange.OUTSIDE) {
@@ -789,7 +774,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					 tempview = utility.Binarization.CreateBinary(CurrentView, lowprob, highprob);
 			
 			
-			/*
+			
 			if (localimp == null || !localimp.isVisible() && automode) {
 				localimp = ImageJFunctions.show(tempview);
 
@@ -813,7 +798,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			if(automode || curveautomode)
 				localimp.setTitle(
 						"Seg Image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
-*/
+
 		}
 		
 
@@ -984,11 +969,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					CurrentViewOrig = utility.Slicer.getCurrentView(originalimgbefore, thirdDimension,
 							thirdDimensionSize, thirdDimension, fourthDimensionSize);
 
-					repaintView(impOrig, CurrentViewOrig);
 					
 					
-					impOrig.setTitle(
-							"Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 				}
 			}
 			
@@ -1003,7 +985,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			}
 			else if (automode || supermode)
 				DisplayAuto.Display(this);
-			if (!automode && !supermode && !curveautomode && !curvesupermode) 
 			imp.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 
 		}
@@ -1583,7 +1564,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		if((automode )  ||    (curveautomode )  ) {
 			
-/*
+
 			Probselect.add(lowprobText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
@@ -1595,7 +1576,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			Probselect.add(highprobslider, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-*/
+
 			Probselect.add(autoTstart, new GridBagConstraints(2, 6, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Probselect.add(startT, new GridBagConstraints(2, 8, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,

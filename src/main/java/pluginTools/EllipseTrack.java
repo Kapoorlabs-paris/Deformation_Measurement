@@ -44,62 +44,10 @@ public class EllipseTrack {
 		this.jpb = jpb;
 	}
 
-	public void BlockRepeatRect(double percent, int z, int t) {
 
-		parent.updatePreview(ValueChange.THIRDDIMmouse);
 
-		percent++;
 
-		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
-				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.originalimgsuper, z,
-				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
-		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
-
-		GetPixelList(CurrentViewInt);
-
-		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentViewInt, t, z, (int) percent);
-		compute.ParallelRansac();
-
-	}
-
-	public void BlockRepeatAutoRect(double percent, int z, int t) {
-
-		parent.updatePreview(ValueChange.THIRDDIMmouse);
-
-		percent++;
-
-		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
-				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
-		Pair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>> Current = getAutoint(CurrentView);
-
-		parent.maxlabel = GetMaxlabelsseeded(Current.getA());
-		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, Current.getA(), t, z, (int) percent,
-				parent.maxlabel);
-		compute.ParallelRansac();
-
-	}
-
-	public void BlockRepeatManualRect(double percent, int z, int t) {
-
-		parent.updatePreview(ValueChange.THIRDDIMmouse);
-		percent++;
-
-		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
-				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
-		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.emptyWater, z,
-				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
-		parent.maxlabel = GetMaxlabelsseeded(CurrentViewInt);
-
-		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent,
-				parent.maxlabel);
-		compute.ParallelRansac();
-
-	}
 
 	public void BlockRepeat(double percent, int z, int t) {
 
@@ -259,7 +207,6 @@ public class EllipseTrack {
 			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.AccountedZ.entrySet().size()),
 					"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
 
-		System.out.println(parent.AccountedZ.entrySet().size() + " " + percent);
 		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 

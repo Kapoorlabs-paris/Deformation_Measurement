@@ -14,11 +14,11 @@ public class TableDisplay {
 
 		// Make something happen
 		parent.row = trackindex;
-		Integer ID =  (Integer) parent.table.getValueAt(trackindex, 0);
+		String ID =  (String) parent.table.getValueAt(trackindex, 0);
 		ArrayList<Pair<String, double[]>> currentresultAngle = new ArrayList<Pair<String, double[]>>();
 		for (Pair<String, double[]> currentangle : parent.resultAngle) {
 
-			if (ID.equals(Integer.parseInt(currentangle.getA()))) {
+			if (ID.equals(currentangle.getA())) {
 
 				currentresultAngle.add(currentangle);
 

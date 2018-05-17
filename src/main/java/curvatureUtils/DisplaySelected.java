@@ -27,14 +27,13 @@ public class DisplaySelected {
 
 	public static void select(final InteractiveSimpleEllipseFit parent) {
 
-		if (parent.impOrig == null)
-			parent.impOrig = parent.imp;
+	
 
 		if (parent.mvl != null)
-			parent.impOrig.getCanvas().removeMouseListener(parent.mvl);
-		parent.impOrig.getCanvas().addMouseListener(parent.mvl = new MouseListener() {
+			parent.imp.getCanvas().removeMouseListener(parent.mvl);
+		parent.imp.getCanvas().addMouseListener(parent.mvl = new MouseListener() {
 
-			final ImageCanvas canvas = parent.impOrig.getWindow().getCanvas();
+			final ImageCanvas canvas = parent.imp.getWindow().getCanvas();
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -79,13 +78,12 @@ public class DisplaySelected {
 
 	public static void mark(final InteractiveSimpleEllipseFit parent) {
 
-		if (parent.impOrig == null)
-			parent.impOrig = parent.imp;
+		
 		if (parent.ml != null)
-			parent.impOrig.getCanvas().removeMouseMotionListener(parent.ml);
-		parent.impOrig.getCanvas().addMouseMotionListener(parent.ml = new MouseMotionListener() {
+			parent.imp.getCanvas().removeMouseMotionListener(parent.ml);
+		parent.imp.getCanvas().addMouseMotionListener(parent.ml = new MouseMotionListener() {
 
-			final ImageCanvas canvas = parent.impOrig.getWindow().getCanvas();
+			final ImageCanvas canvas = parent.imp.getWindow().getCanvas();
 
 			@Override
 			public void mouseMoved(MouseEvent e) {

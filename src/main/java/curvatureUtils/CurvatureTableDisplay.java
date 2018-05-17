@@ -47,9 +47,9 @@ public class CurvatureTableDisplay {
 		
 		
 
-		if (parent.impOrig != null) {
-			parent.impOrig.setOverlay(parent.overlay);
-			parent.impOrig.updateAndDraw();
+		if (parent.imp != null) {
+			parent.imp.setOverlay(parent.overlay);
+			parent.imp.updateAndDraw();
 		}
 
 		Double[] X = new Double[currentresultCurvature.size()];
