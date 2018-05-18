@@ -87,7 +87,7 @@ public class Watershedobject {
 	}
 	
 	
-	public static Watershedobject CurrentLabelBinaryImage(RandomAccessibleInterval<IntType> Intimg,
+	public static Watershedobject CurrentLabelBinaryImage(RandomAccessibleInterval<IntType> Intimg, 
 			 int currentLabel) {
 		int n = Intimg.numDimensions();
 		long[] position = new long[n];
@@ -103,6 +103,8 @@ public class Watershedobject {
 		RandomAccessibleInterval<BitType> currentimg = GenericFilters.GradientmagnitudeImage(Intimg);
 		currentimg = GenericFilters.AutoThreshold(currentimg);
 		RandomAccess<BitType> inputRA = currentimg.randomAccess();
+		
+		
 		// Go through the whole image and add every pixel, that belongs to
 		// the currently processed label
 		long[] minVal = { Intimg.max(0), Intimg.max(1) };

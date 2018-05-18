@@ -78,14 +78,13 @@ public class LabelCurvature implements Runnable {
 				utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.Accountedframes.entrySet().size()),
 						"Computing Curvature = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
 								+ parent.thirdDimensionSize);
-			else
+			else if(parent.thirdDimensionSize!=0)
 				utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.AccountedZ.entrySet().size()),
 						"Computing Curvature T/Z = " + z + "/" + parent.thirdDimensionSize);
 		} else {
 
-			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
-					"Computing Curvature T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
-							+ parent.thirdDimensionSize);
+			utility.ProgressBar.SetProgressBar(jpb, 100 ,
+					"Computing Curvature ");
 		}
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
 
@@ -103,9 +102,8 @@ public class LabelCurvature implements Runnable {
 
 		parent.localCurvature = CurvatureFunction.getCurvature(orderedtruths, ndims, celllabel, t, z);
 		
-		
 		parent.AlllocalCurvature.add(parent.localCurvature);
-		
+
 
 	}
 

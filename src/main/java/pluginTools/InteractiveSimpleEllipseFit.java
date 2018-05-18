@@ -1747,8 +1747,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		KalmanPanel.setPreferredSize(new Dimension(SizeX, SizeY));
 
 		int span = 5;
-		if(!automode  || !supermode  || !curveautomode  || !curvesupermode )
-			span = 10;
+		
 		panelFirst.add(KalmanPanel, new GridBagConstraints(0, 2, span, 1, 0.0, 0.0, GridBagConstraints.ABOVE_BASELINE,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 	  }

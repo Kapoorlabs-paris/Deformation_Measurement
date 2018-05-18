@@ -95,38 +95,34 @@ public class Computeinwater {
 
 		ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
 
+		Iterator<Integer> setiter = parent.pixellist.iterator();
 
-			Iterator<Integer> setiter = parent.pixellist.iterator();
+		parent.superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>>();
+		while (setiter.hasNext()) {
+			percent++;
 
-			parent.superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>>();
-			while (setiter.hasNext()) {
-				percent++;
+			int label = setiter.next();
 
-				int label = setiter.next();
-
+				Watershedobject current = utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt,
+						label);
 				
-				Watershedobject current = 
-						utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
-				// Neglect the small watershed regions by choosing only those regions which have more than 9 candidate points for ellipse fitting
-				
+				// Neglect the small watershed regions by choosing only those regions which have
+				// more than 9 candidate points for ellipse fitting
+
 				if (current.Size > parent.minperimeter / 3 * parent.minperimeter / 3
-						&& current.Size < parent.maxperimeter / 3 *  parent.maxperimeter / 3 && current.meanIntensity > parent.minellipsepoints){
-					
+						&& current.Size < parent.maxperimeter / 3 * parent.maxperimeter / 3
+						&& current.meanIntensity > parent.minellipsepoints) {
+
 					List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
-					
-					
+
 					tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi,
 							resultovalroi, resultlineroi, AllPointsofIntersect, Allintersection, fitmapspecial,
 							parent.jpb, percent, parent.supermode)));
 
 				}
 
-			}
+		}
 
-		
-
-	
-		
 		try {
 			taskExecutor.invokeAll(tasks);
 
@@ -134,32 +130,29 @@ public class Computeinwater {
 
 				// Get superintersection
 
-				
 				SuperIntersection newintersect = new SuperIntersection(parent);
 				AllPointsofIntersect = new ArrayList<Tangentobject>();
 				Allintersection = new ArrayList<Intersectionobject>();
 				newintersect.Getsuperintersection(resultroi, resultovalroi, resultlineroi, AllPointsofIntersect,
 						Allintersection, t, z);
-			
 
 			}
-			
+
 			else {
-				
+
 				NormalIntersection newintersect = new NormalIntersection(parent);
 				AllPointsofIntersect = new ArrayList<Tangentobject>();
 				Allintersection = new ArrayList<Intersectionobject>();
 				newintersect.Getsuperintersection(resultroi, resultovalroi, resultlineroi, AllPointsofIntersect,
 						Allintersection, t, z);
 			}
-		
+
 		} catch (InterruptedException e1) {
 
 		}
 
 	}
-	
-	
+
 	public void ParallelRansacCurve() {
 
 		int nThreads = Runtime.getRuntime().availableProcessors();
@@ -170,54 +163,34 @@ public class Computeinwater {
 		ArrayList<Line> resultlineroi = new ArrayList<Line>();
 		// Obtain the points of intersections
 
-	
+		Iterator<Integer> setiter = parent.pixellist.iterator();
 
+		while (setiter.hasNext()) {
 
-			Iterator<Integer> setiter = parent.pixellist.iterator();
+			percent++;
 
-			
-			
-			while (setiter.hasNext()) {
-				
-				
-				percent++;
+			int label = setiter.next();
+				// Creating a binary image in the integer image region from the boundary
+				// probability map
+				Watershedobject current =
 
-				int label = setiter.next();
-
-				// Creating a binary image in the integer image region from the boundary probability map
-				Watershedobject current = 
-						
 						utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
-						
-				
-				// Neglect the small watershed regions by choosing only those regions which have more than 9 candidate points for ellipse fitting
-				
-				if (current.Size > parent.minperimeter / 3 * parent.minperimeter / 3
-						&& current.Size < parent.maxperimeter / 3 *  parent.maxperimeter / 3 && current.meanIntensity > parent.minellipsepoints){
-					
-					List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
-					
-					tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, t, z, 
-							parent.jpb, percent, label)));
 
-				}
+				List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
 
-			}
+				tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, t, z,
+						parent.jpb, percent, label)));
+		}
 
-		
-
-	
-		
 		try {
 			taskExecutor.invokeAll(tasks);
 
 			// Put a fancy display at the end
-		
+
 		} catch (InterruptedException e1) {
 
 		}
 
 	}
-	
 
 }

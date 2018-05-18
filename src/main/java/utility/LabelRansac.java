@@ -102,9 +102,8 @@ public class LabelRansac implements Runnable {
 		}
 		else {
 			
-			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
-					"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
-							+ parent.thirdDimensionSize);
+			utility.ProgressBar.SetProgressBar(jpb, 100,
+					"Fitting ellipses and computing angles");
 		}
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
 

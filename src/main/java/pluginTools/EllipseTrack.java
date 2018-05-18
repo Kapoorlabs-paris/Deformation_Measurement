@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import distanceTransform.DistWatershedBinary;
+import distanceTransform.WatershedBinary;
+
 import javax.swing.JProgressBar;
 
 import net.imglib2.Cursor;
@@ -55,7 +57,7 @@ public class EllipseTrack {
 
 		percent++;
 		if(jpb!=null)
-		utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
+		utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize + 1),
 				"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
 						+ parent.thirdDimensionSize);
 
@@ -75,8 +77,8 @@ public class EllipseTrack {
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
 
 		percent++;
-		if(jpb!=null)
-		utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
+		if(jpb!=null )
+		utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize + 1),
 				"Computing Curvature = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
 						+ parent.thirdDimensionSize);
 
@@ -115,7 +117,7 @@ public class EllipseTrack {
 
 		percent++;
 		if(jpb!=null)
-		utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
+		utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize + 1),
 				"Fitting ellipses and computing angles T = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
 						+ parent.thirdDimensionSize);
 
@@ -147,7 +149,7 @@ public class EllipseTrack {
 
 		percent++;
 		if(jpb!=null)
-		utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize),
+		utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize + 1),
 				"Computing Curvature = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
 						+ parent.thirdDimensionSize);
 
@@ -159,15 +161,17 @@ public class EllipseTrack {
 		// Use smoothed image for segmentation and non smooth image for getting the
 		// candidate points for fitting ellipses
 		RandomAccessibleInterval<IntType> CurrentInt = getSeg(CurrentViewSmooth);
-		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
+	
+		
 		if (parent.showWater) {
 
 			Watershow(CurrentInt);
 
 		}
 
+		
 		GetPixelList(CurrentInt);
-		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentInt, t, z, (int) percent);
+		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentInt, t, z, (int) percent);
 		compute.ParallelRansacCurve();
 
 	}
@@ -574,7 +578,7 @@ public class EllipseTrack {
 
 		newCurrentView = Kernels.CannyEdgeandMeanBit(CurrentView, 1);
 		thinit.compute(newCurrentView, newthinCurrentView);
-		DistWatershedBinary segmentimage = new DistWatershedBinary(newthinCurrentView);
+		DistWatershedBinary segmentimage = new DistWatershedBinary(newCurrentView);
 
 		segmentimage.process();
 
@@ -585,6 +589,8 @@ public class EllipseTrack {
 		return CurrentViewInt;
 
 	}
+
+
 
 	public RandomAccessibleInterval<BitType> getCand(RandomAccessibleInterval<BitType> CurrentView) {
 
@@ -619,7 +625,6 @@ public class EllipseTrack {
 		newCurrentView = Kernels.CannyEdgeandMeanBit(CurrentView, 1);
 		thinit.compute(newCurrentView, newthinCurrentView);
 
-		// ImageJFunctions.show(newthinCurrentView).setTitle("Thinned image");
 
 		DistWatershedBinary segmentimage = new DistWatershedBinary(newthinCurrentView);
 
@@ -627,7 +632,6 @@ public class EllipseTrack {
 
 		RandomAccessibleInterval<IntType> CurrentViewInt = segmentimage.getResult();
 
-		// ImageJFunctions.show(CurrentViewInt).setTitle("Segmented image");
 
 		return new ValuePair<RandomAccessibleInterval<IntType>, RandomAccessibleInterval<BitType>>(CurrentViewInt,
 				newthinCurrentView);
@@ -666,6 +670,7 @@ public class EllipseTrack {
 		IntType max = new IntType();
 		computeMinMax(Views.iterable(intimg), min, max);
 		Cursor<IntType> intCursor = Views.iterable(intimg).cursor();
+		// Neglect the background class label
 		int currentLabel = min.get();
 		parent.pixellist.clear();
 		parent.pixellist.add(currentLabel);
