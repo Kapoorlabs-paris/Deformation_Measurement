@@ -152,7 +152,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 
 	}
 
-	public  void Lineage() {
+	public   void Lineage() {
 
 		for (Map.Entry<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> entryZ : parent.parentgraphZ
 				.entrySet()) {

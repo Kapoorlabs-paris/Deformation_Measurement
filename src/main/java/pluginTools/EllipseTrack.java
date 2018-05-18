@@ -197,6 +197,7 @@ public class EllipseTrack {
 
 	public void BlockRepeatManual(double percent, int z, int t) {
 
+		if(parent.roimanager.getRoisAsArray().length > 0) {
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
 		percent++;
 		if (parent.fourthDimensionSize != 0)
@@ -216,6 +217,7 @@ public class EllipseTrack {
 		GetPixelList(CurrentViewInt);
 		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent);
 		compute.ParallelRansac();
+		}
 
 	}
 

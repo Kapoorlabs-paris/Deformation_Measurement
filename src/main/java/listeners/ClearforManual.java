@@ -23,6 +23,9 @@ public class ClearforManual implements ActionListener {
 		int t = parent.fourthDimension;
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
 		parent.ZTRois.remove(uniqueID);
+		parent.ALLIntersections.remove(uniqueID);
+		if(parent.roimanager!=null)
+		parent.roimanager.runCommand("Delete");
 		DisplayAuto.Display(parent);
 		
 	}

@@ -655,6 +655,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			return;
 		}
 
+		if(originalimgbefore == null)
+			originalimgbefore = originalimg;
 		setTime(fourthDimension);
 		setZ(thirdDimension);
 		CurrentView = utility.Slicer.getCurrentView(originalimg, fourthDimension, thirdDimensionSize, thirdDimension,
@@ -767,13 +769,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 
 		if (change == ValueChange.SEG) {
+			
+			if(!supermode && !curvesupermode) {
 			RandomAccessibleInterval<FloatType> tempview = null;
 
 				 if(automode || curveautomode) 
 					 tempview = utility.Binarization.CreateBinary(CurrentViewSmooth, lowprob, highprob);
-				 else if (supermode || curvesupermode)
-					 
-					 tempview = utility.Binarization.CreateBinary(CurrentView, lowprob, highprob);
+			
 			
 			
 			
@@ -794,13 +796,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			}
 
-			if(supermode || curvesupermode)
-			localimp.setTitle(
-					"Candidate Points" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
+		
 			if(automode || curveautomode)
 				localimp.setTitle(
 						"Seg Image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 
+		}
 		}
 		
 
@@ -1745,10 +1746,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		KalmanPanel.setPreferredSize(new Dimension(SizeX, SizeY));
 
-		panelFirst.add(KalmanPanel, new GridBagConstraints(0, 2, 5, 1, 0.0, 0.0, GridBagConstraints.ABOVE_BASELINE,
+		int span = 5;
+		if(!automode  || !supermode  || !curveautomode  || !curvesupermode )
+			span = 10;
+		panelFirst.add(KalmanPanel, new GridBagConstraints(0, 2, span, 1, 0.0, 0.0, GridBagConstraints.ABOVE_BASELINE,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 	  }
-	  if(!curveautomode && !curvesupermode) {
+	  if(automode || supermode) {
 		  
 		  ManualIntervention.add(Clearmanual, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
