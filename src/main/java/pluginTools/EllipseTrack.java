@@ -219,6 +219,15 @@ public class EllipseTrack {
 
 	}
 
+	public void ManualIntervention() {
+		
+		double percent = 0;
+		int z = parent.thirdDimension;
+		int t = parent.fourthDimension;
+
+		BlockRepeatManual(percent, z, t);
+		
+	}
 	public void IntersectandTrack() {
 
 		// Main method for computing intersections and tangents and angles between

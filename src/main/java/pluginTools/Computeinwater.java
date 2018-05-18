@@ -109,7 +109,8 @@ public class Computeinwater {
 						utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
 				// Neglect the small watershed regions by choosing only those regions which have more than 9 candidate points for ellipse fitting
 				
-				if (current.meanIntensity > parent.minellipsepoints) {
+				if (current.Size > parent.minperimeter / 3 * parent.minperimeter / 3
+						&& current.Size < parent.maxperimeter / 3 *  parent.maxperimeter / 3 && current.meanIntensity > parent.minellipsepoints){
 					
 					List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
 					
@@ -191,7 +192,8 @@ public class Computeinwater {
 				
 				// Neglect the small watershed regions by choosing only those regions which have more than 9 candidate points for ellipse fitting
 				
-				if (current.meanIntensity > parent.minellipsepoints) {
+				if (current.Size > parent.minperimeter / 3 * parent.minperimeter / 3
+						&& current.Size < parent.maxperimeter / 3 *  parent.maxperimeter / 3 && current.meanIntensity > parent.minellipsepoints){
 					
 					List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
 					

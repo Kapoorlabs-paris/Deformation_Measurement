@@ -77,6 +77,7 @@ import kalmanTracker.NearestRoi;
 import listeners.AngleListener;
 import listeners.AutoEndListener;
 import listeners.AutoStartListener;
+import listeners.ClearforManual;
 import listeners.ColorListener;
 import listeners.CurvatureListener;
 import listeners.DeltasepListener;
@@ -90,6 +91,7 @@ import listeners.HighProbListener;
 import listeners.IlastikListener;
 import listeners.InsideCutoffListener;
 import listeners.LowProbListener;
+import listeners.ManualInterventionListener;
 import listeners.MaxTryListener;
 import listeners.MaxperimeterListener;
 import listeners.MinpercentListener;
@@ -932,7 +934,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 
 		if (change == ValueChange.ROI) {
+			roimanager = RoiManager.getInstance();
 
+			if (roimanager == null) {
+				roimanager = new RoiManager();
+			}
 			IJ.run("Select None");
 			DefaultZTRois.clear();
 			// roimanager.runCommand("show all");
@@ -997,6 +1003,16 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		compute.execute();
 
+	}
+	
+	
+	public void StartManualIntervention() {
+		
+		
+		ComputeManual compute = new ComputeManual(this , jpb);
+		
+		compute.execute();
+		
 	}
 	
 	public void StartCurvatureComputing() {
@@ -1223,6 +1239,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JPanel Probselect = new JPanel();
 	public JPanel Angleselect = new JPanel();
 	public JPanel KalmanPanel = new JPanel();
+	public JPanel ManualIntervention = new JPanel();
 	public JCheckBox IlastikAuto = new JCheckBox("Show Watershed Image", showWater);
 
 	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField, gaussfield, deltasepField;
@@ -1248,6 +1265,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JButton Savebutton = new JButton("Save Track");
 	public JButton Redobutton = new JButton("Recompute for current view");
 	public JButton Smoothbutton = new JButton("Do Gaussian Smoothing");
+	public JButton Clearmanual = new JButton("Clear Current View");
+	public JButton ManualCompute = new JButton("Manual Computation");
 
 	public Label timeText = new Label("Current T = " + 1, Label.CENTER);
 	public Label zText = new Label("Current Z = " + 1, Label.CENTER);
@@ -1357,6 +1376,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		Probselect.setLayout(layout);
 		Angleselect.setLayout(layout);
 		KalmanPanel.setLayout(layout);
+		ManualIntervention.setLayout(layout);
 		inputFieldZ = new TextField(5);
 		inputFieldZ.setText(Integer.toString(thirdDimension));
 
@@ -1459,6 +1479,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		Border Kalmanborder = new CompoundBorder(new TitledBorder("Kalman Filter Search for angle tracking"),
 				new EmptyBorder(c.insets));
+		
+
+		Border ManualInterventionborder = new CompoundBorder(new TitledBorder("Manual Intervention"),
+				new EmptyBorder(c.insets));
+		
 		c.anchor = GridBagConstraints.BOTH;
 		c.ipadx = 35;
 
@@ -1707,20 +1732,49 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		KalmanPanel.add(Anglebutton, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-		KalmanPanel.add(Redobutton, new GridBagConstraints(5, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		KalmanPanel.add(Redobutton, new GridBagConstraints(3, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		
+	
+
+
+		
+		
 		
 		KalmanPanel.setBorder(Kalmanborder);
 		
 		KalmanPanel.setPreferredSize(new Dimension(SizeX, SizeY));
-	  }
-		KalmanPanel.add(controlnext, new GridBagConstraints(5, 6, 10, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
-		
-		
-		
-		panelFirst.add(KalmanPanel, new GridBagConstraints(0, 2, 10, 1, 0.0, 0.0, GridBagConstraints.ABOVE_BASELINE,
+
+		panelFirst.add(KalmanPanel, new GridBagConstraints(0, 2, 5, 1, 0.0, 0.0, GridBagConstraints.ABOVE_BASELINE,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+	  }
+	  if(!curveautomode && !curvesupermode) {
+		  
+		  ManualIntervention.add(Clearmanual, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		  
+		  ManualIntervention.add(Roibutton, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		  
+		  ManualIntervention.add(ManualCompute, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		  
+		
+		  
+		  ManualIntervention.setBorder(ManualInterventionborder);
+			
+		  ManualIntervention.setPreferredSize(new Dimension(SizeX, SizeY));
+		  
+
+			panelFirst.add(ManualIntervention, new GridBagConstraints(5, 2, 5, 1, 0.0, 0.0, GridBagConstraints.ABOVE_BASELINE,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+	  }
+	  
+	  panelFirst.add(controlnext, new GridBagConstraints(5, 6, 10, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.ABOVE_BASELINE, new Insets(10, 10, 0, 10), 0, 0));
+		
+		
+		
 	  
 		
 		table.setFillsViewportHeight(true);
@@ -1811,6 +1865,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		highprobslider.addAdjustmentListener(new HighProbListener(this, highporbText, highprobstring, highprobmin,
 				highprobmax, scrollbarSize, highprobslider));
 	
+		Clearmanual.addActionListener(new ClearforManual(this));
+		ManualCompute.addActionListener(new ManualInterventionListener(this));
 		maxSearchS.addAdjustmentListener(new ETrackMaxSearchListener(this, maxSearchText, maxSearchstring,
 				maxSearchradiusMin, maxSearchradiusMax, scrollbarSize, maxSearchS));
 		initialSearchS.addAdjustmentListener(new ETrackIniSearchListener(this, iniSearchText, initialSearchstring,
