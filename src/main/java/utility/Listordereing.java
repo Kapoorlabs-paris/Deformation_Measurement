@@ -28,22 +28,25 @@ public class Listordereing {
 	 * @return
 	 */
 
-	public static <T extends RealType<T> & NativeType<T>> List<RealLocalizable> getOrderedList(
-			List<Pair<RealLocalizable, T>> truths, double deltasep) {
+	public static List<RealLocalizable> getOrderedList(
+			List<RealLocalizable> truths) {
 
-		List<Pair<RealLocalizable, T>> copytruths = copyList(truths);
+		
+		List<RealLocalizable> copytruths = copyList(truths);
+		
+		
 		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
-		Pair<RealLocalizable, T> minCord = getMinCord(copytruths);
+		RealLocalizable minCord = getMinCord(copytruths);
 
-             orderedtruths.add(minCord.getA());
+             orderedtruths.add(minCord);
              copytruths.remove(minCord);
 		do {
 		
 			
-			Pair<RealLocalizable, T> nextCord = getNextNearest(minCord.getA(), copytruths);
-			if (Distance.DistanceSqrt(minCord.getA(), nextCord.getA()) > deltasep) {
+			RealLocalizable nextCord = getNextNearest(minCord, copytruths);
+			if (Distance.DistanceSqrt(minCord, nextCord) > 0) {
 			minCord = nextCord;
-			orderedtruths.add(minCord.getA());
+			orderedtruths.add(minCord);
 			}
 			copytruths.remove(nextCord);
 			
@@ -56,16 +59,16 @@ public class Listordereing {
 	
 
 
-	public static <T extends RealType<T> & NativeType<T>> List<Pair<RealLocalizable, T>> copyList(
-			List<Pair<RealLocalizable, T>> truths) {
+	public static  List<RealLocalizable> copyList(
+			List<RealLocalizable> truths) {
 
-		List<Pair<RealLocalizable, T>> copytruths = new ArrayList<Pair<RealLocalizable, T>>();
+		List<RealLocalizable> copytruths = new ArrayList<RealLocalizable>();
 
-		Iterator<Pair<RealLocalizable, T>> iterator = truths.iterator();
+		Iterator<RealLocalizable> iterator = truths.iterator();
 
 		while (iterator.hasNext()) {
 
-			Pair<RealLocalizable, T> nextvalue = iterator.next();
+			RealLocalizable nextvalue = iterator.next();
 
 			copytruths.add(nextvalue);
 
@@ -82,18 +85,18 @@ public class Listordereing {
 	 * @return
 	 */
 
-	public static <T extends RealType<T> & NativeType<T>> Pair<RealLocalizable, T> getMinCord(
-			List<Pair<RealLocalizable, T>> truths) {
+	public static RealLocalizable getMinCord(
+			List<RealLocalizable> truths) {
 
 		RealPoint minCord = new RealPoint(new double[] { Double.MAX_VALUE, Double.MAX_VALUE });
-		Pair<RealLocalizable, T> minobject = null;
-		Iterator<Pair<RealLocalizable, T>> iter = truths.iterator();
+		RealLocalizable minobject = null;
+		Iterator<RealLocalizable> iter = truths.iterator();
 
 		while (iter.hasNext()) {
 
-			Pair<RealLocalizable, T> currentpair = iter.next();
+			RealLocalizable currentpair = iter.next();
 
-			RealLocalizable currentpoint = currentpair.getA();
+			RealLocalizable currentpoint = currentpair;
 
 			if (currentpoint.getDoublePosition(0) <= minCord.getDoublePosition(0)
 					&& currentpoint.getDoublePosition(1) <= minCord.getDoublePosition(1)) {
@@ -118,32 +121,32 @@ public class Listordereing {
 	 * @return
 	 */
 
-	public static <T extends RealType<T> & NativeType<T>> Pair<RealLocalizable, T> getNextNearest(
-			RealLocalizable minCord, List<Pair<RealLocalizable, T>> truths) {
+	public static  RealLocalizable getNextNearest(
+			RealLocalizable minCord, List<RealLocalizable> truths) {
 
-		Pair<RealLocalizable, T> nextobject = null;
+		RealLocalizable nextobject = null;
 
 		final List<RealPoint> targetCoords = new ArrayList<RealPoint>(truths.size());
-		final List<FlagNode<Pair<RealLocalizable, T>>> targetNodes = new ArrayList<FlagNode<Pair<RealLocalizable, T>>>(
+		final List<FlagNode<RealLocalizable>> targetNodes = new ArrayList<FlagNode<RealLocalizable>>(
 				truths.size());
 
-		for (Pair<RealLocalizable, T> localcord : truths) {
+		for (RealLocalizable localcord : truths) {
 
-			targetCoords.add(new RealPoint(localcord.getA()));
-			targetNodes.add(new FlagNode<Pair<RealLocalizable, T>>(localcord));
+			targetCoords.add(new RealPoint(localcord));
+			targetNodes.add(new FlagNode<RealLocalizable>(localcord));
 		}
 
 		if (targetNodes.size() > 0 && targetCoords.size() > 0) {
 
-			final KDTree<FlagNode<Pair<RealLocalizable, T>>> Tree = new KDTree<FlagNode<Pair<RealLocalizable, T>>>(
+			final KDTree<FlagNode<RealLocalizable>> Tree = new KDTree<FlagNode<RealLocalizable>>(
 					targetNodes, targetCoords);
 
-			final NNFlagsearchKDtree<Pair<RealLocalizable, T>> Search = new NNFlagsearchKDtree<Pair<RealLocalizable, T>>(
+			final NNFlagsearchKDtree<RealLocalizable> Search = new NNFlagsearchKDtree<RealLocalizable>(
 					Tree);
 
 			Search.search(minCord);
 
-			final FlagNode<Pair<RealLocalizable, T>> targetNode = Search.getSampler().get();
+			final FlagNode<RealLocalizable> targetNode = Search.getSampler().get();
 
 			nextobject = targetNode.getValue();
 		}

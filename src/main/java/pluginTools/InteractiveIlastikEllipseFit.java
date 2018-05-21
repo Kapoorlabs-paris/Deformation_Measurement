@@ -24,7 +24,7 @@ public class InteractiveIlastikEllipseFit {
 		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/CurvatureTest/Circles.tif");
 		impC.show();
 		
-		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/CurvatureTest/Circles.tif");
+		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/CurvatureTest/MultiCircles.tif");
 		impA.show();
 		IlastikEllipseFileChooser panel = new IlastikEllipseFileChooser();
 

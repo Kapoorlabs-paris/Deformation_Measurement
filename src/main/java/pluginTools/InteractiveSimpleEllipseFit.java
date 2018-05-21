@@ -163,7 +163,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public long maxsize = 100;
 	public int span = 2;
 	public int minperimeter = 100;
-	public double deltasep = 10;
+	public int numseg = 10;
 	public int maxperimeter = 1000;
 	public float lowprob = 0f;
 	public float highprob = 1f;
@@ -1243,7 +1243,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JPanel ManualIntervention = new JPanel();
 	public JCheckBox IlastikAuto = new JCheckBox("Show Watershed Image", showWater);
 
-	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField, gaussfield, deltasepField;
+	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField, gaussfield, numsegField;
 	public TextField inputFieldZ, startT, endT;
 	public TextField inputFieldmaxtry;
 	public TextField inputFieldminpercent;
@@ -1281,7 +1281,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final Label minperiText = new Label("Minimum ellipse perimeter" );
 	final Label maxperiText = new Label("Maximum ellipse perimeter" );
 	
-	final Label deltasepText = new Label("Delta seperation" );
+	final Label numsegText = new Label("Number of segments" );
 	final Label lowprobText = new Label("Lower probability level = " + lowprob, Label.CENTER);
 	final Label highporbText = new Label("Higher probability level = " + highprob, Label.CENTER);
 
@@ -1394,8 +1394,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		minperimeterField = new TextField(5);
 		minperimeterField.setText(Integer.toString(minperimeter));
 		
-		deltasepField = new TextField(5);
-		deltasepField.setText(Double.toString(deltasep));
+		numsegField = new TextField(5);
+		numsegField.setText(Double.toString(numseg));
 
 		maxperimeterField = new TextField(5);
 		maxperimeterField.setText(Integer.toString(maxperimeter));
@@ -1633,10 +1633,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 		if (curvesupermode || curveautomode ) {
 			
-			Angleselect.add(deltasepText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(numsegText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(deltasepField, new GridBagConstraints(4, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(numsegField, new GridBagConstraints(4, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
@@ -1850,7 +1850,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		Roibutton.addActionListener(new RoiListener(this));
 		inputFieldZ.addTextListener(new ZlocListener(this, false));
 		minperimeterField.addTextListener(new MinperimeterListener(this));
-		deltasepField.addTextListener(new DeltasepListener(this));
+		numsegField.addTextListener(new DeltasepListener(this));
 		maxperimeterField.addTextListener(new MaxperimeterListener(this));
 		inputFieldT.addTextListener(new TlocListener(this, false));
 		inputtrackField.addTextListener(new TrackidListener(this));

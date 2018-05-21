@@ -14,7 +14,6 @@ public class Threepointfit {
 	
 	    public Threepointfit(double[] x, double[] y, int degree){
 			
-			
 			this.degree = degree;
 			Npoints = x.length;
 			

@@ -104,7 +104,7 @@ public class Watershedobject {
 		currentimg = GenericFilters.AutoThreshold(currentimg);
 		RandomAccess<BitType> inputRA = currentimg.randomAccess();
 		
-		
+
 		// Go through the whole image and add every pixel, that belongs to
 		// the currently processed label
 		long[] minVal = { Intimg.max(0), Intimg.max(1) };

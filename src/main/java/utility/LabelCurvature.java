@@ -32,7 +32,7 @@ public class LabelCurvature implements Runnable {
 
 	final InteractiveSimpleEllipseFit parent;
 	final RandomAccessibleInterval<BitType> ActualRoiimg;
-	List<Pair<RealLocalizable, BitType>> truths;
+	List<RealLocalizable> truths;
 	final int t;
 	final int z;
 	final int celllabel;
@@ -41,7 +41,7 @@ public class LabelCurvature implements Runnable {
 	final JProgressBar jpb;
 
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
-			final RandomAccessibleInterval<BitType> ActualRoiimg, List<Pair<RealLocalizable, BitType>> truths,
+			final RandomAccessibleInterval<BitType> ActualRoiimg, List<RealLocalizable> truths,
 			ArrayList<Line> resultlineroi, final int t, final int z, final int celllabel) {
 
 		this.parent = parent;
@@ -56,7 +56,7 @@ public class LabelCurvature implements Runnable {
 	}
 
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
-			final RandomAccessibleInterval<BitType> ActualRoiimg, List<Pair<RealLocalizable, BitType>> truths,
+			final RandomAccessibleInterval<BitType> ActualRoiimg, List<RealLocalizable> truths,
 			ArrayList<Line> resultlineroi, final int t, final int z, final JProgressBar jpb, final int percent,
 			final int celllabel) {
 
@@ -89,10 +89,8 @@ public class LabelCurvature implements Runnable {
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
 
 		// Get the sparse list of points
-		List<RealLocalizable> orderedtruths = Listordereing.getOrderedList(truths, parent.deltasep);
+		List<RealLocalizable> allorderedtruths = Listordereing.getOrderedList(truths);
 		
-		
-
 		if (parent.fourthDimensionSize > 1)
 			parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension,
 					parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
@@ -100,7 +98,7 @@ public class LabelCurvature implements Runnable {
 				parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
 		final int ndims = ActualRoiimg.numDimensions();
 
-		parent.localCurvature = CurvatureFunction.getCurvature(orderedtruths, ndims, celllabel, t, z);
+		parent.localCurvature = CurvatureFunction.getCurvature(allorderedtruths, parent.numseg, ndims, celllabel, t, z);
 		
 		parent.AlllocalCurvature.add(parent.localCurvature);
 

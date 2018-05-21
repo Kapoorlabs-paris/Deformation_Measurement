@@ -176,7 +176,7 @@ public class Computeinwater {
 
 						utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
 
-				List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
+				List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
 
 				tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, t, z,
 						parent.jpb, percent, label)));
