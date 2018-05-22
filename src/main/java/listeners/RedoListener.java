@@ -23,51 +23,40 @@ public class RedoListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
+
 		parent.superReducedSamples.clear();
-if (parent.supermode) {
 		
-			
-			parent.empty = utility.Binarization.CreateBinaryBit(parent.originalimg, parent.lowprob, parent.highprob);
-			
-			
+		if (parent.supermode) {
 
-			
-			parent.parentgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
-			parent.parentgraphZ =  new 
-					HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
-			parent.StartComputingCurrent();
-			
-		}
-		
-       if (parent.automode) {
-		
-			
-			parent.emptysmooth = utility.Binarization.CreateBinaryBit(parent.originalimgsmooth, parent.lowprob, parent.highprob);
 			parent.empty = utility.Binarization.CreateBinaryBit(parent.originalimg, parent.lowprob, parent.highprob);
 
-			
-			parent.parentgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
-			parent.parentgraphZ =  new 
-					HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
+			parent.parentgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(
+					DefaultWeightedEdge.class);
+			parent.parentgraphZ = new HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
 			parent.StartComputingCurrent();
-			
+
 		}
-		
-		
-		else if(!parent.automode && !parent.supermode) {
-		parent.parentgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
-		parent.parentgraphZ =  new 
-				HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
-		parent.StartComputingCurrent();
-		
-		
+
+		if (parent.automode) {
+
+			parent.emptysmooth = utility.Binarization.CreateBinaryBit(parent.originalimgsmooth, parent.lowprob,
+					parent.highprob);
+			parent.empty = utility.Binarization.CreateBinaryBit(parent.originalimg, parent.lowprob, parent.highprob);
+
+			parent.parentgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(
+					DefaultWeightedEdge.class);
+			parent.parentgraphZ = new HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
+			parent.StartComputingCurrent();
+
 		}
-		
-		
-		
-		
-		
+
+		else if (!parent.automode && !parent.supermode) {
+			parent.parentgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(
+					DefaultWeightedEdge.class);
+			parent.parentgraphZ = new HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
+			parent.StartComputingCurrent();
+
+		}
 
 	}
 

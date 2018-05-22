@@ -31,6 +31,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import ellipsoidDetector.Intersectionobject;
+import ij.ImageStack;
 import kalmanTracker.ETrackCostFunction;
 import kalmanTracker.IntersectionobjectCollection;
 import kalmanTracker.KFsearch;
@@ -56,81 +57,87 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 
 	@Override
 	protected Void doInBackground() throws Exception {
+
 		parent.table.removeAll();
 		HashMap<String, Integer> map = sortByValues(parent.Accountedframes);
 		parent.Accountedframes = map;
 
 		HashMap<String, Integer> mapZ = sortByValues(parent.AccountedZ);
 		parent.AccountedZ = mapZ;
+
 		EllipseTrack newtrack = new EllipseTrack(parent, jpb);
 		newtrack.IntersectandTrackCurrent();
-
+	
 		return null;
 
 	}
-	private static HashMap<String, Integer> sortByValues(HashMap<String, Integer> map) { 
-	       List<Entry<String, Integer>> list = new LinkedList<Entry<String, Integer>>(map.entrySet());
-	       // Defined Custom Comparator here
-	       Collections.sort(list, new Comparator<Entry<String, Integer>>() {
-	        
 
-				@Override
-				public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {
-					 return (o1.getValue())
-			                  .compareTo(o2.getValue());
-				}
-	       });
+	private static HashMap<String, Integer> sortByValues(HashMap<String, Integer> map) {
+		List<Entry<String, Integer>> list = new LinkedList<Entry<String, Integer>>(map.entrySet());
+		
+		// Defined Custom Comparator here
+		Collections.sort(list, new Comparator<Entry<String, Integer>>() {
 
-	       // Here I am copying the sorted list in HashMap
-	       // using LinkedHashMap to preserve the insertion order
-	       HashMap<String, Integer> sortedHashMap = new LinkedHashMap<String, Integer>();
-	       for (Iterator<Entry<String, Integer>> it = list.iterator(); it.hasNext();) {
-	              Map.Entry<String, Integer> entry = (Map.Entry<String, Integer>) it.next();
-	              sortedHashMap.put(entry.getKey(), entry.getValue());
-	       } 
-	       return sortedHashMap;
-	  }
+			@Override
+			public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {
+				
+				return (o1.getValue()).compareTo(o2.getValue());
+			
+			}
+		});
+
+		// Here I am copying the sorted list in HashMap
+		// using LinkedHashMap to preserve the insertion order
+		HashMap<String, Integer> sortedHashMap = new LinkedHashMap<String, Integer>();
+		
+		for (Iterator<Entry<String, Integer>> it = list.iterator(); it.hasNext();) {
+		
+			Map.Entry<String, Integer> entry = (Map.Entry<String, Integer>) it.next();
+			
+			sortedHashMap.put(entry.getKey(), entry.getValue());
+		}
+		return sortedHashMap;
+	}
 
 	@Override
 	protected void done() {
 
 		parent.jpb.setIndeterminate(false);
+		
 		parent.Cardframe.validate();
 
-	
-		if (parent.ndims > 3){
-		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
+		parent.prestack =  new ImageStack((int) parent.originalimg.dimension(0), (int) parent.originalimg.dimension(1),
+				java.awt.image.ColorModel.getRGBdefault());
 		
+		parent.resultDraw.clear();
 		
-        		
-		
-		while (itZ.hasNext()) {
+		parent.Tracklist.clear();
 
-		int	z = itZ.next().getValue();
-	
-		
-		NearestNeighbourSearch NNsearch = new NearestNeighbourSearch(parent.ALLIntersections, z,
-				(int)parent.fourthDimensionSize, parent.maxdistance, parent.Accountedframes);
-		NNsearch.process();
-		parent.parentgraphZ.put(Integer.toString(z), NNsearch.getResult());
-		
-		
-		
-		}
-		Lineage();
-		}
-		
-		else {
+		if (parent.ndims > 3) {
 			
-			NearestNeighbourSearch2D NNsearch = new NearestNeighbourSearch2D(parent.ALLIntersections, 
-					(int)parent.thirdDimensionSize, parent.maxdistance, parent.AccountedZ, parent.mindistance);
-			NNsearch.process();
-			 SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>	simplegraph =  NNsearch.getResult();
-			 parent.parentgraphZ.put(Integer.toString(1), simplegraph);
+			Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
+			
+			while (itZ.hasNext()) {
+
+				int z = itZ.next().getValue();
+			
+				SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > simplegraph = Trackfunction();
+				
+				parent.parentgraphZ.put(Integer.toString(z), simplegraph);
+			}
 			Lineage();
 		}
+
+		else {
 		
-	
+			SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > simplegraph = Trackfunction();
+			
+			
+
+			parent.parentgraphZ.put(Integer.toString(1), simplegraph);
+			
+			Lineage();
+		}
 
 		try {
 			get();
@@ -295,6 +302,7 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 		
 		
 	}
+	
 
 
 }
