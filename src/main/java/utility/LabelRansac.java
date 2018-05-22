@@ -105,7 +105,7 @@ public class LabelRansac implements Runnable {
 			utility.ProgressBar.SetProgressBar(jpb, 100,
 					"Fitting ellipses and computing angles");
 		}
-		truths = ConnectedComponentCoordinates.GetCoordinates(ActualRoiimg , new BitType(false));
+		truths = ConnectedComponentCoordinates.GetCoordinates(ActualRoiimg , new BitType(true));
 
 		if(parent.fourthDimensionSize > 1)
 		parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension, parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));

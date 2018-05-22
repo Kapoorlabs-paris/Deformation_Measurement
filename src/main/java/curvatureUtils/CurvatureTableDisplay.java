@@ -27,15 +27,15 @@ public class CurvatureTableDisplay {
 		final ArrayList<Line> resultlineroi = new ArrayList<Line>();
 		ArrayList<Curvatureobject> currentresultCurvature = new ArrayList<Curvatureobject>();
 		for (ArrayList<Curvatureobject> Allcurrentcurvature : parent.AlllocalCurvature) {
-			for (int index = 0; index < Allcurrentcurvature.size(); ++index) {
+			for (int index = 0; index < Allcurrentcurvature.size() - 1; ++index) {
 				Curvatureobject currentcurvature = Allcurrentcurvature.get(index);
-
+				Curvatureobject currentcurvaturenext = Allcurrentcurvature.get(index + 1);
 				if (ID.equals(currentcurvature.Label) && parent.thirdDimension == currentcurvature.z
 						&& parent.fourthDimension == currentcurvature.t) {
 
 					currentresultCurvature.add(currentcurvature);
 					Line currentline = new Line(currentcurvature.cord[0], currentcurvature.cord[1],
-							currentcurvature.cord[0], currentcurvature.cord[1]);
+							currentcurvaturenext.cord[0], currentcurvaturenext.cord[1]);
 					resultlineroi.add(currentline);
 					parent.overlay.add(currentline);
 

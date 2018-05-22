@@ -66,9 +66,9 @@ public class EllipseTrack {
 		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.originalimgsuper, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
-		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
+		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
 		GetPixelList(CurrentViewInt);
-		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentViewInt, t, z, (int) percent);
+		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent);
 		compute.ParallelRansac();
 	}
 	
@@ -87,9 +87,9 @@ public class EllipseTrack {
 		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.originalimgsuper, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
-		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
+		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
 		GetPixelList(CurrentViewInt);
-		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentViewInt, t, z, (int) percent);
+		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent);
 		compute.ParallelRansacCurve();
 	}
 	
@@ -129,7 +129,7 @@ public class EllipseTrack {
 		// Use smoothed image for segmentation and non smooth image for getting the
 		// candidate points for fitting ellipses
 		RandomAccessibleInterval<IntType> CurrentInt = getSeg(CurrentViewSmooth);
-		RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
+		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
 		if (parent.showWater) {
 
 			Watershow(CurrentInt);
@@ -137,7 +137,7 @@ public class EllipseTrack {
 		}
 
 		GetPixelList(CurrentInt);
-		Computeinwater compute = new Computeinwater(parent, CurrentViewthin, CurrentInt, t, z, (int) percent);
+		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentInt, t, z, (int) percent);
 		compute.ParallelRansac();
 
 	}
@@ -550,7 +550,7 @@ public class EllipseTrack {
 
 		return newthinCurrentView;
 	}
-
+/*
 	public RandomAccessibleInterval<BitType> getThin(RandomAccessibleInterval<BitType> CurrentView) {
 
 		ThinningStrategyFactory fact = new ThinningStrategyFactory(true);
@@ -568,8 +568,9 @@ public class EllipseTrack {
 		newblurCurrentView = Kernels.CannyEdgeandMeanBit(newthinCurrentView, 1);
 		return newblurCurrentView;
 	}
-
+*/
 	public RandomAccessibleInterval<IntType> getSeg(RandomAccessibleInterval<BitType> CurrentView) {
+	/*
 		ThinningStrategyFactory fact = new ThinningStrategyFactory(true);
 		ThinningStrategy strat = fact.getStrategy(Strategy.HILDITCH);
 		ThinningOp thinit = new ThinningOp(strat, true, new ArrayImgFactory<BitType>());
@@ -583,7 +584,8 @@ public class EllipseTrack {
 		newCurrentView = Kernels.CannyEdgeandMeanBit(CurrentView, 1);
 		thinit.compute(newCurrentView, newthinCurrentView);
 		newblurCurrentView = Kernels.CannyEdgeandMeanBit(newthinCurrentView, 1);
-		DistWatershedBinary segmentimage = new DistWatershedBinary(newblurCurrentView);
+		*/
+		DistWatershedBinary segmentimage = new DistWatershedBinary(CurrentView);
 
 		segmentimage.process();
 

@@ -972,18 +972,23 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				if(originalimgsmooth!= null)
 					CurrentViewSmooth =  utility.Slicer.getCurrentView(originalimgsmooth, thirdDimension,
 							thirdDimensionSize, thirdDimension, fourthDimensionSize);
-				if (originalimgbefore != null) {
+				if (originalimgbefore != null) 
 					CurrentViewOrig = utility.Slicer.getCurrentView(originalimgbefore, thirdDimension,
 							thirdDimensionSize, thirdDimension, fourthDimensionSize);
 
+					if (originalimg!= null) 
+						CurrentView = utility.Slicer.getCurrentView(originalimg, thirdDimension,
+								thirdDimensionSize, thirdDimension, fourthDimensionSize);
 					
-					
-				}
+				
 			}
 			
-			if (!automode && !supermode && !curveautomode && !curvesupermode) {
+			if(supermode || curvesupermode || automode || curveautomode  )
+				repaintView(imp, CurrentViewOrig);
+			else
 				repaintView(imp, CurrentView);
-			}
+			
+			
 			if(!automode && !supermode && !curveautomode && !curvesupermode){
 				if (ZTRois.get(uniqueID) == null)
 					DisplayDefault();
