@@ -31,6 +31,9 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import ellipsoidDetector.Intersectionobject;
+import kalmanTracker.ETrackCostFunction;
+import kalmanTracker.IntersectionobjectCollection;
+import kalmanTracker.KFsearch;
 import kalmanTracker.NearestNeighbourSearch;
 import kalmanTracker.NearestNeighbourSearch2D;
 import kalmanTracker.TrackModel;
@@ -53,7 +56,12 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 
 	@Override
 	protected Void doInBackground() throws Exception {
-	
+		parent.table.removeAll();
+		HashMap<String, Integer> map = sortByValues(parent.Accountedframes);
+		parent.Accountedframes = map;
+
+		HashMap<String, Integer> mapZ = sortByValues(parent.AccountedZ);
+		parent.AccountedZ = mapZ;
 		EllipseTrack newtrack = new EllipseTrack(parent, jpb);
 		newtrack.IntersectandTrackCurrent();
 
@@ -109,7 +117,7 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 		
 		
 		}
-		LineageRedo();
+		Lineage();
 		}
 		
 		else {
@@ -119,7 +127,7 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 			NNsearch.process();
 			 SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>	simplegraph =  NNsearch.getResult();
 			 parent.parentgraphZ.put(Integer.toString(1), simplegraph);
-			LineageRedo();
+			Lineage();
 		}
 		
 	
@@ -134,134 +142,159 @@ public class ComputeAnglesCurrent extends SwingWorker<Void, Void> {
 
 	}
 
-	
-	public void LineageRedo() {
+	public   void Lineage() {
 
-		parent.Tracklist.clear();
-		for(Map.Entry<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> entryZ : parent.parentgraphZ.entrySet()){
-		
-		TrackModel model = new TrackModel(entryZ.getValue());
-		
-		
-	
-		int minid = Integer.MAX_VALUE;
-		int maxid = Integer.MIN_VALUE;
-		
-		for (final Integer id : model.trackIDs(true)) {
-			
-			if (id > maxid)
-				maxid = id;
-			
-			if(id < minid)
-				minid = id;
-			
-		}
-		
-		
-		
-		if (minid!=Integer.MAX_VALUE){
-		
-		for (final Integer id : model.trackIDs(true)) {
+		for (Map.Entry<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> entryZ : parent.parentgraphZ
+				.entrySet()) {
 
-			
+			TrackModel model = new TrackModel(entryZ.getValue());
 
-			
-			Comparator<Pair<String,Intersectionobject>> ThirdDimcomparison = new Comparator<Pair<String,Intersectionobject>>() {
+			int minid = Integer.MAX_VALUE;
+			int maxid = Integer.MIN_VALUE;
 
-				@Override
-				public int compare(final Pair<String,Intersectionobject> A, final Pair<String,Intersectionobject> B) {
+			for (final Integer id : model.trackIDs(true)) {
 
-					return A.getB().z - B.getB().z;
+				if (id > maxid)
+					maxid = id;
 
-				}
+				if (id < minid)
+					minid = id;
 
-			};
-
-			Comparator<Pair<String,Intersectionobject>> FourthDimcomparison = new Comparator<Pair<String,Intersectionobject>>() {
-
-				@Override
-				public int compare(final Pair<String,Intersectionobject> A, final Pair<String,Intersectionobject> B) {
-
-					return A.getB().t - B.getB().t;
-
-				}
-
-			};
-			
-			
-			model.setName(id, "Track" + id + entryZ.getKey() );
-
-			final HashSet<Intersectionobject> Angleset = model.trackIntersectionobjects(id);
-
-			Iterator<Intersectionobject> Angleiter = Angleset.iterator();
-			
-			
-			while(Angleiter.hasNext()) {
-				
-				Intersectionobject currentangle = Angleiter.next();
-				
-			
-				
-						parent.Tracklist.add(new ValuePair<String, Intersectionobject>( Integer.toString(id) + entryZ.getKey(), currentangle));
-				
-				
-				
 			}
-			Collections.sort(parent.Tracklist, ThirdDimcomparison);
-			if (parent.fourthDimensionSize > 1)
-				Collections.sort(parent.Tracklist, FourthDimcomparison);
 
-			
-		}
-		
-		
-		
-		for (int id = minid; id <= maxid; ++id) {
-			Intersectionobject bestangle = null;
-			if(model.trackIntersectionobjects(id)!=null){
-			
-				List<Intersectionobject> sortedList = new ArrayList<Intersectionobject>(model.trackIntersectionobjects(id));
-				
-				
-				Collections.sort(sortedList, new Comparator<Intersectionobject>() {
 
-					@Override
-					public int compare(Intersectionobject o1, Intersectionobject o2) {
+			if (minid != Integer.MAX_VALUE) {
 
-						return o1.t - o2.t;
+				for (final Integer id : model.trackIDs(true)) {
+
+					Comparator<Pair<String, Intersectionobject>> ThirdDimcomparison = new Comparator<Pair<String, Intersectionobject>>() {
+
+						@Override
+						public int compare(final Pair<String, Intersectionobject> A,
+								final Pair<String, Intersectionobject> B) {
+
+							return A.getB().z - B.getB().z;
+
+						}
+
+					};
+
+					Comparator<Pair<String, Intersectionobject>> FourthDimcomparison = new Comparator<Pair<String, Intersectionobject>>() {
+
+						@Override
+						public int compare(final Pair<String, Intersectionobject> A,
+								final Pair<String, Intersectionobject> B) {
+
+							return A.getB().t - B.getB().t;
+
+						}
+
+					};
+
+					model.setName(id, "Track" + id + entryZ.getKey());
+
+					final HashSet<Intersectionobject> Angleset = model.trackIntersectionobjects(id);
+
+					Iterator<Intersectionobject> Angleiter = Angleset.iterator();
+
+					while (Angleiter.hasNext()) {
+
+						Intersectionobject currentangle = Angleiter.next();
+						parent.Tracklist.add(new ValuePair<String, Intersectionobject>(
+								Integer.toString(id) + entryZ.getKey(), currentangle));
 					}
-					
-					
-					
-				});
-				
-				Iterator<Intersectionobject> iterator = sortedList.iterator(); 
-				
-				int count = 0;
-				while(iterator.hasNext()){
-				
-				
-					Intersectionobject currentangle = iterator.next();
-					
-					    if (count == 0)
-						bestangle = currentangle;
-					if (bestangle.t > currentangle.t)
-						bestangle = currentangle;
-					
+					Collections.sort(parent.Tracklist, ThirdDimcomparison);
+					if (parent.fourthDimensionSize > 1)
+						Collections.sort(parent.Tracklist, FourthDimcomparison);
+
 				}
-				parent.Finalresult.put(Integer.toString(id) + entryZ.getKey() , bestangle);
-				
-			
+
+				for (int id = minid; id <= maxid; ++id) {
+					Intersectionobject bestangle = null;
+					if (model.trackIntersectionobjects(id) != null) {
+
+						List<Intersectionobject> sortedList = new ArrayList<Intersectionobject>(
+								model.trackIntersectionobjects(id));
+
+						Collections.sort(sortedList, new Comparator<Intersectionobject>() {
+
+							@Override
+							public int compare(Intersectionobject o1, Intersectionobject o2) {
+
+								return o1.t - o2.t;
+							}
+
+						});
+
+						Iterator<Intersectionobject> iterator = sortedList.iterator();
+
+						int count = 0;
+						while (iterator.hasNext()) {
+
+							Intersectionobject currentangle = iterator.next();
+
+							if (count == 0)
+								bestangle = currentangle;
+							if(parent.originalimg.numDimensions() > 3) {
+							if (currentangle.t  == parent.fourthDimension) {
+								bestangle = currentangle;
+								count++;
+							    break;	
+							}
+							}
+							else if (parent.originalimg.numDimensions()<= 3){
+								if (currentangle.z  == parent.thirdDimension) {
+									bestangle = currentangle;
+									count++;
+								    break;	
+								 
+								}
+								
+								
+							}
+
+							
+						}
+						parent.Finalresult.put(Integer.toString(id) + entryZ.getKey(), bestangle);
+
+					}
+
+				}
 			}
-			
-		}
-		}
 		}
 		CreateTable.CreateTableView(parent);
 
 	}
 
-	
+	public SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > Trackfunction() {
+		
+		parent.UserchosenCostFunction = new ETrackCostFunction(1, 0);
+		
+		IntersectionobjectCollection coll = new IntersectionobjectCollection();
+		
+		for(Map.Entry<String, ArrayList<Intersectionobject>> entry : parent.ALLIntersections.entrySet()) {
+			
+			String ID = entry.getKey();
+			ArrayList<Intersectionobject> bloblist = entry.getValue();
+			
+			for (Intersectionobject blobs: bloblist) {
+				
+				coll.add(blobs, ID);
+				
+				
+			}
+			
+			
+		}
+		
+		KFsearch Tsearch = new KFsearch(coll, parent.UserchosenCostFunction, parent.maxSearchradius, parent.initialSearchradius, parent.maxframegap, parent.AccountedZ, parent.jpb);
+		Tsearch.process();
+		SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > simplegraph = Tsearch.getResult();
+		
+		return simplegraph;
+		
+		
+	}
 
 
 }

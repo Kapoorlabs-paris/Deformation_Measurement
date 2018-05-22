@@ -3,6 +3,7 @@ package curvatureUtils;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.math3.analysis.interpolation.BicubicInterpolator;
 import org.apache.commons.math3.analysis.interpolation.BicubicSplineInterpolator;
@@ -14,6 +15,7 @@ import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
+import utility.ChartMaker;
 import utility.Curvatureobject;
 
 public class CurvatureTableDisplay {
@@ -56,21 +58,25 @@ public class CurvatureTableDisplay {
 		Double[] Y = new Double[currentresultCurvature.size()];
 		Double[] Z = new Double[currentresultCurvature.size()];
 
+		List<Pair<Integer, Double>> linelist = new ArrayList<Pair<Integer, Double>>();
+		
+		parent.contdataset.removeAllSeries();
 		for (int index = 0; index < currentresultCurvature.size(); ++index) {
 
 			X[index] = currentresultCurvature.get(index).cord[0];
 			Y[index] = currentresultCurvature.get(index).cord[1];
 			Z[index] = currentresultCurvature.get(index).radiusCurvature;
 
+			linelist.add(new ValuePair<Integer, Double>(index, Z[index]));
 		}
+        parent.contdataset.addSeries(ChartMaker.drawCurvePoints(linelist));
+        
+        
+	//	Pair<Double, Double> minmaxX = RangePlot(currentresultCurvature, 0);
+	//	Pair<Double, Double> minmaxY = RangePlot(currentresultCurvature, 1);
 
-		Pair<Double, Double> minmaxX = RangePlot(currentresultCurvature, 0);
-		Pair<Double, Double> minmaxY = RangePlot(currentresultCurvature, 1);
 
-		parent.contdataset.initialize(X, Y, Z);
-
-		parent.chart = utility.ChartMaker.makeContourChart(parent.contdataset, "Curvature Measurment",
-				minmaxX.getA() - 5, minmaxX.getB() + 5, minmaxY.getA() - 5, minmaxY.getB() + 5);
+		parent.chart = utility.ChartMaker.makeChart(parent.contdataset,"Clockwise Curvature", "index", "Absolute Curvature" );
 		parent.jFreeChartFrame.dispose();
 		parent.jFreeChartFrame.repaint();
 

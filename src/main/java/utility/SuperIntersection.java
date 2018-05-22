@@ -89,7 +89,7 @@ public class SuperIntersection {
 
 			// Reject wrong points that are not candidate points
 
-			RejectPoints(pos);
+			
 
 			Tangentobject PointsIntersect = new Tangentobject(pos, ellipsepair, t, z);
 
@@ -146,45 +146,7 @@ public class SuperIntersection {
 
 	}
 
-	public void RejectPoints(ArrayList<double[]> pos) {
-		boolean removeit = true;
-		for (int indexx = 0; indexx < pos.size(); ++indexx) {
-
-			for (int index = 0; index < parent.superReducedSamples.size(); ++index) {
-
-				double[] currentpoint = pos.get(indexx);
-				double[] targetpoint = new double[currentpoint.length];
-
-				Iterator<Pair<RealLocalizable, BitType>> iter = parent.superReducedSamples.get(index).getB().iterator();
-
-				while (iter.hasNext()) {
-
-					Pair<RealLocalizable, BitType> current = iter.next();
-
-					current.getA().localize(targetpoint);
-
-					double currdist = Sqdistance(currentpoint, targetpoint);
-
-					if (currdist < parent.cutoffdist) {
-
-						removeit = false;
-						
-					}
-				}
-
-			}
-			
-			if (removeit) {
-				
-				pos.remove(indexx);
-				System.out.println("Removing wrong point");
-				--indexx;
-			}
-
-		}
-
-	}
-
+	
 	public double Sqdistance(double[] sourceLocation, double[] targetLocation) {
 
 		double distance = 0;

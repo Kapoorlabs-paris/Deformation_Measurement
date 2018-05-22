@@ -204,7 +204,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Frame jFreeChartFrame;
 	public NumberFormat nf;
 	public XYSeriesCollection dataset;
-	public DefaultContourDataset contdataset;
+	public XYSeriesCollection contdataset;
+	
 	public double displaymin, displaymax;
 	public JFreeChart chart;
 	public RandomAccessibleInterval<FloatType> originalimg;
@@ -271,7 +272,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public double maxdistance = 10;
 	public float alpha = 0.5f;
 	public float beta = 0.5f;
-	ImageStack prestack;
+	public ImageStack prestack;
 	public MouseAdapter mouseadapter;
 	public ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> superReducedSamples;
 	public ArrayList<Curvatureobject> localCurvature, interpolatedlocalCurvature;
@@ -533,7 +534,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.originalimgbefore = originalimgbefore;
 		this.ndims = originalimg.numDimensions();
 		this.dataset = new XYSeriesCollection();
-		this.contdataset = new DefaultContourDataset();
+		this.contdataset = new XYSeriesCollection();
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
@@ -555,7 +556,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.originalimgbefore = originalimgbefore;
 		this.ndims = originalimg.numDimensions();
 		this.dataset = new XYSeriesCollection();
-		this.contdataset = new DefaultContourDataset();
+		this.contdataset = new XYSeriesCollection();
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
@@ -989,7 +990,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				repaintView(imp, CurrentView);
 			
 			
-			if(!automode && !supermode && !curveautomode && !curvesupermode){
+			if(!automode || !supermode || !curveautomode || !curvesupermode){
 				if (ZTRois.get(uniqueID) == null)
 					DisplayDefault();
 				else

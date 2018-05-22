@@ -570,7 +570,7 @@ public class EllipseTrack {
 	}
 */
 	public RandomAccessibleInterval<IntType> getSeg(RandomAccessibleInterval<BitType> CurrentView) {
-	/*
+	
 		ThinningStrategyFactory fact = new ThinningStrategyFactory(true);
 		ThinningStrategy strat = fact.getStrategy(Strategy.HILDITCH);
 		ThinningOp thinit = new ThinningOp(strat, true, new ArrayImgFactory<BitType>());
@@ -579,13 +579,12 @@ public class EllipseTrack {
 				new BitType());
 		RandomAccessibleInterval<BitType> newthinCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
 				new BitType());
-		RandomAccessibleInterval<BitType> newblurCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
-				new BitType());
+	
 		newCurrentView = Kernels.CannyEdgeandMeanBit(CurrentView, 1);
 		thinit.compute(newCurrentView, newthinCurrentView);
-		newblurCurrentView = Kernels.CannyEdgeandMeanBit(newthinCurrentView, 1);
-		*/
-		DistWatershedBinary segmentimage = new DistWatershedBinary(CurrentView);
+		
+		
+		DistWatershedBinary segmentimage = new DistWatershedBinary(newthinCurrentView);
 
 		segmentimage.process();
 

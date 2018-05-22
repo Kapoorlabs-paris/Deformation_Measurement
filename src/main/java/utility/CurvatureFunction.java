@@ -71,7 +71,6 @@ public class CurvatureFunction {
 				
 			}while(sublist + blocksize <= truths.size());
 		for (int indexx = 0; indexx < interpolatedCurvature.size(); ++indexx) {
-System.out.println(interpolatedCurvature.get(indexx).getB());
 			Curvatureobject currentobject = new Curvatureobject(interpolatedCurvature.get(indexx).getB(), perimeter,
 					Label, interpolatedCurvature.get(indexx).getA(), t, z);
 

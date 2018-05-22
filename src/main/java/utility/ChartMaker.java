@@ -10,6 +10,8 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import ij3d.*;
+import mpicbg.models.Point;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -31,6 +33,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import net.imglib2.util.Pair;
+import regression.Threepointfit;
 
 public class ChartMaker {
 
@@ -131,6 +134,29 @@ public class ChartMaker {
 		}
 		return series;
 	}
+
+	public static XYSeries drawCurvePoints( final List< Pair< Integer, Double > > mts) { return drawCurvePoints( mts, "Curvature measurement" ); }
+	public static XYSeries drawCurvePoints( final List< Pair< Integer, Double > > mts, final String name )
+	{
+		XYSeries series = new XYSeries( name );
+
+		if (mts!=null){
+		for ( final Pair< Integer, Double > mt : mts )
+			series.add(  mt.getA(), mt.getB() );
+		}
+		return series;
+	}
+
+	public static XYSeries drawFunction( final Threepointfit polynomial, final double from, final double to, final double step, final String name )
+	{
+		XYSeries series = new XYSeries( name );
+
+		for ( double x = from; x <= to; x = x + step )
+			series.add( x, polynomial.predict( x ) );
+
+		return series;
+	}
+	
 
 	public static void setColor(final JFreeChart chart, final int seriesIndex, final Color col) {
 		final XYPlot plot = chart.getXYPlot();
