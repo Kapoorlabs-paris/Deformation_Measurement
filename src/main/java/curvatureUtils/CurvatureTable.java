@@ -18,6 +18,51 @@ import utility.Curvatureobject;
 
 public class CurvatureTable {
 
+	
+	
+	
+	
+	public static void CreateTableTrackView(final InteractiveSimpleEllipseFit parent) {
+		
+		
+		parent.resultAngle = new ArrayList<Pair<String, double[]>>();
+
+		for (Pair<String, Intersectionobject> currentangle : parent.Tracklist) {
+			if(parent.originalimg.numDimensions() > 3)
+			parent.resultAngle.add(new ValuePair<String, double[]>(currentangle.getA(),
+					new double[] { currentangle.getB().t, currentangle.getB().perimeter }));
+			else
+				parent.resultAngle.add(new ValuePair<String, double[]>(currentangle.getA(),
+						new double[] { currentangle.getB().z, currentangle.getB().perimeter }));
+
+		}
+		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Location Z", "Perimeter"};
+
+		Object[][] rowvalues = new Object[0][colnames.length];
+
+		rowvalues = new Object[parent.Finalresult.size()][colnames.length];
+
+		parent.table = new JTable(rowvalues, colnames);
+		parent.row = 0;
+		NumberFormat f = NumberFormat.getInstance();
+		for (Map.Entry<String, Intersectionobject> entry : parent.Finalresult.entrySet()) {
+
+			Intersectionobject currentangle = entry.getValue();
+			parent.table.getModel().setValueAt(entry.getKey(), parent.row, 0);
+			parent.table.getModel().setValueAt(f.format(currentangle.Intersectionpoint[0]), parent.row, 1);
+			parent.table.getModel().setValueAt(f.format(currentangle.Intersectionpoint[1]), parent.row, 2);
+			parent.table.getModel().setValueAt(f.format(currentangle.z), parent.row, 3);
+			parent.table.getModel().setValueAt(f.format(currentangle.perimeter), parent.row, 4);
+			
+
+			parent.row++;
+
+			parent.tablesize = parent.row;
+		}
+
+		makeGUI(parent);
+	}
+	
 	public static void CreateTableView(final InteractiveSimpleEllipseFit parent) {
 
 	
@@ -45,6 +90,13 @@ public class CurvatureTable {
 			parent.tablesize = parent.row;
 		}
 
+		makeGUI(parent);
+
+	}
+	
+	
+	public static void makeGUI(final InteractiveSimpleEllipseFit parent) {
+		
 		parent.PanelSelectFile.removeAll();
 
 		parent.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -95,7 +147,8 @@ public class CurvatureTable {
 		parent.panelSecond.validate();
 		parent.Cardframe.repaint();
 		parent.Cardframe.validate();
-
+		
 	}
+	
 
 }

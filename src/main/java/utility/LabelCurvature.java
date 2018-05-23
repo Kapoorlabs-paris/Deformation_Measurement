@@ -74,6 +74,7 @@ public class LabelCurvature implements Runnable {
 
 	@Override
 	public void run() {
+		ArrayList<Intersectionobject> AllCurveintersection = new ArrayList<Intersectionobject>();
 		if (!parent.curveautomode || !parent.curvesupermode) {
 			if (parent.fourthDimensionSize != 0)
 				utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.Accountedframes.entrySet().size()),
@@ -88,7 +89,7 @@ public class LabelCurvature implements Runnable {
 					"Computing Curvature ");
 		}
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
-		String uniqueID = Integer.toString(z) + Integer.toString(t);
+	
 		// Get the sparse list of points
 		List<RealLocalizable> allorderedtruths = Listordereing.getOrderedList(truths);
 		
@@ -103,9 +104,15 @@ public class LabelCurvature implements Runnable {
 		
 		// Make intersection object here
 
-		Intersectionobject currentobject = PointExtractor.CurvaturetoIntersection(parent.localCurvature);
 		
-		parent.AllCurveintersection.add(currentobject);
+		Intersectionobject currentobject = PointExtractor.CurvaturetoIntersection(parent.localCurvature);
+		AllCurveintersection.add(currentobject);
+		String uniqueID = Integer.toString(z) + Integer.toString(t);
+		parent.ALLIntersections.put(uniqueID, AllCurveintersection);
+		resultlineroi.addAll(currentobject.linerois);
+		Roiobject currentroiobject = new Roiobject(null, null, resultlineroi, z, t, true);
+		parent.ZTRois.put(uniqueID, currentroiobject);
+		DisplayAuto.Display(parent);
 		parent.AlllocalCurvature.add(parent.localCurvature);
 
 

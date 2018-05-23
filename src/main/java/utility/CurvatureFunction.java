@@ -41,10 +41,8 @@ public class CurvatureFunction {
 		
 	
 			do {
-				System.out.println(sublist + " sss" + blocksize + " " + actualnumseg);
 				if((truths.size() % actualnumseg) == 0) {
 			List<RealLocalizable> subtruths = truths.subList(sublist, sublist + blocksize);
-			System.out.println(subtruths.size());
 			
 			ArrayList<double[]> Cordlist = new ArrayList<double[]>();
 			for (int i = 0; i < subtruths.size(); ++i) {
@@ -132,7 +130,6 @@ public class CurvatureFunction {
 		}
 
 		averagecurvature /= x.length;
-System.out.println(averagecurvature);
 		Pair<ArrayList<double[]>, Double> resultcurvature = new ValuePair<ArrayList<double[]>, Double>(InterpolCordlist,
 				averagecurvature);
 		return resultcurvature;

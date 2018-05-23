@@ -249,6 +249,9 @@ public class KFsearch implements IntersectionTracker {
 
 					// Store filter and source
 					kalmanFiltersMap.put(kt, target);
+					
+					System.out.println(source.Intersectionpoint[0] + " " + source.Intersectionpoint[1] + " " 
+					+ target.Intersectionpoint[0] + " " + target.Intersectionpoint[1] + " " + source.z + " "+ target.z);
 					synchronized (graph) {
 						// Add edge to the graph.
 						graph.addVertex(source);

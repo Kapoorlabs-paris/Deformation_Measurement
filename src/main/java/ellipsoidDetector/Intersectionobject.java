@@ -17,12 +17,12 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 	
 	
 	public final double[] Intersectionpoint;
-	public final double[] CenterofMass;
 	public final List<Pair<Double, Double>> linelist;
 	public final double angle;
 	public final Pair<Ellipsoid, Ellipsoid> ellipsepair;
 	public final int t;
 	public final int z;
+	public final double perimeter;
 	public final int celllabel;
 	public final ArrayList<Line> linerois;
 	private String name;
@@ -40,9 +40,9 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 		this.z = z;
 		this.ID = IDcounter.incrementAndGet();
 		this.name = "ID" + ID;
-		this.CenterofMass = null;
 		this.linelist = null;
 		this.celllabel = 0;
+		this.perimeter = 0;
 		putFeature(Time,  (double) t);
 		putFeature(ZPOSITION, (double) z);
 		putFeature(XPOSITION, Intersectionpoint[0]);
@@ -60,17 +60,17 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 	 * @param z
 	 * 
 	 */
-	public Intersectionobject(final double[] CenterofMass, List<Pair<Double, Double>> linelist, final ArrayList<Line> linerois, final int celllabel, final int t, final int z) {
+	public Intersectionobject(final double[] CenterofMass, List<Pair<Double, Double>> linelist, final ArrayList<Line> linerois, final double perimeter,  final int celllabel, final int t, final int z) {
 		super(3);
-		this.Intersectionpoint = null;
-		this.CenterofMass = CenterofMass;
+		this.Intersectionpoint = CenterofMass;
 		this.angle = 0;
 		this.celllabel = celllabel;
 		this.linelist = linelist;
 		this.linerois = linerois;
 		this.ellipsepair = null;
 		this.t = t;
-		this.z = 1;
+		this.z = z;
+		this.perimeter = perimeter;
 		this.ID = IDcounter.incrementAndGet();
 		this.name = "ID" + ID;
 		putFeature(Time,  (double) t);
@@ -136,10 +136,7 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 			distance += (sourceLocation[d] - targetLocation[d]) * (sourceLocation[d] - targetLocation[d]);
 		}
 		
-		double cost = distance ;
-		
-		
-			return cost;
+			return distance;
 	}
 	/**
 	 * Returns the difference between the location of two blobs, this operation

@@ -104,23 +104,22 @@ public class Computeinwater {
 
 			int label = setiter.next();
 
-				Watershedobject current = utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt,
-						label);
-				
-				// Neglect the small watershed regions by choosing only those regions which have
-				// more than 9 candidate points for ellipse fitting
+			Watershedobject current = utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
 
-				if (current.Size > parent.minperimeter / 3 * parent.minperimeter / 3
-						&& current.Size < parent.maxperimeter / 3 * parent.maxperimeter / 3
-						&& current.meanIntensity > parent.minellipsepoints) {
+			// Neglect the small watershed regions by choosing only those regions which have
+			// more than 9 candidate points for ellipse fitting
 
-					List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
+			if (current.Size > parent.minperimeter / 3 * parent.minperimeter / 3
+					&& current.Size < parent.maxperimeter / 3 * parent.maxperimeter / 3
+					&& current.meanIntensity > parent.minellipsepoints) {
 
-					tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi,
-							resultovalroi, resultlineroi, AllPointsofIntersect, Allintersection, fitmapspecial,
-							parent.jpb, percent, parent.supermode)));
+				List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
 
-				}
+				tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi,
+						resultovalroi, resultlineroi, AllPointsofIntersect, Allintersection, fitmapspecial, parent.jpb,
+						percent, parent.supermode)));
+
+			}
 
 		}
 
@@ -171,28 +170,28 @@ public class Computeinwater {
 			percent++;
 
 			int label = setiter.next();
-				// Creating a binary image in the integer image region from the boundary
-				// probability map
-				Watershedobject current =
+			// Creating a binary image in the integer image region from the boundary
+			// probability map
+			Watershedobject current =
 
-						utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
+					utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
 
-				List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
+			List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
 
-				tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, t, z,
-						parent.jpb, percent, label)));
+			tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, t, z,
+					parent.jpb, percent, label)));
 		}
 
 		try {
 			taskExecutor.invokeAll(tasks);
 
-			// Here we take the list of intersection object from current view and make a list of cells we want to track
-			 
-			String uniqueID = Integer.toString(z) + Integer.toString(t);
-		parent.ALLIntersections.put(uniqueID, parent.AllCurveintersection);
-			
-		
+			// Here we take the list of intersection object from current view and make a
+			// list of cells we want to track
 
+			String uniqueID = Integer.toString(z) + Integer.toString(t);
+			Roiobject currentobject = new Roiobject(null, null, resultlineroi, z, t, true);
+			parent.ZTRois.put(uniqueID, currentobject);
+			DisplayAuto.Display(parent);
 		} catch (InterruptedException e1) {
 
 		}

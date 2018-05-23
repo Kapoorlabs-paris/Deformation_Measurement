@@ -38,7 +38,6 @@ public class TrackingFunctions {
 				
 				coll.add(blobs, ID);
 				
-				
 			}
 			
 			

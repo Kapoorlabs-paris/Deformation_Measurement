@@ -45,6 +45,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
+import track.TrackingFunctions;
 import utility.CreateTable;
 import utility.Curvatureobject;
 import utility.Roiobject;
@@ -112,7 +113,38 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 				java.awt.image.ColorModel.getRGBdefault());
 
           
-		CurvedLineage();
+
+		parent.resultDraw.clear();
+		
+		parent.Tracklist.clear();
+
+		 TrackingFunctions track = new TrackingFunctions(parent);
+		if (parent.ndims > 3) {
+			
+			Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
+			
+			while (itZ.hasNext()) {
+
+				int z = itZ.next().getValue();
+			
+				SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > simplegraph = track.Trackfunction();
+				
+				parent.parentgraphZ.put(Integer.toString(z), simplegraph);
+				
+			}
+			
+			CurvedLineage();
+		}
+
+		else {
+		
+			SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > simplegraph = track.Trackfunction();
+
+			parent.parentgraphZ.put(Integer.toString(1), simplegraph);
+			
+			CurvedLineage();
+		}
+
 
 		try {
 			get();
@@ -128,6 +160,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		
 
+		if(parent.ndims < 3) {
 		DisplaySelected.mark(parent);
 		DisplaySelected.select(parent);
 		
@@ -157,5 +190,135 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		curvatureUtils.CurvatureTable.CreateTableView(parent);
 
 	}
+		
+		else {
+			
+			
+			for (Map.Entry<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> entryZ : parent.parentgraphZ
+					.entrySet()) {
+
+				TrackModel model = new TrackModel(entryZ.getValue());
+
+				int minid = Integer.MAX_VALUE;
+				int maxid = Integer.MIN_VALUE;
+
+				for (final Integer id : model.trackIDs(true)) {
+
+					if (id > maxid)
+						maxid = id;
+
+					if (id < minid)
+						minid = id;
+
+				}
+
+
+				if (minid != Integer.MAX_VALUE) {
+
+					for (final Integer id : model.trackIDs(true)) {
+
+						Comparator<Pair<String, Intersectionobject>> ThirdDimcomparison = new Comparator<Pair<String, Intersectionobject>>() {
+
+							@Override
+							public int compare(final Pair<String, Intersectionobject> A,
+									final Pair<String, Intersectionobject> B) {
+
+								return A.getB().z - B.getB().z;
+
+							}
+
+						};
+
+						Comparator<Pair<String, Intersectionobject>> FourthDimcomparison = new Comparator<Pair<String, Intersectionobject>>() {
+
+							@Override
+							public int compare(final Pair<String, Intersectionobject> A,
+									final Pair<String, Intersectionobject> B) {
+
+								return A.getB().t - B.getB().t;
+
+							}
+
+						};
+
+						model.setName(id, "Track" + id + entryZ.getKey());
+
+						final HashSet<Intersectionobject> Angleset = model.trackIntersectionobjects(id);
+
+						Iterator<Intersectionobject> Angleiter = Angleset.iterator();
+
+						while (Angleiter.hasNext()) {
+
+							Intersectionobject currentangle = Angleiter.next();
+							parent.Tracklist.add(new ValuePair<String, Intersectionobject>(
+									Integer.toString(id) + entryZ.getKey(), currentangle));
+						}
+						Collections.sort(parent.Tracklist, ThirdDimcomparison);
+						if (parent.fourthDimensionSize > 1)
+						Collections.sort(parent.Tracklist, FourthDimcomparison);
+
+					}
+
+					for (int id = minid; id <= maxid; ++id) {
+						Intersectionobject bestangle = null;
+						if (model.trackIntersectionobjects(id) != null) {
+
+							List<Intersectionobject> sortedList = new ArrayList<Intersectionobject>(
+									model.trackIntersectionobjects(id));
+
+							Collections.sort(sortedList, new Comparator<Intersectionobject>() {
+
+								@Override
+								public int compare(Intersectionobject o1, Intersectionobject o2) {
+
+									return o1.t - o2.t;
+								}
+
+							});
+
+							Iterator<Intersectionobject> iterator = sortedList.iterator();
+
+							int count = 0;
+							while (iterator.hasNext()) {
+
+								Intersectionobject currentangle = iterator.next();
+
+								if (count == 0)
+									bestangle = currentangle;
+								if(parent.originalimg.numDimensions() > 3) {
+								if (currentangle.t  == parent.fourthDimension) {
+									bestangle = currentangle;
+									count++;
+								    break;	
+								}
+								}
+								else if (parent.originalimg.numDimensions()<= 3){
+									if (currentangle.z  == parent.thirdDimension) {
+										bestangle = currentangle;
+										count++;
+									    break;	
+									 
+									}
+									
+									
+								}
+
+								
+							}
+							parent.Finalresult.put(Integer.toString(id) + entryZ.getKey(), bestangle);
+
+						}
+
+					}
+				}
+			}
+			curvatureUtils.CurvatureTable.CreateTableTrackView(parent);
+			
+			
+			
+		}
+		
+	}
+	
 
 }

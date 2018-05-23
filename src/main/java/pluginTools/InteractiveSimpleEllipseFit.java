@@ -543,11 +543,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.contdataset = new XYSeriesCollection();
 		this.visdataset = new DefaultContourDataset();
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
-		this.contchart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
-		this.contjFreeChartFrame = utility.ChartMaker.display(contchart, new Dimension(500, 500));
-		this.contjFreeChartFrame.setVisible(false);
+	
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(decimalplaces);
 		this.automode = automode;
@@ -569,11 +567,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.contdataset = new XYSeriesCollection();
 		this.visdataset = new DefaultContourDataset();
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
-		this.contchart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
-		this.contjFreeChartFrame = utility.ChartMaker.display(contchart, new Dimension(500, 500));
-		this.contjFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(decimalplaces);
 		this.automode = automode;
@@ -1146,8 +1141,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			}
 			imp.updateAndDraw();
 
+			if(automode || supermode) {
 			DisplayAuto.mark(this);
 			DisplayAuto.select(this);
+			}
 
 		}
 	}
@@ -1241,8 +1238,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			}
 			imp.updateAndDraw();
+			if(automode || supermode) {
 			DisplayAuto.mark(this);
 			DisplayAuto.select(this);
+			}
 
 		}
 	}
@@ -1361,7 +1360,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	Label iniSearchText = new Label(initialSearchstring + " = " + initialSearchradiusInit, Label.CENTER);
 	Label alphaText = new Label(alphastring + " = " + alphaInit, Label.CENTER);
 	Label betaText = new Label(betastring + " = " + betaInit, Label.CENTER);
+	
+	
 	public void Card() {
+		
+		
 		lostlabel = new Label("Number of frames for loosing the track");
 		lostframe = new TextField(1);
 		lostframe.setText(Integer.toString(maxframegap));
@@ -1456,20 +1459,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		inputLabelminpercent = new Label("Min. percent points to lie on ellipse");
 		Object[] colnames;
 		Object[][] rowvalues;
-		if (!curveautomode &&!curvesupermode) {
-		colnames = new Object[] { "Track Id", "Location X", "Location Y",
-				"Current Angle" };
+		
+		colnames = new Object[] { "", "", "","",
+				"" };
 
 		rowvalues = new Object[0][colnames.length];
-		}
-		
-		else {
-			
-			colnames = new Object[] { "Cell Id", "Location X", "Location Y", "Location Z" , "Perimeter", "Curvature"};
-
-			rowvalues = new Object[0][colnames.length];
-			
-		}
+	
 		
 		if (Finalresult != null && Finalresult.size() > 0) {
 
@@ -1799,7 +1794,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		
 	  
-		
+		table.setPreferredSize(new Dimension(500, 500));
 		table.setFillsViewportHeight(true);
 
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);

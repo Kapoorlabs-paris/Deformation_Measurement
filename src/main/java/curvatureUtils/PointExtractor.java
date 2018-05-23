@@ -25,10 +25,11 @@ public class PointExtractor {
 		double[] X = new double[localCurvature.size()];
 		double[] Y = new double[localCurvature.size()];
 		int celllabel, t, z;
+		double perimeter;
 		celllabel = localCurvature.get(0).Label;
         t = localCurvature.get(0).t;
         z = localCurvature.get(0).z;
-		
+		perimeter = localCurvature.get(0).perimeter;
         for (int index = 0; index < localCurvature.size() - 1; ++index) {
 
 			Curvatureobject currentcurvature = localCurvature.get(index);
@@ -49,8 +50,7 @@ public class PointExtractor {
 		
 		double[] mean = GeometricCenter(X, Y);
 		
-		
-		Intersectionobject currentIntersection = new Intersectionobject(mean, linelist, resultlineroi, celllabel, t, z);
+		Intersectionobject currentIntersection = new Intersectionobject(mean, linelist, resultlineroi, perimeter, celllabel, t, z);
 
 		return currentIntersection;
 		

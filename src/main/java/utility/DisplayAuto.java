@@ -16,6 +16,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import angleUtils.TableDisplay;
+import curvatureUtils.DisplaySelected;
 import ellipsoidDetector.Distance;
 import ij.gui.EllipseRoi;
 import ij.gui.ImageCanvas;
@@ -77,9 +78,15 @@ public class DisplayAuto {
 			parent.imp.setOverlay(parent.overlay);
 			parent.imp.updateAndDraw();
 
-			
+			if(parent.automode || parent.supermode) {
 			mark(parent);
 			select(parent);
+			}
+			
+			if(parent.curveautomode || parent.curvesupermode) {
+				DisplaySelected.mark(parent);
+				DisplaySelected.select(parent);
+			}
 
 		}
 	}
