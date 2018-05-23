@@ -64,7 +64,7 @@ public class CurvatureFunction {
 			sublist += blocksize;
 				}
 				else {
-					actualnumseg--;
+					truths.remove(truths.size() - 1);
 					blocksize = (int) (truths.size() / actualnumseg);
 					
 				}

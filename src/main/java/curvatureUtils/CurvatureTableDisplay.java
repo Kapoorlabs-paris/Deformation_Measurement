@@ -58,28 +58,33 @@ public class CurvatureTableDisplay {
 		Double[] Y = new Double[currentresultCurvature.size()];
 		Double[] Z = new Double[currentresultCurvature.size()];
 
-		List<Pair<Integer, Double>> linelist = new ArrayList<Pair<Integer, Double>>();
+		List<Pair<Double, Double>> linelist = new ArrayList<Pair<Double, Double>>();
 		
 		parent.contdataset.removeAllSeries();
+		
 		for (int index = 0; index < currentresultCurvature.size(); ++index) {
 
 			X[index] = currentresultCurvature.get(index).cord[0];
 			Y[index] = currentresultCurvature.get(index).cord[1];
 			Z[index] = currentresultCurvature.get(index).radiusCurvature;
 
-			linelist.add(new ValuePair<Integer, Double>(index, Z[index]));
+			linelist.add(new ValuePair<Double, Double>(X[index], Z[index]));
 		}
         parent.contdataset.addSeries(ChartMaker.drawCurvePoints(linelist));
+        parent.visdataset.initialize(X, Y, Z);
         
         
-	//	Pair<Double, Double> minmaxX = RangePlot(currentresultCurvature, 0);
-	//	Pair<Double, Double> minmaxY = RangePlot(currentresultCurvature, 1);
+		Pair<Double, Double> minmaxX = RangePlot(currentresultCurvature, 0);
+		Pair<Double, Double> minmaxY = RangePlot(currentresultCurvature, 1);
 
 
 		parent.chart = utility.ChartMaker.makeChart(parent.contdataset,"Clockwise Curvature", "index", "Absolute Curvature" );
+		parent.contchart = utility.ChartMaker.makeContourChart(parent.visdataset, "Curvature Measurment",
+				minmaxX.getA() - 5, minmaxX.getB() + 5, minmaxY.getA() - 5, minmaxY.getB() + 5);
 		parent.jFreeChartFrame.dispose();
 		parent.jFreeChartFrame.repaint();
-
+		parent.contjFreeChartFrame.dispose();
+		parent.contjFreeChartFrame.repaint();
 
 	}
 

@@ -11,6 +11,7 @@ import javax.swing.JProgressBar;
 
 import curvatureUtils.DisplaySelected;
 import curvatureUtils.InterpolateCurvature;
+import curvatureUtils.PointExtractor;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import ellipsoidDetector.Tangentobject;
@@ -87,7 +88,7 @@ public class LabelCurvature implements Runnable {
 					"Computing Curvature ");
 		}
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
-
+		String uniqueID = Integer.toString(z) + Integer.toString(t);
 		// Get the sparse list of points
 		List<RealLocalizable> allorderedtruths = Listordereing.getOrderedList(truths);
 		
@@ -100,6 +101,11 @@ public class LabelCurvature implements Runnable {
 
 		parent.localCurvature = CurvatureFunction.getCurvature(allorderedtruths, parent.numseg, ndims, celllabel, t, z);
 		
+		// Make intersection object here
+
+		Intersectionobject currentobject = PointExtractor.CurvaturetoIntersection(parent.localCurvature);
+		
+		parent.AllCurveintersection.add(currentobject);
 		parent.AlllocalCurvature.add(parent.localCurvature);
 
 

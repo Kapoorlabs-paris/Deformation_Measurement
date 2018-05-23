@@ -43,6 +43,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
+import track.TrackingFunctions;
 import utility.CreateTable;
 import utility.ThreeDRoiobject;
 
@@ -116,6 +117,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 		
 		parent.Tracklist.clear();
 
+		 TrackingFunctions track = new TrackingFunctions(parent);
 		if (parent.ndims > 3) {
 			
 			Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
@@ -124,7 +126,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 
 				int z = itZ.next().getValue();
 			
-				SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > simplegraph = Trackfunction();
+				SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > simplegraph = track.Trackfunction();
 				
 				parent.parentgraphZ.put(Integer.toString(z), simplegraph);
 			}
@@ -133,7 +135,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 
 		else {
 		
-			SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > simplegraph = Trackfunction();
+			SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > simplegraph = track.Trackfunction();
 			
 			
 
@@ -276,34 +278,6 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 
 	}
 
-	public SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > Trackfunction() {
-		
-		parent.UserchosenCostFunction = new ETrackCostFunction(1, 0);
-		
-		IntersectionobjectCollection coll = new IntersectionobjectCollection();
-		
-		for(Map.Entry<String, ArrayList<Intersectionobject>> entry : parent.ALLIntersections.entrySet()) {
-			
-			String ID = entry.getKey();
-			ArrayList<Intersectionobject> bloblist = entry.getValue();
-			
-			for (Intersectionobject blobs: bloblist) {
-				
-				coll.add(blobs, ID);
-				
-				
-			}
-			
-			
-		}
-		
-		KFsearch Tsearch = new KFsearch(coll, parent.UserchosenCostFunction, parent.maxSearchradius, parent.initialSearchradius, parent.maxframegap, parent.AccountedZ, parent.jpb);
-		Tsearch.process();
-		SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > simplegraph = Tsearch.getResult();
-		
-		return simplegraph;
-		
-		
-	}
+
 	
 }

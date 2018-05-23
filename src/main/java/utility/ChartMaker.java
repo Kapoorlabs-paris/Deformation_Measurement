@@ -135,13 +135,13 @@ public class ChartMaker {
 		return series;
 	}
 
-	public static XYSeries drawCurvePoints( final List< Pair< Integer, Double > > mts) { return drawCurvePoints( mts, "Curvature measurement" ); }
-	public static XYSeries drawCurvePoints( final List< Pair< Integer, Double > > mts, final String name )
+	public static XYSeries drawCurvePoints( final List< Pair< Double, Double > > mts) { return drawCurvePoints( mts, "Curvature measurement" ); }
+	public static XYSeries drawCurvePoints( final List< Pair< Double, Double > > mts, final String name )
 	{
 		XYSeries series = new XYSeries( name );
 
 		if (mts!=null){
-		for ( final Pair< Integer, Double > mt : mts )
+		for ( final Pair< Double, Double > mt : mts )
 			series.add(  mt.getA(), mt.getB() );
 		}
 		return series;

@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
+import curvatureUtils.PointExtractor;
 import ellipsoidDetector.Intersectionobject;
 import ellipsoidDetector.Tangentobject;
 import ij.gui.EllipseRoi;
@@ -185,7 +186,12 @@ public class Computeinwater {
 		try {
 			taskExecutor.invokeAll(tasks);
 
-			// Put a fancy display at the end
+			// Here we take the list of intersection object from current view and make a list of cells we want to track
+			 
+			String uniqueID = Integer.toString(z) + Integer.toString(t);
+		parent.ALLIntersections.put(uniqueID, parent.AllCurveintersection);
+			
+		
 
 		} catch (InterruptedException e1) {
 

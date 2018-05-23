@@ -202,15 +202,20 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public File userfile;
 	public File saveFile;
 	public Frame jFreeChartFrame;
+	public Frame contjFreeChartFrame;
 	public NumberFormat nf;
 	public XYSeriesCollection dataset;
 	public XYSeriesCollection contdataset;
+	public DefaultContourDataset visdataset;
 	
 	public double displaymin, displaymax;
 	public JFreeChart chart;
+	public JFreeChart contchart;
 	public RandomAccessibleInterval<FloatType> originalimg;
 	public RandomAccessibleInterval<IntType> originalimgsuper;
 	public RandomAccessibleInterval<FloatType> originalimgbefore;
+	
+	public ArrayList<Intersectionobject> AllCurveintersection = new ArrayList<Intersectionobject>();
 	ResultsTable rtAll;
 	public File inputfile;
 	public String inputdirectory;
@@ -428,6 +433,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
+		
 		this.automode = false;
 		this.supermode = false;
 		this.curveautomode = false;
@@ -535,9 +541,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.ndims = originalimg.numDimensions();
 		this.dataset = new XYSeriesCollection();
 		this.contdataset = new XYSeriesCollection();
+		this.visdataset = new DefaultContourDataset();
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
+		this.contchart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
+		this.contjFreeChartFrame = utility.ChartMaker.display(contchart, new Dimension(500, 500));
+		this.contjFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(decimalplaces);
 		this.automode = automode;
@@ -557,9 +567,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.ndims = originalimg.numDimensions();
 		this.dataset = new XYSeriesCollection();
 		this.contdataset = new XYSeriesCollection();
+		this.visdataset = new DefaultContourDataset();
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
+		this.contchart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
+		this.contjFreeChartFrame = utility.ChartMaker.display(contchart, new Dimension(500, 500));
+		this.contjFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(decimalplaces);
 		this.automode = automode;

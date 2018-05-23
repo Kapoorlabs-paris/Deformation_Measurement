@@ -49,6 +49,8 @@ public class DisplaySelected {
 
 					if (!parent.jFreeChartFrame.isVisible())
 						parent.jFreeChartFrame = utility.ChartMaker.display(parent.chart, new Dimension(500, 500));
+					if (!parent.contjFreeChartFrame.isVisible())
+						parent.contjFreeChartFrame = utility.ChartMaker.display(parent.contchart, new Dimension(500, 500));
 				}
 
 			}

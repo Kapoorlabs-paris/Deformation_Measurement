@@ -1,6 +1,7 @@
 package ellipsoidDetector;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -16,10 +17,13 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 	
 	
 	public final double[] Intersectionpoint;
+	public final double[] CenterofMass;
+	public final List<Pair<Double, Double>> linelist;
 	public final double angle;
 	public final Pair<Ellipsoid, Ellipsoid> ellipsepair;
 	public final int t;
 	public final int z;
+	public final int celllabel;
 	public final ArrayList<Line> linerois;
 	private String name;
 	private final int ID;
@@ -36,27 +40,45 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 		this.z = z;
 		this.ID = IDcounter.incrementAndGet();
 		this.name = "ID" + ID;
+		this.CenterofMass = null;
+		this.linelist = null;
+		this.celllabel = 0;
 		putFeature(Time,  (double) t);
 		putFeature(ZPOSITION, (double) z);
 		putFeature(XPOSITION, Intersectionpoint[0]);
 		putFeature(YPOSITION, Intersectionpoint[1]);
 	}
 	
-	public Intersectionobject(final double[] Intersectionpoint, final double angle, final Pair<Ellipsoid, Ellipsoid> ellipsepair, final ArrayList<Line> linerois,  final int t) {
+
+	
+	/**
+	 * For curvature calculations
+	 * 
+	 * @param center of mass of candidate points (geometric center)
+	 * @param list of points and curvature value
+	 * @param t
+	 * @param z
+	 * 
+	 */
+	public Intersectionobject(final double[] CenterofMass, List<Pair<Double, Double>> linelist, final ArrayList<Line> linerois, final int celllabel, final int t, final int z) {
 		super(3);
-		this.Intersectionpoint = Intersectionpoint;
-		this.angle = angle;
+		this.Intersectionpoint = null;
+		this.CenterofMass = CenterofMass;
+		this.angle = 0;
+		this.celllabel = celllabel;
+		this.linelist = linelist;
 		this.linerois = linerois;
-		this.ellipsepair = ellipsepair;
+		this.ellipsepair = null;
 		this.t = t;
 		this.z = 1;
 		this.ID = IDcounter.incrementAndGet();
 		this.name = "ID" + ID;
 		putFeature(Time,  (double) t);
 		putFeature(ZPOSITION, (double) z);
-		putFeature(XPOSITION, Intersectionpoint[0]);
-		putFeature(YPOSITION, Intersectionpoint[1]);
+		putFeature(XPOSITION, CenterofMass[0]);
+		putFeature(YPOSITION, CenterofMass[1]);
 	}
+	
 	public void setName( final String name )
 	{
 		this.name = name;
