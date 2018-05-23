@@ -164,7 +164,8 @@ public class Computeinwater {
 		// Obtain the points of intersections
 
 		Iterator<Integer> setiter = parent.pixellist.iterator();
-
+		parent.superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>>();
+		 ArrayList<Intersectionobject> AllCurveintersection = new ArrayList<Intersectionobject>();
 		while (setiter.hasNext()) {
 
 			percent++;
@@ -177,8 +178,8 @@ public class Computeinwater {
 					utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
 
 			List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
-
-			tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, t, z,
+			
+			tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, AllCurveintersection, t, z,
 					parent.jpb, percent, label)));
 		}
 
@@ -189,6 +190,7 @@ public class Computeinwater {
 			// list of cells we want to track
 
 			String uniqueID = Integer.toString(z) + Integer.toString(t);
+			parent.ALLIntersections.put(uniqueID, AllCurveintersection);
 			Roiobject currentobject = new Roiobject(null, null, resultlineroi, z, t, true);
 			parent.ZTRois.put(uniqueID, currentobject);
 			DisplayAuto.Display(parent);

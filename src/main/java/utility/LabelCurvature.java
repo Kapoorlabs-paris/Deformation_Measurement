@@ -40,16 +40,17 @@ public class LabelCurvature implements Runnable {
 	final int percent;
 	final ArrayList<Line> resultlineroi;
 	final JProgressBar jpb;
-
+	ArrayList<Intersectionobject> AllCurveintersection;
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
 			final RandomAccessibleInterval<BitType> ActualRoiimg, List<RealLocalizable> truths,
-			ArrayList<Line> resultlineroi, final int t, final int z, final int celllabel) {
+			ArrayList<Line> resultlineroi,ArrayList<Intersectionobject> AllCurveintersection, final int t, final int z, final int celllabel) {
 
 		this.parent = parent;
 		this.ActualRoiimg = ActualRoiimg;
 		this.truths = truths;
 		this.t = t;
 		this.z = z;
+		this.AllCurveintersection = AllCurveintersection;
 		this.jpb = null;
 		this.percent = 0;
 		this.resultlineroi = resultlineroi;
@@ -58,7 +59,7 @@ public class LabelCurvature implements Runnable {
 
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
 			final RandomAccessibleInterval<BitType> ActualRoiimg, List<RealLocalizable> truths,
-			ArrayList<Line> resultlineroi, final int t, final int z, final JProgressBar jpb, final int percent,
+			ArrayList<Line> resultlineroi,ArrayList<Intersectionobject> AllCurveintersection, final int t, final int z, final JProgressBar jpb, final int percent,
 			final int celllabel) {
 
 		this.parent = parent;
@@ -69,12 +70,12 @@ public class LabelCurvature implements Runnable {
 		this.z = z;
 		this.jpb = jpb;
 		this.percent = percent;
+		this.AllCurveintersection = AllCurveintersection;
 		this.celllabel = celllabel;
 	}
 
 	@Override
 	public void run() {
-		ArrayList<Intersectionobject> AllCurveintersection = new ArrayList<Intersectionobject>();
 		if (!parent.curveautomode || !parent.curvesupermode) {
 			if (parent.fourthDimensionSize != 0)
 				utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.Accountedframes.entrySet().size()),
@@ -108,7 +109,7 @@ public class LabelCurvature implements Runnable {
 		Intersectionobject currentobject = PointExtractor.CurvaturetoIntersection(parent.localCurvature);
 		AllCurveintersection.add(currentobject);
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
-		parent.ALLIntersections.put(uniqueID, AllCurveintersection);
+
 		resultlineroi.addAll(currentobject.linerois);
 		Roiobject currentroiobject = new Roiobject(null, null, resultlineroi, z, t, true);
 		parent.ZTRois.put(uniqueID, currentroiobject);
