@@ -57,6 +57,7 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 import costMatrix.CostFunction;
 import curvatureUtils.DisplaySelected;
 import curvatureUtils.InterpolateCurvature;
+import edu.mines.jtk.mosaic.PointsView.Mark;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import ij.IJ;
@@ -1141,10 +1142,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			}
 			imp.updateAndDraw();
 
-			if(automode || supermode) {
+			
 			DisplayAuto.mark(this);
 			DisplayAuto.select(this);
-			}
+			
 
 		}
 	}
@@ -1238,10 +1239,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			}
 			imp.updateAndDraw();
-			if(automode || supermode) {
+			
 			DisplayAuto.mark(this);
 			DisplayAuto.select(this);
-			}
+			
 
 		}
 	}

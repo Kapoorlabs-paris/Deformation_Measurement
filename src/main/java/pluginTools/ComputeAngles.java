@@ -62,7 +62,7 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 	@Override
 	protected Void doInBackground() throws Exception {
 
-		parent.table.removeAll();
+		
 		HashMap<String, Integer> map = sortByValues(parent.Accountedframes);
 		parent.Accountedframes = map;
 

@@ -113,7 +113,6 @@ public class SuperIntersection {
 
 				Allintersection.add(currentintersection);
 
-				// System.out.println("Angle: " + angleobject.angle + " " + pos.get(j)[0]);
 
 			}
 

@@ -25,7 +25,12 @@ public class CurvatureListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		
+		parent.table.removeAll();
+		parent.table.repaint();
+		parent.localCurvature.clear();
+		parent.AlllocalCurvature.clear();
+		parent.overlay.clear();
+		parent.Tracklist.clear();
 		
 		if(parent.curveautomode) {
 			

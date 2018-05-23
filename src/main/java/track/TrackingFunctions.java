@@ -37,7 +37,6 @@ public class TrackingFunctions {
 			for (Intersectionobject blobs: bloblist) {
 				
 				coll.add(blobs, ID);
-				
 			}
 			
 			

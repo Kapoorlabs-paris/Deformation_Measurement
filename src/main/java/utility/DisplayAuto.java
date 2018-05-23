@@ -22,13 +22,15 @@ import ij.gui.EllipseRoi;
 import ij.gui.ImageCanvas;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
+import ij.gui.Roi;
+import kalmanTracker.NearestRoi;
 import pluginTools.InteractiveSimpleEllipseFit;
 
 public class DisplayAuto {
 
 	public static void Display(final InteractiveSimpleEllipseFit parent) {
-
 		parent.overlay.clear();
+		
 
 		if (parent.ZTRois.size() > 0) {
 
@@ -83,10 +85,11 @@ public class DisplayAuto {
 			select(parent);
 			}
 			
-			if(parent.curveautomode || parent.curvesupermode) {
+			else if(parent.curveautomode || parent.curvesupermode) {
 				DisplaySelected.mark(parent);
 				DisplaySelected.select(parent);
 			}
+		
 
 		}
 	}
@@ -204,7 +207,7 @@ public class DisplayAuto {
 		parent.imp.getCanvas().addMouseMotionListener(parent.ml = new MouseMotionListener() {
 
 			final ImageCanvas canvas = parent.imp.getWindow().getCanvas();
-
+			Roi lastnearest = null;
 			@Override
 			public void mouseMoved(MouseEvent e) {
 
@@ -214,7 +217,38 @@ public class DisplayAuto {
 				final HashMap<Integer, double[]> loc = new HashMap<Integer, double[]>();
 
 				loc.put(0, new double[] { x, y });
+				if(!parent.automode && !parent.supermode && !parent.curveautomode && !parent.curvesupermode) {
+				Color roicolor;
+				Roiobject currentobject;
+				String uniqueID = Integer.toString(parent.thirdDimension) + Integer.toString(parent.fourthDimension);
+				if (parent.ZTRois.get(uniqueID) == null && parent.DefaultZTRois!=null) {
+					roicolor = parent.defaultRois;
 
+					currentobject =parent.DefaultZTRois.entrySet().iterator().next().getValue();
+					
+						
+
+				} else {
+					roicolor = parent.confirmedRois;
+
+					currentobject = parent.ZTRois.get(uniqueID);
+
+				}
+				if(currentobject.roilist!=null) {
+				parent.nearestRoiCurr = NearestRoi.getNearestRois(currentobject, loc.get(0), parent);
+
+				if (parent.nearestRoiCurr != null) {
+					parent.nearestRoiCurr.setStrokeColor(parent.colorChange);
+
+					if (lastnearest != parent.nearestRoiCurr && lastnearest != null)
+						lastnearest.setStrokeColor(roicolor);
+
+					lastnearest = parent.nearestRoiCurr;
+
+					parent.imp.updateAndDraw();
+				}
+				}
+				}
 				double distmin = Double.MAX_VALUE;
 				if (parent.tablesize > 0) {
 					NumberFormat f = NumberFormat.getInstance();

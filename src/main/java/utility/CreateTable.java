@@ -36,7 +36,7 @@ public class CreateTable {
 						new double[] { currentangle.getB().z, currentangle.getB().angle }));
 
 		}
-		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Current Angle"};
+		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Angle" };
 
 		Object[][] rowvalues = new Object[0][colnames.length];
 

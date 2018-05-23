@@ -50,6 +50,10 @@ public class AngleListener implements ActionListener {
 		
 		// For computing angles
 		parent.superReducedSamples.clear();
+		parent.table.removeAll();
+		parent.table.repaint();
+		parent.Tracklist.clear();
+		parent.overlay.clear();
 		if (parent.supermode) {
 		
 			
@@ -81,6 +85,7 @@ public class AngleListener implements ActionListener {
 		
 		
 		else if(!parent.automode && !parent.supermode) {
+		
 		parent.parentgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 		parent.parentgraphZ =  new 
 				HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();

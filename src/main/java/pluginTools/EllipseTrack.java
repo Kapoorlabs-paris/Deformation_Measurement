@@ -201,7 +201,6 @@ public class EllipseTrack {
 
 	public void BlockRepeatManual(double percent, int z, int t) {
 
-		if(parent.roimanager.getRoisAsArray().length > 0) {
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
 		percent++;
 		if (parent.fourthDimensionSize != 0)
@@ -221,7 +220,6 @@ public class EllipseTrack {
 		GetPixelList(CurrentViewInt);
 		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent);
 		compute.ParallelRansac();
-		}
 
 	}
 
@@ -550,25 +548,7 @@ public class EllipseTrack {
 
 		return newthinCurrentView;
 	}
-/*
-	public RandomAccessibleInterval<BitType> getThin(RandomAccessibleInterval<BitType> CurrentView) {
 
-		ThinningStrategyFactory fact = new ThinningStrategyFactory(true);
-		ThinningStrategy strat = fact.getStrategy(Strategy.HILDITCH);
-
-		ThinningOp thinit = new ThinningOp(strat, true, new ArrayImgFactory<BitType>());
-
-		RandomAccessibleInterval<BitType> newthinCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
-				new BitType());
-
-		RandomAccessibleInterval<BitType> newblurCurrentView = new ArrayImgFactory<BitType>().create(CurrentView,
-				new BitType());
-		
-		thinit.compute(CurrentView, newthinCurrentView);
-		newblurCurrentView = Kernels.CannyEdgeandMeanBit(newthinCurrentView, 1);
-		return newblurCurrentView;
-	}
-*/
 	public RandomAccessibleInterval<IntType> getSeg(RandomAccessibleInterval<BitType> CurrentView) {
 	
 		ThinningStrategyFactory fact = new ThinningStrategyFactory(true);
@@ -590,7 +570,6 @@ public class EllipseTrack {
 
 		RandomAccessibleInterval<IntType> CurrentViewInt = segmentimage.getResult();
 
-		// ImageJFunctions.show(CurrentViewInt).setTitle("Segmented image");
 
 		return CurrentViewInt;
 
