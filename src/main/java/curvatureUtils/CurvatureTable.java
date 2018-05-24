@@ -26,14 +26,22 @@ public class CurvatureTable {
 		
 		
 		parent.resultAngle = new ArrayList<Pair<String, double[]>>();
-
+		parent.resultCurvature = new ArrayList<Pair<String, Pair< Integer,ArrayList<double[]>>>>();
 		for (Pair<String, Intersectionobject> currentangle : parent.Tracklist) {
-			if(parent.originalimg.numDimensions() > 3)
+			if(parent.originalimg.numDimensions() > 3) {
 			parent.resultAngle.add(new ValuePair<String, double[]>(currentangle.getA(),
 					new double[] { currentangle.getB().t, currentangle.getB().perimeter }));
-			else
+			
+			Pair< Integer,ArrayList<double[]>> timelist = new ValuePair<Integer, ArrayList<double[]>>(currentangle.getB().t, currentangle.getB().linelist);
+			parent.resultCurvature.add(new ValuePair<String, Pair< Integer, ArrayList<double[]>>>(currentangle.getA(),timelist));
+			
+			}
+			else {
 				parent.resultAngle.add(new ValuePair<String, double[]>(currentangle.getA(),
 						new double[] { currentangle.getB().z, currentangle.getB().perimeter }));
+				Pair< Integer,ArrayList<double[]>> timelist = new ValuePair<Integer, ArrayList<double[]>>(currentangle.getB().z, currentangle.getB().linelist);
+				parent.resultCurvature.add(new ValuePair<String, Pair< Integer, ArrayList<double[]>>>(currentangle.getA(),timelist));
+			}
 
 		}
 		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Location Z", "Perimeter"};

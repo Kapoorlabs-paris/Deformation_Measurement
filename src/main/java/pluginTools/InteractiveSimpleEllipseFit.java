@@ -288,6 +288,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int endtime;
 	public ArrayList<Pair<String, Intersectionobject>> Tracklist;
 	public ArrayList<Pair<String, double[]>> resultAngle;
+	public ArrayList<Pair<String, Pair< Integer,ArrayList<double[]>>>> resultCurvature;
 	public HashMap<String, Pair<ArrayList<double[]>, ArrayList<Line>>> resultDraw;
 	public HashMap<String, ArrayList<Line>> resultDrawLine;
 	public KeyListener kl;
@@ -1142,7 +1143,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			}
 			imp.updateAndDraw();
 
-			if(!curvesupermode || !curveautomode) {
+			if(!curvesupermode && !curveautomode) {
 			DisplayAuto.mark(this);
 			DisplayAuto.select(this);
 			}

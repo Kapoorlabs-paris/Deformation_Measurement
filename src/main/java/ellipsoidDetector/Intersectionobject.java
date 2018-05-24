@@ -17,7 +17,7 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 	
 	
 	public final double[] Intersectionpoint;
-	public final List<Pair<Double, Double>> linelist;
+	public final ArrayList<double[]> linelist;
 	public final double angle;
 	public final Pair<Ellipsoid, Ellipsoid> ellipsepair;
 	public final int t;
@@ -60,7 +60,7 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 	 * @param z
 	 * 
 	 */
-	public Intersectionobject(final double[] CenterofMass, List<Pair<Double, Double>> linelist, final ArrayList<Line> linerois, final double perimeter,  final int celllabel, final int t, final int z) {
+	public Intersectionobject(final double[] CenterofMass, ArrayList<double[]> linelist, final ArrayList<Line> linerois, final double perimeter,  final int celllabel, final int t, final int z) {
 		super(3);
 		this.Intersectionpoint = CenterofMass;
 		this.angle = 0;

@@ -21,9 +21,10 @@ public class PointExtractor {
 	public static Intersectionobject CurvaturetoIntersection(final ArrayList<Curvatureobject> localCurvature) {
 
 		ArrayList<Line> resultlineroi = new ArrayList<Line>();
-		List<Pair<Double, Double>> linelist = new ArrayList<Pair<Double, Double>>();
+		ArrayList<double[]> linelist = new ArrayList<double[]>();
 		double[] X = new double[localCurvature.size()];
 		double[] Y = new double[localCurvature.size()];
+		double[] Z = new double[localCurvature.size()];
 		int celllabel, t, z;
 		double perimeter;
 		celllabel = localCurvature.get(0).Label;
@@ -37,9 +38,9 @@ public class PointExtractor {
 
 			X[index] = localCurvature.get(index).cord[0];
 			Y[index] = localCurvature.get(index).cord[1];
-			
+			Z[index] = localCurvature.get(index).radiusCurvature;
 			// Make the line list for making intersection object
-			linelist.add(new ValuePair<Double, Double>(X[index], Y[index]));
+			linelist.add(new double[] {X[index], Y[index], Z[index]});
 			
 			// Make the line roi for intersection object
 			Line currentline = new Line(currentcurvature.cord[0], currentcurvature.cord[1],
