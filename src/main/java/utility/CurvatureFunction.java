@@ -5,9 +5,15 @@ import java.util.Iterator;
 import java.util.List;
 
 import ellipsoidDetector.Distance;
+import mpicbg.models.Point;
 import net.imglib2.RealLocalizable;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import ransac.PointFunctionMatch.PointFunctionMatch;
+import ransac.loadFiles.Tracking;
+import ransacPoly.AbstractFunction2D;
+import ransacPoly.QuadraticFunction;
+import ransacPoly.Sort;
 import regression.Threepointfit;
 
 public class CurvatureFunction {
@@ -25,11 +31,11 @@ public class CurvatureFunction {
 	 * @param z
 	 * @return
 	 */
-	public static ArrayList<Curvatureobject> getCurvature(List<RealLocalizable> truths, int numseg, int ndims,
+	public static ArrayList<Curvatureobject> getCurvature(List<RealLocalizable> truths, int minInliers, int numseg, int ndims,
 			int Label, int t, int z) {
 
 		ArrayList<Curvatureobject> curveobject = new ArrayList<Curvatureobject>();
-		ArrayList<Pair<double[], Double>> interpolatedCurvature = new ArrayList<Pair<double[], Double>>();
+		ArrayList<double[]> interpolatedCurvature = new ArrayList<double[]>();
 
 		double perimeter = getPerimeter(truths, ndims);
 		int actualnumseg = numseg;
@@ -51,14 +57,9 @@ public class CurvatureFunction {
 						subtruths.get(i).getDoublePosition(1) });
 
 			}
-			Pair<ArrayList<double[]>, Double> resultcurvature = getLocalcurvature(Cordlist);
-
-			for (int i = 0; i < Cordlist.size(); ++i) {
-				Pair<double[], Double> interpolresult = new ValuePair<double[], Double>(Cordlist.get(i),
-						resultcurvature.getB());
-				interpolatedCurvature.add(interpolresult);
-				
-			}
+			ArrayList<double[]> resultcurvature = getLocalcurvature(Cordlist, minInliers);
+            interpolatedCurvature.addAll(resultcurvature);
+			
 			sublist += blocksize;
 				}
 				else {
@@ -69,8 +70,8 @@ public class CurvatureFunction {
 				
 			}while(sublist + blocksize <= truths.size());
 		for (int indexx = 0; indexx < interpolatedCurvature.size(); ++indexx) {
-			Curvatureobject currentobject = new Curvatureobject(interpolatedCurvature.get(indexx).getB(), perimeter,
-					Label, interpolatedCurvature.get(indexx).getA(), t, z);
+			Curvatureobject currentobject = new Curvatureobject(interpolatedCurvature.get(indexx)[2], perimeter,
+					Label, new double[] {interpolatedCurvature.get(indexx)[0], interpolatedCurvature.get(indexx)[1]}, t, z);
 
 			curveobject.add(currentobject);
 		}
@@ -89,50 +90,50 @@ public class CurvatureFunction {
 	 * @return
 	 */
 
-	public static Pair<ArrayList<double[]>, Double> getLocalcurvature(ArrayList<double[]> Cordlist) {
+	public static ArrayList<double[]> getLocalcurvature(ArrayList<double[]> Cordlist, int minInliers) {
 
 		double[] x = new double[Cordlist.size()];
 		double[] y = new double[Cordlist.size()];
 
 		ArrayList<double[]> InterpolCordlist = new ArrayList<double[]>();
-
+		ArrayList<Point> points = new ArrayList< Point >();
+		ArrayList<double[]> Curvaturepoints = new ArrayList< double[] >();
+		
+		
+		AbstractFunction2D function  = new QuadraticFunction();
 		for (int index = 0; index < Cordlist.size(); ++index) {
-
 			x[index] = Cordlist.get(index)[0];
 			y[index] = Cordlist.get(index)[1];
+			points.add( new Point( new double[]{ x[index], y[index] } ) );
 		}
 
-		Threepointfit regression = new Threepointfit(x, y, 2);
-
-		for (int index = 0; index < Cordlist.size() - 1; ++index) {
-
-			double[] Xcurr = new double[] { Cordlist.get(index)[0], Cordlist.get(index)[1] };
-			double[] Xnext = new double[] { Cordlist.get(index + 1)[0], Cordlist.get(index + 1)[1] };
-
-			Pair<double[], double[]> interpolXY = InterpolateValues(Xcurr, Xnext, regression);
-
-			double[] Xinterpol = interpolXY.getA();
-			double[] Yinterpol = interpolXY.getB();
-
-			for (int i = 0; i < Xinterpol.length; ++i) {
-				InterpolCordlist.add(new double[] { Xinterpol[i], Yinterpol[i] });
-			}
+		
+		final Pair<QuadraticFunction, ArrayList<PointFunctionMatch>> foundfunction = Tracking
+				.findFunction(points, function, 0.75, minInliers , 1.1);
+	
+		
+		double highestCoeff = foundfunction.getA().getCoefficient(2);
+		double sechighestCoeff = foundfunction.getA().getCoefficient(1);
+		double lowestCoeff = foundfunction.getA().getCoefficient(0);
+		Iterator<Point> iter = points.iterator();
+		
+		
+		while(iter.hasNext()) {
+			
+			
+			Point currentpoint = iter.next();
+			
+			double secderiv = 2 * highestCoeff;
+			double firstderiv = 2 * highestCoeff * currentpoint.getL()[0] + sechighestCoeff;
+			double Kappa = secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0);
+			
+			
+			Curvaturepoints.add(new double[] {currentpoint.getL()[0], currentpoint.getL()[1], Kappa});
+			
 		}
-
-		double averagecurvature = 0;
-		for (int t = 0; t < x.length; ++t) {
-
-			double secderiv = 2 * regression.GetCoefficients(2);
-			double firstderiv = 2 * regression.GetCoefficients(2) * x[t] + regression.GetCoefficients(1);
-			double poly = secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0);
-
-			averagecurvature += Math.abs(poly);
-		}
-
-		averagecurvature /= x.length;
-		Pair<ArrayList<double[]>, Double> resultcurvature = new ValuePair<ArrayList<double[]>, Double>(InterpolCordlist,
-				averagecurvature);
-		return resultcurvature;
+		
+	
+		return Curvaturepoints;
 	}
 
 	/**

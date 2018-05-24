@@ -1142,9 +1142,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			}
 			imp.updateAndDraw();
 
-			
+			if(!curvesupermode || !curveautomode) {
 			DisplayAuto.mark(this);
 			DisplayAuto.select(this);
+			}
 			
 
 		}
@@ -1239,10 +1240,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			}
 			imp.updateAndDraw();
-			
+			if(!curvesupermode || !curveautomode) {
 			DisplayAuto.mark(this);
 			DisplayAuto.select(this);
-			
+			}
 
 		}
 	}
@@ -1487,7 +1488,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				new EmptyBorder(c.insets));
 		Border origborder = new CompoundBorder(new TitledBorder("Enter filename for results files"),
 				new EmptyBorder(c.insets));
-		Border probborder = new CompoundBorder(new TitledBorder("Enter class probability range"),
+		Border probborder = new CompoundBorder(new TitledBorder("Automation block"),
 				new EmptyBorder(c.insets));
 		Border ellipsetools = new CompoundBorder(new TitledBorder("Ransac and Angle computer"),
 				new EmptyBorder(c.insets));
@@ -1655,6 +1656,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			Angleselect.add(numsegField, new GridBagConstraints(4, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			
+			Angleselect.add(insideText, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+			Angleselect.add(insideslider, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			Angleselect.setBorder(circletools);
 			Angleselect.setPreferredSize(new Dimension(SizeX, SizeY));

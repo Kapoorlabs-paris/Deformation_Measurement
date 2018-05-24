@@ -9,9 +9,10 @@ import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 
 public class TableDisplay {
 
-	
+
 	public static void displayclicked(InteractiveSimpleEllipseFit parent, int trackindex) {
 
+		System.out.println("This is for angle");
 		// Make something happen
 		parent.row = trackindex;
 		String ID =  (String) parent.table.getValueAt(trackindex, 0);

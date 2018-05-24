@@ -101,7 +101,7 @@ public class LabelCurvature implements Runnable {
 				parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
 		final int ndims = ActualRoiimg.numDimensions();
 
-		parent.localCurvature = CurvatureFunction.getCurvature(allorderedtruths, parent.numseg, ndims, celllabel, t, z);
+		parent.localCurvature = CurvatureFunction.getCurvature(allorderedtruths, (int) parent.insideCutoff, parent.numseg, ndims, celllabel, t, z);
 		
 		// Make intersection object here
 

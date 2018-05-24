@@ -85,7 +85,7 @@ public class DisplayAuto {
 			select(parent);
 			}
 			
-			else if(parent.curveautomode || parent.curvesupermode) {
+			if(parent.curveautomode || parent.curvesupermode) {
 				DisplaySelected.mark(parent);
 				DisplaySelected.select(parent);
 			}
