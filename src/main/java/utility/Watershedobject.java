@@ -87,7 +87,7 @@ public class Watershedobject {
 		RandomAccessibleInterval<BitType> outimg = new ArrayImgFactory<BitType>().create(Intimg, new BitType());
 		RandomAccess<BitType> imageRA = outimg.randomAccess();
 		RandomAccessibleInterval<BitType> currentimg = GenericFilters.GradientmagnitudeImage(Intimg);
-		currentimg = GenericFilters.AutoThreshold(currentimg);
+		
 		RandomAccess<BitType> inputRA = currentimg.randomAccess();
 
 		// Go through the whole image and add every pixel, that belongs to

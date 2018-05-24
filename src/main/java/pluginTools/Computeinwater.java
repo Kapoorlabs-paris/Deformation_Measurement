@@ -111,6 +111,7 @@ public class Computeinwater {
 			else
 				current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, label);
 
+			
 			// Neglect the small watershed regions by choosing only those regions which have
 			// more than 9 candidate points for ellipse fitting
 			List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
