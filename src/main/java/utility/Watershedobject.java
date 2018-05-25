@@ -6,6 +6,7 @@ import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.IntType;
@@ -87,7 +88,7 @@ public class Watershedobject {
 		RandomAccessibleInterval<BitType> outimg = new ArrayImgFactory<BitType>().create(Intimg, new BitType());
 		RandomAccess<BitType> imageRA = outimg.randomAccess();
 		RandomAccessibleInterval<BitType> currentimg = GenericFilters.GradientmagnitudeImage(Intimg);
-		
+
 		RandomAccess<BitType> inputRA = currentimg.randomAccess();
 
 		// Go through the whole image and add every pixel, that belongs to

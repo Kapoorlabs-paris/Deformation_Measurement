@@ -54,8 +54,6 @@ public class DisplayCurvatureResults {
 				
 			}
 			
-		//	RandomAccessibleInterval<FloatType> CurrentView = utility.Slicer.getCurrentView(originalimg, time,
-		//			parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
 			RandomAccessibleInterval<FloatType> CurrentViewprobImg = utility.Slicer.getCurrentView(probImg, time,
 					parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
 	

@@ -15,6 +15,7 @@ import curvatureUtils.PointExtractor;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import ellipsoidDetector.Tangentobject;
+import ij.ImagePlus;
 import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
@@ -28,6 +29,8 @@ import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
+import regression.RegressionFunction;
+import regression.Threepointfit;
 
 public class LabelCurvature implements Runnable {
 
@@ -76,6 +79,10 @@ public class LabelCurvature implements Runnable {
 
 	@Override
 	public void run() {
+		
+		parent.Allnodes.clear();
+		parent.Nodemap.clear();
+		
 		if (!parent.curveautomode || !parent.curvesupermode) {
 			if (parent.fourthDimensionSize != 0)
 				utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.Accountedframes.entrySet().size()),
@@ -101,12 +108,14 @@ public class LabelCurvature implements Runnable {
 				parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
 		final int ndims = ActualRoiimg.numDimensions();
 
-		parent.localCurvature = CurvatureFunction.getCurvature(allorderedtruths, (int) parent.insideCutoff, parent.numseg, ndims, celllabel, t, z);
 		
+		Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> resultpair  = CurvatureFunction.getCurvature( parent, allorderedtruths, ndims, celllabel, t, z);
+		parent.localCurvature = resultpair.getB();
+		parent.functions = resultpair.getA();
 		// Make intersection object here
 
 		
-		Intersectionobject currentobject = PointExtractor.CurvaturetoIntersection(parent.localCurvature);
+		Intersectionobject currentobject = PointExtractor.CurvaturetoIntersection(parent.localCurvature, parent.functions);
 		AllCurveintersection.add(currentobject);
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
 

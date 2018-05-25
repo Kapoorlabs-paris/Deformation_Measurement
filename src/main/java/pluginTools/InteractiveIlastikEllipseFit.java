@@ -17,14 +17,16 @@ public class InteractiveIlastikEllipseFit {
 		// /Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/Stage3Training/TestEtrack/TestTimeLapse/Test3_1/RawData.tif
 		// /Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/Stage3Training/TestEtrack/TestTimeLapse/Test3_1/MulticutSegmentation.tif
 		// /Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/Stage3Training/TestEtrack/TestTimeLapse/Test3_1/BoundaryProbability.tif
-		
-		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/Stage3Training/TestEtrack/TestTimeLapse/Test3_1/SmallRawData.tif");
+		///Users/aimachine/Documents/TalkCurie
+		///Users/aimachine/Documents/CurvatureTest/MultiCircles.tif
+		///Users/aimachine/Documents/CurvatureTest/Circles.tif
+		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/TalkCurie/SmallRawData.tif");
 		impB.show();
 		
-		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/Stage3Training/TestEtrack/TestTimeLapse/Test3_1/SmallMulticutSegmentation.tif");
+		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/TalkCurie/SmallMulticutSegmentation.tif");
 		impC.show();
 		
-		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/Stage3Training/TestEtrack/TestTimeLapse/Test3_1/SmallBoundaryProbability.tif");
+		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/TalkCurie/SmallBoundaryProbability.tif");
 		impA.show();
 		IlastikEllipseFileChooser panel = new IlastikEllipseFileChooser();
 

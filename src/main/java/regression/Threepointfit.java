@@ -89,6 +89,7 @@ public class Threepointfit {
 	        double y = 0;
 	        for (int j = degree - 2; j >= 0; j--)
 	            y = j * (j + 1) * GetCoefficients(j + 1) + (x * y);
+	    
 	        return y;
 	    }
 }

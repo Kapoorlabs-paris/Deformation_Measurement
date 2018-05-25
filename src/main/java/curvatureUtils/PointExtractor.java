@@ -1,5 +1,6 @@
 package curvatureUtils;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +8,8 @@ import ellipsoidDetector.Intersectionobject;
 import ij.gui.Line;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import regression.RegressionFunction;
+import regression.Threepointfit;
 import utility.Curvatureobject;
 
 public class PointExtractor {
@@ -18,7 +21,7 @@ public class PointExtractor {
 	 * 
 	 * @param localCurvature
 	 */
-	public static Intersectionobject CurvaturetoIntersection(final ArrayList<Curvatureobject> localCurvature) {
+	public static Intersectionobject CurvaturetoIntersection(final ArrayList<Curvatureobject> localCurvature, final ArrayList<RegressionFunction> functions) {
 
 		ArrayList<Line> resultlineroi = new ArrayList<Line>();
 		ArrayList<double[]> linelist = new ArrayList<double[]>();
@@ -31,10 +34,24 @@ public class PointExtractor {
         t = localCurvature.get(0).t;
         z = localCurvature.get(0).z;
 		perimeter = localCurvature.get(0).perimeter;
+		
+		for (int i = 0; i < functions.size(); ++i) {
+		
+			RegressionFunction regression = functions.get(i);
+			
+		for (int index = 0; index < regression.Curvaturepoints.size() - 1; ++index) {
+			int xs = (int) regression.Curvaturepoints.get(index)[0];
+			int xe = (int) regression.Curvaturepoints.get(index + 1)[0];
+			
+			int ys = (int)regression.regression.predict(xs);
+			int ye = (int)regression.regression.predict(xe);
+			Line line = new Line(xs, ys, xe, ye);
+			resultlineroi.add(line);
+		
+		}
+		}
         for (int index = 0; index < localCurvature.size() - 1; ++index) {
 
-			Curvatureobject currentcurvature = localCurvature.get(index);
-			Curvatureobject currentcurvaturenext = localCurvature.get(index + 1);
 
 			X[index] = localCurvature.get(index).cord[0];
 			Y[index] = localCurvature.get(index).cord[1];
@@ -42,10 +59,7 @@ public class PointExtractor {
 			// Make the line list for making intersection object
 			linelist.add(new double[] {X[index], Y[index], Z[index]});
 			
-			// Make the line roi for intersection object
-			Line currentline = new Line(currentcurvature.cord[0], currentcurvature.cord[1],
-					currentcurvaturenext.cord[0], currentcurvaturenext.cord[1]);
-			resultlineroi.add(currentline);
+	
 
 		}
 		

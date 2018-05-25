@@ -110,8 +110,8 @@ public class Computeinwater {
 				current = utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
 			else
 				current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, label);
-
-			
+		
+		
 			// Neglect the small watershed regions by choosing only those regions which have
 			// more than 9 candidate points for ellipse fitting
 			List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
@@ -157,6 +157,11 @@ public class Computeinwater {
 		Iterator<Integer> setiter = parent.pixellist.iterator();
 		parent.superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>>();
 		 ArrayList<Intersectionobject> AllCurveintersection = new ArrayList<Intersectionobject>();
+		 
+		 // Skip the background label
+		 if (setiter.hasNext())
+				 setiter.next();
+		 
 		while (setiter.hasNext()) {
 
 			percent++;

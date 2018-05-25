@@ -32,9 +32,65 @@ public class Listordereing {
 			List<RealLocalizable> truths) {
 
 		
+		List<RealLocalizable> copytruths = getOrderedList(truths, 2);
+		
+		
+		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
+		
+		// Get the starting minX and minY co-ordinates
+		RealLocalizable minCord = getMinCord(copytruths);
+
+		RealLocalizable meanCord = getMeanCord(copytruths);
+             orderedtruths.add(minCord);
+             copytruths.remove(minCord);
+		do {
+		
+			
+			RealLocalizable nextCord = getNextNearest(minCord, copytruths);
+			copytruths.remove(nextCord);
+			RealLocalizable secondnextCord = getNextNearest(minCord, copytruths);
+			copytruths.add(nextCord);
+			
+			double nextangle = Distance.AngleVectors(minCord, nextCord, meanCord);
+			double secondnextangle = Distance.AngleVectors(minCord, secondnextCord, meanCord);
+			RealLocalizable chosenCord = null;
+			
+			if(nextangle > 0 && secondnextangle > 0 && nextangle < secondnextangle)
+				chosenCord = nextCord;
+			if(nextangle > 0 && secondnextangle > 0 && nextangle > secondnextangle)
+				chosenCord = secondnextCord;
+			else if (nextangle < 0 || secondnextangle < 0)
+			
+			chosenCord = (nextangle > secondnextangle) ? nextCord: secondnextCord; 
+			
+
+			minCord = chosenCord;
+			orderedtruths.add(minCord);
+			
+		
+			
+			
+			copytruths.remove(chosenCord);
+			
+		} while (copytruths.size() > 4);
+
+		
+		return orderedtruths;
+	}
+	
+	/**
+	 * Return an ordered list of XY coordinates starting from the min X position to
+	 * the end of the list
+	 * 
+	 * 
+	 * @param truths
+	 * @return
+	 */
+
+	public static <T extends RealType<T> & NativeType<T>> List<RealLocalizable> getOrderedList(
+			List<RealLocalizable> truths, double deltasep) {
+
 		List<RealLocalizable> copytruths = copyList(truths);
-		
-		
 		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
 		RealLocalizable minCord = getMinCord(copytruths);
 
@@ -44,7 +100,7 @@ public class Listordereing {
 		
 			
 			RealLocalizable nextCord = getNextNearest(minCord, copytruths);
-			if (Distance.DistanceSqrt(minCord, nextCord) > 0) {
+			if (Distance.DistanceSqrt(minCord, nextCord) > deltasep) {
 			minCord = nextCord;
 			orderedtruths.add(minCord);
 			}
@@ -56,8 +112,6 @@ public class Listordereing {
 		
 		return orderedtruths;
 	}
-	
-
 
 	public static  List<RealLocalizable> copyList(
 			List<RealLocalizable> truths) {
@@ -79,7 +133,39 @@ public class Listordereing {
 
 	/**
 	 * 
-	 * Get the starting XY co-ordinates to create an ordered list
+	 * Get the mean XY co-ordinates from the list
+	 * 
+	 * @param truths
+	 * @return
+	 */
+
+	public static RealLocalizable getMeanCord(
+			List<RealLocalizable> truths) {
+
+		Iterator<RealLocalizable> iter = truths.iterator();
+        double Xmean = 0, Ymean = 0;
+		while (iter.hasNext()) {
+
+			RealLocalizable currentpair = iter.next();
+
+			RealLocalizable currentpoint = currentpair;
+
+			Xmean+= currentpoint.getDoublePosition(0);
+			Ymean+= currentpoint.getDoublePosition(1);
+			
+			
+
+		}
+		RealPoint meanCord = new RealPoint(new double[] {Xmean / truths.size(), Ymean / truths.size()});
+		
+		
+
+		return meanCord;
+	}
+	
+	/**
+	 * 
+	 * Get the starting XY co-ordinates to create an ordered list, start from minX and minY
 	 * 
 	 * @param truths
 	 * @return

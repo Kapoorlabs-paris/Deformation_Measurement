@@ -57,6 +57,7 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 import costMatrix.CostFunction;
 import curvatureUtils.DisplaySelected;
 import curvatureUtils.InterpolateCurvature;
+import curvatureUtils.Node;
 import edu.mines.jtk.mosaic.PointsView.Mark;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
@@ -125,6 +126,8 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
+import regression.RegressionFunction;
+import regression.Threepointfit;
 import utility.Curvatureobject;
 import utility.DisplayAuto;
 import utility.Roiobject;
@@ -144,6 +147,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public double minellipsepoints = 9;
 	public double mincirclepoints = 3;
 	public int tablesize;
+	public ArrayList<Node<RealLocalizable>> Allnodes = new ArrayList<Node<RealLocalizable>>();
+	public HashMap<Integer, ArrayList<Node<RealLocalizable>>> Nodemap = new HashMap<Integer, ArrayList<Node<RealLocalizable>>>();
 	public Overlay overlay;
 	public Overlay emptyoverlay;
 	public int thirdDimensionslider = 1;
@@ -177,8 +182,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float lowprobmax = 1.0f;
 	public float highprobmax = 1.0f;
 
-	public float insideCutoffmin = 5;
-	public float outsideCutoffmin = 5;
+	public float insideCutoffmin = 1;
+	public float outsideCutoffmin = 1;
 
 	public int AutostartTime, AutoendTime;
 	public float insideCutoffmax = 50;
@@ -282,6 +287,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public MouseAdapter mouseadapter;
 	public ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> superReducedSamples;
 	public ArrayList<Curvatureobject> localCurvature, interpolatedlocalCurvature;
+	public ArrayList<RegressionFunction> functions ;
 	public ArrayList<ArrayList<Curvatureobject>> AlllocalCurvature;
 	public int[] Clickedpoints;
 	public int starttime;
@@ -316,7 +322,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int betaInit = 0;
 	public int minSizeInit = 50;
 	public int maxSizeInit = 500;
-
+	public double maxError = 15.0;
+	public int maxDist = 100;
 	public int maxSearchInit = 100;
 	public int maxframegap = 10;
 	public static enum ValueChange {
@@ -603,6 +610,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		redoing = false;
 		localCurvature = new ArrayList<Curvatureobject>();
+		functions = new ArrayList<RegressionFunction>();
 		interpolatedlocalCurvature = new ArrayList<Curvatureobject>();
 		AlllocalCurvature = new ArrayList<ArrayList<Curvatureobject>>();
 		superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>>();
@@ -1656,14 +1664,17 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			Angleselect.add(numsegField, new GridBagConstraints(4, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
-			Angleselect.add(insideText, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			
+			Angleselect.add(insideText, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(insideslider, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(insideslider, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			
+			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			
 			Angleselect.setBorder(circletools);
 			Angleselect.setPreferredSize(new Dimension(SizeX, SizeY));
 			panelFirst.add(Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
