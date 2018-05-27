@@ -66,6 +66,7 @@ public class DisplayAuto {
 							Line ellipse = currentobject.resultlineroi.get(i);
 							ellipse.setStrokeColor(parent.colorLineA);
 
+							ellipse.setStrokeWidth(2);
 							parent.overlay.add(ellipse);
 
 						}

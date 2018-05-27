@@ -8,6 +8,7 @@ import ellipsoidDetector.Intersectionobject;
 import ij.gui.Line;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import ransacPoly.QuadraticFunction;
 import regression.RegressionFunction;
 import regression.Threepointfit;
 import utility.Curvatureobject;
@@ -38,17 +39,33 @@ public class PointExtractor {
 		for (int i = 0; i < functions.size(); ++i) {
 		
 			RegressionFunction regression = functions.get(i);
+		
 			
 		for (int index = 0; index < regression.Curvaturepoints.size() - 1; ++index) {
 			int xs = (int) regression.Curvaturepoints.get(index)[0];
 			int xe = (int) regression.Curvaturepoints.get(index + 1)[0];
 			
-			int ys = (int)regression.regression.predict(xs);
-			int ye = (int)regression.regression.predict(xe);
+			int ys = 0;
+			int ye = 0;
+			if(regression.regression!=null) {
+			ys = (int)regression.regression.predict(xs);
+			ye = (int)regression.regression.predict(xe);
+			}
+			else {
+				ys = (int)regression.quad.predict(xs);
+				ye = (int)regression.quad.predict(xe);
+				
+			}
+			
+			
 			Line line = new Line(xs, ys, xe, ye);
 			resultlineroi.add(line);
 		
 		}
+		
+			
+			
+			
 		}
         for (int index = 0; index < localCurvature.size() - 1; ++index) {
 

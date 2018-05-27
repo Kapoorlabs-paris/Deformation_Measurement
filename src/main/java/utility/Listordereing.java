@@ -32,7 +32,7 @@ public class Listordereing {
 			List<RealLocalizable> truths) {
 
 		
-		List<RealLocalizable> copytruths = getOrderedList(truths, 2);
+		List<RealLocalizable> copytruths = getOrderedList(truths, 0);
 		
 		
 		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
@@ -72,7 +72,7 @@ public class Listordereing {
 			
 			copytruths.remove(chosenCord);
 			
-		} while (copytruths.size() > 4);
+		} while (copytruths.size() > 3);
 
 		
 		return orderedtruths;

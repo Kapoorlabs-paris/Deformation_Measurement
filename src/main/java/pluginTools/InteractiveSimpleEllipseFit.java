@@ -166,6 +166,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float insideCutoff = 15;
 	public float outsideCutoff = insideCutoff;
 
+	public int minNumInliers = 3;
 	public long maxsize = 100;
 	public int span = 2;
 	public int minperimeter = 100;

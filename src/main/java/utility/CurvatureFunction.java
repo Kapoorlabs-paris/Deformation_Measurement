@@ -9,7 +9,7 @@ import curvatureUtils.Node;
 import drawUtils.DrawFunction;
 import ellipsoidDetector.Distance;
 import ij.ImagePlus;
-import net.imglib2.Point;
+import mpicbg.models.Point;
 import net.imglib2.RealLocalizable;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.util.Pair;
@@ -45,7 +45,8 @@ public class CurvatureFunction {
 	 * @param z
 	 * @return
 	 */
-	public static ValuePair<ArrayList<RegressionFunction> , ArrayList<Curvatureobject>> getCurvature(InteractiveSimpleEllipseFit parent, List<RealLocalizable> truths,
+	public static ValuePair<ArrayList<RegressionFunction> , ArrayList<Curvatureobject>> getCurvature(InteractiveSimpleEllipseFit parent, List<RealLocalizable> truths, 
+			double maxError, int minNumInliers, double maxDist,
 			int ndims, int Label, int t, int z) {
 
 		ArrayList<Curvatureobject> curveobject = new ArrayList<Curvatureobject>();
@@ -107,7 +108,7 @@ public class CurvatureFunction {
 	
 				
 			}
-			RegressionFunction Leftresultcurvature = getLocalcurvature(LeftCordlist);
+			RegressionFunction Leftresultcurvature = getLocalcurvature(LeftCordlist, maxError, minNumInliers, maxDist);
 			
 			// Draw the function
 			
@@ -126,7 +127,7 @@ public class CurvatureFunction {
 			
 
 			}
-			RegressionFunction Rightresultcurvature = getLocalcurvature(RightCordlist);
+			RegressionFunction Rightresultcurvature = getLocalcurvature(RightCordlist, maxError, minNumInliers, maxDist);
 			
 			
 			
@@ -229,25 +230,40 @@ public class CurvatureFunction {
 	 */
 
 	
-	public static RegressionFunction getLocalcurvature(ArrayList<double[]> Cordlist) {
+	public static RegressionFunction getLocalcurvature(ArrayList<double[]> Cordlist, double maxError, int minNumInliers, double maxDist) {
 
 		double[] x = new double[Cordlist.size()];
 		double[] y = new double[Cordlist.size()];
 
 		ArrayList<double[]> points = new ArrayList<double[]>();
+		ArrayList<Point> pointlist = new ArrayList<Point>();
 		ArrayList<double[]> Curvaturepoints = new ArrayList<double[]>();
-
+		AbstractFunction2D function = new QuadraticFunction();
+		
+		
 		for (int index = 0; index < Cordlist.size() - 1; ++index) {
 			x[index] = Cordlist.get(index)[0];
 			y[index] = Cordlist.get(index)[1];
 			points.add(new double[] { x[index], y[index] });
+			
+			pointlist.add(new Point( new double[]{ x[index],y[index]} ) );
 		}
 
 	
+		// Regression or Ransac
+		//Regression block
 		Threepointfit regression = new Threepointfit(x, y, 2);
 
 		double highestCoeff = regression.GetCoefficients(2);
 		double sechighestCoeff = regression.GetCoefficients(1);
+		
+		// Ransac block
+		
+		final Pair<QuadraticFunction, ArrayList<PointFunctionMatch>> segment = Tracking
+				.findFunction(pointlist, function, maxError, minNumInliers, maxDist);
+		
+		highestCoeff  = segment.getA().getCoefficient(2);
+		sechighestCoeff = segment.getA().getCoefficient(1);
 
 		for (int index = 0; index < points.size() - 1; ++index) {
 
@@ -269,7 +285,7 @@ public class CurvatureFunction {
 		}
             System.out.println(perimeter + " " + "Peri");
             
-            RegressionFunction finalfunction = new RegressionFunction(regression, Curvaturepoints, perimeter);
+            RegressionFunction finalfunction = new RegressionFunction(segment.getA(), Curvaturepoints, perimeter);
             
 		return finalfunction;
 	}
