@@ -1312,7 +1312,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final Label minperiText = new Label("Minimum ellipse perimeter" );
 	final Label maxperiText = new Label("Maximum ellipse perimeter" );
 	
-	final Label numsegText = new Label("Number of segments" );
+	final Label numsegText = new Label("Minimum number of Inliers" );
 	final Label lowprobText = new Label("Lower probability level = " + lowprob, Label.CENTER);
 	final Label highporbText = new Label("Higher probability level = " + highprob, Label.CENTER);
 

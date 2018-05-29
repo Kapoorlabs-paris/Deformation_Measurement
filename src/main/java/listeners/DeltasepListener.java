@@ -25,7 +25,7 @@ public class DeltasepListener implements TextListener {
 				String s = tc.getText();
 			
 				if(s.length() > 0)
-						parent.numseg = Integer.parseInt(s);
+						parent.minNumInliers  = Integer.parseInt(s);
 				
 				
 

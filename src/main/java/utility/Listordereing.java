@@ -72,7 +72,7 @@ public class Listordereing {
 			
 			copytruths.remove(chosenCord);
 			
-		} while (copytruths.size() > 3);
+		} while (copytruths.size() > 1);
 
 		
 		return orderedtruths;

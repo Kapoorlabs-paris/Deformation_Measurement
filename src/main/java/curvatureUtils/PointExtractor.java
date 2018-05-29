@@ -82,6 +82,7 @@ public class PointExtractor {
 		
 		double[] mean = GeometricCenter(X, Y);
 		
+		
 		Intersectionobject currentIntersection = new Intersectionobject(mean, linelist, resultlineroi, perimeter, celllabel, t, z);
 
 		return currentIntersection;

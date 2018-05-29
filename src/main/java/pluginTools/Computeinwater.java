@@ -187,6 +187,8 @@ public class Computeinwater {
 
 			String uniqueID = Integer.toString(z) + Integer.toString(t);
 			parent.ALLIntersections.put(uniqueID, AllCurveintersection);
+			for(int i = 0; i < AllCurveintersection.size(); ++i)
+				System.out.println(AllCurveintersection.get(i).celllabel + " " + AllCurveintersection.get(i).z);
 			Roiobject currentobject = new Roiobject(null, null, resultlineroi, z, t, true);
 			parent.ZTRois.put(uniqueID, currentobject);
 			DisplayAuto.Display(parent);

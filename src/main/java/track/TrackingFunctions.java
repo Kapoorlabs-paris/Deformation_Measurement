@@ -33,18 +33,21 @@ public class TrackingFunctions {
 			
 			String ID = entry.getKey();
 			ArrayList<Intersectionobject> bloblist = entry.getValue();
-			
+		
 			for (Intersectionobject blobs: bloblist) {
 				
+				
 				coll.add(blobs, ID);
+				
 			}
 			
-			
 		}
+		
 		
 		KFsearch Tsearch = new KFsearch(coll, parent.UserchosenCostFunction, parent.maxSearchradius, parent.initialSearchradius, parent.maxframegap, parent.AccountedZ, parent.jpb);
 		Tsearch.process();
 		SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > simplegraph = Tsearch.getResult();
+		
 		
 		return simplegraph;
 		

@@ -118,6 +118,8 @@ public class LabelCurvature implements Runnable {
 
 		
 		Intersectionobject currentobject = PointExtractor.CurvaturetoIntersection(parent.localCurvature, parent.functions);
+		
+		
 		AllCurveintersection.add(currentobject);
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
 

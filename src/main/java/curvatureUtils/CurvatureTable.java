@@ -24,7 +24,7 @@ public class CurvatureTable {
 	
 	public static void CreateTableTrackView(final InteractiveSimpleEllipseFit parent) {
 		
-		
+		System.out.println("Creating table");
 		parent.resultAngle = new ArrayList<Pair<String, double[]>>();
 		parent.resultCurvature = new ArrayList<Pair<String, Pair< Integer,ArrayList<double[]>>>>();
 		for (Pair<String, Intersectionobject> currentangle : parent.Tracklist) {

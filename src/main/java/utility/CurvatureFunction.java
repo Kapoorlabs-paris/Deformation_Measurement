@@ -28,7 +28,7 @@ public class CurvatureFunction {
 	
 	
 	
-
+	static int maxdepth = 0;
 	
 	
 	
@@ -56,16 +56,13 @@ public class CurvatureFunction {
 		int depth = 0;
 		// Extract the depth of the tree from the user input
 		
-		int maxdepth = (int) (Math.log(parent.numseg)/Math.log(2));
 		
-		if(parent.numseg == 1)
-			maxdepth = 1;
 		
 		// Make a tree of a certain depth
-		MakeTree(truths,parent.Allnodes, depth, maxdepth);
+		MakeTree(parent,truths,parent.Allnodes, depth);
 
 		
-		for (int i = 1; i <= maxdepth; ++i) {
+		for (int i = 0; i <= maxdepth; ++i) {
 			ArrayList<Node<RealLocalizable>> Inode = new ArrayList<Node<RealLocalizable>>();
 		
 			
@@ -88,6 +85,7 @@ public class CurvatureFunction {
 		
 		ArrayList<Node<RealLocalizable>> leafnode = parent.Nodemap.get(maxdepth);
 	
+		
 		double perimeter = 0;
 		for (Node<RealLocalizable> leaf: leafnode) {
 			
@@ -96,7 +94,7 @@ public class CurvatureFunction {
 			
 			
 			
-		
+		if(Leftsubtruths.size() > parent.minNumInliers) {
 			// Fit function on left tree
 			
 			ArrayList<double[]> LeftCordlist = new ArrayList<double[]>();
@@ -110,6 +108,7 @@ public class CurvatureFunction {
 			}
 			RegressionFunction Leftresultcurvature = getLocalcurvature(LeftCordlist, maxError, minNumInliers, maxDist);
 			
+			
 			// Draw the function
 			
 			functions.add(Leftresultcurvature);
@@ -117,9 +116,11 @@ public class CurvatureFunction {
 			interpolatedCurvature.addAll(Leftresultcurvature.Curvaturepoints);
 
 			perimeter+=Leftresultcurvature.perimeter;
-			
+		}
 			// Fit function on right tree
 			ArrayList<double[]> RightCordlist = new ArrayList<double[]>();
+			
+			if(Rightsubtruths.size() > parent.minNumInliers) {
 			for (int i = 0; i < Rightsubtruths.size(); ++i) {
 
 				RightCordlist.add(new double[] { Rightsubtruths.get(i).getDoublePosition(0),
@@ -128,7 +129,6 @@ public class CurvatureFunction {
 
 			}
 			RegressionFunction Rightresultcurvature = getLocalcurvature(RightCordlist, maxError, minNumInliers, maxDist);
-			
 			
 			
 			
@@ -143,8 +143,8 @@ public class CurvatureFunction {
 		
 		}
 		
-	
-
+		}
+System.out.println(perimeter + " Peri ");
 
 		for (int indexx = 0; indexx < interpolatedCurvature.size(); ++indexx) {
 			Curvatureobject currentobject = new Curvatureobject(interpolatedCurvature.get(indexx)[2], perimeter, Label,
@@ -154,7 +154,7 @@ public class CurvatureFunction {
 		}
 
 		return new ValuePair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> (functions, curveobject);
-
+		
 	}
 
 	
@@ -162,16 +162,16 @@ public class CurvatureFunction {
 	
 
 	
-	public static void  MakeTree(final List<RealLocalizable> truths,ArrayList<Node<RealLocalizable>> Allnodes, int depth, int maxdepth) {
+	public static void  MakeTree(InteractiveSimpleEllipseFit parent,final List<RealLocalizable> truths,ArrayList<Node<RealLocalizable>> Allnodes, int depth) {
 		
 		
-		if(depth > maxdepth)
+		if(truths.size() < 10 * parent.minNumInliers)
 			return;
 		
 		else {
 		int size = truths.size();
 		
-		
+		maxdepth = depth;
 		
 		int splitindex;
 		if (size % 2 == 0)
@@ -204,12 +204,12 @@ public class CurvatureFunction {
 			
 		}
 		
-		Node<RealLocalizable> currentnode = new Node<RealLocalizable>(truths.get(splitindex), childA, childB, depth++);
 		
+		Node<RealLocalizable> currentnode = new Node<RealLocalizable>(truths.get(splitindex), childA, childB, depth);
 		
-		
-		MakeTree(childA, Allnodes, depth, maxdepth);
-		MakeTree(childB, Allnodes, depth, maxdepth);
+		depth++;
+		MakeTree(parent, childA, Allnodes, depth);
+		MakeTree(parent, childB, Allnodes, depth);
 		Allnodes.add(currentnode);
 		}
 		
@@ -252,19 +252,12 @@ public class CurvatureFunction {
 	
 		// Regression or Ransac
 		//Regression block
+		/*
 		Threepointfit regression = new Threepointfit(x, y, 2);
 
 		double highestCoeff = regression.GetCoefficients(2);
 		double sechighestCoeff = regression.GetCoefficients(1);
-		
-		// Ransac block
-		
-		final Pair<QuadraticFunction, ArrayList<PointFunctionMatch>> segment = Tracking
-				.findFunction(pointlist, function, maxError, minNumInliers, maxDist);
-		
-		highestCoeff  = segment.getA().getCoefficient(2);
-		sechighestCoeff = segment.getA().getCoefficient(1);
-
+		/*
 		for (int index = 0; index < points.size() - 1; ++index) {
 
 
@@ -273,17 +266,36 @@ public class CurvatureFunction {
 			double Kappa = secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0);
             
 			Curvaturepoints.add(new double[] { points.get(index)[0], points.get(index)[1], Math.abs(Kappa) });
+		//	System.out.println("Kappa" + Math.abs(Kappa));
+		}
+	*/
+		
+		// Ransac block
+		
+		final Pair<QuadraticFunction, ArrayList<PointFunctionMatch>> segment = Tracking
+				.findFunction(pointlist, function, maxError, minNumInliers, maxDist);
+		
+		double highestCoeff  = segment.getA().getCoefficient(2);
+		double sechighestCoeff = segment.getA().getCoefficient(1);
+		for ( final PointFunctionMatch p : segment.getB() ) {
+			
+			double secderiv = 2 * highestCoeff;
+			double firstderiv = 2 * highestCoeff * p.getP1().getW()[0]+ sechighestCoeff;
+			double Kappa = secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0);
+			Curvaturepoints.add(new double[] { p.getP1().getW()[0],p.getP1().getW()[1], Math.abs(Kappa) });
 			System.out.println("Kappa" + Math.abs(Kappa));
 		}
-	
+		
+		
 		double perimeter = 0;
 		for (int index = 0; index < points.size() - 1; ++index) {
 			
+			double dx = Math.abs(points.get(index)[0] - points.get(index + 1)[0]);
 			double firstderiv =  2 * highestCoeff *  points.get(index)[0]  + sechighestCoeff;
-			perimeter+= Math.sqrt(1 + firstderiv * firstderiv);
+			perimeter+= Math.sqrt(1 + firstderiv * firstderiv) * dx;
 			
 		}
-            System.out.println(perimeter + " " + "Peri");
+         //   System.out.println(perimeter + " " + "Peri");
             
             RegressionFunction finalfunction = new RegressionFunction(segment.getA(), Curvaturepoints, perimeter);
             

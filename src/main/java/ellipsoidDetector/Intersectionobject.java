@@ -30,7 +30,8 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 	private final ConcurrentHashMap< String, Double > features = new ConcurrentHashMap< String, Double >();
 	public static AtomicInteger IDcounter = new AtomicInteger( -1 );
 	
-	public Intersectionobject(final double[] Intersectionpoint, final double angle, final Pair<Ellipsoid, Ellipsoid> ellipsepair, final ArrayList<Line> linerois,  final int t, final int z) {
+	public Intersectionobject(final double[] Intersectionpoint, final double angle, final Pair<Ellipsoid, Ellipsoid> ellipsepair, 
+			final ArrayList<Line> linerois,  final int t, final int z) {
 		super(3);
 		this.Intersectionpoint = Intersectionpoint;
 		this.angle = angle;
@@ -60,9 +61,10 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 	 * @param z
 	 * 
 	 */
-	public Intersectionobject(final double[] CenterofMass, ArrayList<double[]> linelist, final ArrayList<Line> linerois, final double perimeter,  final int celllabel, final int t, final int z) {
+	public Intersectionobject(final double[] Intersectionpoint, ArrayList<double[]> linelist, final ArrayList<Line> linerois, 
+			final double perimeter,  final int celllabel, final int t, final int z) {
 		super(3);
-		this.Intersectionpoint = CenterofMass;
+		this.Intersectionpoint = Intersectionpoint;
 		this.angle = 0;
 		this.celllabel = celllabel;
 		this.linelist = linelist;
@@ -75,8 +77,8 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 		this.name = "ID" + ID;
 		putFeature(Time,  (double) t);
 		putFeature(ZPOSITION, (double) z);
-		putFeature(XPOSITION, CenterofMass[0]);
-		putFeature(YPOSITION, CenterofMass[1]);
+		putFeature(XPOSITION, Intersectionpoint[0]);
+		putFeature(YPOSITION, Intersectionpoint[1]);
 	}
 	
 	public void setName( final String name )

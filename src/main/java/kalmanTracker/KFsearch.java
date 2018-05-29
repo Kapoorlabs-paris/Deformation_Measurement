@@ -99,6 +99,7 @@ public class KFsearch implements IntersectionTracker {
 			Firstorphan = generateSpotList( Allblobs, uniqueID );
 			
 		}
+		
 		Collection<Intersectionobject> Secondorphan = new ArrayList<>();
 		String uniqueIDnext = uniqueID;
 		while ( Secondorphan.isEmpty() )
@@ -132,7 +133,6 @@ public class KFsearch implements IntersectionTracker {
 
 		final Map<CVMKalmanFilter, Intersectionobject> kalmanFiltersMap = new HashMap<CVMKalmanFilter, Intersectionobject>(
 				Secondorphan.size());
-
 		// Loop from the second frame to the last frame and build
 		// KalmanFilterMap
 		
@@ -140,11 +140,10 @@ public class KFsearch implements IntersectionTracker {
 			
 		uniqueIDnext = frameIteratorcopy.next();
 			
-			
+		
 
 
 			List<Intersectionobject> measurements = generateSpotList(Allblobs, uniqueIDnext);
-
 			// Make the preditiction map
 			final Map<ComparableRealPoint, CVMKalmanFilter> predictionMap = new HashMap<ComparableRealPoint, CVMKalmanFilter>(
 					kalmanFiltersMap.size());
@@ -154,11 +153,9 @@ public class KFsearch implements IntersectionTracker {
 				final ComparableRealPoint point = new ComparableRealPoint(X);
 				predictionMap.put(point, kf);
 				
-				
 
 			}
 			final List<ComparableRealPoint> predictions = new ArrayList<ComparableRealPoint>(predictionMap.keySet());
-
 			// Orphans are dealt with later
 			final Collection<CVMKalmanFilter> childlessKFs = new HashSet<CVMKalmanFilter>(kalmanFiltersMap.keySet());
 
@@ -222,6 +219,7 @@ public class KFsearch implements IntersectionTracker {
 
 				// Trying to link orphans with unlinked candidates.
 
+				
 				final JaqamanLinkingCostMatrixCreator<Intersectionobject, Intersectionobject> ic = new JaqamanLinkingCostMatrixCreator<Intersectionobject, Intersectionobject>(
 						Firstorphan, Secondorphan, UserchosenCostFunction, maxInitialCost, ALTERNATIVE_COST_FACTOR,
 						PERCENTILE);
@@ -234,7 +232,7 @@ public class KFsearch implements IntersectionTracker {
 				}
 				final Map<Intersectionobject, Intersectionobject> newAssignments = newLinker.getResult();
 				final Map<Intersectionobject, Double> assignmentCosts = newLinker.getAssignmentCosts();
-
+				
 				// Build links and new KFs from these links.
 				for (final Intersectionobject source : newAssignments.keySet()) {
 					final Intersectionobject target = newAssignments.get(source);
@@ -251,7 +249,7 @@ public class KFsearch implements IntersectionTracker {
 					kalmanFiltersMap.put(kt, target);
 					
 					System.out.println(source.Intersectionpoint[0] + " " + source.Intersectionpoint[1] + " " 
-					+ target.Intersectionpoint[0] + " " + target.Intersectionpoint[1] + " " + source.z + " "+ target.z);
+					+ target.Intersectionpoint[0] + " " + target.Intersectionpoint[1] + " " + source.z + " "+ target.z + " " + "Kalman");
 					synchronized (graph) {
 						// Add edge to the graph.
 						graph.addVertex(source);
@@ -326,8 +324,10 @@ public class KFsearch implements IntersectionTracker {
 		public double linkingCost(final ComparableRealPoint state, final Intersectionobject Blob) {
 			final double dx = state.getDoublePosition(0) - Blob.Intersectionpoint[0];
 			final double dy = state.getDoublePosition(1) - Blob.Intersectionpoint[1];
+			System.out.println((dx * dx));
 			return dx * dx + dy * dy  + Double.MIN_NORMAL;
 			// So that it's never 0
+			
 		}
 	};
 	
