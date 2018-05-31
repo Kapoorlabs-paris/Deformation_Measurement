@@ -152,6 +152,7 @@ public class Computeinwater {
 		List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
 
 		ArrayList<Line> resultlineroi = new ArrayList<Line>();
+		ArrayList<OvalRoi> resultcurvelineroi = new ArrayList<OvalRoi>();
 		// Obtain the points of intersections
 
 		Iterator<Integer> setiter = parent.pixellist.iterator();
@@ -175,7 +176,7 @@ public class Computeinwater {
 
 			List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
 			
-			tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, AllCurveintersection, t, z,
+			tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, resultcurvelineroi, AllCurveintersection, t, z,
 					parent.jpb, percent, label)));
 		}
 

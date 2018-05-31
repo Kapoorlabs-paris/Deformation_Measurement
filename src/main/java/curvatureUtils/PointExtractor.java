@@ -6,11 +6,13 @@ import java.util.List;
 
 import ellipsoidDetector.Intersectionobject;
 import ij.gui.Line;
+import ij.gui.OvalRoi;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import ransacPoly.QuadraticFunction;
 import ransacPoly.RegressionFunction;
 import utility.Curvatureobject;
+import utility.DisplayAuto;
 
 public class PointExtractor {
 
@@ -34,7 +36,7 @@ public class PointExtractor {
         t = localCurvature.get(0).t;
         z = localCurvature.get(0).z;
 		perimeter = localCurvature.get(0).perimeter;
-		
+		ArrayList<OvalRoi> resultcurveline = new ArrayList<OvalRoi>();
 		for (int i = 0; i < functions.size(); ++i) {
 		
 			RegressionFunction regression = functions.get(i);
@@ -63,11 +65,12 @@ public class PointExtractor {
 			resultlineroi.add(line);
 		
 		}
-		
+					
 			
-			
-			
+			resultcurveline.addAll(DisplayAuto.DisplayInliers(regression.inliers));
 		}
+
+
         for (int index = 0; index < localCurvature.size() - 1; ++index) {
 
 
@@ -85,7 +88,7 @@ public class PointExtractor {
 		double[] mean = GeometricCenter(X, Y);
 		
 		
-		Intersectionobject currentIntersection = new Intersectionobject(mean, linelist, resultlineroi, perimeter, celllabel, t, z);
+		Intersectionobject currentIntersection = new Intersectionobject(mean, linelist, resultlineroi, resultcurveline, perimeter, celllabel, t, z);
 
 		return currentIntersection;
 		

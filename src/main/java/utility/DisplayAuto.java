@@ -8,6 +8,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,12 +26,14 @@ import ij.gui.OvalRoi;
 import ij.gui.Roi;
 import kalmanTracker.NearestRoi;
 import pluginTools.InteractiveSimpleEllipseFit;
+import ransac.PointFunctionMatch.PointFunctionMatch;
+import ransacPoly.RansacFunction;
+import ransacPoly.RegressionFunction;
 
 public class DisplayAuto {
 
 	public static void Display(final InteractiveSimpleEllipseFit parent) {
 		parent.overlay.clear();
-		
 
 		if (parent.ZTRois.size() > 0) {
 
@@ -66,12 +69,26 @@ public class DisplayAuto {
 							Line ellipse = currentobject.resultlineroi.get(i);
 							ellipse.setStrokeColor(parent.colorLineA);
 
-							ellipse.setStrokeWidth(2);
+							ellipse.setStrokeWidth(1);
 							parent.overlay.add(ellipse);
 
 						}
 
 					}
+					
+					if (currentobject.resultcurvelineroi != null) {
+						System.out.println("Draw this please");
+						for (int i = 0; i < currentobject.resultcurvelineroi.size(); ++i) {
+
+							OvalRoi ellipse = currentobject.resultcurvelineroi.get(i);
+							ellipse.setStrokeColor(parent.colorPoints);
+
+							parent.overlay.add(ellipse);
+
+						}
+
+					}
+
 
 					break;
 				}
@@ -81,18 +98,34 @@ public class DisplayAuto {
 			parent.imp.setOverlay(parent.overlay);
 			parent.imp.updateAndDraw();
 
-			if(parent.automode || parent.supermode) {
-			mark(parent);
-			select(parent);
+			if (parent.automode || parent.supermode) {
+				mark(parent);
+				select(parent);
 			}
-			
-			if(parent.curveautomode || parent.curvesupermode) {
+
+			if (parent.curveautomode || parent.curvesupermode) {
 				DisplaySelected.mark(parent);
 				DisplaySelected.select(parent);
 			}
-		
 
 		}
+	}
+
+	public static ArrayList<OvalRoi> DisplayInliers(ArrayList<PointFunctionMatch> currentlist) {
+
+		ArrayList<OvalRoi> pointline = new ArrayList<OvalRoi>();
+
+		for (PointFunctionMatch currentpoint : currentlist) {
+
+			final double[] point = new double[] { currentpoint.getP1().getW()[0], currentpoint.getP1().getW()[1] };
+
+			OvalRoi line = new OvalRoi(point[0], point[1], 2, 2);
+			pointline.add(line);
+
+		}
+
+		return pointline;
+
 	}
 
 	public static void DisplayNOM(final InteractiveSimpleEllipseFit parent) {
@@ -152,8 +185,6 @@ public class DisplayAuto {
 
 	public static void select(final InteractiveSimpleEllipseFit parent) {
 
-		
-		
 		if (parent.mvl != null)
 			parent.imp.getCanvas().removeMouseListener(parent.mvl);
 		parent.imp.getCanvas().addMouseListener(parent.mvl = new MouseListener() {
@@ -202,13 +233,13 @@ public class DisplayAuto {
 
 	public static void mark(final InteractiveSimpleEllipseFit parent) {
 
-	
 		if (parent.ml != null)
 			parent.imp.getCanvas().removeMouseMotionListener(parent.ml);
 		parent.imp.getCanvas().addMouseMotionListener(parent.ml = new MouseMotionListener() {
 
 			final ImageCanvas canvas = parent.imp.getWindow().getCanvas();
 			Roi lastnearest = null;
+
 			@Override
 			public void mouseMoved(MouseEvent e) {
 
@@ -218,37 +249,36 @@ public class DisplayAuto {
 				final HashMap<Integer, double[]> loc = new HashMap<Integer, double[]>();
 
 				loc.put(0, new double[] { x, y });
-				if(!parent.automode && !parent.supermode && !parent.curveautomode && !parent.curvesupermode) {
-				Color roicolor;
-				Roiobject currentobject;
-				String uniqueID = Integer.toString(parent.thirdDimension) + Integer.toString(parent.fourthDimension);
-				if (parent.ZTRois.get(uniqueID) == null && parent.DefaultZTRois!=null) {
-					roicolor = parent.defaultRois;
+				if (!parent.automode && !parent.supermode && !parent.curveautomode && !parent.curvesupermode) {
+					Color roicolor;
+					Roiobject currentobject;
+					String uniqueID = Integer.toString(parent.thirdDimension)
+							+ Integer.toString(parent.fourthDimension);
+					if (parent.ZTRois.get(uniqueID) == null && parent.DefaultZTRois != null) {
+						roicolor = parent.defaultRois;
 
-					currentobject =parent.DefaultZTRois.entrySet().iterator().next().getValue();
-					
-						
+						currentobject = parent.DefaultZTRois.entrySet().iterator().next().getValue();
 
-				} else {
-					roicolor = parent.confirmedRois;
+					} else {
+						roicolor = parent.confirmedRois;
 
-					currentobject = parent.ZTRois.get(uniqueID);
+						currentobject = parent.ZTRois.get(uniqueID);
 
-				}
-				if(currentobject.roilist!=null) {
-				parent.nearestRoiCurr = NearestRoi.getNearestRois(currentobject, loc.get(0), parent);
+					}
+					if (currentobject.roilist != null) {
+						parent.nearestRoiCurr = NearestRoi.getNearestRois(currentobject, loc.get(0), parent);
 
-				if (parent.nearestRoiCurr != null) {
-					parent.nearestRoiCurr.setStrokeColor(parent.colorChange);
+						if (parent.nearestRoiCurr != null) {
+							parent.nearestRoiCurr.setStrokeColor(parent.colorChange);
 
-					if (lastnearest != parent.nearestRoiCurr && lastnearest != null)
-						lastnearest.setStrokeColor(roicolor);
+							if (lastnearest != parent.nearestRoiCurr && lastnearest != null)
+								lastnearest.setStrokeColor(roicolor);
 
-					lastnearest = parent.nearestRoiCurr;
+							lastnearest = parent.nearestRoiCurr;
 
-					parent.imp.updateAndDraw();
-				}
-				}
+							parent.imp.updateAndDraw();
+						}
+					}
 				}
 				double distmin = Double.MAX_VALUE;
 				if (parent.tablesize > 0) {

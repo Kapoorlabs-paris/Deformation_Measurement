@@ -68,7 +68,6 @@ public class CurvatureFunction {
 				double perimeterlocal = FitonsubTree(parent, node, interpolatedCurvature, functions, maxError,
 						minNumInliers, maxDist);
 
-				// Do not fit on the same tree again
 
 				// Add local perimeters to get total perimeter of the curve
 				perimeter += perimeterlocal;
@@ -90,6 +89,8 @@ public class CurvatureFunction {
 			System.out.println("Kappa" + Math.abs(interpolatedCurvature.get(indexx)[2]) + " " + perimeter + " "
 					+ interpolatedCurvature.get(indexx)[0] + " " + interpolatedCurvature.get(indexx)[1]);
 		}
+		
+	
 
 		return new ValuePair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>(functions, curveobject);
 
@@ -334,7 +335,7 @@ public class CurvatureFunction {
 				Curvaturepoints.add(new double[] { p.getP1().getW()[0], p.getP1().getW()[1],
 						Math.abs(Kappa) / perimeter, perimeter });
 		}
-		RegressionFunction finalfunction = new RegressionFunction(segment.function, Curvaturepoints);
+		RegressionFunction finalfunction = new RegressionFunction(segment.function, Curvaturepoints, segment.inliers);
 		return finalfunction;
 		}
 		

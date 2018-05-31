@@ -94,6 +94,7 @@ import listeners.IlastikListener;
 import listeners.InsideCutoffListener;
 import listeners.LowProbListener;
 import listeners.ManualInterventionListener;
+import listeners.MaxDistListener;
 import listeners.MaxTryListener;
 import listeners.MaxperimeterListener;
 import listeners.MinpercentListener;
@@ -142,7 +143,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public String usefolder = IJ.getDirectory("imagej");
 	public String addToName = "EllipseFits";
 	public final int scrollbarSize = 1000;
-	public double cutoffdist = 100;
+	public double maxError = 3;
 	public double minellipsepoints = 9;
 	public double mincirclepoints = 3;
 	public int tablesize;
@@ -163,9 +164,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public final double minSeperation = 5;
 	public String selectedID;
 	public float insideCutoff = 15;
+	public float maxDist = 3;
 	public float outsideCutoff = insideCutoff;
 
-	public int minNumInliers = 3;
+	public int minNumInliers = 4;
 	public long maxsize = 100;
 	public int span = 2;
 	public int minperimeter = 100;
@@ -184,7 +186,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	public float insideCutoffmin = 1;
 	public float outsideCutoffmin = 1;
-
+	
+	public float maxDistmin = 0;
+	public float maxDistmax = 100;
+	
 	public int AutostartTime, AutoendTime;
 	public float insideCutoffmax = 50;
 	public float outsideCutoffmax = 50;
@@ -279,6 +284,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Color colorDet = Color.GREEN;
 	public Color colorLineA = Color.YELLOW;
 	public Color colorLineB = Color.YELLOW;
+	public Color colorPoints = Color.RED;
 	public Color colorresult = Color.magenta;
 	public double maxdistance = 10;
 	public float alpha = 0.5f;
@@ -322,8 +328,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int betaInit = 0;
 	public int minSizeInit = 50;
 	public int maxSizeInit = 500;
-	public double maxError = 15.0;
-	public int maxDist = 100;
+	
 	public int maxSearchInit = 100;
 	public int maxframegap = 10;
 	public static enum ValueChange {
@@ -352,6 +357,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		insideslider
 		.setValue(utility.Slicer.computeScrollbarPositionFromValue(insideCutoff, insideCutoffmin, insideCutoffmax, scrollbarSize));
+	}
+	public void setmaxDistcut(final float maxDist) {
+
+		maxdistslider
+		.setValue(utility.Slicer.computeScrollbarPositionFromValue(insideCutoff, maxDistmin, maxDistmax, scrollbarSize));
 	}
 
 	public void setOutsidecut(final int value) {
@@ -636,7 +646,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		setlowprob(lowprob);
 		sethighprob(highprob);
 		setInsidecut(insideCutoff);
-		
+		setmaxDistcut(maxDist);
 
 		if (ndims < 3) {
 
@@ -1009,13 +1019,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				repaintView(imp, CurrentView);
 			
 			
-			if(!automode || !supermode || !curveautomode || !curvesupermode){
+			if(!automode && !supermode && !curveautomode && !curvesupermode){
 				if (ZTRois.get(uniqueID) == null)
 					DisplayDefault();
 				else
 					Display();
 			}
-			else if (automode || supermode)
+			else if (automode || supermode || curveautomode || curvesupermode)
 				DisplayAuto.Display(this);
 			imp.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 
@@ -1088,6 +1098,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	public void Display() {
 
+		System.out.println("Can not be here");
 		overlay.clear();
 
 		if (ZTRois.size() > 0) {
@@ -1306,6 +1317,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final Label contText = new Label("After making all roi selections");
 	final Label insideText = new Label("Cutoff distance  = " + insideCutoff,
 			Label.CENTER);
+	final Label maxdistText = new Label("Max. gap b/w points  = " + maxDist,
+			Label.CENTER);
 	final Label outsideText = new Label("Cutoff distance = " + outsideCutoff, Label.CENTER);
 
 	final Label minperiText = new Label("Minimum ellipse perimeter" );
@@ -1320,6 +1333,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final String zgenstring = "Current Z / T";
 	final String rstring = "Radius";
 	final String insidestring = "Cutoff distance";
+	final String maxdiststring = "Max. gap b/w points";
 	final String outsidestring = "Cutoff distance";
 
 	final String lowprobstring = "Lower probability level";
@@ -1341,6 +1355,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			10 + scrollbarSize);
 	public JScrollBar rslider = new JScrollBar(Scrollbar.HORIZONTAL, radiusInt, 10, 0, 10 + scrollbarSize);
 	public JScrollBar insideslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
+	
+	public JScrollBar maxdistslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
+	
+	
 	public JScrollBar outsideslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
 
 	public JScrollBar lowprobslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
@@ -1672,7 +1690,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			Angleselect.add(insideslider, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
-			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+
+			Angleselect.add(maxdistText, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+			Angleselect.add(maxdistslider, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			
+			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 7, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			Angleselect.setBorder(circletools);
@@ -1870,6 +1895,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		insideslider.addAdjustmentListener(new InsideCutoffListener(this, insideText, insidestring, insideCutoffmin,
 				insideCutoffmax, scrollbarSize, insideslider));
+		maxdistslider.addAdjustmentListener(new MaxDistListener(this, maxdistText, maxdiststring, maxDistmin,
+				maxDistmax, scrollbarSize, maxdistslider));
 		outsideslider.addAdjustmentListener(new OutsideCutoffListener(this, outsideText, outsidestring,
 				outsideCutoffmin, outsideCutoffmax, scrollbarSize, outsideslider));
 		

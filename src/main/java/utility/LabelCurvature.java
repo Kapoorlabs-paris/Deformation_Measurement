@@ -42,11 +42,13 @@ public class LabelCurvature implements Runnable {
 	final int celllabel;
 	final int percent;
 	final ArrayList<Line> resultlineroi;
+	final ArrayList<OvalRoi> resultcurvelineroi;
+	
 	final JProgressBar jpb;
 	ArrayList<Intersectionobject> AllCurveintersection;
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
 			final RandomAccessibleInterval<BitType> ActualRoiimg, List<RealLocalizable> truths,
-			ArrayList<Line> resultlineroi,ArrayList<Intersectionobject> AllCurveintersection, final int t, final int z, final int celllabel) {
+			ArrayList<Line> resultlineroi, ArrayList<OvalRoi> resultcurvelineroi, ArrayList<Intersectionobject> AllCurveintersection, final int t, final int z, final int celllabel) {
 
 		this.parent = parent;
 		this.ActualRoiimg = ActualRoiimg;
@@ -57,17 +59,19 @@ public class LabelCurvature implements Runnable {
 		this.jpb = null;
 		this.percent = 0;
 		this.resultlineroi = resultlineroi;
+		this.resultcurvelineroi = resultcurvelineroi;
 		this.celllabel = celllabel;
 	}
 
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
 			final RandomAccessibleInterval<BitType> ActualRoiimg, List<RealLocalizable> truths,
-			ArrayList<Line> resultlineroi,ArrayList<Intersectionobject> AllCurveintersection, final int t, final int z, final JProgressBar jpb, final int percent,
+			ArrayList<Line> resultlineroi, ArrayList<OvalRoi> resultcurvelineroi, ArrayList<Intersectionobject> AllCurveintersection, final int t, final int z, final JProgressBar jpb, final int percent,
 			final int celllabel) {
 
 		this.parent = parent;
 		this.ActualRoiimg = ActualRoiimg;
 		this.resultlineroi = resultlineroi;
+		this.resultcurvelineroi = resultcurvelineroi;
 		this.truths = truths;
 		this.t = t;
 		this.z = z;
@@ -111,8 +115,8 @@ public class LabelCurvature implements Runnable {
 		CurvatureFunction.MakeTree(parent, truths, 0);
 		
 		Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> resultpair  = CurvatureFunction.getCurvature( parent,
-				allorderedtruths,parent.maxError, parent.minNumInliers,
-				parent.insideCutoff, ndims, celllabel, t, z);
+				allorderedtruths,parent.insideCutoff, parent.minNumInliers,
+				parent.maxDist, ndims, celllabel, t, z);
 		parent.localCurvature = resultpair.getB();
 		parent.functions = resultpair.getA();
 		// Make intersection object here
@@ -125,7 +129,10 @@ public class LabelCurvature implements Runnable {
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
 
 		resultlineroi.addAll(currentobject.linerois);
-		Roiobject currentroiobject = new Roiobject(null, null, resultlineroi, z, t, true);
+		resultcurvelineroi.addAll(currentobject.curvelinerois);
+		
+		
+		Roiobject currentroiobject = new Roiobject(null, null, resultlineroi, resultcurvelineroi, z, t, celllabel, true);
 		parent.ZTRois.put(uniqueID, currentroiobject);
 		DisplayAuto.Display(parent);
 		parent.AlllocalCurvature.add(parent.localCurvature);
