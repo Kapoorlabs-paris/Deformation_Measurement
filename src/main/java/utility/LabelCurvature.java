@@ -112,11 +112,18 @@ public class LabelCurvature implements Runnable {
 				parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
 		final int ndims = ActualRoiimg.numDimensions();
 		// Make a tree of a certain depth
-		CurvatureFunction.MakeTree(parent, truths, 0);
 		
+		
+		int treedepth = parent.depth - 1;
+		
+		if (treedepth <= 0)
+			treedepth = 0;
+		
+		CurvatureFunction.MakeTree(parent, truths, 0, treedepth);
+		CurvatureFunction.evendepth = treedepth;
 		Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> resultpair  = CurvatureFunction.getCurvature( parent,
-				allorderedtruths,parent.insideCutoff, parent.minNumInliers,
-				parent.maxDist, ndims, celllabel, t, z);
+				allorderedtruths, parent.epsilon, parent.minNumInliers,
+				parent.insideCutoff, ndims, celllabel, t, z);
 		parent.localCurvature = resultpair.getB();
 		parent.functions = resultpair.getA();
 		// Make intersection object here

@@ -35,12 +35,12 @@ public class MaxDistListener implements AdjustmentListener {
 
 	@Override
 	public void adjustmentValueChanged(AdjustmentEvent e) {
-		parent.maxDist =  (float) utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize);
+		parent.minNumInliers =  (int) utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize);
 	
 		deltaScrollbar
-				.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.maxDist, min, max, scrollbarSize));
+				.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.minNumInliers, min, max, scrollbarSize));
 
-		label.setText(string +  " = "  + parent.nf.format(parent.maxDist));
+		label.setText(string +  " = "  + parent.nf.format(parent.minNumInliers));
 		parent.panelFirst.validate();
 		parent.panelFirst.repaint();
 	

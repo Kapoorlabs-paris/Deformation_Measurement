@@ -27,7 +27,7 @@ import ransacPoly.Threepointfit;
 
 public class CurvatureFunction {
 
-	static int maxdepth = 0;
+	static int evendepth;
 
 	/**
 	 * 
@@ -50,6 +50,7 @@ public class CurvatureFunction {
 		ArrayList<double[]> interpolatedCurvature = new ArrayList<double[]>();
 		ArrayList<RegressionFunction> functions = new ArrayList<RegressionFunction>();
 
+		
 		double perimeter = 0;
 		// Extract the depth of the tree from the user input
 
@@ -59,9 +60,10 @@ public class CurvatureFunction {
 
 			Node<RealLocalizable> node = parent.Allnodes.get(index);
 			
-			int depth = Getdepth(parent);
-			if (node.depth == depth) {
+		System.out.println(node.depth + " " + evendepth);
+			if (node.depth == evendepth) {
 
+				System.out.println(node.depth + " " + node.parent.size() + " " + "Size");
 				// Get the left and right tree of the node and do ransac fits
 
 				// Output is the local perimeter of the fitted function
@@ -75,8 +77,7 @@ public class CurvatureFunction {
 				
 			}
 
-			parent.Allnodes.remove(node);
-			--index;
+		
 		}
 
 		for (int indexx = 0; indexx < interpolatedCurvature.size(); ++indexx) {
@@ -152,15 +153,21 @@ public class CurvatureFunction {
 
 	}
 
-	public static void MakeTree(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int depth) {
+	public static void MakeTree(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int depth, int maxdepth) {
 
-		if (truths.size() <=  parent.minNumInliers)
+		
+		
+		if (truths.size() <= 3 || depth > maxdepth)
 			return;
+		
+	
 
-		else {
+		else  {
+			
+			evendepth = depth;
+			System.out.println(truths.size() + " " + depth + "Depth" +  " " + maxdepth + " " + evendepth);
 			int size = truths.size();
 
-			maxdepth = depth;
 			int splitindex;
 			if (size % 2 == 0)
 				splitindex = size / 2;
@@ -194,8 +201,8 @@ public class CurvatureFunction {
 
 			parent.Allnodes.add(currentnode);
 
-			MakeTree(parent, childA, depth + 1);
-			MakeTree(parent, childB, depth + 1);
+			MakeTree(parent, childA, depth + 1, maxdepth);
+			MakeTree(parent, childB, depth + 1, maxdepth);
 
 		}
 

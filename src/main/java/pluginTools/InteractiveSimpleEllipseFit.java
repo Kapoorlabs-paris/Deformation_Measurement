@@ -168,6 +168,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float outsideCutoff = insideCutoff;
 
 	public int minNumInliers = 4;
+	public int depth = 4;
 	public long maxsize = 100;
 	public int span = 2;
 	public int minperimeter = 100;
@@ -176,6 +177,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float lowprob = 0f;
 	public float highprob = 1f;
 
+	public float epsilon = 3f;
 	public float lowprobmin = 0f;
 	public float highprobmin = 0f;
 
@@ -187,8 +189,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float insideCutoffmin = 1;
 	public float outsideCutoffmin = 1;
 	
-	public float maxDistmin = 0;
-	public float maxDistmax = 100;
+	public float minNumInliersmin = 0;
+	public float minNumInliersmax = 100;
 	
 	public int AutostartTime, AutoendTime;
 	public float insideCutoffmax = 50;
@@ -358,10 +360,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		insideslider
 		.setValue(utility.Slicer.computeScrollbarPositionFromValue(insideCutoff, insideCutoffmin, insideCutoffmax, scrollbarSize));
 	}
-	public void setmaxDistcut(final float maxDist) {
+	public void setminInliers(final float minInliers) {
 
-		maxdistslider
-		.setValue(utility.Slicer.computeScrollbarPositionFromValue(insideCutoff, maxDistmin, maxDistmax, scrollbarSize));
+		minInlierslider
+		.setValue(utility.Slicer.computeScrollbarPositionFromValue(minInliers, minNumInliersmin, minNumInliersmax, scrollbarSize));
 	}
 
 	public void setOutsidecut(final int value) {
@@ -646,7 +648,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		setlowprob(lowprob);
 		sethighprob(highprob);
 		setInsidecut(insideCutoff);
-		setmaxDistcut(maxDist);
+		setminInliers(minNumInliers);
 
 		if (ndims < 3) {
 
@@ -1098,7 +1100,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	public void Display() {
 
-		System.out.println("Can not be here");
 		overlay.clear();
 
 		if (ZTRois.size() > 0) {
@@ -1317,14 +1318,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final Label contText = new Label("After making all roi selections");
 	final Label insideText = new Label("Cutoff distance  = " + insideCutoff,
 			Label.CENTER);
-	final Label maxdistText = new Label("Max. gap b/w points  = " + maxDist,
+	final Label minInlierText = new Label("Min Inliers  = " + minNumInliers,
 			Label.CENTER);
 	final Label outsideText = new Label("Cutoff distance = " + outsideCutoff, Label.CENTER);
 
 	final Label minperiText = new Label("Minimum ellipse perimeter" );
 	final Label maxperiText = new Label("Maximum ellipse perimeter" );
 	
-	final Label numsegText = new Label("Minimum number of Points" );
+	final Label numsegText = new Label("Number of segments" );
 	final Label lowprobText = new Label("Lower probability level = " + lowprob, Label.CENTER);
 	final Label highporbText = new Label("Higher probability level = " + highprob, Label.CENTER);
 
@@ -1333,9 +1334,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final String zgenstring = "Current Z / T";
 	final String rstring = "Radius";
 	final String insidestring = "Cutoff distance";
-	final String maxdiststring = "Max. gap b/w points";
 	final String outsidestring = "Cutoff distance";
-
+	
+	final String mininlierstring = "Min Inliers";
+	
+	
+	
 	final String lowprobstring = "Lower probability level";
 	final String highprobstring = "Higher probability level";
 
@@ -1356,8 +1360,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JScrollBar rslider = new JScrollBar(Scrollbar.HORIZONTAL, radiusInt, 10, 0, 10 + scrollbarSize);
 	public JScrollBar insideslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
 	
-	public JScrollBar maxdistslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
-	
+	public JScrollBar minInlierslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
 	
 	public JScrollBar outsideslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
 
@@ -1447,7 +1450,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		minperimeterField.setText(Integer.toString(minperimeter));
 		
 		numsegField = new TextField(5);
-		numsegField.setText(Integer.toString(minNumInliers));
+		numsegField.setText(Integer.toString(depth));
 
 		maxperimeterField = new TextField(5);
 		maxperimeterField.setText(Integer.toString(maxperimeter));
@@ -1691,11 +1694,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 
-			Angleselect.add(maxdistText, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(minInlierText, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(maxdistslider, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(minInlierslider, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+	
 			
 			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 7, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
@@ -1895,11 +1899,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		insideslider.addAdjustmentListener(new InsideCutoffListener(this, insideText, insidestring, insideCutoffmin,
 				insideCutoffmax, scrollbarSize, insideslider));
-		maxdistslider.addAdjustmentListener(new MaxDistListener(this, maxdistText, maxdiststring, maxDistmin,
-				maxDistmax, scrollbarSize, maxdistslider));
+
 		outsideslider.addAdjustmentListener(new OutsideCutoffListener(this, outsideText, outsidestring,
 				outsideCutoffmin, outsideCutoffmax, scrollbarSize, outsideslider));
-		
+		minInlierslider.addAdjustmentListener(new MaxDistListener(this, minInlierText, mininlierstring, minNumInliersmin,
+				minNumInliersmax, scrollbarSize, minInlierslider));
 		
 		gaussfield.addTextListener(new GaussRadiusListener(this));
 		Smoothbutton.addActionListener(new DoSmoothingListener(this));

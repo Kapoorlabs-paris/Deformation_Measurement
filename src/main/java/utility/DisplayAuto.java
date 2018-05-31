@@ -77,12 +77,12 @@ public class DisplayAuto {
 					}
 					
 					if (currentobject.resultcurvelineroi != null) {
-						System.out.println("Draw this please");
 						for (int i = 0; i < currentobject.resultcurvelineroi.size(); ++i) {
 
 							OvalRoi ellipse = currentobject.resultcurvelineroi.get(i);
 							ellipse.setStrokeColor(parent.colorPoints);
 
+							
 							parent.overlay.add(ellipse);
 
 						}

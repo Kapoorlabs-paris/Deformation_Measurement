@@ -189,7 +189,7 @@ public class Computeinwater {
 			String uniqueID = Integer.toString(z) + Integer.toString(t);
 			parent.ALLIntersections.put(uniqueID, AllCurveintersection);
 		
-			Roiobject currentobject = new Roiobject(null, null, resultlineroi, z, t, true);
+			Roiobject currentobject = new Roiobject(null, resultcurvelineroi, resultlineroi, z, t, true);
 			parent.ZTRois.put(uniqueID, currentobject);
 			DisplayAuto.Display(parent);
 		} catch (InterruptedException e1) {
