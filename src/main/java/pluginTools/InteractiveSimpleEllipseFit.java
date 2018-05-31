@@ -1304,14 +1304,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Label zgenText = new Label("Current Z / T = " + 1, Label.CENTER);
 	final Label rText = new Label("Alt+Left Click selects a Roi");
 	final Label contText = new Label("After making all roi selections");
-	final Label insideText = new Label("Cutoff distance for points belonging to ellipse = " + insideCutoff,
+	final Label insideText = new Label("Cutoff distance  = " + insideCutoff,
 			Label.CENTER);
-	final Label outsideText = new Label("Cutoff distance for points outside ellipse = " + outsideCutoff, Label.CENTER);
+	final Label outsideText = new Label("Cutoff distance = " + outsideCutoff, Label.CENTER);
 
 	final Label minperiText = new Label("Minimum ellipse perimeter" );
 	final Label maxperiText = new Label("Maximum ellipse perimeter" );
 	
-	final Label numsegText = new Label("Minimum number of Inliers" );
+	final Label numsegText = new Label("Minimum number of Points" );
 	final Label lowprobText = new Label("Lower probability level = " + lowprob, Label.CENTER);
 	final Label highporbText = new Label("Higher probability level = " + highprob, Label.CENTER);
 
@@ -1319,8 +1319,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final String zstring = "Current Z";
 	final String zgenstring = "Current Z / T";
 	final String rstring = "Radius";
-	final String insidestring = "Cutoff distance for points inside ellipse";
-	final String outsidestring = "Cutoff distance for points outside ellipse";
+	final String insidestring = "Cutoff distance";
+	final String outsidestring = "Cutoff distance";
 
 	final String lowprobstring = "Lower probability level";
 	final String highprobstring = "Higher probability level";

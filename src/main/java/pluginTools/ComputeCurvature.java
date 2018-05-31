@@ -280,7 +280,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 							while (iterator.hasNext()) {
 
 								Intersectionobject currentangle = iterator.next();
-System.out.println(currentangle.perimeter + " Local" );
 								if (count == 0)
 									bestangle = currentangle;
 								if(parent.originalimg.numDimensions() > 3) {
@@ -301,7 +300,6 @@ System.out.println(currentangle.perimeter + " Local" );
 									
 								}
 
-								System.out.println(bestangle.perimeter + " Local" );
 							}
 							parent.Finalresult.put(Integer.toString(id) + entryZ.getKey(), bestangle);
 
