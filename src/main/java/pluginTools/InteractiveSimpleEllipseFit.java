@@ -126,8 +126,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
-import regression.RegressionFunction;
-import regression.Threepointfit;
+import ransacPoly.RegressionFunction;
 import utility.Curvatureobject;
 import utility.DisplayAuto;
 import utility.Roiobject;
@@ -1430,7 +1429,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		minperimeterField.setText(Integer.toString(minperimeter));
 		
 		numsegField = new TextField(5);
-		numsegField.setText(Double.toString(numseg));
+		numsegField.setText(Integer.toString(minNumInliers));
 
 		maxperimeterField = new TextField(5);
 		maxperimeterField.setText(Integer.toString(maxperimeter));

@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import ij.ImagePlus;
 import ij.gui.Line;
 import ij.gui.Overlay;
-import regression.RegressionFunction;
-import regression.Threepointfit;
+import ransacPoly.RegressionFunction;
+
 
 public class DrawFunction {
 

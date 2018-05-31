@@ -33,7 +33,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import net.imglib2.util.Pair;
-import regression.Threepointfit;
+import ransacPoly.Threepointfit;
 
 public class ChartMaker {
 

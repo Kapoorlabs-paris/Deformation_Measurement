@@ -9,18 +9,17 @@ import ij.gui.Line;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import ransacPoly.QuadraticFunction;
-import regression.RegressionFunction;
-import regression.Threepointfit;
+import ransacPoly.RegressionFunction;
 import utility.Curvatureobject;
 
 public class PointExtractor {
 
-	
 	/**
-	 * 
-	 * Use the information stored in curvature object to make an intersection object for tracking
+	 * The functions can come from either regression or from Ransac, this routine converts the curvature object to intersection object
 	 * 
 	 * @param localCurvature
+	 * @param functions
+	 * @return
 	 */
 	public static Intersectionobject CurvaturetoIntersection(final ArrayList<Curvatureobject> localCurvature, final ArrayList<RegressionFunction> functions) {
 
@@ -47,17 +46,19 @@ public class PointExtractor {
 			
 			int ys = 0;
 			int ye = 0;
+			// If the method of fitting a function was regression
 			if(regression.regression!=null) {
 			ys = (int)regression.regression.predict(xs);
 			ye = (int)regression.regression.predict(xe);
 			}
+			// If the method of fitting a function was Ransac
 			else {
-				ys = (int)regression.quad.predict(xs);
-				ye = (int)regression.quad.predict(xe);
+				ys = (int)((QuadraticFunction) regression.quad).predict(xs);
+				ye = (int)((QuadraticFunction) regression.quad).predict(xe);
 				
 			}
 			
-			
+			// Store the information to draw a line as a lineroi
 			Line line = new Line(xs, ys, xe, ye);
 			resultlineroi.add(line);
 		
@@ -80,6 +81,7 @@ public class PointExtractor {
 
 		}
 		
+        // Compute the geometric mean of the object, which we would need for tracking
 		double[] mean = GeometricCenter(X, Y);
 		
 		

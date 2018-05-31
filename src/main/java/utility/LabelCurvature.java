@@ -29,8 +29,8 @@ import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
-import regression.RegressionFunction;
-import regression.Threepointfit;
+import ransacPoly.RegressionFunction;
+
 
 public class LabelCurvature implements Runnable {
 
@@ -107,7 +107,8 @@ public class LabelCurvature implements Runnable {
 		parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension,
 				parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
 		final int ndims = ActualRoiimg.numDimensions();
-
+		// Make a tree of a certain depth
+		CurvatureFunction.MakeTree(parent, truths, 0);
 		
 		Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> resultpair  = CurvatureFunction.getCurvature( parent,
 				allorderedtruths,parent.maxError, parent.minNumInliers,
