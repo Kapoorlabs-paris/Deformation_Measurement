@@ -124,7 +124,7 @@ public class LabelCurvature implements Runnable {
 		
 		Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> resultpair  = CurvatureFunction.getCurvature( parent,
 				allorderedtruths, parent.insideCutoff, parent.minNumInliers,
-				parent.maxdistance, ndims, celllabel, t, z);
+				 ndims, celllabel, t, z);
 		parent.localCurvature = resultpair.getB();
 		parent.functions = resultpair.getA();
 		// Make intersection object here
@@ -139,6 +139,7 @@ public class LabelCurvature implements Runnable {
 		resultlineroi.addAll(currentobject.linerois);
 		resultcurvelineroi.addAll(currentobject.curvelinerois);
 		resultallcurvelineroi.addAll(currentobject.curvealllinerois);
+		System.out.println("Size of candidate points " + currentobject.curvealllinerois.size() + " "+ "Size of inliers " + currentobject.curvelinerois.size()  );
 		
 		Roiobject currentroiobject = new Roiobject(null, resultallcurvelineroi, resultlineroi, resultcurvelineroi, z, t, celllabel, true);
 		parent.ZTRois.put(uniqueID, currentroiobject);

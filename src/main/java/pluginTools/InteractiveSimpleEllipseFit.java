@@ -1320,6 +1320,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			Label.CENTER);
 	final Label minInlierText = new Label("Min Inliers  = " + minNumInliers,
 			Label.CENTER);
+	
+	
 	final Label outsideText = new Label("Cutoff distance = " + outsideCutoff, Label.CENTER);
 
 	final Label minperiText = new Label("Minimum ellipse perimeter" );
@@ -1361,9 +1363,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JScrollBar insideslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
 	public JScrollBar maxdistslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
 	public JScrollBar minInlierslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
-	
 	public JScrollBar outsideslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
-
 	public JScrollBar lowprobslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
 	public JScrollBar highprobslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
 
@@ -1701,6 +1701,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			Angleselect.add(minInlierslider, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 	
+			
+			
 			
 			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 7, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
