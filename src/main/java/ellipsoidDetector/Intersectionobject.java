@@ -27,7 +27,7 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 	public final int celllabel;
 	public final ArrayList<Line> linerois;
 	public final ArrayList<OvalRoi> curvelinerois;
-	
+	public final ArrayList<OvalRoi> curvealllinerois;
 	private String name;
 	private final int ID;
 	private final ConcurrentHashMap< String, Double > features = new ConcurrentHashMap< String, Double >();
@@ -48,6 +48,7 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 		this.celllabel = 0;
 		this.perimeter = 0;
 		this.curvelinerois = null;
+		this.curvealllinerois = null;
 		putFeature(Time,  (double) t);
 		putFeature(ZPOSITION, (double) z);
 		putFeature(XPOSITION, Intersectionpoint[0]);
@@ -66,7 +67,7 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 	 * 
 	 */
 	public Intersectionobject(final double[] Intersectionpoint, ArrayList<double[]> linelist, final ArrayList<Line> linerois, final ArrayList<OvalRoi> curvelinerois,
-			final double perimeter,  final int celllabel, final int t, final int z) {
+			final ArrayList<OvalRoi> curvealllinerois,final double perimeter,  final int celllabel, final int t, final int z) {
 		super(3);
 		this.Intersectionpoint = Intersectionpoint;
 		this.angle = 0;
@@ -74,6 +75,7 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 		this.linelist = linelist;
 		this.linerois = linerois;
 		this.curvelinerois = curvelinerois;
+		this.curvealllinerois = curvealllinerois;
 		this.ellipsepair = null;
 		this.t = t;
 		this.z = z;

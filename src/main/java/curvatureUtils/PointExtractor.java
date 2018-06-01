@@ -37,6 +37,7 @@ public class PointExtractor {
         z = localCurvature.get(0).z;
 		perimeter = localCurvature.get(0).perimeter;
 		ArrayList<OvalRoi> resultcurveline = new ArrayList<OvalRoi>();
+		ArrayList<OvalRoi> resultqllcurveline = new ArrayList<OvalRoi>();
 		for (int i = 0; i < functions.size(); ++i) {
 		
 			RegressionFunction regression = functions.get(i);
@@ -68,6 +69,7 @@ public class PointExtractor {
 					
 			
 			resultcurveline.addAll(DisplayAuto.DisplayInliers(regression.inliers));
+			resultqllcurveline.addAll(DisplayAuto.DisplayInliers(regression.candidates));
 		}
 
 
@@ -88,7 +90,7 @@ public class PointExtractor {
 		double[] mean = GeometricCenter(X, Y);
 		
 		
-		Intersectionobject currentIntersection = new Intersectionobject(mean, linelist, resultlineroi, resultcurveline, perimeter, celllabel, t, z);
+		Intersectionobject currentIntersection = new Intersectionobject(mean, linelist, resultlineroi, resultcurveline, resultqllcurveline, perimeter, celllabel, t, z);
 
 		return currentIntersection;
 		

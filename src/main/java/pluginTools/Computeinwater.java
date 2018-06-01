@@ -153,6 +153,7 @@ public class Computeinwater {
 
 		ArrayList<Line> resultlineroi = new ArrayList<Line>();
 		ArrayList<OvalRoi> resultcurvelineroi = new ArrayList<OvalRoi>();
+		ArrayList<OvalRoi> resultallcurvelineroi = new ArrayList<OvalRoi>();
 		// Obtain the points of intersections
 
 		Iterator<Integer> setiter = parent.pixellist.iterator();
@@ -176,7 +177,7 @@ public class Computeinwater {
 
 			List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
 			
-			tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, resultcurvelineroi, AllCurveintersection, t, z,
+			tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, resultcurvelineroi,resultallcurvelineroi, AllCurveintersection, t, z,
 					parent.jpb, percent, label)));
 		}
 
@@ -189,8 +190,8 @@ public class Computeinwater {
 			String uniqueID = Integer.toString(z) + Integer.toString(t);
 			parent.ALLIntersections.put(uniqueID, AllCurveintersection);
 		
-			Roiobject currentobject = new Roiobject(null, resultcurvelineroi, resultlineroi, z, t, true);
-			parent.ZTRois.put(uniqueID, currentobject);
+			Roiobject currentroiobject = new Roiobject(null, resultallcurvelineroi, resultlineroi, resultcurvelineroi, z, t, -1, true);
+			parent.ZTRois.put(uniqueID, currentroiobject);
 			DisplayAuto.Display(parent);
 		} catch (InterruptedException e1) {
 

@@ -11,7 +11,7 @@ import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.ShowView;
 
-public class MaxDistListener implements AdjustmentListener {
+public class MinInlierListener implements AdjustmentListener {
 	final Label label;
 	final String string;
 	InteractiveSimpleEllipseFit parent;
@@ -20,7 +20,7 @@ public class MaxDistListener implements AdjustmentListener {
 
 	final JScrollBar deltaScrollbar;
 
-	public MaxDistListener(final InteractiveSimpleEllipseFit parent, final Label label, final String string, final float min, final float max,
+	public MinInlierListener(final InteractiveSimpleEllipseFit parent, final Label label, final String string, final float min, final float max,
 			final int scrollbarSize, final JScrollBar deltaScrollbar) {
 		this.label = label;
 		this.parent = parent;

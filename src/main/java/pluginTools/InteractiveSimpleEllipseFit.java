@@ -94,9 +94,9 @@ import listeners.IlastikListener;
 import listeners.InsideCutoffListener;
 import listeners.LowProbListener;
 import listeners.ManualInterventionListener;
-import listeners.MaxDistListener;
 import listeners.MaxTryListener;
 import listeners.MaxperimeterListener;
+import listeners.MinInlierListener;
 import listeners.MinpercentListener;
 import listeners.MinperimeterListener;
 import listeners.OutsideCutoffListener;
@@ -148,7 +148,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public double mincirclepoints = 3;
 	public int tablesize;
 	public ArrayList<Node<RealLocalizable>> Allnodes = new ArrayList<Node<RealLocalizable>>();
-	public HashMap<Integer, ArrayList<Node<RealLocalizable>>> Nodemap = new HashMap<Integer, ArrayList<Node<RealLocalizable>>>();
+	public HashMap<String, Node<RealLocalizable>> Nodemap = new HashMap<String, Node<RealLocalizable>>();
 	public Overlay overlay;
 	public Overlay emptyoverlay;
 	public int thirdDimensionslider = 1;
@@ -1359,7 +1359,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			10 + scrollbarSize);
 	public JScrollBar rslider = new JScrollBar(Scrollbar.HORIZONTAL, radiusInt, 10, 0, 10 + scrollbarSize);
 	public JScrollBar insideslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
-	
+	public JScrollBar maxdistslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
 	public JScrollBar minInlierslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
 	
 	public JScrollBar outsideslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
@@ -1386,6 +1386,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final String maxSearchstring = "Maximum search radius";
 	final String maxSearchstringS = "Maximum search radius";
 	final String initialSearchstring = "Initial search radius";
+	
    
 	Label maxSearchText = new Label(maxSearchstring + " = " + maxSearchInit, Label.CENTER);
 	Label maxSearchTextS = new Label(maxSearchstring + " = " + maxSearchInit, Label.CENTER);
@@ -1902,7 +1903,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		outsideslider.addAdjustmentListener(new OutsideCutoffListener(this, outsideText, outsidestring,
 				outsideCutoffmin, outsideCutoffmax, scrollbarSize, outsideslider));
-		minInlierslider.addAdjustmentListener(new MaxDistListener(this, minInlierText, mininlierstring, minNumInliersmin,
+		minInlierslider.addAdjustmentListener(new MinInlierListener(this, minInlierText, mininlierstring, minNumInliersmin,
 				minNumInliersmax, scrollbarSize, minInlierslider));
 		
 		gaussfield.addTextListener(new GaussRadiusListener(this));

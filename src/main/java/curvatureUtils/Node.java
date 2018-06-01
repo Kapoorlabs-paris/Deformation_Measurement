@@ -5,7 +5,7 @@ import java.util.List;
 public class Node <RealLocalizable> {
 	
 	public final RealLocalizable nodePoint;
-	public final int depth;
+	public final String depth;
 	public final List<RealLocalizable> leftTree;
 	public final List<RealLocalizable> rightTree;
 	public final List<RealLocalizable> parent;
@@ -21,7 +21,7 @@ public class Node <RealLocalizable> {
 	 * @param depth
 	 */
 	
-	public Node (final RealLocalizable nodePoint, final List<RealLocalizable> parent, final List<RealLocalizable> leftTree,final List<RealLocalizable> rightTree, int depth ){
+	public Node (final RealLocalizable nodePoint, final List<RealLocalizable> parent, final List<RealLocalizable> leftTree,final List<RealLocalizable> rightTree, String depth ){
 		
 		this.nodePoint = nodePoint;
 		this.leftTree = leftTree;
@@ -31,7 +31,25 @@ public class Node <RealLocalizable> {
 		
 	}
 	
+	public   List<RealLocalizable> getLeftTree() {
+		
+		return leftTree;
+	}
 	
+	public   List<RealLocalizable> getRightTree() {
+		
+		return rightTree;
+	}
+	
+	public String getTreedepth() {
+		
+		return depth;
+	}
+	
+	public RealLocalizable getSplitPoint() {
+		
+		return nodePoint;
+	}
 	
 
 }

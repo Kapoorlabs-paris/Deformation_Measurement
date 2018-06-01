@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import curvatureUtils.Node;
 import drawUtils.DrawFunction;
@@ -50,35 +51,38 @@ public class CurvatureFunction {
 		ArrayList<double[]> interpolatedCurvature = new ArrayList<double[]>();
 		ArrayList<RegressionFunction> functions = new ArrayList<RegressionFunction>();
 
-		
 		double perimeter = 0;
-		// Extract the depth of the tree from the user input
-
-		// Extract the last split left and right tree
-
-		for (int index = 0; index < parent.Allnodes.size(); ++index) {
-
-			Node<RealLocalizable> node = parent.Allnodes.get(index);
-			
-		System.out.println(node.depth + " " + evendepth);
-			if (node.depth == evendepth) {
-
-				System.out.println(node.depth + " " + node.parent.size() + " " + "Size");
-				// Get the left and right tree of the node and do ransac fits
-
-				// Output is the local perimeter of the fitted function
-				double perimeterlocal = FitonsubTree(parent, node, interpolatedCurvature, functions, maxError,
-						minNumInliers, maxDist);
-
-
-				// Add local perimeters to get total perimeter of the curve
-				perimeter += perimeterlocal;
-
-				
-			}
-
 		
-		}
+		
+		
+		// Fill the node map
+	    PopulateNodeMap(parent, truths);
+
+	    int maxlength = GetMaxStringsize(parent);
+		System.out.println(maxlength + " String length");
+	    
+	    for (Map.Entry<String, Node<RealLocalizable>>  entry :  parent.Nodemap.entrySet()) {
+	    	         
+	    	if (entry.getKey().length() == maxlength) {
+	    		
+	    		
+	    		Node<RealLocalizable> node = entry.getValue();
+	    		
+	    		
+	    		// Output is the local perimeter of the fitted function
+	    		double perimeterlocal = FitonsubTree(parent, node, interpolatedCurvature, functions, maxError, minNumInliers,
+	    				maxDist);
+
+	    		// Add local perimeters to get total perimeter of the curve
+	    		perimeter += perimeterlocal;
+	    		
+	    	}
+	    	
+	    	
+	    	
+	    }
+
+	
 
 		for (int indexx = 0; indexx < interpolatedCurvature.size(); ++indexx) {
 
@@ -87,11 +91,11 @@ public class CurvatureFunction {
 
 			curveobject.add(currentobject);
 
-			System.out.println("Kappa" + Math.abs(interpolatedCurvature.get(indexx)[2]) + " " + perimeter + " "
-					+ interpolatedCurvature.get(indexx)[0] + " " + interpolatedCurvature.get(indexx)[1]);
+			// System.out.println("Kappa" + Math.abs(interpolatedCurvature.get(indexx)[2]) +
+			// " " + perimeter + " "
+			// + interpolatedCurvature.get(indexx)[0] + " " +
+			// interpolatedCurvature.get(indexx)[1]);
 		}
-		
-	
 
 		return new ValuePair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>(functions, curveobject);
 
@@ -101,24 +105,100 @@ public class CurvatureFunction {
 	public static int Getdepth(InteractiveSimpleEllipseFit parent) {
 		
 		
-		double nearestsize = Double.MAX_VALUE;
-		int depth = 0;
-		for (Node<RealLocalizable> node : parent.Allnodes) {
+		int nearestk = Integer.MAX_VALUE;
+		
+		int maxk = 10;
+		
+		for (int k = 0; k <= maxk; ++k) {
 			
-			int currentsize = node.parent.size();
+			int current = (int)Math.pow(2, k);
 			
-			if (Math.abs(currentsize - parent.minNumInliers) <= nearestsize) {
+			if(Math.abs(parent.numseg - current) <= nearestk) {
 				
-				
-				nearestsize = currentsize;
-				
-				depth = node.depth;
+				nearestk = k;
 			}
+		}
+		
+	System.out.println("depth is" +  nearestk);
+		
+		return nearestk;
+	}
+	
+	/**
+	 * 
+	 * Make a hash map for each node of the tree, identified by a unique string
+	 * 
+	 * @param parent
+	 * @param truths
+	 */
+	public static void PopulateNodeMap(InteractiveSimpleEllipseFit parent, List<RealLocalizable> truths) {
+		
+		int maxdepth = Getdepth(parent);
+
+		String depthleft = Integer.toString(0);
+		String depthright = Integer.toString(0);
+		Node<RealLocalizable> node = MakeTree(parent, truths, depthleft);
+		parent.Nodemap.put(depthleft, node);
+		parent.Nodemap.put(depthright, node);
+		// Make the left tree nodes
+		for (int split = 1; split < maxdepth; ++split) {
+
+			// 01L, 01L2L, 01L2L3L....
+			depthleft += Integer.toString(split) + "L";
+			node = MakeTree(parent, truths, depthleft);
+			parent.Nodemap.put(depthleft, node);
+
+			if (split < maxdepth - 1) {
+				// 01L2R, 01L2L3R....
+				depthright = depthleft + Integer.toString(split + 1) + "R";
+				node = MakeTree(parent, truths, depthright);
+				parent.Nodemap.put(depthright, node);
+			}
+		}
+
+		// Make the right tree nodes
+		depthleft = Integer.toString(0);
+		depthright = Integer.toString(0);
+		for (int split = 1; split < maxdepth; ++split) {
+
+			// 01R, 01R2R
+			depthright += Integer.toString(split) + "R";
+			node = MakeTree(parent, truths, depthright);
+			parent.Nodemap.put(depthright, node);
+
+			if (split < maxdepth - 1) {
+				// 01R2L, 01R2R3L....
+				depthright = depthleft + Integer.toString(split + 1) + "L";
+				node = MakeTree(parent, truths, depthright);
+				parent.Nodemap.put(depthright, node);
+			}
+
+		}
+
+		
+		
+		
+	}
+	
+	public static int GetMaxStringsize(InteractiveSimpleEllipseFit parent) {
+		
+		Iterator<String> iter = parent.Nodemap.keySet().iterator();
+		
+		int maxlength = 0;
+		
+		while(iter.hasNext()) {
+			
+			String s = iter.next();
+			System.out.println(s);
+			if (s.length() > maxlength)
+				maxlength = s.length();
 			
 		}
 		
-		return depth;
+		return maxlength;
+		
 	}
+	
 
 	public static double FitonsubTree(InteractiveSimpleEllipseFit parent, Node<RealLocalizable> leaf,
 			ArrayList<double[]> interpolatedCurvature, ArrayList<RegressionFunction> functions, double maxError,
@@ -137,35 +217,26 @@ public class CurvatureFunction {
 		}
 		RegressionFunction Leftresultcurvature = getLocalcurvature(LeftCordlist, maxError, minNumInliers, maxDist);
 
-		if(Leftresultcurvature !=null) {
-		// Draw the function
+		if (Leftresultcurvature != null) {
+			// Draw the function
 
-		functions.add(Leftresultcurvature);
+			functions.add(Leftresultcurvature);
 
-		interpolatedCurvature.addAll(Leftresultcurvature.Curvaturepoints);
+			interpolatedCurvature.addAll(Leftresultcurvature.Curvaturepoints);
 
-		double perimeter = Leftresultcurvature.Curvaturepoints.get(0)[3];
+			double perimeter = Leftresultcurvature.Curvaturepoints.get(0)[3];
+			return perimeter;
 
-		return perimeter;
 		}
-		
-		else return 0;
+
+		else
+			return 0;
 
 	}
 
-	public static void MakeTree(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int depth, int maxdepth) {
+	public static Node<RealLocalizable> MakeTree(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, String depth) {
 
 		
-		
-		if (truths.size() <= 3 || depth > maxdepth)
-			return;
-		
-	
-
-		else  {
-			
-			evendepth = depth;
-			System.out.println(truths.size() + " " + depth + "Depth" +  " " + maxdepth + " " + evendepth);
 			int size = truths.size();
 
 			int splitindex;
@@ -199,14 +270,11 @@ public class CurvatureFunction {
 			Node<RealLocalizable> currentnode = new Node<RealLocalizable>(truths.get(splitindex), truths, childA,
 					childB, depth);
 
-			parent.Allnodes.add(currentnode);
-
-			MakeTree(parent, childA, depth + 1, maxdepth);
-			MakeTree(parent, childB, depth + 1, maxdepth);
+			return currentnode;
 
 		}
 
-	}
+	
 
 	/**
 	 * 
@@ -342,7 +410,7 @@ public class CurvatureFunction {
 				Curvaturepoints.add(new double[] { p.getP1().getW()[0], p.getP1().getW()[1],
 						Math.abs(Kappa) / perimeter, perimeter });
 		}
-		RegressionFunction finalfunction = new RegressionFunction(segment.function, Curvaturepoints, segment.inliers);
+		RegressionFunction finalfunction = new RegressionFunction(segment.function, Curvaturepoints, segment.inliers, segment.candidates);
 		return finalfunction;
 		}
 		
