@@ -89,23 +89,22 @@ public class LabelCurvature implements Runnable {
 		parent.Allnodes.clear();
 		parent.Nodemap.clear();
 		
-		if (!parent.curveautomode || !parent.curvesupermode) {
-			if (parent.fourthDimensionSize != 0)
+		
+			if (parent.fourthDimensionSize != 0 && parent.Accountedframes.size()!=0 && parent.Accountedframes!=null)
 				utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.Accountedframes.entrySet().size()),
 						"Computing Curvature = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
 								+ parent.thirdDimensionSize);
-			else if(parent.thirdDimensionSize!=0)
+			else if(parent.thirdDimensionSize!=0 && parent.AccountedZ.size()!=0 && parent.AccountedZ!=null)
 				utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.AccountedZ.entrySet().size()),
 						"Computing Curvature T/Z = " + z + "/" + parent.thirdDimensionSize);
-		} else {
+		 else {
 
 			utility.ProgressBar.SetProgressBar(jpb, 100 ,
 					"Computing Curvature ");
 		}
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
-	
 		// Get the sparse list of points
-		List<RealLocalizable> allorderedtruths = Listordereing.getOrderedList(truths, 0);
+		List<RealLocalizable> allorderedtruths = Listordereing.getOrderedList(truths);
 		
 		if (parent.fourthDimensionSize > 1)
 			parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension,

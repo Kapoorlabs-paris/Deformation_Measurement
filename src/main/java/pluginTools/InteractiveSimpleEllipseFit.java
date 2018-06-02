@@ -1097,6 +1097,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		compute.execute();
 	}
+	
+	public void StartCurvatureComputingCurrent() {
+
+		ComputeCurvatureCurrent compute = new ComputeCurvatureCurrent(this, jpb);
+
+		compute.execute();
+	}
 
 	public void Display() {
 
@@ -1681,30 +1688,25 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 		if (curvesupermode || curveautomode ) {
 			
-			Angleselect.add(numsegText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		
+			
+			Angleselect.add(insideText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(numsegField, new GridBagConstraints(4, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-			
-			
-			Angleselect.add(insideText, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-			Angleselect.add(insideslider, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(insideslider, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 
-			Angleselect.add(minInlierText, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(minInlierText, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(minInlierslider, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(minInlierslider, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 	
 			
 			
 			
-			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 7, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			Angleselect.setBorder(circletools);

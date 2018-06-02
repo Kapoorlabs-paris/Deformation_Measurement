@@ -7,6 +7,7 @@ import java.awt.event.AdjustmentListener;
 
 import javax.swing.JScrollBar;
 
+import pluginTools.EllipseTrack;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.ShowView;
@@ -28,9 +29,10 @@ public class MinInlierListener implements AdjustmentListener {
 		this.min = min;
 		this.max = max;
 		this.scrollbarSize = scrollbarSize;
-
+		deltaScrollbar.addMouseListener( new CurvatureMouseListener( parent ) );
 		this.deltaScrollbar = deltaScrollbar;
 		deltaScrollbar.setBlockIncrement(1);
+	
 	}
 
 	@Override
@@ -43,7 +45,7 @@ public class MinInlierListener implements AdjustmentListener {
 		label.setText(string +  " = "  + parent.nf.format(parent.minNumInliers));
 		parent.panelFirst.validate();
 		parent.panelFirst.repaint();
-	
+		
 		
 	}
 	

@@ -738,7 +738,32 @@ public class EllipseTrack {
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
 
 	}
+	public void ComputeCurvatureCurrent() {
 
+		double percent = 0;
+
+		int z = parent.thirdDimension;
+		int t = parent.fourthDimension;
+		if (parent.curvesupermode) {
+
+
+			BlockRepeatCurve(percent, z, t);
+
+		}
+
+		if (parent.curveautomode) {
+
+			
+
+			BlockRepeatAutoCurve(percent, z, t);
+
+		}
+
+		
+
+		parent.updatePreview(ValueChange.THIRDDIMmouse);
+
+	}
 	public RandomAccessibleInterval<IntType> getIntimg(RandomAccessibleInterval<BitType> CurrentView) {
 
 		DistWatershedBinary segmentimage = new DistWatershedBinary(CurrentView);

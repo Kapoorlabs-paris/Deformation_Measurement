@@ -32,7 +32,7 @@ public class Listordereing {
 			List<RealLocalizable> truths) {
 
 		
-		List<RealLocalizable> copytruths = getOrderedList(truths, 0);
+		List<RealLocalizable> copytruths = truths;
 		
 		
 		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();

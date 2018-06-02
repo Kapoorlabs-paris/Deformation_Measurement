@@ -158,7 +158,7 @@ public class CurvatureFunction {
 			String depth, int maxdepth) {
 
 		int size = truths.size();
-		if (depthint > maxdepth || size <= parent.minNumInliers)
+		if (size <= parent.minNumInliers)
 			return;
 		else {
 
