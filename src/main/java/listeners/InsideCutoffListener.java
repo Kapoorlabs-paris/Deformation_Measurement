@@ -29,6 +29,8 @@ public class InsideCutoffListener implements AdjustmentListener {
 		this.max = max;
 		this.scrollbarSize = scrollbarSize;
 
+		if(parent.curveautomode || parent.curvesupermode)
+			deltaScrollbar.addMouseListener( new CurvatureMouseListener( parent ) );
 		this.deltaScrollbar = deltaScrollbar;
 		deltaScrollbar.setBlockIncrement(1);
 	}

@@ -62,7 +62,7 @@ public class CurvatureFunction {
 
 		for (Map.Entry<String, Node<RealLocalizable>> entry : parent.Nodemap.entrySet()) {
 
-			if (entry.getKey().length() == maxlength) {
+			if (entry.getValue().parent.size() >= 0.75 * parent.minNumInliers && entry.getValue().parent.size()  <= 1.5 *parent.minNumInliers ) {
 
 				Node<RealLocalizable> node = entry.getValue();
 				System.out.println(node.depth + " String");
