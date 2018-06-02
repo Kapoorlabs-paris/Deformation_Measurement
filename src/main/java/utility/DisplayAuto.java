@@ -127,6 +127,23 @@ public class DisplayAuto {
 		return pointline;
 
 	}
+	
+	public static ArrayList<OvalRoi> DisplayPointInliers(ArrayList<double[]> currentlist) {
+
+		ArrayList<OvalRoi> pointline = new ArrayList<OvalRoi>();
+
+		for (double[] point : currentlist) {
+
+
+			OvalRoi line = new OvalRoi(point[0], point[1], 2, 2);
+			pointline.add(line);
+
+		}
+
+		return pointline;
+
+	}
+
 
 	public static void DisplayNOM(final InteractiveSimpleEllipseFit parent) {
 

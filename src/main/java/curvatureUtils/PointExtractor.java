@@ -37,12 +37,11 @@ public class PointExtractor {
         z = localCurvature.get(0).z;
 		perimeter = localCurvature.get(0).perimeter;
 		ArrayList<OvalRoi> resultcurveline = new ArrayList<OvalRoi>();
-		ArrayList<OvalRoi> resultqllcurveline = new ArrayList<OvalRoi>();
+		ArrayList<OvalRoi> resultallcurveline = new ArrayList<OvalRoi>();
 		for (int i = 0; i < functions.size(); ++i) {
 		
 			RegressionFunction regression = functions.get(i);
 		
-			
 		for (int index = 0; index < regression.Curvaturepoints.size() - 1; ++index) {
 			int xs = (int) regression.Curvaturepoints.get(index)[0];
 			int xe = (int) regression.Curvaturepoints.get(index + 1)[0];
@@ -51,11 +50,16 @@ public class PointExtractor {
 			int ye = 0;
 			// If the method of fitting a function was regression
 			if(regression.regression!=null) {
+				
+			
 			ys = (int)regression.regression.predict(xs);
 			ye = (int)regression.regression.predict(xe);
+			
+			
 			}
 			// If the method of fitting a function was Ransac
 			else {
+				
 				ys = (int)((QuadraticFunction) regression.quad).predict(xs);
 				ye = (int)((QuadraticFunction) regression.quad).predict(xe);
 				
@@ -67,9 +71,16 @@ public class PointExtractor {
 		
 		}
 					
-			
+			if (regression.inliers!=null) {
 			resultcurveline.addAll(DisplayAuto.DisplayInliers(regression.inliers));
-			resultqllcurveline.addAll(DisplayAuto.DisplayInliers(regression.candidates));
+			resultallcurveline.addAll(DisplayAuto.DisplayInliers(regression.candidates));
+		}
+			else {
+				
+				resultallcurveline.addAll(DisplayAuto.DisplayPointInliers(regression.Curvaturepoints));
+			}
+			
+			
 		}
 
 
@@ -90,7 +101,7 @@ public class PointExtractor {
 		double[] mean = GeometricCenter(X, Y);
 		
 		
-		Intersectionobject currentIntersection = new Intersectionobject(mean, linelist, resultlineroi, resultcurveline, resultqllcurveline, perimeter, celllabel, t, z);
+		Intersectionobject currentIntersection = new Intersectionobject(mean, linelist, resultlineroi, resultcurveline, resultallcurveline, perimeter, celllabel, t, z);
 
 		return currentIntersection;
 		

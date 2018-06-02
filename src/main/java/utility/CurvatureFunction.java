@@ -58,11 +58,11 @@ public class CurvatureFunction {
 		// Fill the node map
 		MakeTree(parent, truths, 0, Integer.toString(0), maxdepth);
 
-		int maxlength = GetMaxStringsize(parent);
-
 		for (Map.Entry<String, Node<RealLocalizable>> entry : parent.Nodemap.entrySet()) {
 
-			if (entry.getValue().parent.size() >= 0.75 * parent.minNumInliers && entry.getValue().parent.size()  <= 1.5 *parent.minNumInliers ) {
+			System.out.println(entry.getValue().parent.size() + " Size of father");
+			if (entry.getValue().parent.size() >= 0.75 * parent.minNumInliers
+					&& entry.getValue().parent.size() <= 1.5 * parent.minNumInliers) {
 
 				Node<RealLocalizable> node = entry.getValue();
 				System.out.println(node.depth + " String");
@@ -137,20 +137,14 @@ public class CurvatureFunction {
 		}
 		RegressionFunction Leftresultcurvature = getLocalcurvature(LeftCordlist, maxError, minNumInliers);
 
-		if (Leftresultcurvature != null) {
-			// Draw the function
+		// Draw the function
 
-			functions.add(Leftresultcurvature);
+		functions.add(Leftresultcurvature);
 
-			interpolatedCurvature.addAll(Leftresultcurvature.Curvaturepoints);
+		interpolatedCurvature.addAll(Leftresultcurvature.Curvaturepoints);
 
-			double perimeter = Leftresultcurvature.Curvaturepoints.get(0)[3];
-			return perimeter;
-
-		}
-
-		else
-			return 0;
+		double perimeter = Leftresultcurvature.Curvaturepoints.get(0)[3];
+		return perimeter;
 
 	}
 
@@ -158,7 +152,7 @@ public class CurvatureFunction {
 			String depth, int maxdepth) {
 
 		int size = truths.size();
-		if (size <= parent.minNumInliers)
+		if (size <= parent.minNumInliers / 2)
 			return;
 		else {
 
@@ -197,10 +191,9 @@ public class CurvatureFunction {
 			depthint = depthint + 1;
 			String depthleft = depth + Integer.toString(depthint) + "L";
 			String depthright = depth + Integer.toString(depthint) + "R";
-			System.out.println(depthleft + " " + depthright);
+
 			MakeTree(parent, childA, depthint, depthleft, maxdepth);
 			MakeTree(parent, childB, depthint, depthright, maxdepth);
-
 		}
 
 	}
@@ -222,25 +215,22 @@ public class CurvatureFunction {
 		double[] y = new double[Cordlist.size()];
 
 		ArrayList<Point> pointlist = new ArrayList<Point>();
-
+		ArrayList<double[]> points = new ArrayList<double[]>();
 		for (int index = 0; index < Cordlist.size() - 1; ++index) {
 			x[index] = Cordlist.get(index)[0];
 			y[index] = Cordlist.get(index)[1];
 
+			points.add(new double[] { x[index], y[index] });
 			pointlist.add(new Point(new double[] { x[index], y[index] }));
 
 		}
 
-		// Use Ransac to fit a quadratic or a linear function
+		// Use Ransac to fit a quadratic function if it fails do it via regression
 
-		RegressionFunction finalfunction = RansacBlock(pointlist, maxError, minNumInliers);
+		RegressionFunction finalfunction = RansacBlock(pointlist, points, maxError, minNumInliers);
 
-		if (finalfunction != null)
+		return finalfunction;
 
-			return finalfunction;
-
-		else
-			return null;
 	}
 
 	/**
@@ -269,7 +259,17 @@ public class CurvatureFunction {
 		double highestCoeff = regression.GetCoefficients(2);
 		double sechighestCoeff = regression.GetCoefficients(1);
 
-		double perimeter = 0;
+		if (Math.abs(highestCoeff) > 1.0E5 && Math.abs(sechighestCoeff) > 1.0E5) {
+			
+			
+			highestCoeff = 0;
+			
+			regression = new Threepointfit(x, y, 1);
+			
+			sechighestCoeff = regression.GetCoefficients(1);
+			
+		}
+		double perimeter = 0.5;
 		double Kappa = 0;
 		for (int index = 0; index < points.size() - 1; ++index) {
 
@@ -283,6 +283,7 @@ public class CurvatureFunction {
 
 		}
 
+		System.out.println(highestCoeff + " " + sechighestCoeff + " "  + perimeter + " lets c");
 		for (int index = 0; index < points.size() - 1; ++index) {
 			if (perimeter > 0)
 				Curvaturepoints.add(new double[] { points.get(index)[0], points.get(index)[1],
@@ -304,13 +305,15 @@ public class CurvatureFunction {
 	 * @return
 	 */
 
-	public static RegressionFunction RansacBlock(final ArrayList<Point> pointlist, double maxError, int minNumInliers) {
+	public static RegressionFunction RansacBlock(final ArrayList<Point> pointlist, ArrayList<double[]> points,
+			double maxError, int minNumInliers) {
 
 		// Ransac block
 		QuadraticFunction function = new QuadraticFunction();
 
 		ArrayList<double[]> Curvaturepoints = new ArrayList<double[]>();
 
+		System.out.println(pointlist.size() + " Input list size");
 		final RansacFunction segment = Tracking.findQuadLinearFunction(pointlist, function, maxError, minNumInliers);
 
 		if (segment != null) {
@@ -343,9 +346,12 @@ public class CurvatureFunction {
 			return finalfunction;
 		}
 
-		else
+		else {
+			System.out.println("Ransac failed, fitting via regression ");
+			RegressionFunction finalfunction = RegressionBlock(points);
+			return finalfunction;
+		}
 
-			return null;
 	}
 
 	/**
