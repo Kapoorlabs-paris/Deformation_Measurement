@@ -60,7 +60,7 @@ public class CurvatureFunction {
 
 		for (Map.Entry<String, Node<RealLocalizable>> entry : parent.Nodemap.entrySet()) {
 
-			if (entry.getValue().parent.size() >= 0.75 * parent.minNumInliers
+			if (entry.getValue().parent.size() >= 0.8 * parent.minNumInliers
 					&& entry.getValue().parent.size() <= 1.5 * parent.minNumInliers) {
 
 				Node<RealLocalizable> node = entry.getValue();
@@ -214,19 +214,17 @@ public class CurvatureFunction {
 		double[] y = new double[Cordlist.size()];
 
 		ArrayList<Point> pointlist = new ArrayList<Point>();
-		ArrayList<double[]> points = new ArrayList<double[]>();
 		for (int index = 0; index < Cordlist.size() - 1; ++index) {
 			x[index] = Cordlist.get(index)[0];
 			y[index] = Cordlist.get(index)[1];
 
-			points.add(new double[] { x[index], y[index] });
 			pointlist.add(new Point(new double[] { x[index], y[index] }));
 
 		}
 
 		// Use Ransac to fit a quadratic function if it fails do it via regression
 
-		RegressionFunction finalfunction = RansacBlock(pointlist, points, maxError, minNumInliers);
+		RegressionFunction finalfunction = RansacBlock(pointlist, maxError, minNumInliers);
 
 		return finalfunction;
 
@@ -239,42 +237,72 @@ public class CurvatureFunction {
 	 * @param points
 	 * @return
 	 */
-	public static RegressionFunction RegressionBlock(ArrayList<double[]> points) {
+	public static RegressionFunction RegressionBlock(ArrayList<Point> points) {
 
 		double[] x = new double[points.size()];
 		double[] y = new double[points.size()];
 		ArrayList<double[]> Curvaturepoints = new ArrayList<double[]>();
 
+		boolean uniquePoints = true;
+		int Xcount = 0;
+		int Ycount = 0;
 		for (int index = 0; index < points.size(); ++index) {
 
-			x[index] = points.get(index)[0];
+			x[index] = points.get(index).getL()[0];
 
-			y[index] = points.get(index)[1];
+			y[index] = points.get(index).getL()[1];
 
 		}
 
-		Threepointfit regression = new Threepointfit(x, y, 2);
+		for (int index = 0; index < points.size(); ++index) {
 
-		double highestCoeff = regression.GetCoefficients(2);
-		double sechighestCoeff = regression.GetCoefficients(1);
+			for (int secindex = 0; secindex < points.size(); ++secindex) {
 
-		if (Math.abs(highestCoeff) > 1.0E5 && Math.abs(sechighestCoeff) > 1.0E5) {
-			
-			
-			highestCoeff = 0;
-			
-			regression = new Threepointfit(x, y, 1);
-			
+				if (x[index] == x[secindex])
+					Xcount++;
+
+				if (y[index] == y[secindex])
+					Ycount++;
+
+			}
+
+		}
+		if (Xcount > points.size() / 2 || Ycount > points.size() / 2)
+			uniquePoints = false;
+
+		Threepointfit regression = null;
+		double highestCoeff = 0, sechighestCoeff = 0;
+		if (points.size() > 3 && uniquePoints) {
+			regression = new Threepointfit(x, y, 2);
+
+			highestCoeff = regression.GetCoefficients(2);
 			sechighestCoeff = regression.GetCoefficients(1);
-			
+		}
+
+		else {
+			highestCoeff = 0;
+
+			regression = new Threepointfit(x, y, 1);
+
+			sechighestCoeff = regression.GetCoefficients(1);
+
+		}
+		if (Math.abs(highestCoeff) > 1.0E5 && Math.abs(sechighestCoeff) > 1.0E5) {
+
+			highestCoeff = 0;
+
+			regression = new Threepointfit(x, y, 1);
+
+			sechighestCoeff = regression.GetCoefficients(1);
+
 		}
 		double perimeter = 0.5;
 		double Kappa = 0;
 		for (int index = 0; index < points.size() - 1; ++index) {
 
-			double dx = Math.abs(points.get(index)[0] - points.get(index + 1)[0]);
+			double dx = Math.abs(points.get(index).getL()[0] - points.get(index + 1).getL()[0]);
 			double secderiv = 2 * highestCoeff;
-			double firstderiv = 2 * highestCoeff * points.get(index)[0] + sechighestCoeff;
+			double firstderiv = 2 * highestCoeff * points.get(index).getL()[0] + sechighestCoeff;
 
 			Kappa += secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0);
 
@@ -282,11 +310,12 @@ public class CurvatureFunction {
 
 		}
 
-		System.out.println(highestCoeff + " " + sechighestCoeff + " "  + perimeter + " lets c");
 		for (int index = 0; index < points.size() - 1; ++index) {
 			if (perimeter > 0)
-				Curvaturepoints.add(new double[] { points.get(index)[0], points.get(index)[1],
+				Curvaturepoints.add(new double[] { points.get(index).getL()[0], points.get(index).getL()[1],
 						Math.abs(Kappa) / perimeter, perimeter });
+
+			
 		}
 		RegressionFunction finalfunction = new RegressionFunction(regression, Curvaturepoints);
 		return finalfunction;
@@ -304,18 +333,19 @@ public class CurvatureFunction {
 	 * @return
 	 */
 
-	public static RegressionFunction RansacBlock(final ArrayList<Point> pointlist, ArrayList<double[]> points,
-			double maxError, int minNumInliers) {
+	public static RegressionFunction RansacBlock(final ArrayList<Point> pointlist, double maxError, int minNumInliers) {
+
+		RegressionFunction finalfunction = RegressionBlock(pointlist);
 
 		// Ransac block
+
 		QuadraticFunction function = new QuadraticFunction();
 
 		ArrayList<double[]> Curvaturepoints = new ArrayList<double[]>();
 
-		System.out.println(pointlist.size() + " Input list size");
 		final RansacFunction segment = Tracking.findQuadLinearFunction(pointlist, function, maxError, minNumInliers);
 
-		if (segment != null) {
+		if (segment!= null && segment.function != null) {
 			double perimeter = 0;
 			double Kappa = 0;
 
@@ -340,16 +370,59 @@ public class CurvatureFunction {
 					Curvaturepoints.add(new double[] { p.getP1().getW()[0], p.getP1().getW()[1],
 							Math.abs(Kappa) / perimeter, perimeter });
 			}
-			RegressionFunction finalfunction = new RegressionFunction(segment.function, Curvaturepoints,
-					segment.inliers, segment.candidates);
-			return finalfunction;
-		}
 
-		else {
-			System.out.println("Ransac failed, fitting via regression ");
-			RegressionFunction finalfunction = RegressionBlock(points);
-			return finalfunction;
+			RegressionFunction finalfunctionransac = new RegressionFunction(segment.function, Curvaturepoints,
+					segment.inliers, segment.candidates);
+
+			if (finalfunctionransac.inliers.size() == 0)
+				finalfunctionransac = finalfunction;
+
+			return finalfunctionransac;
+
 		}
+		else if (segment!=null && segment.backup!=null) {
+			
+			double perimeter = 0;
+			double Kappa = 0;
+
+			double highestCoeff = 0;
+			double sechighestCoeff = segment.backup.getCoefficient(1);
+
+			for (int index = 0; index < segment.inliers.size() - 1; ++index) {
+
+				PointFunctionMatch p = segment.inliers.get(index);
+				PointFunctionMatch pnext = segment.inliers.get(index + 1);
+
+				double dx = Math.abs(p.getP1().getW()[0] - pnext.getP1().getW()[0]);
+				double secderiv = 2 * highestCoeff;
+				double firstderiv = 2 * highestCoeff * p.getP1().getW()[0] + sechighestCoeff;
+				Kappa += secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0);
+				perimeter += Math.sqrt(1 + firstderiv * firstderiv) * dx;
+
+			}
+			for (int index = 0; index < segment.inliers.size() - 1; ++index) {
+				PointFunctionMatch p = segment.inliers.get(index);
+				if (perimeter > 0)
+					Curvaturepoints.add(new double[] { p.getP1().getW()[0], p.getP1().getW()[1],
+							Math.abs(Kappa) / perimeter, perimeter });
+			}
+
+			RegressionFunction finalfunctionransac = new RegressionFunction(segment.backup, Curvaturepoints,
+					segment.inliers, segment.candidates);
+
+			if (finalfunctionransac.inliers.size() == 0)
+				finalfunctionransac = finalfunction;
+
+			return finalfunctionransac;
+			
+			
+		}
+		
+		
+		
+		else
+
+			return finalfunction;
 
 	}
 

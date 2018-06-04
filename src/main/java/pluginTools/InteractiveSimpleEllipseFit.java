@@ -99,6 +99,7 @@ import listeners.ManualInterventionListener;
 import listeners.MaxTryListener;
 import listeners.MaxperimeterListener;
 import listeners.MinInlierListener;
+import listeners.MinInlierLocListener;
 import listeners.MinpercentListener;
 import listeners.MinperimeterListener;
 import listeners.OutsideCutoffListener;
@@ -1294,7 +1295,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JPanel ManualIntervention = new JPanel();
 	public JCheckBox IlastikAuto = new JCheckBox("Show Watershed Image", showWater);
 
-	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField, gaussfield, numsegField, cutoffField;
+	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField, gaussfield, numsegField, cutoffField, minInlierField;
 	public TextField inputFieldZ, startT, endT;
 	public TextField inputFieldmaxtry;
 	public TextField inputFieldminpercent;
@@ -1327,7 +1328,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Label contText = new Label("After making all roi selections");
 	public Label insideText = new Label("Cutoff distance  = " + insideCutoff,
 			Label.CENTER);
-	final Label minInlierText = new Label("Min Inliers  = " + minNumInliers,
+	public Label minInlierText = new Label("Min Inliers  = " + minNumInliers,
 			Label.CENTER);
 	
 	
@@ -1455,6 +1456,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		cutoffField = new TextField(5);
 		cutoffField.setText(Double.toString(insideCutoff));
 		
+		minInlierField = new TextField(5);
+		minInlierField.setText(Double.toString(minNumInliers));
 		
 		inputtrackField = new TextField(5);
 
@@ -1704,17 +1707,15 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			*/
 			
-			SliderBoxGUI combo = new SliderBoxGUI(insidestring, insideslider, cutoffField, insideText, scrollbarSize, insideCutoff, insideCutoffmax);
-			Angleselect.add(combo.BuildDisplay(), new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-			Angleselect.add(minInlierText, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-			Angleselect.add(minInlierslider, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-	
+			SliderBoxGUI combocutoff = new SliderBoxGUI(insidestring, insideslider, cutoffField, insideText, scrollbarSize, insideCutoff, insideCutoffmax);
 			
+			Angleselect.add(combocutoff.BuildDisplay(), new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+			SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider, minInlierField, minInlierText, scrollbarSize, minNumInliers, minNumInliersmax);
+			
+			Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			
 			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
@@ -1932,6 +1933,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		Roibutton.addActionListener(new RoiListener(this));
 		inputFieldZ.addTextListener(new ZlocListener(this, false));
 		cutoffField.addTextListener(new InsideLocListener(this, false));
+		minInlierField.addTextListener(new MinInlierLocListener(this, false));
 		minperimeterField.addTextListener(new MinperimeterListener(this));
 		numsegField.addTextListener(new DeltasepListener(this));
 		maxperimeterField.addTextListener(new MaxperimeterListener(this));

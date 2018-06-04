@@ -59,10 +59,16 @@ public class PointExtractor {
 			
 			}
 			// If the method of fitting a function was Ransac
-			else {
+			else if (regression.quad!=null) {
 				
-				ys = (int)((QuadraticFunction) regression.quad).predict(xs);
-				ye = (int)((QuadraticFunction) regression.quad).predict(xe);
+				ys = (int)( regression.quad).predict(xs);
+				ye = (int)( regression.quad).predict(xe);
+				
+			}
+			
+			else if (regression.back!=null) {
+				ys = (int)(regression.back).predict(xs);
+				ye = (int)(regression.back).predict(xe);
 				
 			}
 			
