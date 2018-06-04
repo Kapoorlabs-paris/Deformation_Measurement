@@ -108,6 +108,7 @@ import listeners.RedoListener;
 import listeners.RoiListener;
 import listeners.SaveListener;
 import listeners.SaverDirectory;
+import listeners.SmoothSliderListener;
 import listeners.TimeListener;
 import listeners.TlocListener;
 import listeners.TrackidListener;
@@ -150,6 +151,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public double minellipsepoints = 9;
 	public double mincirclepoints = 3;
 	public int tablesize;
+	public double smoothing = 0;
 	public ArrayList<Node<RealLocalizable>> Allnodes = new ArrayList<Node<RealLocalizable>>();
 	public HashMap<String, Node<RealLocalizable>> Nodemap = new HashMap<String, Node<RealLocalizable>>();
 	public Overlay overlay;
@@ -191,7 +193,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	public float insideCutoffmin = 1;
 	public float outsideCutoffmin = 1;
-	
+	public int smoothslidermin = 0;
+	public int smoothslidermax = 1;
 	public float minNumInliersmin = 0;
 	public float minNumInliersmax = 100;
 	
@@ -1328,6 +1331,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Label contText = new Label("After making all roi selections");
 	public Label insideText = new Label("Cutoff distance  = " + insideCutoff,
 			Label.CENTER);
+	public Label smoothText = new Label("Choose linearity of function  = " + smoothing,
+			Label.CENTER);
 	public Label minInlierText = new Label("Min Inliers  = " + minNumInliers,
 			Label.CENTER);
 	
@@ -1347,7 +1352,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final String rstring = "Radius";
 	final String insidestring = "Cutoff distance";
 	final String outsidestring = "Cutoff distance";
-	
+	final String smoothsliderstring = "Choose linearity of function ";
 	final String mininlierstring = "Min Inliers";
 	
 	
@@ -1371,6 +1376,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			10 + scrollbarSize);
 	public JScrollBar rslider = new JScrollBar(Scrollbar.HORIZONTAL, radiusInt, 10, 0, 10 + scrollbarSize);
 	public JScrollBar insideslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
+	public JScrollBar smoothslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
 	public JScrollBar maxdistslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
 	public JScrollBar minInlierslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
 	public JScrollBar outsideslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
@@ -1699,22 +1705,22 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		if (curvesupermode || curveautomode ) {
 			
 		
-			/*
-			Angleselect.add(insideText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			
+			Angleselect.add(smoothText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(insideslider, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(smoothslider, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-			*/
+			
 			
 			SliderBoxGUI combocutoff = new SliderBoxGUI(insidestring, insideslider, cutoffField, insideText, scrollbarSize, insideCutoff, insideCutoffmax);
 			
-			Angleselect.add(combocutoff.BuildDisplay(), new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(combocutoff.BuildDisplay(), new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 			SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider, minInlierField, minInlierText, scrollbarSize, minNumInliers, minNumInliersmax);
 			
-			Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			
@@ -1917,6 +1923,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		insideslider.addAdjustmentListener(new InsideCutoffListener(this, insideText, insidestring, insideCutoffmin,
 				insideCutoffmax, scrollbarSize, insideslider));
 
+		
+		smoothslider.addAdjustmentListener(new SmoothSliderListener(this, smoothText, smoothsliderstring, smoothslidermin,
+				smoothslidermax, scrollbarSize, smoothslider));
 		outsideslider.addAdjustmentListener(new OutsideCutoffListener(this, outsideText, outsidestring,
 				outsideCutoffmin, outsideCutoffmax, scrollbarSize, outsideslider));
 		minInlierslider.addAdjustmentListener(new MinInlierListener(this, minInlierText, mininlierstring, minNumInliersmin,

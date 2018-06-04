@@ -22,7 +22,6 @@ import linkers.JaqamanLinker;
 import linkers.Logger;
 import net.imglib2.RealPoint;
 
-
 public class KFsearch implements IntersectionTracker {
 
 	private static final double ALTERNATIVE_COST_FACTOR = 1.05d;
@@ -32,7 +31,7 @@ public class KFsearch implements IntersectionTracker {
 	private static final String BASE_ERROR_MSG = "[KalmanTracker] ";
 
 	private final IntersectionobjectCollection Allblobs;
-    public final JProgressBar jpb;
+	public final JProgressBar jpb;
 	private final double maxsearchRadius;
 	private final double initialsearchRadius;
 	private final CostFunction<Intersectionobject, Intersectionobject> UserchosenCostFunction;
@@ -44,10 +43,10 @@ public class KFsearch implements IntersectionTracker {
 	protected String errorMessage;
 	ArrayList<ArrayList<Intersectionobject>> Allblobscopy;
 	private IntersectionobjectCollection predictionsCollection;
-	
-	public KFsearch(final  IntersectionobjectCollection Allblobs,
-			final CostFunction<Intersectionobject, Intersectionobject> UserchosenCostFunction, final double maxsearchRadius,
-			final double initialsearchRadius, final int maxframeGap,
+
+	public KFsearch(final IntersectionobjectCollection Allblobs,
+			final CostFunction<Intersectionobject, Intersectionobject> UserchosenCostFunction,
+			final double maxsearchRadius, final double initialsearchRadius, final int maxframeGap,
 			HashMap<String, Integer> Accountedframes, final JProgressBar jpb) {
 
 		this.Allblobs = Allblobs;
@@ -59,6 +58,7 @@ public class KFsearch implements IntersectionTracker {
 		this.Accountedframes = Accountedframes;
 
 	}
+
 	@Override
 	public SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> getResult() {
 		return graph;
@@ -81,35 +81,34 @@ public class KFsearch implements IntersectionTracker {
 		 * Outputs
 		 */
 
-		
 		graph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 		predictionsCollection = new IntersectionobjectCollection();
-		
 
-		
 		// Find first and second non-empty frames.
-		final NavigableSet< String > keySet = Allblobs.keySet();
-		final Iterator< String > frameIterator = keySet.iterator();
-		
+		final NavigableSet<String> keySet = Allblobs.keySet();
+		final Iterator<String> frameIterator = keySet.iterator();
+
 		Collection<Intersectionobject> Firstorphan = new ArrayList<>();
-		if ( !frameIterator.hasNext() ) { return true; }
-		String uniqueID = frameIterator.next();
-		while ( Firstorphan.isEmpty() )
-		{
-			Firstorphan = generateSpotList( Allblobs, uniqueID );
-			
+		if (!frameIterator.hasNext()) {
+			return true;
 		}
-		
+		String uniqueID = frameIterator.next();
+		while (Firstorphan.isEmpty()) {
+			Firstorphan = generateSpotList(Allblobs, uniqueID);
+
+		}
+
 		Collection<Intersectionobject> Secondorphan = new ArrayList<>();
 		String uniqueIDnext = uniqueID;
-		while ( Secondorphan.isEmpty() )
-		{
-			if ( !frameIterator.hasNext() ) { return true; }
+		while (Secondorphan.isEmpty()) {
+			if (!frameIterator.hasNext()) {
+				return true;
+			}
 			uniqueIDnext = frameIterator.next();
-			Secondorphan = generateSpotList( Allblobs, uniqueIDnext );
-			
+			Secondorphan = generateSpotList(Allblobs, uniqueIDnext);
+
 		}
-		final Iterator< String > frameIteratorcopy = keySet.iterator();
+		final Iterator<String> frameIteratorcopy = keySet.iterator();
 		frameIteratorcopy.next();
 		// Max KF search cost.
 		final double maxCost = maxsearchRadius * maxsearchRadius;
@@ -128,20 +127,17 @@ public class KFsearch implements IntersectionTracker {
 		final double velocityProcessStd = maxsearchRadius / 2d;
 
 		double meanSpotRadius = 1d;
-		
+
 		final double positionMeasurementStd = meanSpotRadius / 1d;
 
 		final Map<CVMKalmanFilter, Intersectionobject> kalmanFiltersMap = new HashMap<CVMKalmanFilter, Intersectionobject>(
 				Secondorphan.size());
 		// Loop from the second frame to the last frame and build
 		// KalmanFilterMap
-		
-		while(frameIteratorcopy.hasNext()) {
-			
-		uniqueIDnext = frameIteratorcopy.next();
-			
-		
 
+		while (frameIteratorcopy.hasNext()) {
+
+			uniqueIDnext = frameIteratorcopy.next();
 
 			List<Intersectionobject> measurements = generateSpotList(Allblobs, uniqueIDnext);
 			// Make the preditiction map
@@ -152,7 +148,6 @@ public class KFsearch implements IntersectionTracker {
 				final double[] X = kf.predict();
 				final ComparableRealPoint point = new ComparableRealPoint(X);
 				predictionMap.put(point, kf);
-				
 
 			}
 			final List<ComparableRealPoint> predictions = new ArrayList<ComparableRealPoint>(predictionMap.keySet());
@@ -196,8 +191,6 @@ public class KFsearch implements IntersectionTracker {
 					final double cost = costs.get(cm);
 					graph.setEdgeWeight(edge, cost);
 
-					
-
 					// Update Kalman filter
 					kf.update(MeasureBlob(target));
 
@@ -218,25 +211,23 @@ public class KFsearch implements IntersectionTracker {
 			if (!Firstorphan.isEmpty() && !Secondorphan.isEmpty()) {
 
 				// Trying to link orphans with unlinked candidates.
-				
+
 				final JaqamanLinkingCostMatrixCreator<Intersectionobject, Intersectionobject> ic = new JaqamanLinkingCostMatrixCreator<Intersectionobject, Intersectionobject>(
 						Firstorphan, Secondorphan, UserchosenCostFunction, maxInitialCost, ALTERNATIVE_COST_FACTOR,
 						PERCENTILE);
 				final JaqamanLinker<Intersectionobject, Intersectionobject> newLinker = new JaqamanLinker<Intersectionobject, Intersectionobject>(
 						ic);
-				
+
 				System.out.println(newLinker.checkInput() + " " + newLinker.process());
 				if (!newLinker.checkInput() || !newLinker.process()) {
-					errorMessage = BASE_ERROR_MSG + "Error linking Blobs from frame " + (uniqueIDnext) + " to next frame "
-							+ ": " + newLinker.getErrorMessage();
+					errorMessage = BASE_ERROR_MSG + "Error linking Blobs from frame " + (uniqueIDnext)
+							+ " to next frame " + ": " + newLinker.getErrorMessage();
 					return false;
 				}
-				
-				
+
 				final Map<Intersectionobject, Intersectionobject> newAssignments = newLinker.getResult();
 				final Map<Intersectionobject, Double> assignmentCosts = newLinker.getAssignmentCosts();
-				
-				System.out.println(newAssignments.size() + "Map size");
+
 				// Build links and new KFs from these links.
 				for (final Intersectionobject source : newAssignments.keySet()) {
 					final Intersectionobject target = newAssignments.get(source);
@@ -251,9 +242,7 @@ public class KFsearch implements IntersectionTracker {
 
 					// Store filter and source
 					kalmanFiltersMap.put(kt, target);
-					
-					System.out.println(source.Intersectionpoint[0] + " " + source.Intersectionpoint[1] + " " 
-					+ target.Intersectionpoint[0] + " " + target.Intersectionpoint[1] + " " + source.z + " "+ target.z + " " + "Kalman");
+
 					synchronized (graph) {
 						// Add edge to the graph.
 						graph.addVertex(source);
@@ -279,41 +268,39 @@ public class KFsearch implements IntersectionTracker {
 					kalmanFiltersMap.remove(kf);
 				}
 			}
-		
-		};
+
+		}
+		;
 		return true;
 	}
 
 	@Override
 	public String getErrorMessage() {
-		
 
 		return errorMessage;
 	}
-	
-	private static final List< Intersectionobject > generateSpotList( final IntersectionobjectCollection spots, final String frame )
-	{
-		final List< Intersectionobject > list = new ArrayList< >( spots.getNThreeDRoiobjects( frame, true ) );
-		for ( final Iterator< Intersectionobject > iterator = spots.iterator( frame, true ); iterator.hasNext(); )
-		{
-			list.add( iterator.next() );
+
+	private static final List<Intersectionobject> generateSpotList(final IntersectionobjectCollection spots,
+			final String frame) {
+		final List<Intersectionobject> list = new ArrayList<>(spots.getNThreeDRoiobjects(frame, true));
+		for (final Iterator<Intersectionobject> iterator = spots.iterator(frame, true); iterator.hasNext();) {
+			list.add(iterator.next());
 		}
 		return list;
 	}
-	
-
 
 	private static final double[] MeasureBlob(final Intersectionobject target) {
 		final double[] location = new double[] { target.Intersectionpoint[0], target.Intersectionpoint[1] };
 		return location;
 	}
 
-	private static final double[] estimateInitialState(final Intersectionobject first, final Intersectionobject second) {
-		final double[] xp = new double[] { second.Intersectionpoint[0], second.Intersectionpoint[1]
-				, second.diffTo(first, 0), second.diffTo(first, 1)};
+	private static final double[] estimateInitialState(final Intersectionobject first,
+			final Intersectionobject second) {
+		final double[] xp = new double[] { second.Intersectionpoint[0], second.Intersectionpoint[1],
+				second.diffTo(first, 0), second.diffTo(first, 1) };
 		return xp;
 	}
-	
+
 	/**
 	 * 
 	 * Implementations of various cost functions, starting with the simplest one,
@@ -329,12 +316,12 @@ public class KFsearch implements IntersectionTracker {
 			final double dx = state.getDoublePosition(0) - Blob.Intersectionpoint[0];
 			final double dy = state.getDoublePosition(1) - Blob.Intersectionpoint[1];
 			System.out.println((dx * dx));
-			return dx * dx + dy * dy  + Double.MIN_NORMAL;
+			return dx * dx + dy * dy + Double.MIN_NORMAL;
 			// So that it's never 0
-			
+
 		}
 	};
-	
+
 	private static final class ComparableRealPoint extends RealPoint implements Comparable<ComparableRealPoint> {
 		public ComparableRealPoint(final double[] A) {
 			// Wrap array.

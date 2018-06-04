@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.poi.poifs.property.Parent;
+
 import ellipsoidDetector.Intersectionobject;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
@@ -59,10 +61,10 @@ public class PointExtractor {
 			
 			}
 			// If the method of fitting a function was Ransac
-			else if (regression.quad!=null) {
+			else if (regression.mixedfunction!=null) {
 				
-				ys = (int)( regression.quad).predict(xs);
-				ye = (int)( regression.quad).predict(xe);
+				ys = (int)  (( 1 - regression.mixedfunction.getLambda()) * ( regression.mixedfunction.getB()).predict(xs) +  ( regression.mixedfunction.getLambda()) *regression.mixedfunction.getA().predict(xs)) ;
+				ye =  (int) (( 1 - regression.mixedfunction.getLambda()) * ( regression.mixedfunction.getB()).predict(xe) +  ( regression.mixedfunction.getLambda()) *regression.mixedfunction.getA().predict(xe)) ;
 				
 			}
 			
