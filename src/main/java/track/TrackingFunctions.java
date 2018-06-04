@@ -38,7 +38,7 @@ public class TrackingFunctions {
 				
 				
 				coll.add(blobs, ID);
-				
+				System.out.println(blobs.Intersectionpoint[0] + " " + blobs.Intersectionpoint[1] + " To track");
 			}
 			
 		}

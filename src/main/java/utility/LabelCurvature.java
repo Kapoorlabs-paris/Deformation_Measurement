@@ -106,6 +106,8 @@ public class LabelCurvature implements Runnable {
 		// Get the sparse list of points
 		List<RealLocalizable> allorderedtruths = Listordereing.getOrderedList(truths);
 		
+		RealLocalizable centerpoint = Listordereing.getMeanCord(truths);
+		
 		if (parent.fourthDimensionSize > 1)
 			parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension,
 					parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
@@ -129,7 +131,7 @@ public class LabelCurvature implements Runnable {
 		// Make intersection object here
 
 		
-		Intersectionobject currentobject = PointExtractor.CurvaturetoIntersection(parent.localCurvature, parent.functions);
+		Intersectionobject currentobject = PointExtractor.CurvaturetoIntersection(parent.localCurvature, parent.functions, centerpoint);
 		
 		
 		AllCurveintersection.add(currentobject);
@@ -139,7 +141,6 @@ public class LabelCurvature implements Runnable {
 		resultcurvelineroi.addAll(currentobject.curvelinerois);
 		resultallcurvelineroi.addAll(currentobject.curvealllinerois);
 		
-		System.out.println(resultlineroi.size() + " Size of lines ");
 		Roiobject currentroiobject = new Roiobject(null, resultallcurvelineroi, resultlineroi, resultcurvelineroi, z, t, celllabel, true);
 		parent.ZTRois.put(uniqueID, currentroiobject);
 		DisplayAuto.Display(parent);

@@ -53,5 +53,6 @@
 	<classpathentry kind="lib" path="/Users/aimachine/Downloads/java3d-1_5_1-macosx/jzy3d/jzy3d-jdt-core-0.9.1.jar"/>
 	<classpathentry kind="lib" path="/Users/aimachine/Downloads/java3d-1_5_1-macosx/jzy3d/jzy3d-swt-0.9.1.jar"/>
 	<classpathentry kind="src" path="/PolynomialRansac"/>
+	<classpathentry kind="src" path="/MasterPanels"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

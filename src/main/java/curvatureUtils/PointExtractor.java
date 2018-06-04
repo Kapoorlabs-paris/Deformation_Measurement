@@ -7,6 +7,7 @@ import java.util.List;
 import ellipsoidDetector.Intersectionobject;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
+import net.imglib2.RealLocalizable;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import ransacPoly.QuadraticFunction;
@@ -23,7 +24,7 @@ public class PointExtractor {
 	 * @param functions
 	 * @return
 	 */
-	public static Intersectionobject CurvaturetoIntersection(final ArrayList<Curvatureobject> localCurvature, final ArrayList<RegressionFunction> functions) {
+	public static Intersectionobject CurvaturetoIntersection(final ArrayList<Curvatureobject> localCurvature, final ArrayList<RegressionFunction> functions, final RealLocalizable centerpoint) {
 
 		ArrayList<Line> resultlineroi = new ArrayList<Line>();
 		ArrayList<double[]> linelist = new ArrayList<double[]>();
@@ -98,7 +99,7 @@ public class PointExtractor {
 		}
 		
         // Compute the geometric mean of the object, which we would need for tracking
-		double[] mean = GeometricCenter(X, Y);
+		double[] mean = new double[] {centerpoint.getDoublePosition(0), centerpoint.getDoublePosition(1)};
 		
 		
 		Intersectionobject currentIntersection = new Intersectionobject(mean, linelist, resultlineroi, resultcurveline, resultallcurveline, perimeter, celllabel, t, z);

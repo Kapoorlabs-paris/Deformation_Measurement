@@ -218,21 +218,25 @@ public class KFsearch implements IntersectionTracker {
 			if (!Firstorphan.isEmpty() && !Secondorphan.isEmpty()) {
 
 				// Trying to link orphans with unlinked candidates.
-
 				
 				final JaqamanLinkingCostMatrixCreator<Intersectionobject, Intersectionobject> ic = new JaqamanLinkingCostMatrixCreator<Intersectionobject, Intersectionobject>(
 						Firstorphan, Secondorphan, UserchosenCostFunction, maxInitialCost, ALTERNATIVE_COST_FACTOR,
 						PERCENTILE);
 				final JaqamanLinker<Intersectionobject, Intersectionobject> newLinker = new JaqamanLinker<Intersectionobject, Intersectionobject>(
 						ic);
+				
+				System.out.println(newLinker.checkInput() + " " + newLinker.process());
 				if (!newLinker.checkInput() || !newLinker.process()) {
 					errorMessage = BASE_ERROR_MSG + "Error linking Blobs from frame " + (uniqueIDnext) + " to next frame "
 							+ ": " + newLinker.getErrorMessage();
 					return false;
 				}
+				
+				
 				final Map<Intersectionobject, Intersectionobject> newAssignments = newLinker.getResult();
 				final Map<Intersectionobject, Double> assignmentCosts = newLinker.getAssignmentCosts();
 				
+				System.out.println(newAssignments.size() + "Map size");
 				// Build links and new KFs from these links.
 				for (final Intersectionobject source : newAssignments.keySet()) {
 					final Intersectionobject target = newAssignments.get(source);

@@ -54,6 +54,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
+import comboSliderTextbox.SliderBoxGUI;
 import costMatrix.CostFunction;
 import curvatureUtils.DisplaySelected;
 import curvatureUtils.InterpolateCurvature;
@@ -92,6 +93,7 @@ import listeners.GaussRadiusListener;
 import listeners.HighProbListener;
 import listeners.IlastikListener;
 import listeners.InsideCutoffListener;
+import listeners.InsideLocListener;
 import listeners.LowProbListener;
 import listeners.ManualInterventionListener;
 import listeners.MaxTryListener;
@@ -193,8 +195,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float minNumInliersmax = 100;
 	
 	public int AutostartTime, AutoendTime;
-	public float insideCutoffmax = 50;
-	public float outsideCutoffmax = 50;
+	public float insideCutoffmax = 500;
+	public float outsideCutoffmax = 500;
 	public int roiindex;
 	public int fourthDimension;
 	public int thirdDimension;
@@ -256,7 +258,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public ImagePlus resultimp;
 	public ImagePlus emptyimp;
 	public int ndims;
-	public float initialSearchradius = 10;
+	public float initialSearchradius = 100;
 	public float maxSearchradius = 15;
 	public float maxSearchradiusS = 15;
 	public int missedframes = 20;
@@ -1292,7 +1294,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JPanel ManualIntervention = new JPanel();
 	public JCheckBox IlastikAuto = new JCheckBox("Show Watershed Image", showWater);
 
-	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField, gaussfield, numsegField;
+	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField, gaussfield, numsegField, cutoffField;
 	public TextField inputFieldZ, startT, endT;
 	public TextField inputFieldmaxtry;
 	public TextField inputFieldminpercent;
@@ -1321,9 +1323,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Label timeText = new Label("Current T = " + 1, Label.CENTER);
 	public Label zText = new Label("Current Z = " + 1, Label.CENTER);
 	public Label zgenText = new Label("Current Z / T = " + 1, Label.CENTER);
-	final Label rText = new Label("Alt+Left Click selects a Roi");
-	final Label contText = new Label("After making all roi selections");
-	final Label insideText = new Label("Cutoff distance  = " + insideCutoff,
+	public Label rText = new Label("Alt+Left Click selects a Roi");
+	public Label contText = new Label("After making all roi selections");
+	public Label insideText = new Label("Cutoff distance  = " + insideCutoff,
 			Label.CENTER);
 	final Label minInlierText = new Label("Min Inliers  = " + minNumInliers,
 			Label.CENTER);
@@ -1389,6 +1391,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	JPanel controlprev = new JPanel();
 	JPanel controlnext = new JPanel();
 	final String alphastring = "Weightage for distance based cost";
+	final String cutoffstring = insideText.getName();
 	final String betastring = "Weightage for pixel ratio based cost";
 	final String maxSearchstring = "Maximum search radius";
 	final String maxSearchstringS = "Maximum search radius";
@@ -1449,6 +1452,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		inputFieldT = new TextField(5);
 		inputFieldT.setText(Integer.toString(fourthDimension));
 
+		cutoffField = new TextField(5);
+		cutoffField.setText(Double.toString(insideCutoff));
+		
+		
 		inputtrackField = new TextField(5);
 
 		inputFieldIter = new TextField(5);
@@ -1689,13 +1696,17 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		if (curvesupermode || curveautomode ) {
 			
 		
-			
+			/*
 			Angleselect.add(insideText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 			Angleselect.add(insideslider, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			*/
 			
+			SliderBoxGUI combo = new SliderBoxGUI(insidestring, insideslider, cutoffField, insideText, scrollbarSize, insideCutoff, insideCutoffmax);
+			Angleselect.add(combo.BuildDisplay(), new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 			Angleselect.add(minInlierText, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
@@ -1920,6 +1931,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		Redobutton.addActionListener(new RedoListener(this));
 		Roibutton.addActionListener(new RoiListener(this));
 		inputFieldZ.addTextListener(new ZlocListener(this, false));
+		cutoffField.addTextListener(new InsideLocListener(this, false));
 		minperimeterField.addTextListener(new MinperimeterListener(this));
 		numsegField.addTextListener(new DeltasepListener(this));
 		maxperimeterField.addTextListener(new MaxperimeterListener(this));

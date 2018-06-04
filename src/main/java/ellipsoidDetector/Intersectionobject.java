@@ -138,13 +138,13 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 		final double[] sourceLocation = Intersectionpoint;
 		final double[] targetLocation = target.Intersectionpoint;
 
-		double distance = 0;
+		double distance = 1.0E-5;
 
 		for (int d = 0; d < sourceLocation.length; ++d) {
 
 			distance += (sourceLocation[d] - targetLocation[d]) * (sourceLocation[d] - targetLocation[d]);
 		}
-		
+
 			return distance;
 	}
 	/**
@@ -184,7 +184,6 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 
 			distance += (sourceLocation[d] - targetLocation[d]) * (sourceLocation[d] - targetLocation[d]);
 		}
-
 		return distance;
 	}
 

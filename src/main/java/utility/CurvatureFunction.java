@@ -60,7 +60,6 @@ public class CurvatureFunction {
 
 		for (Map.Entry<String, Node<RealLocalizable>> entry : parent.Nodemap.entrySet()) {
 
-			System.out.println(entry.getValue().parent.size() + " Size of father");
 			if (entry.getValue().parent.size() >= 0.75 * parent.minNumInliers
 					&& entry.getValue().parent.size() <= 1.5 * parent.minNumInliers) {
 

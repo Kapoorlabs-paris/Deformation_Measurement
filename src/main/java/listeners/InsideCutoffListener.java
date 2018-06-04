@@ -15,18 +15,19 @@ public class InsideCutoffListener implements AdjustmentListener {
 	final Label label;
 	final String string;
 	InteractiveSimpleEllipseFit parent;
-	final float min, max;
+	final float min;
 	final int scrollbarSize;
 
+	float max;
 	final JScrollBar deltaScrollbar;
 
-	public InsideCutoffListener(final InteractiveSimpleEllipseFit parent, final Label label, final String string, final float min, final float max,
+	public InsideCutoffListener(final InteractiveSimpleEllipseFit parent, final Label label, final String string, final float min, float max,
 			final int scrollbarSize, final JScrollBar deltaScrollbar) {
 		this.label = label;
 		this.parent = parent;
 		this.string = string;
 		this.min = min;
-		this.max = max;
+	
 		this.scrollbarSize = scrollbarSize;
 
 		if(parent.curveautomode || parent.curvesupermode)
@@ -37,13 +38,17 @@ public class InsideCutoffListener implements AdjustmentListener {
 
 	@Override
 	public void adjustmentValueChanged(AdjustmentEvent e) {
+		
+		max = parent.insideCutoffmax;
+		
 		parent.insideCutoff =  (float) utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize);
 	
 		deltaScrollbar
 				.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.insideCutoff, min, max, scrollbarSize));
 
 		parent.outsideCutoff = parent.insideCutoff;
-		label.setText(string +  " = "  + parent.nf.format(parent.insideCutoff));
+		label.setText(string +  " = "  + Math.round(parent.insideCutoff));
+		parent.cutoffField.setText(Integer.toString(Math.round(parent.insideCutoff)));
 		parent.panelFirst.validate();
 		parent.panelFirst.repaint();
 	
