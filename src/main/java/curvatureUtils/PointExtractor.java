@@ -26,7 +26,7 @@ public class PointExtractor {
 	 * @param functions
 	 * @return
 	 */
-	public static Intersectionobject CurvaturetoIntersection(final ArrayList<Curvatureobject> localCurvature, final ArrayList<RegressionFunction> functions, final RealLocalizable centerpoint) {
+	public static Intersectionobject CurvaturetoIntersection(final ArrayList<Curvatureobject> localCurvature, final ArrayList<RegressionFunction> functions, final RealLocalizable centerpoint, double smoothing) {
 
 		ArrayList<Line> resultlineroi = new ArrayList<Line>();
 		ArrayList<double[]> linelist = new ArrayList<double[]>();
@@ -44,7 +44,6 @@ public class PointExtractor {
 		for (int i = 0; i < functions.size(); ++i) {
 		
 			RegressionFunction regression = functions.get(i);
-		
 		for (int index = 0; index < regression.Curvaturepoints.size() - 1; ++index) {
 			int xs = (int) regression.Curvaturepoints.get(index)[0];
 			int xe = (int) regression.Curvaturepoints.get(index + 1)[0];
@@ -63,8 +62,8 @@ public class PointExtractor {
 			// If the method of fitting a function was Ransac
 			else if (regression.mixedfunction!=null) {
 				
-				ys = (int) (regression.mixedfunction.getLambda() * ( regression.mixedfunction.getB()  ).predict(xs) +  ( 1 - regression.mixedfunction.getLambda()) *regression.mixedfunction.getA().predict(xs)) ;
-				ye =  (int) ( regression.mixedfunction.getLambda() * ( regression.mixedfunction.getB()  ).predict(xe) +  ( 1 - regression.mixedfunction.getLambda()) *regression.mixedfunction.getA().predict(xe)) ;
+				ys = (int) (smoothing * ( regression.mixedfunction.getB()  ).predict(xs) +  ( 1 - smoothing) *regression.mixedfunction.getA().predict(xs)) ;
+				ye =  (int) (smoothing * ( regression.mixedfunction.getB()  ).predict(xe) +  ( 1 - smoothing) *regression.mixedfunction.getA().predict(xe)) ;
 				
 			}
 			
@@ -73,7 +72,6 @@ public class PointExtractor {
 				ye = (int)(regression.back).predict(xe);
 				
 			}
-			
 			// Store the information to draw a line as a lineroi
 			Line line = new Line(xs, ys, xe, ye);
 			resultlineroi.add(line);

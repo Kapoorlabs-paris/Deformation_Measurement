@@ -131,8 +131,9 @@ public class LabelCurvature implements Runnable {
 		parent.functions = resultpair.getA();
 		// Make intersection object here
 
+		System.out.println(parent.functions.size() + " funcion list");
 		
-		Intersectionobject currentobject = PointExtractor.CurvaturetoIntersection(parent.localCurvature, parent.functions, centerpoint);
+		Intersectionobject currentobject = PointExtractor.CurvaturetoIntersection(parent.localCurvature, parent.functions, centerpoint, parent.smoothing);
 		
 		
 		AllCurveintersection.add(currentobject);

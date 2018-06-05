@@ -69,9 +69,9 @@ public class CurvatureFunction {
 		MakeTree(parent, truths, 0, Integer.toString(0), maxdepth);
 
 		HashMap<String, Node<RealLocalizable>> SortedNodemap = SortNodes.sortByValues(parent.Nodemap, minNumInliers);
-
+		HashMap<String, Node<RealLocalizable>> SortedRightNodemap = SortNodes.sortByRightValues(SortedNodemap, minNumInliers);
 		int sizein = 0;
-		for (Map.Entry<String, Node<RealLocalizable>> entry : SortedNodemap.entrySet()) {
+		for (Map.Entry<String, Node<RealLocalizable>> entry : SortedRightNodemap.entrySet()) {
 
 
 			sizein += entry.getValue().parent.size();
@@ -133,7 +133,7 @@ public class CurvatureFunction {
 			ArrayList<double[]> interpolatedCurvature, ArrayList<RegressionFunction> functions, double smoothing,
 			double maxError, int minNumInliers, int degree, int secdegree) {
 
-		List<RealLocalizable> Leftsubtruths = leaf.parent;
+		List<RealLocalizable> Leftsubtruths = leaf.leftTree;
 
 		// Fit function on left tree
 
@@ -147,13 +147,42 @@ public class CurvatureFunction {
 		RegressionFunction Leftresultcurvature = getLocalcurvature(LeftCordlist, smoothing, maxError, minNumInliers,
 				degree, secdegree);
 
+		
 		// Draw the function
+
 
 		functions.add(Leftresultcurvature);
 
 		interpolatedCurvature.addAll(Leftresultcurvature.Curvaturepoints);
 
 		double perimeter = Leftresultcurvature.Curvaturepoints.get(0)[3];
+		
+		
+		List<RealLocalizable> Rightsubtruths = leaf.rightTree;
+
+		// Fit function on left tree
+
+		ArrayList<double[]> RightCordlist = new ArrayList<double[]>();
+		for (int i = 0; i < Rightsubtruths.size(); ++i) {
+
+			RightCordlist.add(new double[] { Rightsubtruths.get(i).getDoublePosition(0),
+					Rightsubtruths.get(i).getDoublePosition(1) });
+
+		}
+		RegressionFunction Rightresultcurvature = getLocalcurvature(RightCordlist, smoothing, maxError, minNumInliers,
+				degree, secdegree);
+
+		
+		// Draw the function
+
+
+		functions.add(Rightresultcurvature);
+
+		interpolatedCurvature.addAll(Rightresultcurvature.Curvaturepoints);
+
+		perimeter += Rightresultcurvature.Curvaturepoints.get(0)[3];
+		
+		
 		return perimeter;
 
 	}
@@ -237,6 +266,7 @@ public class CurvatureFunction {
 
 		RegressionFunction finalfunction = RansacBlock(pointlist, smoothing, maxError, minNumInliers, degree, secdegree);
 
+		System.out.println(finalfunction.Curvaturepoints.size() + " " + " Immediate size");
 		return finalfunction;
 
 	}
@@ -309,7 +339,7 @@ public class CurvatureFunction {
 	public static RegressionFunction RansacBlock(final ArrayList<Point> pointlist, double smoothing, double maxError,
 			int minNumInliers, int degree, int secdegree) {
 
-		RegressionFunction finalfunction = RegressionBlock(pointlist, degree);
+	//	RegressionFunction finalfunction = RegressionBlock(pointlist, degree);
 
 		// Ransac block
 		MixedPolynomialFunction<HigherOrderPolynomialFunction, HigherOrderPolynomialFunction,MixedPolynomial<HigherOrderPolynomialFunction, HigherOrderPolynomialFunction> > mixedfunction = 
@@ -319,7 +349,7 @@ public class CurvatureFunction {
 
 		final RansacFunction segment = Tracking.findQuadLinearFunction(pointlist, mixedfunction, maxError, minNumInliers);
 
-		if (segment != null && segment.mixedfunction != null) {
+	//	if (segment != null && segment.mixedfunction != null) {
 			double perimeter = 0.5;
 			double Kappa = 0;
 
@@ -332,8 +362,9 @@ public class CurvatureFunction {
 						+ segment.mixedfunction.getA().predictSecondderivative(p.getP1().getW()[0]) * ( 1 - segment.mixedfunction.getLambda());
 				double firstderiv = segment.mixedfunction.getB().predictFirstderivative(p.getP1().getW()[0])* segment.mixedfunction.getLambda() 
 						+ segment.mixedfunction.getA().predictFirstderivative(p.getP1().getW()[0])*  ( 1 - segment.mixedfunction.getLambda() ) ;
-				Kappa += secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0);
+				Kappa += secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0) * dx;
 				perimeter += Math.sqrt(1 + firstderiv * firstderiv) * dx;
+				
 
 			}
 			for (int index = 0; index < segment.inliers.size() - 1; ++index) {
@@ -346,19 +377,19 @@ public class CurvatureFunction {
 			RegressionFunction finalfunctionransac = new RegressionFunction(segment.mixedfunction, Curvaturepoints,
 					segment.inliers, segment.candidates);
 
-			if (finalfunctionransac.inliers.size() == 0)
-				finalfunctionransac = finalfunction;
+		//	if (finalfunctionransac.inliers.size() == 0)
+		//		finalfunctionransac = finalfunction;
 
-			
+			System.out.println(finalfunctionransac.inliers.size() + " " + "In the loop" + " " + Kappa + " " + segment.mixedfunction.getA().getCoefficient(1));
 				
-			
+	//	}
 			return finalfunctionransac;
 
-		}
+	//	}
 
-		else
+	//	else
 
-			return finalfunction;
+	//		return finalfunction;
 
 	}
 
