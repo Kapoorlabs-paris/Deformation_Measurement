@@ -83,6 +83,7 @@ import listeners.AutoStartListener;
 import listeners.ClearforManual;
 import listeners.ColorListener;
 import listeners.CurvatureListener;
+import listeners.DegreeListener;
 import listeners.DeltasepListener;
 import listeners.DoSmoothingListener;
 import listeners.DrawListener;
@@ -148,6 +149,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public String addToName = "EllipseFits";
 	public final int scrollbarSize = 1000;
 	public double maxError = 3;
+	public int degree = 3;
 	public double minellipsepoints = 9;
 	public double mincirclepoints = 3;
 	public int tablesize;
@@ -1298,7 +1300,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JPanel ManualIntervention = new JPanel();
 	public JCheckBox IlastikAuto = new JCheckBox("Show Watershed Image", showWater);
 
-	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField, gaussfield, numsegField, cutoffField, minInlierField;
+	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField, gaussfield, numsegField, cutoffField, minInlierField, degreeField;
 	public TextField inputFieldZ, startT, endT;
 	public TextField inputFieldmaxtry;
 	public TextField inputFieldminpercent;
@@ -1331,8 +1333,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Label contText = new Label("After making all roi selections");
 	public Label insideText = new Label("Cutoff distance  = " + insideCutoff,
 			Label.CENTER);
-	public Label smoothText = new Label("Choose linearity of function  = " + smoothing,
-			Label.CENTER);
+	public Label degreeText = new Label("Choose degree of polynomial");
 	public Label minInlierText = new Label("Min Inliers  = " + minNumInliers,
 			Label.CENTER);
 	
@@ -1481,6 +1482,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		gaussfield = new TextField(5);
 		gaussfield.setText(Double.toString(gaussradius));
+		
+		
+		degreeField = new TextField(5);
+		degreeField.setText(Integer.toString(degree));
 
 		inputLabelIter = new Label("Max. attempts to find ellipses");
 		final JScrollBar maxSearchS = new JScrollBar(Scrollbar.HORIZONTAL, maxSearchInit, 10, 0, 10 + scrollbarSize);
@@ -1706,10 +1711,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			
 		
 			
-			Angleselect.add(smoothText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(degreeText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(smoothslider, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(degreeField, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			
@@ -1924,14 +1929,15 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				insideCutoffmax, scrollbarSize, insideslider));
 
 		
-		smoothslider.addAdjustmentListener(new SmoothSliderListener(this, smoothText, smoothsliderstring, smoothslidermin,
-				smoothslidermax, scrollbarSize, smoothslider));
+		
 		outsideslider.addAdjustmentListener(new OutsideCutoffListener(this, outsideText, outsidestring,
 				outsideCutoffmin, outsideCutoffmax, scrollbarSize, outsideslider));
 		minInlierslider.addAdjustmentListener(new MinInlierListener(this, minInlierText, mininlierstring, minNumInliersmin,
 				minNumInliersmax, scrollbarSize, minInlierslider));
 		
 		gaussfield.addTextListener(new GaussRadiusListener(this));
+		
+		degreeField.addTextListener(new DegreeListener(this, false));
 		Smoothbutton.addActionListener(new DoSmoothingListener(this));
 		
 		Curvaturebutton.addActionListener(new CurvatureListener(this));
