@@ -266,7 +266,6 @@ public class CurvatureFunction {
 
 		RegressionFunction finalfunction = RansacBlock(pointlist, smoothing, maxError, minNumInliers, degree, secdegree);
 
-		System.out.println(finalfunction.Curvaturepoints.size() + " " + " Immediate size");
 		return finalfunction;
 
 	}
@@ -280,6 +279,7 @@ public class CurvatureFunction {
 	 */
 	public static RegressionFunction RegressionBlock(ArrayList<Point> points, int degree) {
 
+		// DO not use this
 		double[] x = new double[points.size()];
 		double[] y = new double[points.size()];
 		ArrayList<double[]> Curvaturepoints = new ArrayList<double[]>();
@@ -339,7 +339,6 @@ public class CurvatureFunction {
 	public static RegressionFunction RansacBlock(final ArrayList<Point> pointlist, double smoothing, double maxError,
 			int minNumInliers, int degree, int secdegree) {
 
-	//	RegressionFunction finalfunction = RegressionBlock(pointlist, degree);
 
 		// Ransac block
 		MixedPolynomialFunction<HigherOrderPolynomialFunction, HigherOrderPolynomialFunction,MixedPolynomial<HigherOrderPolynomialFunction, HigherOrderPolynomialFunction> > mixedfunction = 
@@ -349,7 +348,6 @@ public class CurvatureFunction {
 
 		final RansacFunction segment = Tracking.findQuadLinearFunction(pointlist, mixedfunction, maxError, minNumInliers);
 
-	//	if (segment != null && segment.mixedfunction != null) {
 			double perimeter = 0.5;
 			double Kappa = 0;
 
@@ -358,14 +356,13 @@ public class CurvatureFunction {
 				PointFunctionMatch p = segment.inliers.get(index);
 				PointFunctionMatch pnext = segment.inliers.get(index + 1);
 				double dx = Math.abs(p.getP1().getW()[0] - pnext.getP1().getW()[0]);
-				double secderiv = segment.mixedfunction.getB().predictSecondderivative(p.getP1().getW()[0]) * segment.mixedfunction.getLambda() 
-						+ segment.mixedfunction.getA().predictSecondderivative(p.getP1().getW()[0]) * ( 1 - segment.mixedfunction.getLambda());
+				double secderiv = segment.mixedfunction.getB().predictSecondderivative(p.getP1().getW()[0])* segment.mixedfunction.getLambda() 
+						  + segment.mixedfunction.getA().predictSecondderivative(p.getP1().getW()[0])* ( 1 - segment.mixedfunction.getLambda());
 				double firstderiv = segment.mixedfunction.getB().predictFirstderivative(p.getP1().getW()[0])* segment.mixedfunction.getLambda() 
-						+ segment.mixedfunction.getA().predictFirstderivative(p.getP1().getW()[0])*  ( 1 - segment.mixedfunction.getLambda() ) ;
+						 + segment.mixedfunction.getA().predictFirstderivative(p.getP1().getW()[0])*  ( 1 - segment.mixedfunction.getLambda() ) ;
 				Kappa += secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0) * dx;
 				perimeter += Math.sqrt(1 + firstderiv * firstderiv) * dx;
 				
-
 			}
 			for (int index = 0; index < segment.inliers.size() - 1; ++index) {
 				PointFunctionMatch p = segment.inliers.get(index);
@@ -377,21 +374,14 @@ public class CurvatureFunction {
 			RegressionFunction finalfunctionransac = new RegressionFunction(segment.mixedfunction, Curvaturepoints,
 					segment.inliers, segment.candidates);
 
-		//	if (finalfunctionransac.inliers.size() == 0)
-		//		finalfunctionransac = finalfunction;
 
-			System.out.println(finalfunctionransac.inliers.size() + " " + "In the loop" + " " + Kappa + " " + segment.mixedfunction.getA().getCoefficient(1));
 				
-	//	}
+		
 			return finalfunctionransac;
 
-	//	}
-
-	//	else
-
-	//		return finalfunction;
 
 	}
+
 
 	/**
 	 * 
