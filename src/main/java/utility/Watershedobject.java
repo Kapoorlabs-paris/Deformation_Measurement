@@ -19,11 +19,11 @@ import preProcessing.Kernels;
 
 public class Watershedobject {
 
-	public final RandomAccessibleInterval<BitType> source;
+	public final RandomAccessibleInterval<FloatType> source;
 	public final double meanIntensity;
 	public final double Size;
 
-	public Watershedobject(final RandomAccessibleInterval<BitType> source, final double meanIntensity,
+	public Watershedobject(final RandomAccessibleInterval<FloatType> source, final double meanIntensity,
 			final double Size) {
 
 		this.source = source;
@@ -38,9 +38,9 @@ public class Watershedobject {
 
 		Cursor<IntType> intCursor = Views.iterable(Intimg).cursor();
 
-		RandomAccessibleInterval<BitType> outimg = new ArrayImgFactory<BitType>().create(Intimg, new BitType());
+		RandomAccessibleInterval<FloatType> outimg = new ArrayImgFactory<FloatType>().create(Intimg, new FloatType());
 
-		RandomAccess<BitType> imageRA = outimg.randomAccess();
+		RandomAccess<FloatType> imageRA = outimg.randomAccess();
 
 		// Go through the whole image and add every pixel, that belongs to
 		// the currently processed label
@@ -70,7 +70,7 @@ public class Watershedobject {
 		}
 		FinalInterval intervalsmall = new FinalInterval(minVal, maxVal);
 
-		RandomAccessibleInterval<BitType> outimgsmall = extractImage(outimg, intervalsmall);
+		RandomAccessibleInterval<FloatType> outimgsmall = extractImage(outimg, intervalsmall);
 		double meanIntensity = computeAverage(Views.iterable(outimgsmall));
 		double size = (intervalsmall.max(0) - intervalsmall.min(0)) * (intervalsmall.max(1) - intervalsmall.min(1));
 		Watershedobject currentobject = new Watershedobject(outimgsmall, meanIntensity, size);
@@ -85,11 +85,11 @@ public class Watershedobject {
 
 		Cursor<IntType> intCursor = Views.iterable(Intimg).cursor();
 
-		RandomAccessibleInterval<BitType> outimg = new ArrayImgFactory<BitType>().create(Intimg, new BitType());
-		RandomAccess<BitType> imageRA = outimg.randomAccess();
-		RandomAccessibleInterval<BitType> currentimg = GenericFilters.GradientmagnitudeImage(Intimg);
+		RandomAccessibleInterval<FloatType> outimg = new ArrayImgFactory<FloatType>().create(Intimg, new FloatType());
+		RandomAccess<FloatType> imageRA = outimg.randomAccess();
+		RandomAccessibleInterval<FloatType> currentimg = GenericFilters.GradientmagnitudeImage(Intimg);
 
-		RandomAccess<BitType> inputRA = currentimg.randomAccess();
+		RandomAccess<FloatType> inputRA = currentimg.randomAccess();
 
 		// Go through the whole image and add every pixel, that belongs to
 		// the currently processed label
@@ -120,7 +120,7 @@ public class Watershedobject {
 		}
 		FinalInterval intervalsmall = new FinalInterval(minVal, maxVal);
 
-		RandomAccessibleInterval<BitType> outimgsmall = extractImage(outimg, intervalsmall);
+		RandomAccessibleInterval<FloatType> outimgsmall = extractImage(outimg, intervalsmall);
 		double meanIntensity = computeAverage(Views.iterable(outimgsmall));
 		double size = (intervalsmall.max(0) - intervalsmall.min(0)) * (intervalsmall.max(1) - intervalsmall.min(1));
 		Watershedobject currentobject = new Watershedobject(outimgsmall, meanIntensity, size);
@@ -150,10 +150,10 @@ public class Watershedobject {
 		return realSum.getSum();
 	}
 
-	public static RandomAccessibleInterval<BitType> extractImage(final RandomAccessibleInterval<BitType> intervalView,
+	public static RandomAccessibleInterval<FloatType> extractImage(final RandomAccessibleInterval<FloatType> outimg,
 			final FinalInterval interval) {
 
-		return intervalView;
+		return outimg;
 	}
 
 }

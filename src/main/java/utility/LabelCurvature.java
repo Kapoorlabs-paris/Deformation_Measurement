@@ -26,6 +26,7 @@ import net.imglib2.algorithm.ransac.RansacModels.*;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
+import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
@@ -35,7 +36,7 @@ import ransacPoly.RegressionFunction;
 public class LabelCurvature implements Runnable {
 
 	final InteractiveSimpleEllipseFit parent;
-	final RandomAccessibleInterval<BitType> ActualRoiimg;
+	final RandomAccessibleInterval<FloatType> ActualRoiimg;
 	List<RealLocalizable> truths;
 	final int t;
 	final int z;
@@ -47,7 +48,7 @@ public class LabelCurvature implements Runnable {
 	final JProgressBar jpb;
 	ArrayList<Intersectionobject> AllCurveintersection;
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
-			final RandomAccessibleInterval<BitType> ActualRoiimg, List<RealLocalizable> truths,
+			final RandomAccessibleInterval<FloatType> ActualRoiimg, List<RealLocalizable> truths,
 			ArrayList<Line> resultlineroi, ArrayList<OvalRoi> resultcurvelineroi, ArrayList<OvalRoi> resultallcurvelineroi,ArrayList<Intersectionobject> AllCurveintersection, final int t, final int z, final int celllabel) {
 
 		this.parent = parent;
@@ -65,7 +66,7 @@ public class LabelCurvature implements Runnable {
 	}
 
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
-			final RandomAccessibleInterval<BitType> ActualRoiimg, List<RealLocalizable> truths,
+			final RandomAccessibleInterval<FloatType> ActualRoiimg, List<RealLocalizable> truths,
 			ArrayList<Line> resultlineroi, ArrayList<OvalRoi> resultcurvelineroi,ArrayList<OvalRoi> resultallcurvelineroi, ArrayList<Intersectionobject> AllCurveintersection, final int t, final int z, final JProgressBar jpb, final int percent,
 			final int celllabel) {
 

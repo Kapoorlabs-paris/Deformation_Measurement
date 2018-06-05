@@ -98,7 +98,7 @@ public class Computeinwater {
 
 		Iterator<Integer> setiter = parent.pixellist.iterator();
 
-		parent.superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>>();
+		parent.superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>>();
 		while (setiter.hasNext()) {
 			percent++;
 
@@ -114,7 +114,7 @@ public class Computeinwater {
 		
 			// Neglect the small watershed regions by choosing only those regions which have
 			// more than 9 candidate points for ellipse fitting
-			List<Pair<RealLocalizable, BitType>> truths = new ArrayList<Pair<RealLocalizable, BitType>>();
+			List<Pair<RealLocalizable, FloatType>> truths = new ArrayList<Pair<RealLocalizable, FloatType>>();
 			if (current.Size > parent.minperimeter / 3 * parent.minperimeter / 3
 					&& current.Size < parent.maxperimeter / 3 * parent.maxperimeter / 3
 					&& current.meanIntensity > parent.minellipsepoints) {
@@ -157,7 +157,7 @@ public class Computeinwater {
 		// Obtain the points of intersections
 
 		Iterator<Integer> setiter = parent.pixellist.iterator();
-		parent.superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>>();
+		parent.superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>>();
 		 ArrayList<Intersectionobject> AllCurveintersection = new ArrayList<Intersectionobject>();
 		 
 		 // Skip the background label

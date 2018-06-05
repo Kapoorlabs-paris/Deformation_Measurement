@@ -299,7 +299,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float beta = 0.5f;
 	public ImageStack prestack;
 	public MouseAdapter mouseadapter;
-	public ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> superReducedSamples;
+	public ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>> superReducedSamples;
 	public ArrayList<Curvatureobject> localCurvature, interpolatedlocalCurvature;
 	public ArrayList<RegressionFunction> functions ;
 	public ArrayList<ArrayList<Curvatureobject>> AlllocalCurvature;
@@ -631,7 +631,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		functions = new ArrayList<RegressionFunction>();
 		interpolatedlocalCurvature = new ArrayList<Curvatureobject>();
 		AlllocalCurvature = new ArrayList<ArrayList<Curvatureobject>>();
-		superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>>();
+		superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>>();
 		pixellist = new HashSet<Integer>();
 		rtAll = new ResultsTable();
 		jpb = new JProgressBar();

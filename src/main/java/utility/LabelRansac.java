@@ -22,6 +22,7 @@ import net.imglib2.algorithm.ransac.RansacModels.*;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
+import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
@@ -29,8 +30,8 @@ import pluginTools.InteractiveSimpleEllipseFit;
 public class LabelRansac implements Runnable {
 
 	final InteractiveSimpleEllipseFit parent;
-	final RandomAccessibleInterval<BitType> ActualRoiimg;
-	List<Pair<RealLocalizable, BitType>> truths;
+	final RandomAccessibleInterval<FloatType> ActualRoiimg;
+	List<Pair<RealLocalizable, FloatType>> truths;
 	final int t;
 	final int z;
 	final ArrayList<EllipseRoi> resultroi;
@@ -44,8 +45,8 @@ public class LabelRansac implements Runnable {
 	final int percent;
 	final JProgressBar jpb;
 
-	public LabelRansac(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,
-			List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, ArrayList<EllipseRoi> resultroi,
+	public LabelRansac(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<FloatType> ActualRoiimg,
+			List<Pair<RealLocalizable, FloatType>> truths, final int t, final int z, ArrayList<EllipseRoi> resultroi,
 			ArrayList<OvalRoi> resultovalroi, ArrayList<Line> resultlineroi,
 			final ArrayList<Tangentobject> AllPointsofIntersect, final ArrayList<Intersectionobject> Allintersection,final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial, final boolean supermode) {
 
@@ -65,14 +66,14 @@ public class LabelRansac implements Runnable {
 		this.percent = 0;
 	}
 
-	public LabelRansac(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<BitType> ActualRoiimg,
-			List<Pair<RealLocalizable, BitType>> truths, final int t, final int z, ArrayList<EllipseRoi> resultroi,
+	public LabelRansac(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<FloatType> source,
+			List<Pair<RealLocalizable, FloatType>> truths, final int t, final int z, ArrayList<EllipseRoi> resultroi,
 			ArrayList<OvalRoi> resultovalroi, ArrayList<Line> resultlineroi,
 			final ArrayList<Tangentobject> AllPointsofIntersect, final ArrayList<Intersectionobject> Allintersection,
 			final ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial, final JProgressBar jpb, final int percent, final boolean supermode) {
 
 		this.parent = parent;
-		this.ActualRoiimg = ActualRoiimg;
+		this.ActualRoiimg = source;
 		this.truths = truths;
 		this.t = t;
 		this.z = z;
@@ -105,7 +106,7 @@ public class LabelRansac implements Runnable {
 			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.thirdDimensionSize),
 					"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
 		}
-		truths = ConnectedComponentCoordinates.GetCoordinates(ActualRoiimg , new BitType(true));
+		truths = ConnectedComponentCoordinates.GetCoordinates(ActualRoiimg , new FloatType(0));
 
 		if(parent.fourthDimensionSize > 1)
 		parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension, parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
@@ -113,7 +114,7 @@ public class LabelRansac implements Runnable {
 		final int ndims = ActualRoiimg.numDimensions();
 		final NumericalSolvers numsol = new BisectorEllipsoid();
 		// Using the ellipse model to do the fitting
-		ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, BitType>>>> Reducedsamples = RansacEllipsoid.Allsamples(
+		ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>> Reducedsamples = RansacEllipsoid.Allsamples(
 				truths, parent.outsideCutoff, parent.insideCutoff, parent.minpercent, parent.minperimeter, parent.maxperimeter, numsol, parent.maxtry, ndims);
 
 		String uniqueID = Integer.toString(z) + Integer.toString(t);

@@ -1,10 +1,15 @@
 package utility;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import curvatureUtils.Node;
 import drawUtils.DrawFunction;
@@ -60,11 +65,18 @@ public class CurvatureFunction {
 
 		// Fill the node map
 		MakeTree(parent, truths, 0, Integer.toString(0), maxdepth);
+		
+		
+		HashMap <String, Node<RealLocalizable>> SortedNodemap = sortByValues(parent.Nodemap, minNumInliers);
+		
+		int sizein = 0;
+		for (Map.Entry<String, Node<RealLocalizable>> entry : SortedNodemap.entrySet()) {
 
-		for (Map.Entry<String, Node<RealLocalizable>> entry : parent.Nodemap.entrySet()) {
-
-			if (entry.getValue().parent.size() >= 1.5 * parent.minNumInliers
-					&& entry.getValue().parent.size() <= 2.5 * parent.minNumInliers) {
+			System.out.println(entry.getValue().parent.size() + " Size sorted " + sizein);
+			
+			sizein+= entry.getValue().parent.size();
+			
+		
 
 				Node<RealLocalizable> node = entry.getValue();
 
@@ -75,7 +87,8 @@ public class CurvatureFunction {
 				// Add local perimeters to get total perimeter of the curve
 				perimeter += perimeterlocal;
 
-			}
+				if(sizein >= truths.size())
+					break;
 
 		}
 
@@ -120,7 +133,29 @@ public class CurvatureFunction {
 		return maxlength;
 
 	}
+	private static HashMap<String, Node<RealLocalizable>> sortByValues(HashMap<String, Node<RealLocalizable>> map, int Inliernumber) {
+		List<Entry<String, Node<RealLocalizable>>> list = new LinkedList<Entry<String, Node<RealLocalizable>>>(map.entrySet());
+		// Defined Custom Comparator here
+		Collections.sort(list, new Comparator<Entry<String, Node<RealLocalizable>>>() {
 
+			@Override
+			public int compare(Entry<String, Node<RealLocalizable>> o1, Entry<String, Node<RealLocalizable>> o2) {
+				
+				int l1 = Math.abs(o1.getValue().parent.size() - Inliernumber);
+				int l2 = Math.abs(o2.getValue().parent.size() - Inliernumber);
+				return (l1 - l2);
+			}
+		});
+
+		// Here I am copying the sorted list in HashMap
+		// using LinkedHashMap to preserve the insertion order
+		HashMap<String, Node<RealLocalizable>> sortedHashMap = new LinkedHashMap<String, Node<RealLocalizable>>();
+		for (Iterator<Entry<String, Node<RealLocalizable>>> it = list.iterator(); it.hasNext();) {
+			Map.Entry<String, Node<RealLocalizable>> entry = (Map.Entry<String, Node<RealLocalizable>>) it.next();
+			sortedHashMap.put(entry.getKey(), entry.getValue());
+		}
+		return sortedHashMap;
+	}
 	public static double FitonsubTree(InteractiveSimpleEllipseFit parent, Node<RealLocalizable> leaf,
 			ArrayList<double[]> interpolatedCurvature, ArrayList<RegressionFunction> functions, double smoothing, double maxError,
 			int minNumInliers) {
