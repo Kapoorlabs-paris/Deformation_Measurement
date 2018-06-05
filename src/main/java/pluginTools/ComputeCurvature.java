@@ -33,6 +33,7 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 import costMatrix.PixelratiowDistCostFunction;
 import curvatureUtils.DisplaySelected;
 import ellipsoidDetector.Intersectionobject;
+import hashMapSorter.SortTimeorZ;
 import ij.ImageStack;
 import ij.gui.Line;
 import kalmanTracker.ETrackCostFunction;
@@ -67,10 +68,10 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 	protected Void doInBackground() throws Exception {
 
 	
-		HashMap<String, Integer> map = sortByValues(parent.Accountedframes);
+		HashMap<String, Integer> map = SortTimeorZ.sortByValues(parent.Accountedframes);
 		parent.Accountedframes = map;
 
-		HashMap<String, Integer> mapZ = sortByValues(parent.AccountedZ);
+		HashMap<String, Integer> mapZ = SortTimeorZ.sortByValues(parent.AccountedZ);
 		parent.AccountedZ = mapZ;
 
 		EllipseTrack newtrack = new EllipseTrack(parent, jpb);
@@ -80,26 +81,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	}
 
-	private static HashMap<String, Integer> sortByValues(HashMap<String, Integer> map) {
-		List<Entry<String, Integer>> list = new LinkedList<Entry<String, Integer>>(map.entrySet());
-		// Defined Custom Comparator here
-		Collections.sort(list, new Comparator<Entry<String, Integer>>() {
 
-			@Override
-			public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {
-				return (o1.getValue()).compareTo(o2.getValue());
-			}
-		});
-
-		// Here I am copying the sorted list in HashMap
-		// using LinkedHashMap to preserve the insertion order
-		HashMap<String, Integer> sortedHashMap = new LinkedHashMap<String, Integer>();
-		for (Iterator<Entry<String, Integer>> it = list.iterator(); it.hasNext();) {
-			Map.Entry<String, Integer> entry = (Map.Entry<String, Integer>) it.next();
-			sortedHashMap.put(entry.getKey(), entry.getValue());
-		}
-		return sortedHashMap;
-	}
 
 	@Override
 	protected void done() {
