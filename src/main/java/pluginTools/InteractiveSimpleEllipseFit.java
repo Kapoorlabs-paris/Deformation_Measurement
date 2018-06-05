@@ -109,6 +109,7 @@ import listeners.RedoListener;
 import listeners.RoiListener;
 import listeners.SaveListener;
 import listeners.SaverDirectory;
+import listeners.SecDegreeListener;
 import listeners.SmoothSliderListener;
 import listeners.TimeListener;
 import listeners.TlocListener;
@@ -150,6 +151,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public final int scrollbarSize = 1000;
 	public double maxError = 3;
 	public int degree = 3;
+	public int secdegree = 1;
 	public double minellipsepoints = 9;
 	public double mincirclepoints = 3;
 	public int tablesize;
@@ -1300,7 +1302,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JPanel ManualIntervention = new JPanel();
 	public JCheckBox IlastikAuto = new JCheckBox("Show Watershed Image", showWater);
 
-	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField, gaussfield, numsegField, cutoffField, minInlierField, degreeField;
+	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField, gaussfield, numsegField, cutoffField, minInlierField, degreeField, secdegreeField;
 	public TextField inputFieldZ, startT, endT;
 	public TextField inputFieldmaxtry;
 	public TextField inputFieldminpercent;
@@ -1334,7 +1336,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Label insideText = new Label("Cutoff distance  = " + insideCutoff,
 			Label.CENTER);
 	public Label degreeText = new Label("Choose degree of polynomial");
-	public Label minInlierText = new Label("Min Inliers  = " + minNumInliers,
+	public Label secdegreeText = new Label("Choose degree of second polynomial");
+	public Label minInlierText = new Label("Min Points in segment  = " + minNumInliers,
 			Label.CENTER);
 	
 	
@@ -1354,7 +1357,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final String insidestring = "Cutoff distance";
 	final String outsidestring = "Cutoff distance";
 	final String smoothsliderstring = "Choose linearity of function ";
-	final String mininlierstring = "Min Inliers";
+	final String mininlierstring = "Min Points in segment";
 	
 	
 	
@@ -1411,7 +1414,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	Label iniSearchText = new Label(initialSearchstring + " = " + initialSearchradiusInit, Label.CENTER);
 	Label alphaText = new Label(alphastring + " = " + alphaInit, Label.CENTER);
 	Label betaText = new Label(betastring + " = " + betaInit, Label.CENTER);
-	
+	public Label smoothText = new Label("Choose linearity of function  = " + smoothing,
+			Label.CENTER);
 	
 	public void Card() {
 		
@@ -1484,8 +1488,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		gaussfield.setText(Double.toString(gaussradius));
 		
 		
-		degreeField = new TextField(5);
+		degreeField = new TextField(1);
 		degreeField.setText(Integer.toString(degree));
+		
+		secdegreeField = new TextField(1);
+		secdegreeField.setText(Integer.toString(secdegree));
 
 		inputLabelIter = new Label("Max. attempts to find ellipses");
 		final JScrollBar maxSearchS = new JScrollBar(Scrollbar.HORIZONTAL, maxSearchInit, 10, 0, 10 + scrollbarSize);
@@ -1711,29 +1718,40 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			
 		
 			
-			Angleselect.add(degreeText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(degreeText, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(degreeField, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(degreeField, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
+			Angleselect.add(secdegreeText, new GridBagConstraints(5, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+			Angleselect.add(secdegreeField, new GridBagConstraints(5, 1, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			
+			Angleselect.add(smoothText, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+			Angleselect.add(smoothslider, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			SliderBoxGUI combocutoff = new SliderBoxGUI(insidestring, insideslider, cutoffField, insideText, scrollbarSize, insideCutoff, insideCutoffmax);
 			
-			Angleselect.add(combocutoff.BuildDisplay(), new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(combocutoff.BuildDisplay(), new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 			SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider, minInlierField, minInlierText, scrollbarSize, minNumInliers, minNumInliersmax);
 			
-			Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			
-			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			Angleselect.setBorder(circletools);
-			Angleselect.setPreferredSize(new Dimension(SizeX, SizeY));
+			Angleselect.setPreferredSize(new Dimension(SizeX + 100, SizeY + 100));
 			panelFirst.add(Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
@@ -1928,7 +1946,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		insideslider.addAdjustmentListener(new InsideCutoffListener(this, insideText, insidestring, insideCutoffmin,
 				insideCutoffmax, scrollbarSize, insideslider));
 
-		
+		smoothslider.addAdjustmentListener(new SmoothSliderListener(this, smoothText, smoothsliderstring, smoothslidermin,
+				smoothslidermax, scrollbarSize, smoothslider));
 		
 		outsideslider.addAdjustmentListener(new OutsideCutoffListener(this, outsideText, outsidestring,
 				outsideCutoffmin, outsideCutoffmax, scrollbarSize, outsideslider));
@@ -1938,6 +1957,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		gaussfield.addTextListener(new GaussRadiusListener(this));
 		
 		degreeField.addTextListener(new DegreeListener(this, false));
+		secdegreeField.addTextListener(new SecDegreeListener(this, false));
 		Smoothbutton.addActionListener(new DoSmoothingListener(this));
 		
 		Curvaturebutton.addActionListener(new CurvatureListener(this));

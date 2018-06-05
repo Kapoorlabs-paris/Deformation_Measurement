@@ -126,7 +126,7 @@ public class LabelCurvature implements Runnable {
 		
 		Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> resultpair  = CurvatureFunction.getCurvature( parent,
 				allorderedtruths, parent.insideCutoff, parent.minNumInliers,
-				 ndims, celllabel, parent.degree, t, z);
+				 ndims, celllabel,Math.abs(Math.max(parent.degree, parent.secdegree)), Math.abs(Math.min(parent.degree, parent.secdegree)), t, z);
 		parent.localCurvature = resultpair.getB();
 		parent.functions = resultpair.getA();
 		// Make intersection object here

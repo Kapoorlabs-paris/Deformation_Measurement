@@ -28,8 +28,8 @@ public class SortNodes {
 			@Override
 			public int compare(Entry<String, Node<RealLocalizable>> o1, Entry<String, Node<RealLocalizable>> o2) {
 				
-				int l1 = Math.abs(o1.getValue().parent.size() - 2 * Inliernumber);
-				int l2 = Math.abs(o2.getValue().parent.size() - 2 * Inliernumber);
+				int l1 = (int)Math.abs(o1.getValue().parent.size() - 1.5 * Inliernumber);
+				int l2 = (int)Math.abs(o2.getValue().parent.size() - 1.5 * Inliernumber);
 				return (l1 - l2);
 			}
 		});

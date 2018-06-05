@@ -12,6 +12,7 @@ import ij.gui.OvalRoi;
 import net.imglib2.RealLocalizable;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import ransacPoly.QuadraticFunction;
 import ransacPoly.RegressionFunction;
 import utility.Curvatureobject;
 import utility.DisplayAuto;
@@ -19,13 +20,13 @@ import utility.DisplayAuto;
 public class PointExtractor {
 
 	/**
-	 * The higherorderfunctions can come from either regression or from Ransac, this routine converts the curvature object to intersection object
+	 * The functions can come from either regression or from Ransac, this routine converts the curvature object to intersection object
 	 * 
 	 * @param localCurvature
-	 * @param higherorderfunctions
+	 * @param functions
 	 * @return
 	 */
-	public static Intersectionobject CurvaturetoIntersection(final ArrayList<Curvatureobject> localCurvature, final ArrayList<RegressionFunction> higherorderfunctions, final RealLocalizable centerpoint) {
+	public static Intersectionobject CurvaturetoIntersection(final ArrayList<Curvatureobject> localCurvature, final ArrayList<RegressionFunction> functions, final RealLocalizable centerpoint) {
 
 		ArrayList<Line> resultlineroi = new ArrayList<Line>();
 		ArrayList<double[]> linelist = new ArrayList<double[]>();
@@ -40,9 +41,9 @@ public class PointExtractor {
 		perimeter = localCurvature.get(0).perimeter;
 		ArrayList<OvalRoi> resultcurveline = new ArrayList<OvalRoi>();
 		ArrayList<OvalRoi> resultallcurveline = new ArrayList<OvalRoi>();
-		for (int i = 0; i < higherorderfunctions.size(); ++i) {
+		for (int i = 0; i < functions.size(); ++i) {
 		
-			RegressionFunction regression = higherorderfunctions.get(i);
+			RegressionFunction regression = functions.get(i);
 		
 		for (int index = 0; index < regression.Curvaturepoints.size() - 1; ++index) {
 			int xs = (int) regression.Curvaturepoints.get(index)[0];
@@ -50,7 +51,7 @@ public class PointExtractor {
 			
 			int ys = 0;
 			int ye = 0;
-			// If the method of fitting a higherorderfunction was regression
+			// If the method of fitting a function was regression
 			if(regression.regression!=null) {
 				
 			
@@ -59,11 +60,11 @@ public class PointExtractor {
 			
 			
 			}
-			// If the method of fitting a higherorderfunction was Ransac
-			else if (regression.higherorder!=null) {
+			// If the method of fitting a function was Ransac
+			else if (regression.mixedfunction!=null) {
 				
-				ys = (int)  ( regression.higherorder).predict(xs) ;
-				ye =  (int) ( regression.higherorder).predict(xe)  ;
+				ys = (int) (regression.mixedfunction.getLambda() * ( regression.mixedfunction.getB()  ).predict(xs) +  ( 1 - regression.mixedfunction.getLambda()) *regression.mixedfunction.getA().predict(xs)) ;
+				ye =  (int) ( regression.mixedfunction.getLambda() * ( regression.mixedfunction.getB()  ).predict(xe) +  ( 1 - regression.mixedfunction.getLambda()) *regression.mixedfunction.getA().predict(xe)) ;
 				
 			}
 			
