@@ -157,8 +157,7 @@ public class DrawCircles {
 		
 		RandomAccessibleInterval<FloatType> img = new ArrayImgFactory<FloatType>().create(new long[] {512, 512}, new FloatType());
 		double[] center = {256, 256};
-		double radius = 20;
-		
+		double radius = 100;
 		drawCircle(img, center, radius);
 		ImageJFunctions.show(img);
 		

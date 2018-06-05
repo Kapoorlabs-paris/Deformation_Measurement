@@ -16,18 +16,18 @@ public class MinInlierListener implements AdjustmentListener {
 	final Label label;
 	final String string;
 	InteractiveSimpleEllipseFit parent;
-	final float min, max;
+	final float min;
 	final int scrollbarSize;
 
 	final JScrollBar deltaScrollbar;
 
-	public MinInlierListener(final InteractiveSimpleEllipseFit parent, final Label label, final String string, final float min, final float max,
+	public MinInlierListener(final InteractiveSimpleEllipseFit parent, final Label label, final String string, final float min,
 			final int scrollbarSize, final JScrollBar deltaScrollbar) {
 		this.label = label;
 		this.parent = parent;
 		this.string = string;
 		this.min = min;
-		this.max = max;
+		
 		this.scrollbarSize = scrollbarSize;
 		deltaScrollbar.addMouseListener( new CurvatureMouseListener( parent ) );
 		this.deltaScrollbar = deltaScrollbar;
@@ -37,6 +37,8 @@ public class MinInlierListener implements AdjustmentListener {
 
 	@Override
 	public void adjustmentValueChanged(AdjustmentEvent e) {
+		
+		float max = parent.minNumInliersmax;
 		parent.minNumInliers =  (int) utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize);
 	
 		deltaScrollbar

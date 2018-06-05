@@ -48,6 +48,7 @@ public class Listordereing {
 			
 			RealLocalizable nextCord = getNextNearest(minCord, copytruths);
 			copytruths.remove(nextCord);
+			if(copytruths.size()!=0) {
 			RealLocalizable secondnextCord = getNextNearest(minCord, copytruths);
 			copytruths.add(nextCord);
 			
@@ -55,13 +56,13 @@ public class Listordereing {
 			double secondnextangle = Distance.AngleVectors(minCord, secondnextCord, meanCord);
 			RealLocalizable chosenCord = null;
 			
-			if(nextangle > 0 && secondnextangle > 0 && nextangle < secondnextangle)
+			if(nextangle >= 0 && secondnextangle >= 0 && nextangle <= secondnextangle)
 				chosenCord = nextCord;
 			if(nextangle > 0 && secondnextangle > 0 && nextangle > secondnextangle)
 				chosenCord = secondnextCord;
 			else if (nextangle < 0 || secondnextangle < 0)
 			
-			chosenCord = (nextangle > secondnextangle) ? nextCord: secondnextCord; 
+			chosenCord = (nextangle >= secondnextangle) ? nextCord: secondnextCord; 
 			
 
 			minCord = chosenCord;
@@ -69,9 +70,9 @@ public class Listordereing {
 			
 		
 			
-			
 			copytruths.remove(chosenCord);
-			
+			}
+			else break;
 		} while (copytruths.size() > 1);
 
 		

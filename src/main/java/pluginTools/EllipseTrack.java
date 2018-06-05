@@ -86,7 +86,6 @@ public class EllipseTrack {
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.originalimgsuper, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
 		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
 		GetPixelList(CurrentViewInt);
 		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent);

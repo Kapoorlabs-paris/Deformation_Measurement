@@ -520,6 +520,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.supermode = false;
 		this.curveautomode = false;
 		this.curvesupermode = false;
+
+		FloatType minval = new FloatType(0);
+		FloatType maxval = new FloatType(1);
+		Normalize.normalize(Views.iterable(originalimg), minval, maxval);
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
@@ -539,6 +543,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.supermode = false;
 		this.curveautomode = false;
 		this.curvesupermode = false;
+
+		FloatType minval = new FloatType(0);
+		FloatType maxval = new FloatType(1);
+		Normalize.normalize(Views.iterable(originalimg), minval, maxval);
+		Normalize.normalize(Views.iterable(originalimgbefore), minval, maxval);
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
@@ -560,6 +569,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.supermode = supermode;
 		this.curveautomode = false;
 		this.curvesupermode = false;
+
+		FloatType minval = new FloatType(0);
+		FloatType maxval = new FloatType(1);
+		Normalize.normalize(Views.iterable(originalimg), minval, maxval);
+		Normalize.normalize(Views.iterable(originalimgbefore), minval, maxval);
 	}
 	
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
@@ -583,11 +597,17 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.supermode = supermode;
 		this.curveautomode = curveautomode;
 		this.curvesupermode = curvesupermode;
+
+		FloatType minval = new FloatType(0);
+		FloatType maxval = new FloatType(1);
+		Normalize.normalize(Views.iterable(originalimg), minval, maxval);
+		Normalize.normalize(Views.iterable(originalimgbefore), minval, maxval);
 	}
 	
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
 			RandomAccessibleInterval<FloatType> originalimgbefore, RandomAccessibleInterval<IntType> originalimgsuper,
 			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode, String inputdirectory) {
+		
 		this.inputfile = null;
 		this.inputdirectory = inputdirectory;
 		this.originalimg = originalimg;
@@ -606,12 +626,16 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.supermode = supermode;
 		this.curveautomode = curveautomode;
 		this.curvesupermode = curvesupermode;
-	}
-
-	public void run(String arg0) {
+		
 		FloatType minval = new FloatType(0);
 		FloatType maxval = new FloatType(1);
 		Normalize.normalize(Views.iterable(originalimg), minval, maxval);
+		Normalize.normalize(Views.iterable(originalimgbefore), minval, maxval);
+		
+	}
+
+	public void run(String arg0) {
+		
 		displaymin = 0;
 		displaymax = 1;
 		
@@ -1952,7 +1976,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		outsideslider.addAdjustmentListener(new OutsideCutoffListener(this, outsideText, outsidestring,
 				outsideCutoffmin, outsideCutoffmax, scrollbarSize, outsideslider));
 		minInlierslider.addAdjustmentListener(new MinInlierListener(this, minInlierText, mininlierstring, minNumInliersmin,
-				minNumInliersmax, scrollbarSize, minInlierslider));
+				 scrollbarSize, minInlierslider));
 		
 		gaussfield.addTextListener(new GaussRadiusListener(this));
 		

@@ -106,7 +106,7 @@ public class LabelCurvature implements Runnable {
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
 		// Get the sparse list of points
 		List<RealLocalizable> allorderedtruths = Listordereing.getOrderedList(truths);
-		
+		System.out.println(allorderedtruths.size() + "size");
 		RealLocalizable centerpoint = Listordereing.getMeanCord(truths);
 		
 		if (parent.fourthDimensionSize > 1)

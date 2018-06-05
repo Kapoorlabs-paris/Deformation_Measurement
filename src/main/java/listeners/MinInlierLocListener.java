@@ -57,7 +57,7 @@ public class MinInlierLocListener implements TextListener {
 			    		
 							parent.minNumInliers = Integer.parseInt(s);
 			  
-					parent.minInlierText.setText("Min Inliers = " + parent.minNumInliers);
+					parent.minInlierText.setText("Min Points in segment = " + parent.minNumInliers);
 					parent.minNumInliersmax = Math.max(parent.minNumInliers, parent.minNumInliersmax);
 					parent.minInlierslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.minNumInliers, parent.minNumInliersmin, parent.minNumInliersmax, parent.scrollbarSize));
 					parent.StartCurvatureComputingCurrent();
