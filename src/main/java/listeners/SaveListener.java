@@ -7,11 +7,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import ellipsoidDetector.Intersectionobject;
+import hashMapSorter.SortCoordinates;
+import net.imglib2.util.Pair;
 import pluginTools.InteractiveSimpleEllipseFit;
 import utility.Curvatureobject;
 
@@ -30,13 +33,14 @@ public class SaveListener implements ActionListener {
 		
 		
 		String ID = parent.selectedID;
+		if (!parent.curveautomode && !parent.curvesupermode) {
 		try {
 			File fichier = new File(
 					parent.saveFile + "//" + parent.addToName + "TrackID" +ID + ".txt");
 
 			FileWriter fw = new FileWriter(fichier);
 			BufferedWriter bw = new BufferedWriter(fw);
-			if (!parent.curveautomode && !parent.curvesupermode) {
+			
 			bw.write(
 					"\tTime (px)\t AngleT \n");
 		for (int index = 0; index< parent.resultAngle.size(); ++index) {
@@ -58,47 +62,99 @@ public class SaveListener implements ActionListener {
 			}
 			
 		}
-			}
-			
-			else {
-				
-				bw.write("\tCellLabel\tX-coordinates\tY-coordinates\tCurvature\tPerimeter\tZposition\tTposition\n");
-				for (ArrayList<Curvatureobject> Allcurrentcurvature : parent.AlllocalCurvature) {
-					for (int index = 0; index < Allcurrentcurvature.size(); ++index) {
-						Curvatureobject currentcurvature = Allcurrentcurvature.get(index);
-
-						if (ID.equals(Integer.toString(currentcurvature.Label)) && parent.thirdDimension == currentcurvature.z
-								&& parent.fourthDimension == currentcurvature.t) {
-							
-							
-							int Label = currentcurvature.Label;
-							int t = currentcurvature.t;
-							int z = currentcurvature.z;
-							double curvature = currentcurvature.radiusCurvature;
-							double perimeter = currentcurvature.perimeter;
-							double X = currentcurvature.cord[0];
-							double Y = currentcurvature.cord[1];
-							bw.write("\t" + Label + "\t" + "\t"
-									+ X +  "\t" + "\t" + Y + "\t" + "\t" + parent.nf.format(curvature) + "\t" + "\t" + parent.nf.format(perimeter) +"\t" + "\t" + z + "\t" + "\t" + t + 
-									
-									"\n");
-							
-							
-						}
-					
-						
-						
-					}
-					}
-				
-				
-			}
 			
 		bw.close();
 		fw.close();
 		}
 		catch (IOException te) {
 		}
+		}
+			
+			else {
+				for (int z = parent.AutostartTime; z <= parent.AutoendTime; ++z) {
+				try {
+					File fichier = new File(
+							parent.saveFile + "//" + parent.addToName + "CellID" +ID + "Tposition" + z + ".txt");
+
+					FileWriter fw = new FileWriter(fichier);
+					BufferedWriter bw = new BufferedWriter(fw);
+				
+				ArrayList<Pair<String, double[]>> currentresultPeri = new ArrayList<Pair<String, double[]>>();
+				for (Pair<String, double[]> currentperi : parent.resultAngle) {
+
+					if (ID.equals(currentperi.getA())) {
+
+						currentresultPeri.add(currentperi);
+
+					}
+
+				}
+				for (int index = 0; index < currentresultPeri.size(); ++index) {
+					int time = (int)currentresultPeri.get(index).getB()[0];
+					if(time == z) {
+					bw.write("\tTrackID" + "\t" + "\t" + ID);
+					bw.write("\tTimepoint" + "\t" + "\t" + z);
+					
+						bw.write("\tPerimeter" + "\t" + "\t" + currentresultPeri.get(index).getB()[1] + 
+								
+								"\n");	
+					}
+				}
+				bw.write("\tX-coordinates\tY-coordinates\tCurvature\n");
+				ArrayList<Pair<String, Pair< Integer,ArrayList<double[]>>>> currentresultCurv = new ArrayList<Pair<String, Pair< Integer,ArrayList<double[]>>>>();
+				for(Pair<String, Pair< Integer,ArrayList<double[]>>> currentCurvature : parent.resultCurvature) {
+					
+					
+					if (ID.equals(currentCurvature.getA())) {
+						
+						currentresultCurv.add(currentCurvature);
+						
+						
+					}
+					
+				}
+				
+				for (int index = 0; index < currentresultCurv.size(); ++index) {
+
+					Pair<String, Pair<Integer, ArrayList<double[]>>> currentpair = currentresultCurv.get(index);
+
+					int time = currentpair.getB().getA();
+
+					double[] X = new double[currentpair.getB().getB().size()];
+					double[] Y = new double[currentpair.getB().getB().size()];
+					double[] I = new double[currentpair.getB().getB().size()];
+
+					if(time == z ) {
+						
+						SortCoordinates.sortByXY(currentpair.getB().getB());
+						for (int i = 0; i < currentpair.getB().getB().size(); ++i) {
+
+							X[i] = currentpair.getB().getB().get(i)[0];
+							Y[i] = currentpair.getB().getB().get(i)[1];
+							I[i] = currentpair.getB().getB().get(i)[2];
+
+						
+						bw.write("\t"+ X[i] +  "\t" + "\t" + Y[i] + "\t" + "\t" + parent.nf.format(I[i]) +
+								"\n");
+						
+					}
+				
+					}
+					
+				}
+				
+			
+				bw.close();
+				fw.close();
+				}
+				catch (IOException te) {
+				}
+					}
+				
+				
+			}
+			
+		
 		
 	}
 	
