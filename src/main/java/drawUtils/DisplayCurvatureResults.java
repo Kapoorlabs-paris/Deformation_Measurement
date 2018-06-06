@@ -22,6 +22,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.view.Views;
 import pluginTools.InteractiveSimpleEllipseFit;
+import script.imglib.color.RGBA;
 
 public class DisplayCurvatureResults {
 
@@ -59,6 +60,9 @@ public class DisplayCurvatureResults {
 	
 		
 			final Cursor<FloatType> cursor = Views.iterable(CurrentViewprobImg).localizingCursor();
+		
+			
+			
 			
 			while(cursor.hasNext()) {
 				

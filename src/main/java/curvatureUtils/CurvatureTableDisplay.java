@@ -12,8 +12,13 @@ import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.jfree.data.contour.DefaultContourDataset;
 
 import ellipsoidDetector.Intersectionobject;
+import ij.IJ;
+import ij.ImagePlus;
 import ij.gui.Line;
+import ij.process.LUT;
+import net.imagej.display.ColorTables;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.display.ColorTable8;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
@@ -69,9 +74,14 @@ public class CurvatureTableDisplay {
 		parent.chart = utility.ChartMaker.makeChart(parent.contdataset, "Perimeter Evolution", "Time", "Perimeter");
 
 		RandomAccessibleInterval<FloatType> result = DisplayCurvatureResults.Display(parent, parent.originalimgbefore, currentresultCurv );
-			
-		ImageJFunctions.show(result).setTitle("Curvature Result");
 		
+		
+		ImagePlus imp = ImageJFunctions.show(result);
+		imp.setTitle("Curvature Result");
+		IJ.run("Fire");
+
+
+ 
 		
 		parent.jFreeChartFrame.dispose();
 		parent.jFreeChartFrame.repaint();

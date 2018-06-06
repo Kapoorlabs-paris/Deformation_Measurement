@@ -11,7 +11,9 @@ import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.NativeType;
 import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
@@ -33,13 +35,13 @@ public class Slicer {
 
 	}
 
-	public static RandomAccessibleInterval<FloatType> getCurrentView(RandomAccessibleInterval<FloatType> originalimg,
+	public static  < T extends NumericType< T > & NativeType< T > > RandomAccessibleInterval<T> getCurrentView(RandomAccessibleInterval<T> originalimg,
 			int thirdDimension, int thirdDimensionSize, int fourthDimension, int fourthDimensionSize) {
 
-		final FloatType type = originalimg.randomAccess().get().createVariable();
+		final T type = originalimg.randomAccess().get().createVariable();
 		long[] dim = { originalimg.dimension(0), originalimg.dimension(1) };
-		final ImgFactory<FloatType> factory = net.imglib2.util.Util.getArrayOrCellImgFactory(originalimg, type);
-		RandomAccessibleInterval<FloatType> totalimg = factory.create(dim, type);
+		final ImgFactory<T> factory = net.imglib2.util.Util.getArrayOrCellImgFactory(originalimg, type);
+		RandomAccessibleInterval<T> totalimg = factory.create(dim, type);
 
 		if (thirdDimensionSize == 0) {
 
@@ -54,7 +56,7 @@ public class Slicer {
 
 		if (fourthDimensionSize > 0) {
 
-			RandomAccessibleInterval<FloatType> pretotalimg = Views.hyperSlice(originalimg, 2, thirdDimension - 1);
+			RandomAccessibleInterval<T> pretotalimg = Views.hyperSlice(originalimg, 2, thirdDimension - 1);
 
 			totalimg = Views.hyperSlice(pretotalimg, 2, fourthDimension - 1);
 		}

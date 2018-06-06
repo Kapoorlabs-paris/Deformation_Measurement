@@ -26,7 +26,9 @@ public class DegreeListener implements TextListener {
 	public void textValueChanged(TextEvent e) {
 		
 		final TextComponent tc = (TextComponent)e.getSource();
-		   
+	 	String s = tc.getText();
+     	if(s.length() > 0)
+    	    parent.degree = Integer.parseInt(s);
 		 tc.addKeyListener(new KeyListener(){
 			 @Override
 			    public void keyTyped(KeyEvent arg0) {
@@ -47,11 +49,11 @@ public class DegreeListener implements TextListener {
 
 			    @Override
 			    public void keyPressed(KeyEvent arg0) {
-			    	String s = tc.getText();
+			   
 			    	if (arg0.getKeyChar() == KeyEvent.VK_ENTER&& !pressed) {
 						pressed = true;
-			parent.degree = Integer.parseInt(s);
-		parent.StartCurvatureComputingCurrent();
+			
+		    parent.StartCurvatureComputingCurrent();
 		
 			   	 }
 

@@ -230,7 +230,6 @@ public class CurvatureFunction {
 			depthint = depthint + 1;
 			String depthleft = depth + Integer.toString(depthint) + "L";
 			String depthright = depth + Integer.toString(depthint) + "R";
-System.out.println(childA.size() + " " + childB.size());
 			MakeTree(parent, childA, depthint, depthleft, maxdepth);
 			MakeTree(parent, childB, depthint, depthright, maxdepth);
 		}
