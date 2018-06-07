@@ -3,6 +3,7 @@ package utility;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import ellipsoidDetector.Distance;
 import mpicbg.models.Point;
@@ -19,6 +20,23 @@ public class Listordereing {
 	
 	//@VKapoor
 	
+	
+	public static List<RealLocalizable> getCopyList(List<RealLocalizable> copytruths) {
+		
+		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
+		Iterator<RealLocalizable> iter = copytruths.iterator();
+		
+		while(iter.hasNext()) {
+			
+			orderedtruths.add(iter.next());
+			
+			
+			
+		}
+		
+		return orderedtruths;
+	}
+	
 	/**
 	 * Return an ordered list of XY coordinates starting from the min X position to
 	 * the end of the list
@@ -29,17 +47,17 @@ public class Listordereing {
 	 */
 
 	public static List<RealLocalizable> getOrderedList(
-			List<RealLocalizable> truths) {
+			List<RealLocalizable> truths, int index) {
 
 		
-		List<RealLocalizable> copytruths = truths;
 		
-		
+		List<RealLocalizable> copytruths = getCopyList(truths);
 		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
-		
 		// Get the starting minX and minY co-ordinates
-		RealLocalizable minCord = getMinCord(copytruths);
+		RealLocalizable minCord = getRandomCord(copytruths, index);
 
+		
+		
 		RealLocalizable meanCord = getMeanCord(copytruths);
              orderedtruths.add(minCord);
              copytruths.remove(minCord);
@@ -58,8 +76,14 @@ public class Listordereing {
 			
 			if(nextangle >= 0 && secondnextangle >= 0 && nextangle <= secondnextangle)
 				chosenCord = nextCord;
-			if(nextangle > 0 && secondnextangle > 0 && nextangle > secondnextangle)
+			if(nextangle >= 0 && secondnextangle >= 0 && nextangle > secondnextangle)
 				chosenCord = secondnextCord;
+			
+			if(nextangle < 0 && secondnextangle > 0)
+				chosenCord = nextCord;
+			if(nextangle > 0 && secondnextangle < 0)
+				chosenCord = secondnextCord;
+			
 			else if (nextangle < 0 || secondnextangle < 0)
 			
 			chosenCord = (nextangle >= secondnextangle) ? nextCord: secondnextCord; 
@@ -88,31 +112,7 @@ public class Listordereing {
 	 * @return
 	 */
 
-	public static <T extends RealType<T> & NativeType<T>> List<RealLocalizable> getOrderedList(
-			List<RealLocalizable> truths, double deltasep) {
 
-		List<RealLocalizable> copytruths = copyList(truths);
-		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
-		RealLocalizable minCord = getMinCord(copytruths);
-
-             orderedtruths.add(minCord);
-             copytruths.remove(minCord);
-		do {
-		
-			
-			RealLocalizable nextCord = getNextNearest(minCord, copytruths);
-			if (Distance.DistanceSqrt(minCord, nextCord) > deltasep) {
-			minCord = nextCord;
-			orderedtruths.add(minCord);
-			}
-			copytruths.remove(nextCord);
-			
-		} while (copytruths.size() > 0);
-
-		
-		
-		return orderedtruths;
-	}
 
 	public static  List<RealLocalizable> copyList(
 			List<RealLocalizable> truths) {
@@ -172,28 +172,17 @@ public class Listordereing {
 	 * @return
 	 */
 
-	public static RealLocalizable getMinCord(
-			List<RealLocalizable> truths) {
+	public static RealLocalizable getRandomCord(
+			List<RealLocalizable> truths, int index) {
 
-		RealPoint minCord = new RealPoint(new double[] { Double.MAX_VALUE, Double.MAX_VALUE });
 		RealLocalizable minobject = null;
-		Iterator<RealLocalizable> iter = truths.iterator();
-
-		while (iter.hasNext()) {
-
-			RealLocalizable currentpair = iter.next();
-
-			RealLocalizable currentpoint = currentpair;
-
-			if (currentpoint.getDoublePosition(0) <= minCord.getDoublePosition(0)
-					&& currentpoint.getDoublePosition(1) <= minCord.getDoublePosition(1)) {
-
-				minCord = new RealPoint(currentpoint);
-				minobject = currentpair;
-
-			}
-
-		}
+		System.out.println(index + "Index");
+			
+			minobject = truths.get(index);
+			
+			
+		
+	
 
 		return minobject;
 	}
@@ -241,6 +230,8 @@ public class Listordereing {
 		return nextobject;
 
 	}
+	
+	
 	
 	/**
 	 * 

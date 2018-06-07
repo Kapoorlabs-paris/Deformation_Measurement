@@ -40,7 +40,7 @@ public class DrawCircles {
 				newpos[1] = center[1] + radii[1] * Math.sin(Math.toRadians(theta));
 				double Numerator = Math.abs(radii[0] * radii[1]);
 				double Denominator = AsqbyBsq * (newpos[1] - center[1]) *  (newpos[1] - center[1]) + BsqbyAsq * (newpos[0] - center[0]) *  (newpos[0] - center[0]);
-				Curvature = Numerator / Denominator;
+				Curvature = Numerator / Math.pow(Denominator, 3.0/2.0);
 				addFixed(CurvatureImage, newpos, Curvature);
 			
 		}
@@ -215,7 +215,7 @@ public class DrawCircles {
 		
 		ImagePlus imp = ImageJFunctions.show(img);
 		imp.setTitle("Curvature Actual");
-	IJ.run("Fire");
+		IJ.run("Fire");
 		
 	}
 	

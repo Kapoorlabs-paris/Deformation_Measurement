@@ -149,15 +149,16 @@ public class CurvatureFunction {
 
 		
 		// Draw the function
-
+		double perimeter = 0;
+		if(Leftresultcurvature!=null) {
 
 		functions.add(Leftresultcurvature);
 
 		interpolatedCurvature.addAll(Leftresultcurvature.Curvaturepoints);
 
-		double perimeter = Leftresultcurvature.Curvaturepoints.get(0)[3];
+		perimeter = Leftresultcurvature.Curvaturepoints.get(0)[3];
 		
-		
+		}
 		List<RealLocalizable> Rightsubtruths = leaf.rightTree;
 
 		// Fit function on left tree
@@ -176,12 +177,13 @@ public class CurvatureFunction {
 		// Draw the function
 
 
+		if(Rightresultcurvature!=null) {
 		functions.add(Rightresultcurvature);
 
 		interpolatedCurvature.addAll(Rightresultcurvature.Curvaturepoints);
 
 		perimeter += Rightresultcurvature.Curvaturepoints.get(0)[3];
-		
+		}
 		
 		return perimeter;
 
@@ -354,6 +356,7 @@ public class CurvatureFunction {
 
 		final RansacFunction segment = Tracking.findQuadLinearFunction(pointlist, mixedfunction, maxError, minNumInliers);
 
+		if(segment!=null) {
 			double perimeter = 0.5;
 			double Kappa = 0;
 
@@ -372,13 +375,13 @@ public class CurvatureFunction {
 			
 			
 			
-			for (int index = 0; index < segment.inliers.size() - 1; ++index) {
+			for (int index = 0; index < segment.inliers.size(); ++index) {
 				PointFunctionMatch p = segment.inliers.get(index);
 				double secderiv = segment.mixedfunction.getB().predictSecondderivative(p.getP1().getW()[0])* segment.mixedfunction.getLambda() 
 						  + segment.mixedfunction.getA().predictSecondderivative(p.getP1().getW()[0])* ( 1 - segment.mixedfunction.getLambda());
 				double firstderiv = segment.mixedfunction.getB().predictFirstderivative(p.getP1().getW()[0])* segment.mixedfunction.getLambda() 
 						 + segment.mixedfunction.getA().predictFirstderivative(p.getP1().getW()[0])*  ( 1 - segment.mixedfunction.getLambda() ) ;
-				Kappa += secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0) ;
+				Kappa = secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0) ;
 					Curvaturepoints.add(new double[] { p.getP1().getW()[0], p.getP1().getW()[1],
 							Math.abs(Kappa), perimeter });
 			}
@@ -391,7 +394,10 @@ public class CurvatureFunction {
 		
 			return finalfunctionransac;
 
-
+		}
+		
+		else
+			return null;
 	}
 
 
