@@ -45,7 +45,7 @@ public class LabelCurvature implements Runnable {
 	final int t;
 	final int z;
 	final int celllabel;
-	final int percent;
+	int percent;
 	final ArrayList<Line> resultlineroi;
 	final ArrayList<OvalRoi> resultcurvelineroi;
 	final ArrayList<OvalRoi> resultallcurvelineroi;
@@ -112,15 +112,24 @@ public class LabelCurvature implements Runnable {
 				new HashMap<Integer,Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>();
 		
 		RealLocalizable centerpoint = Listordereing.getMeanCord(truths);
+		
+		// Get the sparse list of points
+		List<RealLocalizable> Ordered = Listordereing.getOrderedList(truths, 0);
+		
 		int count = 0;
-		for(int i = 0; i < truths.size(); i+=truths.size()/16) {
+		if(parent.minNumInliers > truths.size())
+			parent.minNumInliers = truths.size();
+		int increment = (int)(truths.size()/20);
+		for(int i = 0; i < truths.size(); i+=increment) {
 			
 			
 	
-			
+			if(i >= truths.size() - 1)
+				break;
 			
 		// Get the sparse list of points
-		List<RealLocalizable> allorderedtruths = Listordereing.getOrderedList(truths, i);
+		
+			List<RealLocalizable> allorderedtruths = Listordereing.getOrderedList(Ordered, i);
 		
 		if (parent.fourthDimensionSize > 1)
 			parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension,
@@ -207,13 +216,13 @@ public class LabelCurvature implements Runnable {
 				double frequdelta = Z[index];
 				double averagefrequ = 0;
 				int frequ = 0;
-				double threshold = 1e-5;
+				double threshold = 1e-3;
 				Iterator<Double> setiter = CurveXY.iterator();
 				
 				while(setiter.hasNext()) {
 					
 					Double s = setiter.next();
-					averagefrequ+=s;
+					
 					while(setiter.hasNext()) {
 						
 						
@@ -232,9 +241,8 @@ public class LabelCurvature implements Runnable {
 				
 				}
 				
-				averagefrequ/=CurveXY.size();
-		//	if(frequ == 0)
-				frequdelta = averagefrequ;
+				
+			
 				
 				Curvatureobject newobject = new Curvatureobject(frequdelta, localCurvature.get(index).perimeter, localCurvature.get(index).Label, localCurvature.get(index).cord,
 						localCurvature.get(index).t, localCurvature.get(index).z);
@@ -256,9 +264,9 @@ public class LabelCurvature implements Runnable {
 		//resultcurvelineroi.addAll(currentobject.curvelinerois);
 		//resultallcurvelineroi.addAll(currentobject.curvealllinerois);
 		
-		Roiobject currentroiobject = new Roiobject(null, resultallcurvelineroi, resultlineroi, resultcurvelineroi, z, t, celllabel, true);
-		parent.ZTRois.put(uniqueID, currentroiobject);
-		DisplayAuto.Display(parent);
+		//Roiobject currentroiobject = new Roiobject(null, resultallcurvelineroi, resultlineroi, resultcurvelineroi, z, t, celllabel, true);
+		//parent.ZTRois.put(uniqueID, currentroiobject);
+		//DisplayAuto.Display(parent);
 		AllCurveintersection.add(currentobject);
 		
 

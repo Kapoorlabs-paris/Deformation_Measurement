@@ -176,7 +176,7 @@ public class Listordereing {
 			List<RealLocalizable> truths, int index) {
 
 		RealLocalizable minobject = null;
-		System.out.println(index + "Index");
+		System.out.println(index + "Index" + truths.size());
 			
 			minobject = truths.get(index);
 			
