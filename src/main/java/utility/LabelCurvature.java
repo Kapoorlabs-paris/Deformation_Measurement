@@ -96,11 +96,11 @@ public class LabelCurvature implements Runnable {
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
 		
 			if (parent.fourthDimensionSize != 0 && parent.Accountedframes.size()!=0 && parent.Accountedframes!=null)
-				utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.Accountedframes.entrySet().size()),
+				utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.pixellist.size()),
 						"Computing Curvature = " + t + "/" + parent.fourthDimensionSize + " Z = " + z + "/"
 								+ parent.thirdDimensionSize);
 			else if(parent.thirdDimensionSize!=0 && parent.AccountedZ.size()!=0 && parent.AccountedZ!=null)
-				utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.AccountedZ.entrySet().size()),
+				utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.pixellist.size()),
 						"Computing Curvature T/Z = " + z + "/" + parent.thirdDimensionSize);
 		 else {
 
@@ -114,22 +114,26 @@ public class LabelCurvature implements Runnable {
 		RealLocalizable centerpoint = Listordereing.getMeanCord(truths);
 		
 		// Get the sparse list of points
-		List<RealLocalizable> Ordered = Listordereing.getOrderedList(truths, 0);
+		List<RealLocalizable> Ordered = Listordereing.getOrderedList(truths);
 		
 		int count = 0;
 		if(parent.minNumInliers > truths.size())
 			parent.minNumInliers = truths.size();
-		int increment = (int)(truths.size()/20);
-		for(int i = 0; i < truths.size(); i+=increment) {
+		
+		if(parent.increment<= 0)
+			parent.increment = 1;
+		int increment = Ordered.size() / parent.increment;
+		for(int i = 0; i < Ordered.size(); i+=increment) {
 			
-			
+			if(i%(increment) == 0)
+				resultlineroi.clear();
 	
-			if(i >= truths.size() - 1)
+			if(i >= Ordered.size() - 1)
 				break;
 			
 		// Get the sparse list of points
 		
-			List<RealLocalizable> allorderedtruths = Listordereing.getOrderedList(Ordered, i);
+			List<RealLocalizable> allorderedtruths = Listordereing.getList(Ordered, i);
 		
 		if (parent.fourthDimensionSize > 1)
 			parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension,
@@ -214,9 +218,8 @@ public class LabelCurvature implements Runnable {
 		  }
 				
 				double frequdelta = Z[index];
-				double averagefrequ = 0;
 				int frequ = 0;
-				double threshold = 1e-3;
+				double threshold = 0.9;
 				Iterator<Double> setiter = CurveXY.iterator();
 				
 				while(setiter.hasNext()) {
@@ -229,7 +232,7 @@ public class LabelCurvature implements Runnable {
 						Double p = setiter.next();
 						
 						
-						if(Math.abs( p - s) <= threshold ) {
+						if(Math.abs( p / s) <= threshold || Math.abs( s / p) <= threshold ) {
 							
 							frequ++;
 							frequdelta = s;
@@ -244,7 +247,7 @@ public class LabelCurvature implements Runnable {
 				
 			
 				
-				Curvatureobject newobject = new Curvatureobject(frequdelta, localCurvature.get(index).perimeter, localCurvature.get(index).Label, localCurvature.get(index).cord,
+				Curvatureobject newobject = new Curvatureobject((float)frequdelta, localCurvature.get(index).perimeter, localCurvature.get(index).Label, localCurvature.get(index).cord,
 						localCurvature.get(index).t, localCurvature.get(index).z);
 				 System.out.println( "Best Curvature:" + (float)frequdelta + " " + "Original" + (float)Z[index] + " " + "Frequency: " + frequ + " " +  " XY " + X[index] + " " + Y[index]);
 				RefinedCurvature.add(newobject);
@@ -254,7 +257,7 @@ public class LabelCurvature implements Runnable {
 		  Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> Refinedresultpair = new  ValuePair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>(resultpair.getA(), RefinedCurvature);
 		
 		parent.localCurvature = Refinedresultpair.getB();
-		parent.functions = Refinedresultpair.getA();
+		parent.functions.addAll(Refinedresultpair.getA());
 		// Make intersection object here
 
 		

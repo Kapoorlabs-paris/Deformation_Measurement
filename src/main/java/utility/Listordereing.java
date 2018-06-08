@@ -37,6 +37,31 @@ public class Listordereing {
 		return orderedtruths;
 	}
 	
+	
+	public static List<RealLocalizable> getList(
+			List<RealLocalizable> truths, int index) {
+		
+		
+		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
+		
+		for (int i = index; i < truths.size() ; ++i) {
+			
+			
+			orderedtruths.add(truths.get(i));
+			
+		}
+	     for (int i = 0; i < index ; ++i) {
+			
+			
+			orderedtruths.add(truths.get(i));
+			
+		}
+		
+		
+		return orderedtruths;
+		
+	}
+	
 	/**
 	 * Return an ordered list of XY coordinates starting from the min X position to
 	 * the end of the list
@@ -47,14 +72,14 @@ public class Listordereing {
 	 */
 
 	public static List<RealLocalizable> getOrderedList(
-			List<RealLocalizable> truths, int index) {
+			List<RealLocalizable> truths) {
 
 		
 		
 		List<RealLocalizable> copytruths = getCopyList(truths);
 		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
 		// Get the starting minX and minY co-ordinates
-		RealLocalizable minCord = getRandomCord(copytruths, index);
+		RealLocalizable minCord = getMinCord(copytruths);
 
 		
 		
@@ -93,7 +118,6 @@ public class Listordereing {
 			orderedtruths.add(minCord);
 			
 		
-			
 			copytruths.remove(chosenCord);
 			}
 			else break;
@@ -175,14 +199,47 @@ public class Listordereing {
 	public static RealLocalizable getRandomCord(
 			List<RealLocalizable> truths, int index) {
 
-		RealLocalizable minobject = null;
-		System.out.println(index + "Index" + truths.size());
+
+	
 			
-			minobject = truths.get(index);
+		RealLocalizable minobject = truths.get(index);
 			
 			
 		
 	
+
+		return minobject;
+	}
+	/**
+	 * 
+	 * Get the starting XY co-ordinates to create an ordered list, start from minX and minY
+	 * 
+	 * @param truths
+	 * @return
+	 */
+
+	public static RealLocalizable getMinCord(
+			List<RealLocalizable> truths) {
+
+		RealPoint minCord = new RealPoint(new double[] { Double.MAX_VALUE, Double.MAX_VALUE });
+		RealLocalizable minobject = null;
+		Iterator<RealLocalizable> iter = truths.iterator();
+
+		while (iter.hasNext()) {
+
+			RealLocalizable currentpair = iter.next();
+
+			RealLocalizable currentpoint = currentpair;
+
+			if (currentpoint.getDoublePosition(0) <= minCord.getDoublePosition(0)
+					&& currentpoint.getDoublePosition(1) <= minCord.getDoublePosition(1)) {
+
+				minCord = new RealPoint(currentpoint);
+				minobject = currentpair;
+
+			}
+
+		}
 
 		return minobject;
 	}

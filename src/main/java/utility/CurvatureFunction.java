@@ -263,7 +263,7 @@ public class CurvatureFunction {
 
 		}
 
-		// Use Ransac to fit a general polynomial function 
+		// Use Ransac to fit a quadratic function if it fails do it via regression
 
 		RegressionFunction finalfunction = RansacBlock(pointlist, smoothing, maxError, minNumInliers, degree, secdegree);
 
@@ -308,16 +308,20 @@ public class CurvatureFunction {
 			double dx = Math.abs(points.get(index).getW()[0] - points.get(index + 1).getW()[0]);
 			double firstderiv = regression.predictderivative(points.get(index).getW()[0]);
 
-			double secderiv = regression.predictsecderivative(points.get(index).getW()[0]);
-			Kappa += secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0);
+
 			perimeter += Math.sqrt(1 + firstderiv * firstderiv) * dx;
 
 		}
 		for (int index = 0; index < points.size() - 1; ++index) {
 
+			double secderiv = regression.predictsecderivative(points.get(index).getW()[0]);
+			double firstderiv = regression.predictderivative(points.get(index).getW()[0]);
+
+			Kappa = secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0);
+
 
 			Curvaturepoints.add(new double[] { points.get(index).getW()[0], points.get(index).getW()[1],
-					Math.abs(Kappa)/perimeter , perimeter });
+					Math.abs(Kappa) , perimeter });
 
 		}
 		
@@ -364,9 +368,7 @@ public class CurvatureFunction {
 				
 				double firstderiv = segment.mixedfunction.getB().predictFirstderivative(p.getP1().getW()[0])* segment.mixedfunction.getLambda() 
 						 + segment.mixedfunction.getA().predictFirstderivative(p.getP1().getW()[0])*  ( 1 - segment.mixedfunction.getLambda() ) ;
-				double secderiv = segment.mixedfunction.getB().predictSecondderivative(p.getP1().getW()[0])* segment.mixedfunction.getLambda() 
-						  + segment.mixedfunction.getA().predictSecondderivative(p.getP1().getW()[0])* ( 1 - segment.mixedfunction.getLambda());
-				Kappa += secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0) ;
+				
 				perimeter += Math.sqrt(1 + firstderiv * firstderiv) * dx;
 				
 			}
@@ -375,9 +377,13 @@ public class CurvatureFunction {
 			
 			for (int index = 0; index < segment.inliers.size(); ++index) {
 				PointFunctionMatch p = segment.inliers.get(index);
-				
+				double secderiv = segment.mixedfunction.getB().predictSecondderivative(p.getP1().getW()[0])* segment.mixedfunction.getLambda() 
+						  + segment.mixedfunction.getA().predictSecondderivative(p.getP1().getW()[0])* ( 1 - segment.mixedfunction.getLambda());
+				double firstderiv = segment.mixedfunction.getB().predictFirstderivative(p.getP1().getW()[0])* segment.mixedfunction.getLambda() 
+						 + segment.mixedfunction.getA().predictFirstderivative(p.getP1().getW()[0])*  ( 1 - segment.mixedfunction.getLambda() ) ;
+				Kappa = secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0) ;
 					Curvaturepoints.add(new double[] { p.getP1().getW()[0], p.getP1().getW()[1],
-							Math.abs(Kappa)/ perimeter, perimeter });
+							Math.abs(Kappa), perimeter });
 			}
 
 			RegressionFunction finalfunctionransac = new RegressionFunction(segment.mixedfunction, Curvaturepoints,

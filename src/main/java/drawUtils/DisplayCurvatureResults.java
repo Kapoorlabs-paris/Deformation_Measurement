@@ -64,8 +64,8 @@ public class DisplayCurvatureResults {
 
 				for (int i = 0; i < X.length; ++i) {
 
-					if ((Math.abs(cursor.getFloatPosition(0) - X[i])) < 1
-							&& (Math.abs(cursor.getFloatPosition(1) - Y[i])) < 1) {
+					if ((Math.abs(cursor.getFloatPosition(0) - X[i])) == 0
+							&& (Math.abs(cursor.getFloatPosition(1) - Y[i])) == 0) {
 
 						cursor.get().setReal(I[i]);
 
