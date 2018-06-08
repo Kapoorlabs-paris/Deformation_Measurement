@@ -30,7 +30,11 @@ public class InsideLocListener implements TextListener {
 	@Override
 	public void textValueChanged(TextEvent e) {
 		final TextComponent tc = (TextComponent)e.getSource();
-	   
+	 	String s = tc.getText();
+		parent.insideCutoff = Float.parseFloat(s);
+		parent.insideText.setText("Cutoff distance  = " + parent.insideCutoff);
+		parent.insideCutoffmax = Math.max(parent.insideCutoff, parent.insideCutoffmax);
+		parent.insideslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.insideCutoff, parent.insideCutoffmin, parent.insideCutoffmax, parent.scrollbarSize));
 		 tc.addKeyListener(new KeyListener(){
 			 @Override
 			    public void keyTyped(KeyEvent arg0) {
@@ -51,15 +55,13 @@ public class InsideLocListener implements TextListener {
 
 			    @Override
 			    public void keyPressed(KeyEvent arg0) {
-			    	String s = tc.getText();
+			   
 			    	if (arg0.getKeyChar() == KeyEvent.VK_ENTER&& !pressed) {
 						pressed = true;
 			    		
-							parent.insideCutoff = Float.parseFloat(s);
+						
 			  
-					parent.insideText.setText("Cutoff distance  = " + parent.insideCutoff);
-					parent.insideCutoffmax = Math.max(parent.insideCutoff, parent.insideCutoffmax);
-					parent.insideslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.insideCutoff, parent.insideCutoffmin, parent.insideCutoffmax, parent.scrollbarSize));
+				
 					parent.StartCurvatureComputingCurrent();
 					parent.insideslider.repaint();
 					parent.insideslider.validate();

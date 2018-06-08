@@ -147,7 +147,6 @@ public class CurvatureFunction {
 		RegressionFunction Leftresultcurvature = getLocalcurvature(LeftCordlist, smoothing, maxError, minNumInliers,
 				degree, secdegree);
 
-		
 		// Draw the function
 		double perimeter = 0;
 		if(Leftresultcurvature!=null) {
@@ -173,6 +172,7 @@ public class CurvatureFunction {
 		RegressionFunction Rightresultcurvature = getLocalcurvature(RightCordlist, smoothing, maxError, minNumInliers,
 				degree, secdegree);
 
+
 		
 		// Draw the function
 
@@ -184,7 +184,6 @@ public class CurvatureFunction {
 
 		perimeter += Rightresultcurvature.Curvaturepoints.get(0)[3];
 		}
-		
 		return perimeter;
 
 	}
@@ -266,7 +265,7 @@ public class CurvatureFunction {
 		// Use Ransac to fit a quadratic function if it fails do it via regression
 
 		RegressionFunction finalfunction = RansacBlock(pointlist, smoothing, maxError, minNumInliers, degree, secdegree);
-
+	
 		return finalfunction;
 
 	}
@@ -396,8 +395,11 @@ public class CurvatureFunction {
 
 		}
 		
-		else
+		else 
+			
 			return null;
+			
+		
 	}
 
 

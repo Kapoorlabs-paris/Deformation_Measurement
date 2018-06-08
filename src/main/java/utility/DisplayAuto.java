@@ -119,7 +119,7 @@ public class DisplayAuto {
 
 			final double[] point = new double[] { currentpoint.getP1().getW()[0], currentpoint.getP1().getW()[1] };
 
-			OvalRoi line = new OvalRoi(point[0], point[1], 2, 2);
+			OvalRoi line = new OvalRoi(point[0], point[1], 1, 0);
 			pointline.add(line);
 
 		}
@@ -135,7 +135,7 @@ public class DisplayAuto {
 		for (double[] point : currentlist) {
 
 
-			OvalRoi line = new OvalRoi(point[0], point[1], 2, 2);
+			OvalRoi line = new OvalRoi(point[0], point[1], 1, 0);
 			pointline.add(line);
 
 		}
