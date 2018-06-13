@@ -75,7 +75,6 @@ public class EllipseTrack {
 	public void BlockRepeatCurve(double percent, int z, int t) {
 
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
-
 		percent++;
 		if(jpb!=null )
 		utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.fourthDimensionSize + 1),

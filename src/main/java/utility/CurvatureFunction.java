@@ -21,6 +21,7 @@ import net.imglib2.RealLocalizable;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import pluginTools.CorrectCurvature;
 import pluginTools.InteractiveSimpleEllipseFit;
 import ransac.PointFunctionMatch.PointFunctionMatch;
 import ransac.loadFiles.Tracking;
@@ -62,8 +63,8 @@ public class CurvatureFunction {
 		ArrayList<double[]> leftinterpolatedCurvature = new ArrayList<double[]>();
 		ArrayList<double[]> rightinterpolatedCurvature = new ArrayList<double[]>();
 		ArrayList<double[]> totalinterpolatedCurvature = new ArrayList<double[]>();
-		HashMap<String, Node<RealLocalizable>> WrongLeftnodes = new HashMap<String, Node<RealLocalizable>> ();
-		HashMap<String,Node<RealLocalizable>> WrongRightnodes = new HashMap<String, Node<RealLocalizable>> ();
+		ArrayList<Node<RealLocalizable>> WrongLeftnodes = new ArrayList<Node<RealLocalizable>> ();
+		ArrayList<Node<RealLocalizable>> WrongRightnodes = new ArrayList<Node<RealLocalizable>> ();
 		
 		ArrayList<RegressionFunction> leftfunctions = new ArrayList<RegressionFunction>();
 		ArrayList<RegressionFunction> rightfunctions = new ArrayList<RegressionFunction>();
@@ -108,21 +109,20 @@ public class CurvatureFunction {
 			
 			else {
 				
-				WrongLeftnodes.put(node.depth, node);
+				WrongLeftnodes.add(node);
 				continue;
 			}
 			}
 			
 			if(rightlocal!=null ) {
-      			if(rightlocal.getA()) {
+      			if(!rightlocal.getA()) {
 				perimeter+=rightlocal.getB();
 				totalfunctions.addAll(rightfunctions);
 				totalinterpolatedCurvature.addAll(rightinterpolatedCurvature);
       			}
 		
       			else {
-				WrongRightnodes.put(node.depth, node);
-				System.out.println("Wrong node right tree");
+				WrongRightnodes.add(node);
 				continue;
       			}
 			}
@@ -131,6 +131,20 @@ public class CurvatureFunction {
 				break;
 
 		}
+		
+		
+		// Correct for wrong nodes using recursion
+		
+		// Reduce size of window
+		CorrectCurvature.CorrectCurvaturebySize(WrongLeftnodes, parent, maxError, minNumInliers, ndims, Label, degree, secdegree, t, z);
+		
+		CorrectCurvature.CorrectCurvaturebySize(WrongRightnodes, parent, maxError, minNumInliers, ndims, Label, degree, secdegree, t, z);
+		
+		
+		// Increase degree of fit polynomial by Ransac
+		CorrectCurvature.CorrectCurvaturebyDegree(WrongLeftnodes, parent, maxError, minNumInliers, ndims, Label, degree, secdegree, t, z);
+	
+		CorrectCurvature.CorrectCurvaturebyDegree(WrongRightnodes, parent, maxError, minNumInliers, ndims, Label, degree, secdegree, t, z);
 
 		for (int indexx = 0; indexx < totalinterpolatedCurvature.size(); ++indexx) {
 
@@ -176,18 +190,18 @@ public class CurvatureFunction {
 	
 	public static Boolean CorrectSegment(RegressionFunction Result) {
 		
-		int inliersize = Result.inliers.size();
-		int totalsize = Result.candidates.size();
+		double inliersize = Result.inliers.size();
+		double totalsize = Result.candidates.size();
 		if(totalsize > 0 && inliersize > 0  ) {
 		double ratio = inliersize / totalsize;
-		double threshold = 0.75;
+		double threshold = 0.5;
 		Boolean needCorrection = false;
 		
 		if( ratio <= threshold) {
 			// We need to correct
 			
 			needCorrection = true;
-			
+			System.out.println("Activating correction loop" + " " + "test ratio is at  " + (float)ratio + " " + "Degree of fit polynomial " + Result.mixedfunction.getA().degree() + " " + " And " + Result.mixedfunction.getB().degree() );
 		}
 		
 	      return needCorrection;

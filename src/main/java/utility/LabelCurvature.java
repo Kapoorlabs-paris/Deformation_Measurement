@@ -104,7 +104,9 @@ public class LabelCurvature implements Runnable {
 
 		if (parent.increment <= 0)
 			parent.increment = 1;
-		int increment = Ordered.size() / parent.increment;
+		if(parent.increment >= Ordered.size())
+			parent.increment = Ordered.size() - 1;
+		int increment = parent.increment;
 		for (int i = 0; i < Ordered.size(); i += increment) {
 
 			if (i % (increment) == 0) {

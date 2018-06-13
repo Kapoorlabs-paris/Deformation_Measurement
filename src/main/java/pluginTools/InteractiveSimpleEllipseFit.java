@@ -152,7 +152,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public final int scrollbarSize = 1000;
 	public double maxError = 3;
 	public int degree = 3;
-	public int secdegree = 1;
+	public int secdegree = 2;
 	public double minellipsepoints = 9;
 	public double mincirclepoints = 3;
 	public int tablesize;
@@ -864,7 +864,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			}
 
-		
+			
 			if(automode || curveautomode)
 				localimp.setTitle(
 						"Seg Image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
@@ -1027,24 +1027,27 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 
 		if (change == ValueChange.THIRDDIMmouse || change == ValueChange.FOURTHDIMmouse) {
-
-			if(Tracklist.size() > 0 && automode ||supermode) {
+			if(Tracklist.size() > 0 && (automode ||supermode)) {
+				
 				ComputeAngles current = new ComputeAngles(this, null);
 			
 				current.Lineage();
 				
 			}
-			if(Tracklist.size() > 0 && curveautomode || curvesupermode) {
+			if(Tracklist.size() > 0 && (curveautomode || curvesupermode)) {
+				
 				ComputeCurvature current = new ComputeCurvature(this, null);
 			
 				current.CurvedLineage();
+				
 				
 			}
 			
 			
 			if (automode || supermode || curveautomode || curvesupermode) {
-				updatePreview(ValueChange.SEG);
-			
+				
+					updatePreview(ValueChange.SEG);
+				
 				if(originalimgsmooth!= null)
 					CurrentViewSmooth =  utility.Slicer.getCurrentView(originalimgsmooth, thirdDimension,
 							thirdDimensionSize, thirdDimension, fourthDimensionSize);
@@ -1056,7 +1059,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 						CurrentView = utility.Slicer.getCurrentView(originalimg, thirdDimension,
 								thirdDimensionSize, thirdDimension, fourthDimensionSize);
 					
-				
+					
 			}
 			
 			if(supermode || curvesupermode || automode || curveautomode  )
@@ -1370,7 +1373,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Label insideText = new Label("Cutoff distance  = " + insideCutoff,
 			Label.CENTER);
 	public Label degreeText = new Label("Choose degree of polynomial");
-	public Label incrementText = new Label("Choose increment stride");
+	public Label incrementText = new Label("Choose increment stride (pixels)");
 	public Label secdegreeText = new Label("Choose degree of second polynomial");
 	public Label minInlierText = new Label("Min Points in segment  = " + minNumInliers,
 			Label.CENTER);
