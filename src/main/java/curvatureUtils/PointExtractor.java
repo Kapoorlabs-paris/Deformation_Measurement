@@ -78,9 +78,8 @@ public class PointExtractor {
 			
 			else if(regression.ellipse!=null) {
 				
-				EllipseRoi ellipse = DisplayasROI.create2DEllipse(regression.ellipse.getCenter(),
-						new double[] { regression.ellipse.getRadii() * regression.ellipse.getRadii()  , 0 ,
-								regression.ellipse.getRadii() * regression.ellipse.getRadii()  });
+				EllipseRoi ellipse = DisplayasROI.create2DCircle(regression.ellipse.getCenter(),
+						regression.ellipse.getRadii() * regression.ellipse.getRadii());
 				ellipsecurveline.add(ellipse);
 			}
 			// Store the information to draw a line as a lineroi
