@@ -91,7 +91,9 @@ public class LabelCurvature implements Runnable {
 		this.celllabel = celllabel;
 	}
 
-	private Pair< Integer, HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>> SliderLoop(List<RealLocalizable> Ordered, RealLocalizable centerpoint ) {
+	
+	private Pair<Integer, HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>> SliderLoop(
+			List<RealLocalizable> Ordered, RealLocalizable centerpoint) {
 
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
 		// Get the sparse list of points
@@ -156,10 +158,11 @@ public class LabelCurvature implements Runnable {
 					z, t, celllabel, true);
 			parent.ZTRois.put(uniqueID, currentroiobject);
 			DisplayAuto.Display(parent);
-		
+
 		}
 
-		return new ValuePair< Integer, HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>> (count, Bestdelta);
+		return new ValuePair<Integer, HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>>(
+				count, Bestdelta);
 	}
 
 	@Override
@@ -186,11 +189,13 @@ public class LabelCurvature implements Runnable {
 		// Get the sparse list of points
 		List<RealLocalizable> Ordered = Listordereing.getOrderedList(truths);
 
-		Pair< Integer, HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>> slider  = SliderLoop(Ordered, centerpoint);
-		
+		Pair<Integer, HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>> slider = SliderLoop(
+				Ordered, centerpoint);
+
 		Bestdelta = slider.getB();
 		int count = slider.getA();
 		Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> resultpair = Bestdelta.get(0);
+		
 		ArrayList<Curvatureobject> RefinedCurvature = new ArrayList<Curvatureobject>();
 		ArrayList<Curvatureobject> localCurvature = resultpair.getB();
 
@@ -281,9 +286,7 @@ public class LabelCurvature implements Runnable {
 			Curvatureobject newobject = new Curvatureobject((float) frequdelta, frequdeltaperi,
 					localCurvature.get(index).Label, localCurvature.get(index).cord, localCurvature.get(index).t,
 					localCurvature.get(index).z);
-			System.out.println("Best Curvature:" + (float) frequdelta + " " + "Original" + (float) Z[index] + " "
-					+ "Frequency: " + frequ + " " + " XY " + X[index] + " " + Y[index] + " " + parent.degree + " "
-					+ parent.secdegree);
+		
 			RefinedCurvature.add(newobject);
 		}
 

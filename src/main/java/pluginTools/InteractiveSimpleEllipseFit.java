@@ -1028,12 +1028,20 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		if (change == ValueChange.THIRDDIMmouse || change == ValueChange.FOURTHDIMmouse) {
 
-			if(Tracklist.size() > 0) {
+			if(Tracklist.size() > 0 && automode ||supermode) {
 				ComputeAngles current = new ComputeAngles(this, null);
 			
 				current.Lineage();
 				
 			}
+			if(Tracklist.size() > 0 && curveautomode || curvesupermode) {
+				ComputeCurvature current = new ComputeCurvature(this, null);
+			
+				current.CurvedLineage();
+				
+			}
+			
+			
 			if (automode || supermode || curveautomode || curvesupermode) {
 				updatePreview(ValueChange.SEG);
 			
