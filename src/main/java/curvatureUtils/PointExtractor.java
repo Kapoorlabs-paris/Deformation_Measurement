@@ -7,9 +7,11 @@ import java.util.List;
 import org.apache.poi.poifs.property.Parent;
 
 import ellipsoidDetector.Intersectionobject;
+import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
 import net.imglib2.RealLocalizable;
+import net.imglib2.algorithm.ransac.RansacModels.DisplayasROI;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import ransacPoly.QuadraticFunction;
@@ -40,6 +42,7 @@ public class PointExtractor {
         z = localCurvature.get(0).z;
 		perimeter = localCurvature.get(0).perimeter;
 		ArrayList<OvalRoi> resultcurveline = new ArrayList<OvalRoi>();
+		ArrayList<EllipseRoi> ellipsecurveline = new ArrayList<EllipseRoi>();
 		ArrayList<OvalRoi> resultallcurveline = new ArrayList<OvalRoi>();
 		for (int i = 0; i < functions.size(); ++i) {
 		
@@ -71,6 +74,14 @@ public class PointExtractor {
 				ys = (int)(regression.back).predict(xs);
 				ye = (int)(regression.back).predict(xe);
 				
+			}
+			
+			else if(regression.ellipse!=null) {
+				
+				EllipseRoi ellipse = DisplayasROI.create2DEllipse(regression.ellipse.getCenter(),
+						new double[] { regression.ellipse.getRadii() * regression.ellipse.getRadii()  , 0 ,
+								regression.ellipse.getRadii() * regression.ellipse.getRadii()  });
+				ellipsecurveline.add(ellipse);
 			}
 			// Store the information to draw a line as a lineroi
 			Line line = new Line(xs, ys, xe, ye);
@@ -108,7 +119,7 @@ public class PointExtractor {
 		double[] mean = new double[] {centerpoint.getDoublePosition(0), centerpoint.getDoublePosition(1)};
 		
 		
-		Intersectionobject currentIntersection = new Intersectionobject(mean, linelist, resultlineroi, resultcurveline, resultallcurveline, perimeter, celllabel, t, z);
+		Intersectionobject currentIntersection = new Intersectionobject(mean, linelist, resultlineroi, resultcurveline, resultallcurveline,ellipsecurveline, perimeter, celllabel, t, z);
 
 		return currentIntersection;
 		

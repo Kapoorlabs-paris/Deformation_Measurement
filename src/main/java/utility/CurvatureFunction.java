@@ -18,6 +18,9 @@ import hashMapSorter.SortNodes;
 import ij.ImagePlus;
 import mpicbg.models.Point;
 import net.imglib2.RealLocalizable;
+import net.imglib2.RealPoint;
+import net.imglib2.algorithm.ransac.RansacModels.FitLocalEllipsoid;
+import net.imglib2.algorithm.ransac.RansacModels.RansacFunctionEllipsoid;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -41,7 +44,6 @@ public class CurvatureFunction {
 
 	static int evendepth;
 
-	
 	/**
 	 * 
 	 * Take in a list of ordered co-ordinates and compute a curvature object
@@ -63,12 +65,12 @@ public class CurvatureFunction {
 		ArrayList<double[]> leftinterpolatedCurvature = new ArrayList<double[]>();
 		ArrayList<double[]> rightinterpolatedCurvature = new ArrayList<double[]>();
 		ArrayList<double[]> totalinterpolatedCurvature = new ArrayList<double[]>();
-		ArrayList<Node<RealLocalizable>> WrongLeftnodes = new ArrayList<Node<RealLocalizable>> ();
-		ArrayList<Node<RealLocalizable>> WrongRightnodes = new ArrayList<Node<RealLocalizable>> ();
-		
+		ArrayList<Node<RealLocalizable>> WrongLeftnodes = new ArrayList<Node<RealLocalizable>>();
+		ArrayList<Node<RealLocalizable>> WrongRightnodes = new ArrayList<Node<RealLocalizable>>();
+
 		ArrayList<RegressionFunction> leftfunctions = new ArrayList<RegressionFunction>();
 		ArrayList<RegressionFunction> rightfunctions = new ArrayList<RegressionFunction>();
-		
+
 		ArrayList<RegressionFunction> totalfunctions = new ArrayList<RegressionFunction>();
 
 		double perimeter = 0;
@@ -80,10 +82,10 @@ public class CurvatureFunction {
 		MakeTree(parent, truths, 0, Integer.toString(0), maxdepth);
 
 		HashMap<String, Node<RealLocalizable>> SortedNodemap = SortNodes.sortByValues(parent.Nodemap, minNumInliers);
-		HashMap<String, Node<RealLocalizable>> SortedRightNodemap = SortNodes.sortByRightValues(SortedNodemap, minNumInliers);
+		HashMap<String, Node<RealLocalizable>> SortedRightNodemap = SortNodes.sortByRightValues(SortedNodemap,
+				minNumInliers);
 		int sizein = 0;
 		for (Map.Entry<String, Node<RealLocalizable>> entry : SortedRightNodemap.entrySet()) {
-
 
 			sizein += entry.getValue().parent.size();
 
@@ -91,73 +93,75 @@ public class CurvatureFunction {
 
 			// Output is the local perimeter of the fitted function
 			Pair<Boolean, Double> leftlocal = null, rightlocal = null;
-			if(node.leftTree!=null)
-			leftlocal  = FitonLeftsubTree(parent, node, leftinterpolatedCurvature, leftfunctions, smoothing, maxError,
-					minNumInliers, degree, secdegree);
-			
-			if(node.rightTree!=null)
-			rightlocal = FitonRightsubTree(parent, node, rightinterpolatedCurvature, rightfunctions, smoothing, maxError,
-					minNumInliers, degree, secdegree);
+			if (node.leftTree != null)
+				leftlocal = FitonLeftsubTree(parent, node, leftinterpolatedCurvature, leftfunctions, smoothing,
+						maxError, minNumInliers, degree, secdegree);
+
+			if (node.rightTree != null)
+				rightlocal = FitonRightsubTree(parent, node, rightinterpolatedCurvature, rightfunctions, smoothing,
+						maxError, minNumInliers, degree, secdegree);
+
 			// Add only the correct regions
-			if(leftlocal!=null) {
-			if(!leftlocal.getA()) {
-				perimeter+=leftlocal.getB();
-				totalfunctions.addAll(leftfunctions);
-				totalinterpolatedCurvature.addAll(leftinterpolatedCurvature);
+			if (leftlocal != null) {
+				if (!leftlocal.getA()) {
+					perimeter += leftlocal.getB();
+					totalfunctions.addAll(leftfunctions);
+					totalinterpolatedCurvature.addAll(leftinterpolatedCurvature);
+				}
+
+				else {
+
+					WrongLeftnodes.add(node);
+					continue;
+				}
 			}
-		
-			
-			else {
-				
-				WrongLeftnodes.add(node);
-				continue;
+
+			if (rightlocal != null) {
+				if (!rightlocal.getA()) {
+					perimeter += rightlocal.getB();
+					totalfunctions.addAll(rightfunctions);
+					totalinterpolatedCurvature.addAll(rightinterpolatedCurvature);
+				}
+
+				else {
+					WrongRightnodes.add(node);
+					continue;
+				}
 			}
-			}
-			
-			if(rightlocal!=null ) {
-      			if(!rightlocal.getA()) {
-				perimeter+=rightlocal.getB();
-				totalfunctions.addAll(rightfunctions);
-				totalinterpolatedCurvature.addAll(rightinterpolatedCurvature);
-      			}
-		
-      			else {
-				WrongRightnodes.add(node);
-				continue;
-      			}
-			}
-			
-			if (sizein >= truths.size() )
+			if (sizein >= truths.size())
 				break;
 
 		}
-		
-		
+
 		// Correct for wrong nodes using recursion
-		
+
 		// Reduce size of window
-		CorrectCurvature.CorrectCurvaturebySize(WrongLeftnodes, parent, maxError, minNumInliers, ndims, Label, degree, secdegree, t, z);
-		
-		CorrectCurvature.CorrectCurvaturebySize(WrongRightnodes, parent, maxError, minNumInliers, ndims, Label, degree, secdegree, t, z);
-		
-		
+		// CorrectCurvature.CorrectCurvaturebySize(WrongLeftnodes, parent, maxError,
+		// minNumInliers, ndims, Label, degree, secdegree, t, z);
+
+		// CorrectCurvature.CorrectCurvaturebySize(WrongRightnodes, parent, maxError,
+		// minNumInliers, ndims, Label, degree, secdegree, t, z);
+
 		// Increase degree of fit polynomial by Ransac
-		CorrectCurvature.CorrectCurvaturebyDegree(WrongLeftnodes, parent, maxError, minNumInliers, ndims, Label, degree, secdegree, t, z);
-	
-		CorrectCurvature.CorrectCurvaturebyDegree(WrongRightnodes, parent, maxError, minNumInliers, ndims, Label, degree, secdegree, t, z);
+		// CorrectCurvature.CorrectCurvaturebyDegree(WrongLeftnodes, parent, maxError,
+		// minNumInliers, ndims, Label, degree, secdegree, t, z);
+
+		// CorrectCurvature.CorrectCurvaturebyDegree(WrongRightnodes, parent, maxError,
+		// minNumInliers, ndims, Label, degree, secdegree, t, z);
 
 		for (int indexx = 0; indexx < totalinterpolatedCurvature.size(); ++indexx) {
 
-			Curvatureobject currentobject = new Curvatureobject(totalinterpolatedCurvature.get(indexx)[2], perimeter, Label,
-					new double[] { totalinterpolatedCurvature.get(indexx)[0], totalinterpolatedCurvature.get(indexx)[1] }, t, z);
+			Curvatureobject currentobject = new Curvatureobject(
+					totalinterpolatedCurvature.get(indexx)[2], perimeter, Label, new double[] {
+							totalinterpolatedCurvature.get(indexx)[0], totalinterpolatedCurvature.get(indexx)[1] },
+					t, z);
 
 			curveobject.add(currentobject);
 
-			
 		}
 
 		// Only correct nodes are returned
-		
+
 		return new ValuePair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>(totalfunctions, curveobject);
 
 	}
@@ -187,31 +191,35 @@ public class CurvatureFunction {
 
 	}
 
-	
 	public static Boolean CorrectSegment(RegressionFunction Result) {
-		
-		double inliersize = Result.inliers.size();
-		double totalsize = Result.candidates.size();
-		if(totalsize > 0 && inliersize > 0  ) {
-		double ratio = inliersize / totalsize;
-		double threshold = 0.5;
-		Boolean needCorrection = false;
-		
-		if( ratio <= threshold) {
-			// We need to correct
-			
-			needCorrection = true;
-			System.out.println("Activating correction loop" + " " + "test ratio is at  " + (float)ratio + " " + "Degree of fit polynomial " + Result.mixedfunction.getA().degree() + " " + " And " + Result.mixedfunction.getB().degree() );
+
+		if (Result.ellipse != null)
+			return false;
+		else {
+			double inliersize = Result.inliers.size();
+			double totalsize = Result.candidates.size();
+			if (totalsize > 0 && inliersize > 0) {
+				double ratio = inliersize / totalsize;
+				double threshold = 0.5;
+				Boolean needCorrection = false;
+
+				if (ratio <= threshold) {
+					// We need to correct
+
+					needCorrection = true;
+					System.out.println("Activating correction loop" + " " + "test ratio is at  " + (float) (ratio) + " "
+							+ "Degree of fit polynomial " + Result.mixedfunction.getA().degree() + " " + " And "
+							+ Result.mixedfunction.getB().degree());
+				}
+
+				else
+					System.out.println("No correction needed" + " " + "ration is  at " + (float) (ratio));
+
+				return needCorrection;
+			} else
+				return false;
 		}
-		
-	      return needCorrection;
-		}
-		else return false;
-		
 	}
-	
-	
-	
 
 	public static Pair<Boolean, Double> FitonLeftsubTree(InteractiveSimpleEllipseFit parent, Node<RealLocalizable> leaf,
 			ArrayList<double[]> interpolatedCurvature, ArrayList<RegressionFunction> functions, double smoothing,
@@ -221,7 +229,6 @@ public class CurvatureFunction {
 
 		// Fit function on left tree
 
-		
 		ArrayList<double[]> LeftCordlist = new ArrayList<double[]>();
 		for (int i = 0; i < Leftsubtruths.size(); ++i) {
 
@@ -233,41 +240,36 @@ public class CurvatureFunction {
 				degree, secdegree);
 
 		// Detect correctness
-		
+
 		// Draw the function
 		double perimeter = 0;
-		if(Leftresultcurvature!=null) {
+		if (Leftresultcurvature != null) {
+			functions.add(Leftresultcurvature);
 
-		functions.add(Leftresultcurvature);
+			interpolatedCurvature.addAll(Leftresultcurvature.Curvaturepoints);
 
-		interpolatedCurvature.addAll(Leftresultcurvature.Curvaturepoints);
+			perimeter = Leftresultcurvature.Curvaturepoints.get(0)[3];
 
-		perimeter = Leftresultcurvature.Curvaturepoints.get(0)[3];
-		
-		
-		boolean leftcorrected = CorrectSegment(Leftresultcurvature);
-		
-       Pair<Boolean, Double> leftpair = new ValuePair<Boolean, Double>(leftcorrected, perimeter);
-		return leftpair;
-		
-		}
-		else return null;
-	
-		
-		
-		
+			boolean leftcorrected = CorrectSegment(Leftresultcurvature);
+
+			Pair<Boolean, Double> leftpair = new ValuePair<Boolean, Double>(leftcorrected, perimeter);
+
+			return leftpair;
+
+		} else
+			return null;
+
 	}
-	
-	public static Pair<Boolean, Double> FitonRightsubTree(InteractiveSimpleEllipseFit parent, Node<RealLocalizable> leaf,
-			ArrayList<double[]> interpolatedCurvature, ArrayList<RegressionFunction> functions, double smoothing,
-			double maxError, int minNumInliers, int degree, int secdegree) {
 
-		
+	public static Pair<Boolean, Double> FitonRightsubTree(InteractiveSimpleEllipseFit parent,
+			Node<RealLocalizable> leaf, ArrayList<double[]> interpolatedCurvature,
+			ArrayList<RegressionFunction> functions, double smoothing, double maxError, int minNumInliers, int degree,
+			int secdegree) {
+
 		List<RealLocalizable> Rightsubtruths = leaf.rightTree;
 
 		// Fit function on left tree
 
-	
 		ArrayList<double[]> RightCordlist = new ArrayList<double[]>();
 		for (int i = 0; i < Rightsubtruths.size(); ++i) {
 
@@ -279,28 +281,27 @@ public class CurvatureFunction {
 				degree, secdegree);
 
 		// Detect correctness
-		
+
 		// Draw the function
 		double perimeter = 0;
-		if(Rightresultcurvature!=null) {
+		if (Rightresultcurvature != null) {
 
-		functions.add(Rightresultcurvature);
+			functions.add(Rightresultcurvature);
 
-		interpolatedCurvature.addAll(Rightresultcurvature.Curvaturepoints);
+			interpolatedCurvature.addAll(Rightresultcurvature.Curvaturepoints);
 
-		perimeter = Rightresultcurvature.Curvaturepoints.get(0)[3];
-		
-		boolean rightcorrected = CorrectSegment(Rightresultcurvature);
-        Pair<Boolean, Double> rightpair = new ValuePair<Boolean, Double>(rightcorrected, perimeter);
-		
-		return rightpair;
+			perimeter = Rightresultcurvature.Curvaturepoints.get(0)[3];
+
+			boolean rightcorrected = CorrectSegment(Rightresultcurvature);
+			Pair<Boolean, Double> rightpair = new ValuePair<Boolean, Double>(rightcorrected, perimeter);
+			return rightpair;
 		}
-		
-		
-		else return null;
-		
+
+		else
+			return null;
+
 	}
-	
+
 	public static void MakeTree(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int depthint,
 			String depth, int maxdepth) {
 
@@ -367,18 +368,24 @@ public class CurvatureFunction {
 		double[] y = new double[Cordlist.size()];
 
 		ArrayList<Point> pointlist = new ArrayList<Point>();
+		ArrayList<RealLocalizable> list = new ArrayList<RealLocalizable>();
 		for (int index = 0; index < Cordlist.size() - 1; ++index) {
 			x[index] = Cordlist.get(index)[0];
 			y[index] = Cordlist.get(index)[1];
 
+			RealPoint point = new RealPoint(new double[] { x[index], y[index] });
+			list.add(point);
 			pointlist.add(new Point(new double[] { x[index], y[index] }));
 
 		}
 
 		// Use Ransac to fit a quadratic function if it fails do it via regression
 
-		RegressionFunction finalfunction = RansacBlock(pointlist, smoothing, maxError, minNumInliers, degree, secdegree);
-	
+		RegressionFunction finalfunction = RansacEllipseBlock(list, 2);
+
+		// RansacBlock(pointlist, smoothing, maxError, minNumInliers, degree,
+		// secdegree);
+
 		return finalfunction;
 
 	}
@@ -420,7 +427,6 @@ public class CurvatureFunction {
 			double dx = Math.abs(points.get(index).getW()[0] - points.get(index + 1).getW()[0]);
 			double firstderiv = regression.predictderivative(points.get(index).getW()[0]);
 
-
 			perimeter += Math.sqrt(1 + firstderiv * firstderiv) * dx;
 
 		}
@@ -431,18 +437,45 @@ public class CurvatureFunction {
 
 			Kappa = secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0);
 
-
 			Curvaturepoints.add(new double[] { points.get(index).getW()[0], points.get(index).getW()[1],
-					Math.abs(Kappa) , perimeter });
+					Math.abs(Kappa), perimeter });
 
 		}
-		
-		
-
 
 		RegressionFunction finalfunction = new RegressionFunction(regression, Curvaturepoints);
 		return finalfunction;
 
+	}
+
+	/**
+	 * 
+	 * Fit an ellipse to a bunch of points
+	 * 
+	 * @param pointlist
+	 * @param ndims
+	 * @return
+	 */
+
+	public static RegressionFunction RansacEllipseBlock(final ArrayList<RealLocalizable> pointlist, int ndims) {
+
+		final RansacFunctionEllipsoid ellipsesegment = FitLocalEllipsoid.findLocalEllipsoid(pointlist, ndims);
+
+		double Kappa = 0;
+		ArrayList<double[]> Curvaturepoints = new ArrayList<double[]>();
+
+		double[] center = ellipsesegment.function.getCenter();
+		double radii = ellipsesegment.function.getRadii();
+		double[] newpos = new double[ndims];
+		for (RealLocalizable point : pointlist) {
+
+			point.localize(newpos);
+			Kappa = 1.0 / radii;
+			Curvaturepoints.add(new double[] { newpos[0], newpos[1], Math.abs(Kappa), 0 });
+		}
+
+		RegressionFunction finalfunctionransac = new RegressionFunction(ellipsesegment.function, Curvaturepoints);
+
+		return finalfunctionransac;
 	}
 
 	/**
@@ -459,16 +492,15 @@ public class CurvatureFunction {
 	public static RegressionFunction RansacBlock(final ArrayList<Point> pointlist, double smoothing, double maxError,
 			int minNumInliers, int degree, int secdegree) {
 
-
 		// Ransac block
-		MixedPolynomialFunction<HigherOrderPolynomialFunction, HigherOrderPolynomialFunction,MixedPolynomial<HigherOrderPolynomialFunction, HigherOrderPolynomialFunction> > mixedfunction = 
-				new MixedPolynomial<HigherOrderPolynomialFunction, HigherOrderPolynomialFunction>(new HigherOrderPolynomialFunction(degree),
-				new HigherOrderPolynomialFunction(secdegree), smoothing);
+		MixedPolynomialFunction<HigherOrderPolynomialFunction, HigherOrderPolynomialFunction, MixedPolynomial<HigherOrderPolynomialFunction, HigherOrderPolynomialFunction>> mixedfunction = new MixedPolynomial<HigherOrderPolynomialFunction, HigherOrderPolynomialFunction>(
+				new HigherOrderPolynomialFunction(degree), new HigherOrderPolynomialFunction(secdegree), smoothing);
 		ArrayList<double[]> Curvaturepoints = new ArrayList<double[]>();
 
-		final RansacFunction segment = Tracking.findQuadLinearFunction(pointlist, mixedfunction, maxError, minNumInliers);
+		final RansacFunction segment = Tracking.findQuadLinearFunction(pointlist, mixedfunction, maxError,
+				minNumInliers);
 
-		if(segment!=null) {
+		if (segment != null) {
 			double perimeter = 0.5;
 			double Kappa = 0;
 
@@ -477,44 +509,43 @@ public class CurvatureFunction {
 				PointFunctionMatch p = segment.inliers.get(index);
 				PointFunctionMatch pnext = segment.inliers.get(index + 1);
 				double dx = Math.abs(p.getP1().getW()[0] - pnext.getP1().getW()[0]);
-				
-				double firstderiv = segment.mixedfunction.getB().predictFirstderivative(p.getP1().getW()[0])* segment.mixedfunction.getLambda() 
-						 + segment.mixedfunction.getA().predictFirstderivative(p.getP1().getW()[0])*  ( 1 - segment.mixedfunction.getLambda() ) ;
-				
+
+				double firstderiv = segment.mixedfunction.getB().predictFirstderivative(p.getP1().getW()[0])
+						* segment.mixedfunction.getLambda()
+						+ segment.mixedfunction.getA().predictFirstderivative(p.getP1().getW()[0])
+								* (1 - segment.mixedfunction.getLambda());
+
 				perimeter += Math.sqrt(1 + firstderiv * firstderiv) * dx;
-				
+
 			}
-			
-			
-			
+
 			for (int index = 0; index < segment.inliers.size(); ++index) {
 				PointFunctionMatch p = segment.inliers.get(index);
-				double secderiv = segment.mixedfunction.getB().predictSecondderivative(p.getP1().getW()[0])* segment.mixedfunction.getLambda() 
-						  + segment.mixedfunction.getA().predictSecondderivative(p.getP1().getW()[0])* ( 1 - segment.mixedfunction.getLambda());
-				double firstderiv = segment.mixedfunction.getB().predictFirstderivative(p.getP1().getW()[0])* segment.mixedfunction.getLambda() 
-						 + segment.mixedfunction.getA().predictFirstderivative(p.getP1().getW()[0])*  ( 1 - segment.mixedfunction.getLambda() ) ;
-				Kappa = secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0) ;
-					Curvaturepoints.add(new double[] { p.getP1().getW()[0], p.getP1().getW()[1],
-							Math.abs(Kappa), perimeter });
+				double secderiv = segment.mixedfunction.getB().predictSecondderivative(p.getP1().getW()[0])
+						* segment.mixedfunction.getLambda()
+						+ segment.mixedfunction.getA().predictSecondderivative(p.getP1().getW()[0])
+								* (1 - segment.mixedfunction.getLambda());
+				double firstderiv = segment.mixedfunction.getB().predictFirstderivative(p.getP1().getW()[0])
+						* segment.mixedfunction.getLambda()
+						+ segment.mixedfunction.getA().predictFirstderivative(p.getP1().getW()[0])
+								* (1 - segment.mixedfunction.getLambda());
+				Kappa = secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0);
+				Curvaturepoints
+						.add(new double[] { p.getP1().getW()[0], p.getP1().getW()[1], Math.abs(Kappa), perimeter });
 			}
 
 			RegressionFunction finalfunctionransac = new RegressionFunction(segment.mixedfunction, Curvaturepoints,
 					segment.inliers, segment.candidates);
 
-
-				
-		
 			return finalfunctionransac;
 
 		}
-		
-		else 
-			
-			return null;
-			
-		
-	}
 
+		else
+
+			return null;
+
+	}
 
 	/**
 	 * 

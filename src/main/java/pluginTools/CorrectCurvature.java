@@ -18,21 +18,23 @@ public class CorrectCurvature {
 		
 		for(Node<RealLocalizable> currentleftnode : WrongNodes) {
 		//	System.out.println("Correcting for mistake by reducing window size" + currentleftnode.leftTree.size() + " " + currentleftnode.rightTree.size());
-		if(currentleftnode.leftTree!=null && currentleftnode.leftTree.size() > degree + 1) {	
+		if(currentleftnode.leftTree!=null && currentleftnode.leftTree.size() > 10) {	
 		List<RealLocalizable> Leftsubtruths = currentleftnode.leftTree;
 		
 		CurvatureFunction.getCurvature(parent,Leftsubtruths, maxError, minNumInliers,
 				ndims, Label, degree, secdegree, t, z);
 		}
+		else continue;
 		
 		
-		if(currentleftnode.rightTree!=null  && currentleftnode.rightTree.size() > degree + 1) {	
+		if(currentleftnode.rightTree!=null  && currentleftnode.rightTree.size() > 10) {	
 		List<RealLocalizable> Rightsubtruths = currentleftnode.rightTree;
 		
 		
 		CurvatureFunction.getCurvature(parent,Rightsubtruths, maxError, minNumInliers,
 				ndims, Label, degree, secdegree, t, z);
 		}
+		else continue;
 		
 		}
 		

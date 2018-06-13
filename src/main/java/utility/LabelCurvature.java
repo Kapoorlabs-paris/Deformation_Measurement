@@ -48,13 +48,14 @@ public class LabelCurvature implements Runnable {
 	final ArrayList<Line> resultlineroi;
 	final ArrayList<OvalRoi> resultcurvelineroi;
 	final ArrayList<OvalRoi> resultallcurvelineroi;
+	final ArrayList<EllipseRoi> ellipselineroi;
 	final JProgressBar jpb;
 	ArrayList<Intersectionobject> AllCurveintersection;
 
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
 			final RandomAccessibleInterval<FloatType> ActualRoiimg, List<RealLocalizable> truths,
 			ArrayList<Line> resultlineroi, ArrayList<OvalRoi> resultcurvelineroi,
-			ArrayList<OvalRoi> resultallcurvelineroi, ArrayList<Intersectionobject> AllCurveintersection, final int t,
+			ArrayList<OvalRoi> resultallcurvelineroi,ArrayList<EllipseRoi> ellipselineroi, ArrayList<Intersectionobject> AllCurveintersection, final int t,
 			final int z, final int celllabel) {
 
 		this.parent = parent;
@@ -68,13 +69,14 @@ public class LabelCurvature implements Runnable {
 		this.resultlineroi = resultlineroi;
 		this.resultcurvelineroi = resultcurvelineroi;
 		this.resultallcurvelineroi = resultallcurvelineroi;
+		this.ellipselineroi = ellipselineroi;
 		this.celllabel = celllabel;
 	}
 
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
 			final RandomAccessibleInterval<FloatType> ActualRoiimg, List<RealLocalizable> truths,
 			ArrayList<Line> resultlineroi, ArrayList<OvalRoi> resultcurvelineroi,
-			ArrayList<OvalRoi> resultallcurvelineroi, ArrayList<Intersectionobject> AllCurveintersection, final int t,
+			ArrayList<OvalRoi> resultallcurvelineroi,ArrayList<EllipseRoi> ellipselineroi, ArrayList<Intersectionobject> AllCurveintersection, final int t,
 			final int z, final JProgressBar jpb, final int percent, final int celllabel) {
 
 		this.parent = parent;
@@ -82,6 +84,7 @@ public class LabelCurvature implements Runnable {
 		this.resultlineroi = resultlineroi;
 		this.resultcurvelineroi = resultcurvelineroi;
 		this.resultallcurvelineroi = resultallcurvelineroi;
+		this.ellipselineroi = ellipselineroi;
 		this.truths = truths;
 		this.t = t;
 		this.z = z;
@@ -113,6 +116,7 @@ public class LabelCurvature implements Runnable {
 				resultlineroi.clear();
 				resultcurvelineroi.clear();
 				resultallcurvelineroi.clear();
+				ellipselineroi.clear();
 			}
 
 			if (i >= Ordered.size() - 1)
@@ -153,10 +157,12 @@ public class LabelCurvature implements Runnable {
 					parent.functions, centerpoint, parent.smoothing);
 
 			resultlineroi.addAll(currentobject.linerois);
+			if(currentobject.curvelinerois!= null)
 			resultcurvelineroi.addAll(currentobject.curvelinerois);
 			resultallcurvelineroi.addAll(currentobject.curvealllinerois);
+			ellipselineroi.addAll(currentobject.ellipselinerois);
 
-			Roiobject currentroiobject = new Roiobject(null, resultallcurvelineroi, resultlineroi, resultcurvelineroi,
+			Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi, resultcurvelineroi,
 					z, t, celllabel, true);
 			parent.ZTRois.put(uniqueID, currentroiobject);
 			DisplayAuto.Display(parent);

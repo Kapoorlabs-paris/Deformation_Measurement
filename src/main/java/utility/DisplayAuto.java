@@ -48,7 +48,6 @@ public class DisplayAuto {
 							EllipseRoi ellipse = currentobject.resultroi.get(i);
 							ellipse.setStrokeColor(parent.colorInChange);
 							parent.overlay.add(ellipse);
-
 						}
 					}
 
@@ -88,6 +87,8 @@ public class DisplayAuto {
 						}
 
 					}
+					
+					
 
 
 					break;
