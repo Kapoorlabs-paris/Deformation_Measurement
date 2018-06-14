@@ -2,6 +2,7 @@ package drawUtils;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import ij.ImagePlus;
 import ij.gui.Line;
@@ -16,6 +17,7 @@ import net.imglib2.algorithm.stats.Normalize;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.Type;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -35,6 +37,8 @@ public class DisplayCurvatureResults {
 		RandomAccessibleInterval<FloatType> probImg = new ArrayImgFactory<FloatType>().create(originalimg,
 				new FloatType());
 
+		double minIntensity = Double.MAX_VALUE;
+		double maxIntensity = Double.MIN_VALUE;
 		for (int index = 0; index < currentresultCurv.size(); ++index) {
 
 			Pair<String, Pair<Integer, ArrayList<double[]>>> currentpair = currentresultCurv.get(index);
@@ -51,6 +55,10 @@ public class DisplayCurvatureResults {
 				Y[i] = currentpair.getB().getB().get(i)[1];
 				I[i] = currentpair.getB().getB().get(i)[2];
 
+				if(I[i] <= minIntensity)
+					minIntensity = I[i];
+				if(I[i] >= maxIntensity)
+				    maxIntensity = I[i];
 			}
 
 			RandomAccessibleInterval<FloatType> CurrentViewprobImg = utility.Slicer.getCurrentView(probImg, time,
@@ -70,48 +78,61 @@ public class DisplayCurvatureResults {
 						cursor.get().setReal(I[i]);
 
 					}
+					
+					
 
 				}
 
 			}
+			
+			
+			final Cursor<FloatType> seccursor = Views.iterable(probImg).localizingCursor();
+
+			while (seccursor.hasNext()) {
+
+				seccursor.fwd();
+
+				double Xcord = seccursor.getDoublePosition(0);
+				double lambda = (Xcord - probImg.min(0) ) / (probImg.max(0) - probImg.min(0));
+				if(seccursor.getDoublePosition(1) >= probImg.max(1) - probImg.min(1) - 5)
+					seccursor.get().setReal( minIntensity + lambda * (maxIntensity - minIntensity));
+				
+				
+				
+			}
+			
 
 		}
 
 		return probImg;
 
 	}
+	  public static void computeMinMax(
+		        final Iterable< FloatType > input, final FloatType min,  final FloatType max )
+		    {
+		        // create a cursor for the image (the order does not matter)
+		        final Iterator< FloatType > iterator = input.iterator();
+		 
+		        // initialize min and max with the first image value
+		        FloatType type = iterator.next();
+		 
+		        min.set( type );
+		        max.set( type );
+		 
+		        // loop over the rest of the data and determine min and max value
+		        while ( iterator.hasNext() )
+		        {
+		            // we need this type more than once
+		            type = iterator.next();
+		 
+		            if ( type.compareTo( min ) < 0 )
+		                min.set( type );
+		            
+		 
+		            if ( type.compareTo( max ) > 0 )
+		                max.set( type );
+		        }
+		    }
 
-	public static void makeColorBar(final int lutMaxIndex, final ImagePlus originalImagePlus) {
-
-		final int barHeight = 24, barPad = 5;
-		Overlay overlay = new Overlay();
-
-		final int barY = originalImagePlus.getHeight() - barHeight - barPad;
-
-		final TextRoi labelGood = new TextRoi(barPad, barY, "Low Curvature");
-		labelGood.setStrokeColor(Color.white);
-		overlay.add(labelGood);
-
-		final int barOffset = 2 * barPad + (int) labelGood.getBounds().getWidth();
-
-		final TextRoi labelBad = new TextRoi(barOffset + lutMaxIndex + barPad, barY, "High Curvature");
-		labelBad.setStrokeColor(Color.white);
-		overlay.add(labelBad);
-
-		for (int i = 0; i < lutMaxIndex; ++i) {
-
-			final int barX = barOffset + i;
-			final Roi line = new Line(barX, barY, barX, barY + barHeight);
-			final int r = lut.getRed(i);
-			final int g = lut.getGreen(i);
-			final int b = lut.getBlue(i);
-			line.setStrokeColor(new Color(r, g, b));
-			overlay.add(line);
-
-		}
-
-		originalImagePlus.setOverlay(overlay);
-
-	}
 
 }

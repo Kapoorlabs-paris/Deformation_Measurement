@@ -3,6 +3,7 @@ package curvatureUtils;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,9 +21,11 @@ import net.imagej.display.ColorTables;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.Type;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import net.imglib2.view.Views;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.ChartMaker;
@@ -76,10 +79,14 @@ public class CurvatureTableDisplay {
 		RandomAccessibleInterval<FloatType> result = DisplayCurvatureResults.Display(parent, parent.originalimgbefore, currentresultCurv );
 		
 		
+		
+		
+		
 		ImagePlus imp = ImageJFunctions.show(result);
 		imp.setTitle("Curvature Result");
 		IJ.run("Fire");
-
+		
+		
 
  
 		

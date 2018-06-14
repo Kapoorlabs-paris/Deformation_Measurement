@@ -2,6 +2,8 @@ package pluginTools;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Checkbox;
+import java.awt.CheckboxGroup;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -108,6 +110,8 @@ import listeners.OutsideCutoffListener;
 import listeners.RListener;
 import listeners.RedoListener;
 import listeners.RoiListener;
+import listeners.RunCirclemodeListener;
+import listeners.RunPolymodeListener;
 import listeners.SaveListener;
 import listeners.SaverDirectory;
 import listeners.SecDegreeListener;
@@ -191,6 +195,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float lowprobmin = 0f;
 	public float highprobmin = 0f;
 
+	public boolean polynomialfits = true;
+	public boolean circlefits = false;
 	public boolean redoing;
 	public boolean showWater = false;
 	public float lowprobmax = 1.0f;
@@ -1256,7 +1262,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 						for (int i = 0; i < currentobject.resultroi.size(); ++i) {
 
-							EllipseRoi ellipse = currentobject.resultroi.get(i);
+							Roi ellipse = currentobject.resultroi.get(i);
 							ellipse.setStrokeColor(colorInChange);
 							overlay.add(ellipse);
 
@@ -1364,7 +1370,15 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JButton Smoothbutton = new JButton("Do Gaussian Smoothing");
 	public JButton Clearmanual = new JButton("Clear Current View");
 	public JButton ManualCompute = new JButton("Manual Computation");
-
+	public String timestring = "Current T";
+	public String zstring = "Current Z";
+	public String zgenstring = "Current Z / T";
+	public String rstring = "Radius";
+	public String insidestring = "Cutoff distance";
+	public String outsidestring = "Cutoff distance";
+	public String smoothsliderstring = "Ratio of functions ";
+	public String mininlierstring = "Window Width (pixels)";
+	
 	public Label timeText = new Label("Current T = " + 1, Label.CENTER);
 	public Label zText = new Label("Current Z = " + 1, Label.CENTER);
 	public Label zgenText = new Label("Current Z / T = " + 1, Label.CENTER);
@@ -1375,7 +1389,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Label degreeText = new Label("Choose degree of polynomial");
 	public Label incrementText = new Label("Choose increment stride (pixels)");
 	public Label secdegreeText = new Label("Choose degree of second polynomial");
-	public Label minInlierText = new Label("Min Points in segment  = " + minNumInliers,
+	public Label minInlierText = new Label(mininlierstring +  " = " + minNumInliers,
 			Label.CENTER);
 	
 	
@@ -1388,15 +1402,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final Label lowprobText = new Label("Lower probability level = " + lowprob, Label.CENTER);
 	final Label highporbText = new Label("Higher probability level = " + highprob, Label.CENTER);
 
-	final String timestring = "Current T";
-	final String zstring = "Current Z";
-	final String zgenstring = "Current Z / T";
-	final String rstring = "Radius";
-	final String insidestring = "Cutoff distance";
-	final String outsidestring = "Cutoff distance";
-	final String smoothsliderstring = "Ratio of functions ";
-	final String mininlierstring = "Min Points in segment";
-	
+
 	
 	
 	final String lowprobstring = "Lower probability level";
@@ -1446,6 +1452,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final String maxSearchstringS = "Maximum search radius";
 	final String initialSearchstring = "Initial search radius";
 	
+	CheckboxGroup curvaturemode = new CheckboxGroup();
+	
+	final Checkbox polymode = new Checkbox("Polynomial Fits", curvaturemode, polynomialfits);
+	final Checkbox circlemode = new Checkbox("Circle Fits", curvaturemode, circlefits);
+	
    
 	Label maxSearchText = new Label(maxSearchstring + " = " + maxSearchInit, Label.CENTER);
 	Label maxSearchTextS = new Label(maxSearchstring + " = " + maxSearchInit, Label.CENTER);
@@ -1454,6 +1465,27 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	Label betaText = new Label(betastring + " = " + betaInit, Label.CENTER);
 	public Label smoothText = new Label("Ratio of functions = " + smoothing,
 			Label.CENTER);
+	
+	
+	public Border timeborder = new CompoundBorder(new TitledBorder("Select time"), new EmptyBorder(c.insets));
+	public Border zborder = new CompoundBorder(new TitledBorder("Select Z"), new EmptyBorder(c.insets));
+	public Border roitools = new CompoundBorder(new TitledBorder("Roi and ellipse finder tools"),
+			new EmptyBorder(c.insets));
+
+	public Border probborder = new CompoundBorder(new TitledBorder("Automation block"),
+			new EmptyBorder(c.insets));
+	public Border ellipsetools = new CompoundBorder(new TitledBorder("Ransac and Angle computer"),
+			new EmptyBorder(c.insets));
+	public Border circletools = new CompoundBorder(new TitledBorder("Curvature computer"),
+			new EmptyBorder(c.insets));
+	
+	public Border Kalmanborder = new CompoundBorder(new TitledBorder("Kalman Filter Search for angle tracking"),
+			new EmptyBorder(c.insets));
+	
+
+	public Border ManualInterventionborder = new CompoundBorder(new TitledBorder("Manual Intervention"),
+			new EmptyBorder(c.insets));
+	
 	
 	public void Card() {
 		
@@ -1506,7 +1538,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		cutoffField.setText(Double.toString(insideCutoff));
 		
 		minInlierField = new TextField(5);
-		minInlierField.setText(Double.toString(minNumInliers));
+		minInlierField.setText(Integer.toString(minNumInliers));
 		
 		inputtrackField = new TextField(5);
 
@@ -1589,25 +1621,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 
 		table = new JTable(rowvalues, colnames);
-		Border timeborder = new CompoundBorder(new TitledBorder("Select time"), new EmptyBorder(c.insets));
-		Border zborder = new CompoundBorder(new TitledBorder("Select Z"), new EmptyBorder(c.insets));
-		Border roitools = new CompoundBorder(new TitledBorder("Roi and ellipse finder tools"),
-				new EmptyBorder(c.insets));
-		Border origborder = new CompoundBorder(new TitledBorder("Enter filename for results files"),
-				new EmptyBorder(c.insets));
-		Border probborder = new CompoundBorder(new TitledBorder("Automation block"),
-				new EmptyBorder(c.insets));
-		Border ellipsetools = new CompoundBorder(new TitledBorder("Ransac and Angle computer"),
-				new EmptyBorder(c.insets));
-		Border circletools = new CompoundBorder(new TitledBorder("Curvature computer"),
-				new EmptyBorder(c.insets));
-		
-		Border Kalmanborder = new CompoundBorder(new TitledBorder("Kalman Filter Search for angle tracking"),
-				new EmptyBorder(c.insets));
-		
-
-		Border ManualInterventionborder = new CompoundBorder(new TitledBorder("Manual Intervention"),
-				new EmptyBorder(c.insets));
 		
 		c.anchor = GridBagConstraints.BOTH;
 		c.ipadx = 35;
@@ -1692,17 +1705,25 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			Probselect.add(highprobslider, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 */
-			Probselect.add(autoTstart, new GridBagConstraints(2, 6, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Probselect.add(autoTstart, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-			Probselect.add(startT, new GridBagConstraints(2, 8, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Probselect.add(startT, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			
 
-			Probselect.add(autoTend, new GridBagConstraints(2, 10, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Probselect.add(autoTend, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-			Probselect.add(endT, new GridBagConstraints(2, 12, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Probselect.add(endT, new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-			
+			if(curvesupermode) {
+				
+				Probselect.add(polymode, new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, GridBagConstraints.EAST,
+						GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+				Probselect.add(circlemode, new GridBagConstraints(2, 8, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+						GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+				
+				
+			}
 	
 			Probselect.setPreferredSize(new Dimension(SizeX, SizeY));
 			Probselect.setBorder(probborder);
@@ -1792,7 +1813,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider, minInlierField, minInlierText, scrollbarSize, minNumInliers, minNumInliersmax);
 			
-			Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+			Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(5, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			
@@ -2002,6 +2023,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				outsideCutoffmin, outsideCutoffmax, scrollbarSize, outsideslider));
 		minInlierslider.addAdjustmentListener(new MinInlierListener(this, minInlierText, mininlierstring, minNumInliersmin,
 				 scrollbarSize, minInlierslider));
+		
+		
+		circlemode.addItemListener(new RunCirclemodeListener(this));
+		polymode.addItemListener(new RunPolymodeListener(this));
 		
 		gaussfield.addTextListener(new GaussRadiusListener(this));
 		

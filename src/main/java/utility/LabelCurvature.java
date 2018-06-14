@@ -139,8 +139,9 @@ public class LabelCurvature implements Runnable {
 			if (treedepth <= 0)
 				treedepth = 0;
 
-			Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> resultpair = CurvatureFunction.getCurvature(
-					parent, allorderedtruths, parent.insideCutoff, parent.minNumInliers, ndims, celllabel,
+			CurvatureFunction computecurve = new CurvatureFunction(parent);
+			Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> resultpair = computecurve.getCurvature(
+					allorderedtruths, parent.insideCutoff, parent.minNumInliers, ndims, celllabel,
 					Math.abs(Math.max(parent.degree, parent.secdegree)),
 					Math.abs(Math.min(parent.degree, parent.secdegree)), t, z);
 
@@ -211,11 +212,11 @@ public class LabelCurvature implements Runnable {
 		double[] Y = new double[localCurvature.size()];
 		double[] Z = new double[localCurvature.size()];
 
-		Set<Double> CurvePeri = new HashSet<Double>();
+		ArrayList<Double> CurvePeri = new ArrayList<Double>();
 		CurvePeri.add(localCurvature.get(0).perimeter);
 		for (int index = 0; index < localCurvature.size(); ++index) {
 
-			Set<Double> CurveXY = new HashSet<Double>();
+			ArrayList<Double> CurveXY = new ArrayList<Double>();
 			X[index] = localCurvature.get(index).cord[0];
 			Y[index] = localCurvature.get(index).cord[1];
 			Z[index] = localCurvature.get(index).radiusCurvature;
@@ -244,53 +245,36 @@ public class LabelCurvature implements Runnable {
 				}
 
 			}
-
+			Collections.sort(CurveXY);
+			Collections.sort(CurvePeri);
+			double frequdeltaperi = localCurvature.get(0).perimeter ;
 			double frequdelta = Z[index];
-			int frequ = 0;
-			double threshold = 0.9;
-			Iterator<Double> setiter = CurveXY.iterator();
-
-			while (setiter.hasNext()) {
-
-				Double s = setiter.next();
-
+			
+				
+				
+				
+				Iterator<Double> setiter = CurveXY.iterator();
 				while (setiter.hasNext()) {
 
-					Double p = setiter.next();
+					Double s = setiter.next();
 
-					if (Math.abs(p / s) <= threshold || Math.abs(s / p) <= threshold) {
-
-						frequ++;
-						frequdelta = s;
-					}
+				frequdelta+=s;
 
 				}
 
-			}
-
-			double frequdeltaperi = localCurvature.get(0).perimeter;
-			int frequperi = 0;
-			double thresholdperi = 0.9;
-			Iterator<Double> perisetiter = CurvePeri.iterator();
-
-			while (perisetiter.hasNext()) {
-
-				Double s = perisetiter.next();
-
+				frequdelta/=CurveXY.size();
+				Iterator<Double> perisetiter = CurvePeri.iterator();
 				while (perisetiter.hasNext()) {
 
-					Double p = perisetiter.next();
+					Double s = perisetiter.next();
 
-					if (Math.abs(p / s) <= thresholdperi || Math.abs(s / p) <= thresholdperi) {
-
-						frequperi++;
-						frequdeltaperi = s;
-					}
+				
+					frequdeltaperi+=s;
 
 				}
-
-			}
-
+				
+				frequdeltaperi/=CurvePeri.size();
+			
 			Curvatureobject newobject = new Curvatureobject((float) frequdelta, frequdeltaperi,
 					localCurvature.get(index).Label, localCurvature.get(index).cord, localCurvature.get(index).t,
 					localCurvature.get(index).z);

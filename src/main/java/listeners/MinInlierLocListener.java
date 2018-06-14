@@ -15,66 +15,63 @@ import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.ShowView;
 
 public class MinInlierLocListener implements TextListener {
-	
-	
+
 	final InteractiveSimpleEllipseFit parent;
-	
+
 	boolean pressed;
+
 	public MinInlierLocListener(final InteractiveSimpleEllipseFit parent, final boolean pressed) {
-		
+
 		this.parent = parent;
 		this.pressed = pressed;
-		
+
 	}
-	
+
 	@Override
 	public void textValueChanged(TextEvent e) {
-		final TextComponent tc = (TextComponent)e.getSource();
-	   
-		 tc.addKeyListener(new KeyListener(){
-			 @Override
-			    public void keyTyped(KeyEvent arg0) {
-				   
-			    }
+		final TextComponent tc = (TextComponent) e.getSource();
+		String s = tc.getText();
+		if (s.length() > 0) {
+			parent.minNumInliers = Integer.parseInt(s);
 
-			    @Override
-			    public void keyReleased(KeyEvent arg0) {
-			    	
-			    	if (arg0.getKeyChar() == KeyEvent.VK_ENTER ) {
-						
-						
-						pressed = false;
-						
-					}
+			parent.minInlierText.setText(parent.mininlierstring + " = " + parent.minNumInliers);
+			parent.minNumInliersmax = Math.max(parent.minNumInliers, parent.minNumInliersmax);
+			parent.minInlierslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.minNumInliers,
+					parent.minNumInliersmin, parent.minNumInliersmax, parent.scrollbarSize));
+			parent.minInlierslider.repaint();
+			parent.minInlierslider.validate();
 
-			    }
+		}
+		tc.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {
 
-			    @Override
-			    public void keyPressed(KeyEvent arg0) {
-			    	String s = tc.getText();
-			    	if (arg0.getKeyChar() == KeyEvent.VK_ENTER&& !pressed) {
-						pressed = true;
-			    		
-							parent.minNumInliers = Integer.parseInt(s);
-			  
-					parent.minInlierText.setText("Min Points in segment = " + parent.minNumInliers);
-					parent.minNumInliersmax = Math.max(parent.minNumInliers, parent.minNumInliersmax);
-					parent.minInlierslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.minNumInliers, parent.minNumInliersmin, parent.minNumInliersmax, parent.scrollbarSize));
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+
+				if (arg0.getKeyChar() == KeyEvent.VK_ENTER) {
+
+					pressed = false;
+
+				}
+
+			}
+
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+
+				if (arg0.getKeyChar() == KeyEvent.VK_ENTER && !pressed) {
+					pressed = true;
+
 					parent.StartCurvatureComputingCurrent();
-					parent.minInlierslider.repaint();
-					parent.minInlierslider.validate();
-					
-					
-					
-			    		
-					 }
 
-			    }
-			});
-	
+				}
 
-	
+			}
+		});
 
-}
+	}
 
 }
