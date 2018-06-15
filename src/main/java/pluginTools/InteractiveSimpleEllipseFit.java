@@ -59,7 +59,6 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 import comboSliderTextbox.SliderBoxGUI;
 import costMatrix.CostFunction;
 import curvatureUtils.DisplaySelected;
-import curvatureUtils.InterpolateCurvature;
 import curvatureUtils.Node;
 import edu.mines.jtk.mosaic.PointsView.Mark;
 import ellipsoidDetector.Distance;
@@ -128,7 +127,6 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.gauss3.Gauss3;
 import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
-import net.imglib2.algorithm.stats.Normalize;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
@@ -529,9 +527,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.curveautomode = false;
 		this.curvesupermode = false;
 
-		FloatType minval = new FloatType(0);
-		FloatType maxval = new FloatType(1);
-		Normalize.normalize(Views.iterable(originalimg), minval, maxval);
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
@@ -552,10 +547,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.curveautomode = false;
 		this.curvesupermode = false;
 
-		FloatType minval = new FloatType(0);
-		FloatType maxval = new FloatType(1);
-		Normalize.normalize(Views.iterable(originalimg), minval, maxval);
-		Normalize.normalize(Views.iterable(originalimgbefore), minval, maxval);
+		
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
@@ -578,10 +570,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.curveautomode = false;
 		this.curvesupermode = false;
 
-		FloatType minval = new FloatType(0);
-		FloatType maxval = new FloatType(1);
-		Normalize.normalize(Views.iterable(originalimg), minval, maxval);
-		Normalize.normalize(Views.iterable(originalimgbefore), minval, maxval);
+	
 	}
 	
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
@@ -606,10 +595,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.curveautomode = curveautomode;
 		this.curvesupermode = curvesupermode;
 
-		FloatType minval = new FloatType(0);
-		FloatType maxval = new FloatType(1);
-		Normalize.normalize(Views.iterable(originalimg), minval, maxval);
-		Normalize.normalize(Views.iterable(originalimgbefore), minval, maxval);
 	}
 	
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
@@ -635,10 +620,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.curveautomode = curveautomode;
 		this.curvesupermode = curvesupermode;
 		
-		FloatType minval = new FloatType(0);
-		FloatType maxval = new FloatType(1);
-		Normalize.normalize(Views.iterable(originalimg), minval, maxval);
-		Normalize.normalize(Views.iterable(originalimgbefore), minval, maxval);
 		
 	}
 

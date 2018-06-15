@@ -76,7 +76,10 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		EllipseTrack newtrack = new EllipseTrack(parent, jpb);
 		newtrack.ComputeCurvature();
-
+		parent.inputField.setEnabled(false);
+		parent.inputtrackField.setEnabled(false);
+		parent.Savebutton.setEnabled(false);
+		parent.ChooseDirectory.setEnabled(false);
 		return null;
 
 	}

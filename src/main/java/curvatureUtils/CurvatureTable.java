@@ -44,7 +44,7 @@ public class CurvatureTable {
 			}
 
 		}
-		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Location Z", "Perimeter"};
+		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Location Z/T", "Perimeter"};
 
 		Object[][] rowvalues = new Object[0][colnames.length];
 
@@ -97,7 +97,7 @@ public class CurvatureTable {
 
 			parent.tablesize = parent.row;
 		}
-
+	
 		makeGUI(parent);
 
 	}

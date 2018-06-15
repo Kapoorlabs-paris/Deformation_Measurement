@@ -17,11 +17,15 @@ import ellipsoidDetector.Distance;
 import hashMapSorter.SortNodes;
 import ij.ImagePlus;
 import mpicbg.models.Point;
+import net.imglib2.Localizable;
+import net.imglib2.RandomAccess;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.algorithm.ransac.RansacModels.FitLocalEllipsoid;
 import net.imglib2.algorithm.ransac.RansacModels.RansacFunctionEllipsoid;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.CorrectCurvature;
@@ -158,7 +162,7 @@ public class CurvatureFunction {
 		for (int indexx = 0; indexx < totalinterpolatedCurvature.size(); ++indexx) {
 
 			Curvatureobject currentobject = new Curvatureobject(
-					totalinterpolatedCurvature.get(indexx)[2], perimeter, Label, new double[] {
+					totalinterpolatedCurvature.get(indexx)[2], perimeter, totalinterpolatedCurvature.get(indexx)[4], totalinterpolatedCurvature.get(indexx)[5], Label, new double[] {
 							totalinterpolatedCurvature.get(indexx)[0], totalinterpolatedCurvature.get(indexx)[1] },
 					t, z);
 
@@ -455,8 +459,12 @@ public class CurvatureFunction {
 
 			Kappa = secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0);
 
+			long[] posf = new long[] { (long)points.get(index).getW()[0],  (long)points.get(index).getW()[1]};
+			net.imglib2.Point point = new net.imglib2.Point(posf);
+			double Intensity = getIntensity(point);
+			
 			Curvaturepoints.add(new double[] { points.get(index).getW()[0], points.get(index).getW()[1],
-					Math.abs(Kappa), perimeter });
+					Math.abs(Kappa), perimeter, Kappa, Intensity });
 
 		}
 
@@ -484,15 +492,24 @@ public class CurvatureFunction {
 
 		double[] center = ellipsesegment.function.getCenter();
 		double radii = ellipsesegment.function.getRadii();
+		double sign = ellipsesegment.function.getSign();
 		double[] newpos = new double[ndims];
+		long[] longnewpos = new long[ndims];
 		
 		perimeter = Distance.DistanceSqrt(pointlist.get(0), pointlist.get(pointlist.size() - 1));
 		
 		for (RealLocalizable point : pointlist) {
 
 			point.localize(newpos);
-			Kappa = 1.0 / radii;
-			Curvaturepoints.add(new double[] { newpos[0], newpos[1], Math.abs(Kappa), perimeter });
+			
+			
+			 
+			Kappa = sign / radii;
+			for (int d = 0; d < newpos.length; ++d)
+				longnewpos[d] = (long) newpos[d];
+			net.imglib2.Point intpoint = new net.imglib2.Point(longnewpos);
+			double Intensity = getIntensity(intpoint);
+			Curvaturepoints.add(new double[] { newpos[0], newpos[1], Math.abs(Kappa), perimeter, Kappa, Intensity });
 		}
 
 		RegressionFunction finalfunctionransac = new RegressionFunction(ellipsesegment.function, Curvaturepoints);
@@ -552,10 +569,20 @@ public class CurvatureFunction {
 						+ segment.mixedfunction.getA().predictFirstderivative(p.getP1().getW()[0])
 								* (1 - segment.mixedfunction.getLambda());
 				Kappa = secderiv / Math.pow((1 + firstderiv * firstderiv), 3.0 / 2.0);
+				
+				long[] posf = new long[] { (long)p.getP1().getW()[0],  (long)p.getP1().getW()[1]};
+				net.imglib2.Point point = new net.imglib2.Point(posf);
+				double Intensity = getIntensity(point);
 				Curvaturepoints
-						.add(new double[] { p.getP1().getW()[0], p.getP1().getW()[1], Math.abs(Kappa), perimeter });
+						.add(new double[] { p.getP1().getW()[0], p.getP1().getW()[1], Math.abs(Kappa), perimeter, Kappa, Intensity });
+				
+					
+						
 			}
 
+			
+			
+			
 			RegressionFunction finalfunctionransac = new RegressionFunction(segment.mixedfunction, Curvaturepoints,
 					segment.inliers, segment.candidates);
 
@@ -675,5 +702,20 @@ public class CurvatureFunction {
 
 		return perimeter;
 	}
+	
+	public double getIntensity(Localizable point) {
+		
+		
+		RandomAccess<FloatType> ranac = parent.CurrentViewOrig.randomAccess();
+		
+		ranac.setPosition(point);
+		
+		double Intensity = ranac.get().getRealDouble();
+		
+		
+		return Intensity;
+		
+	}
+	
 
 }

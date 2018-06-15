@@ -94,13 +94,13 @@ public class SaveListener implements ActionListener {
 					if(time == z) {
 					bw.write("\tTrackID" + "\t" + "\t" + ID);
 					bw.write("\tTimepoint" + "\t" + "\t" + z);
-					
-						bw.write("\tPerimeter" + "\t" + "\t" + currentresultPeri.get(index).getB()[1] + 
+					bw.write("\tPerimeter" + "\t" + "\t" + currentresultPeri.get(index).getB()[1] + 
 								
 								"\n");	
+					break;
 					}
 				}
-				bw.write("\tX-coordinates\tY-coordinates\tCurvature\n");
+				bw.write("\tX-coordinates\tY-coordinates\tCurvature\tSignedCurvature\t \t Intensity\n");
 				ArrayList<Pair<String, Pair< Integer,ArrayList<double[]>>>> currentresultCurv = new ArrayList<Pair<String, Pair< Integer,ArrayList<double[]>>>>();
 				for(Pair<String, Pair< Integer,ArrayList<double[]>>> currentCurvature : parent.resultCurvature) {
 					
@@ -123,18 +123,23 @@ public class SaveListener implements ActionListener {
 					double[] X = new double[currentpair.getB().getB().size()];
 					double[] Y = new double[currentpair.getB().getB().size()];
 					double[] I = new double[currentpair.getB().getB().size()];
+					
+					double[] signedI = new double[currentpair.getB().getB().size()];
+					
+					double[] Intensity = new double[currentpair.getB().getB().size()];
 
 					if(time == z ) {
 						
-						SortCoordinates.sortByXY(currentpair.getB().getB());
+					
 						for (int i = 0; i < currentpair.getB().getB().size(); ++i) {
 
 							X[i] = currentpair.getB().getB().get(i)[0];
 							Y[i] = currentpair.getB().getB().get(i)[1];
 							I[i] = currentpair.getB().getB().get(i)[2];
-
+							signedI[i] = currentpair.getB().getB().get(i)[3];
+							Intensity[i] = currentpair.getB().getB().get(i)[4];
 						
-						bw.write("\t"+ X[i] +  "\t" + "\t" + Y[i] + "\t" + "\t" + parent.nf.format(I[i]) +
+						bw.write("\t"+ X[i] +  "\t" + "\t" + Y[i] + "\t" + "\t" + parent.nf.format(I[i]) + "\t"  + "\t"+ parent.nf.format(signedI[i]) +  "\t" + "\t" + Intensity[i] + "\t" + "\t" + 
 								"\n");
 						
 					}
