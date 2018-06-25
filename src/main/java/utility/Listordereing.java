@@ -62,6 +62,70 @@ public class Listordereing {
 		
 	}
 	
+	public static List<RealLocalizable> getSparseOrderedList(
+			List<RealLocalizable> truths, double deltasep) {
+		List<RealLocalizable> copytruths = getCopyList(truths);
+		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
+		// Get the starting minX and minY co-ordinates
+		RealLocalizable minCord = getMinCord(copytruths);
+
+		
+		
+		RealLocalizable meanCord = getMeanCord(copytruths);
+             orderedtruths.add(minCord);
+             copytruths.remove(minCord);
+	do {
+		
+		
+		RealLocalizable nextCord = getNextNearest(minCord, copytruths);
+		if (Distance.DistanceSqrt(minCord, nextCord) > deltasep) {
+		minCord = nextCord;
+		orderedtruths.add(minCord);
+		}
+		copytruths.remove(nextCord);
+		
+	} while (copytruths.size() > 0);
+	copytruths = getCopyList(orderedtruths);
+	do {
+		
+		
+		RealLocalizable nextCord = getNextNearest(minCord, copytruths);
+		copytruths.remove(nextCord);
+		if(copytruths.size()!=0) {
+		RealLocalizable secondnextCord = getNextNearest(minCord, copytruths);
+		copytruths.add(nextCord);
+		
+		double nextangle = Distance.AngleVectors(minCord, nextCord, meanCord);
+		double secondnextangle = Distance.AngleVectors(minCord, secondnextCord, meanCord);
+		RealLocalizable chosenCord = null;
+		
+		if(nextangle >= 0 && secondnextangle >= 0 && nextangle <= secondnextangle)
+			chosenCord = nextCord;
+		if(nextangle >= 0 && secondnextangle >= 0 && nextangle > secondnextangle)
+			chosenCord = secondnextCord;
+		
+		if(nextangle < 0 && secondnextangle > 0)
+			chosenCord = nextCord;
+		if(nextangle > 0 && secondnextangle < 0)
+			chosenCord = secondnextCord;
+		
+		else if (nextangle < 0 || secondnextangle < 0)
+		
+		chosenCord = (nextangle >= secondnextangle) ? nextCord: secondnextCord; 
+		
+
+		minCord = chosenCord;
+		orderedtruths.add(minCord);
+		
+	
+		copytruths.remove(chosenCord);
+		}
+		else break;
+	} while (copytruths.size() > 1);
+
+	
+	return orderedtruths;
+	}
 	/**
 	 * Return an ordered list of XY coordinates starting from the min X position to
 	 * the end of the list

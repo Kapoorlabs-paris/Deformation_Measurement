@@ -20,7 +20,6 @@ public class Curvatureobject extends AbstractEuclideanSpace implements RealLocal
 	public static AtomicInteger IDcounter = new AtomicInteger( -1 );
 
 	/** Store the individual features, and their values. */
-	private final ConcurrentHashMap< String, Double > features = new ConcurrentHashMap< String, Double >();
 
 	/** A user-supplied name for this spot. */
 	private String name;
@@ -51,13 +50,8 @@ public class Curvatureobject extends AbstractEuclideanSpace implements RealLocal
 		this.ID = IDcounter.incrementAndGet();
 		this.name = "ID" + ID;
 		this.Label = Label;
-		putFeature( Time,Double.valueOf( t ) );
-		putFeature( Radius, Double.valueOf(radiusCurvature ) );
-		putFeature( Perimeter, Double.valueOf( perimeter ) );
-		putFeature( LocationX, cord[0]);
-		putFeature( LocationY, cord[1]);
-		putFeature( Integer.toString(Label), Double.valueOf(Label) );
-	}
+	};
+		
 	
 	
 	/*
@@ -98,10 +92,7 @@ public class Curvatureobject extends AbstractEuclideanSpace implements RealLocal
 	 *            the value to store, as a {@link Double}. Using
 	 *            <code>null</code> will have unpredicted outcomes.
 	 */
-	public final void putFeature( final String feature, final Double value )
-	{
-		features.put( feature, value );
-	}
+	
 	public static final String Radius = "Radius";
 
 	public static final String Perimeter = "Perimeter";
@@ -119,10 +110,7 @@ public class Curvatureobject extends AbstractEuclideanSpace implements RealLocal
 	/** The curvature features. */
 	public final static String[] Curvature_features = new String[] { Radius, Perimeter, LABEL, LocationX, LocationY };
 	
-	public final Double getFeature( final String feature )
-	{
-		return features.get( feature );
-	}
+	
 	/**
 	 * The 7 features for curvatrue object include, LocationX and LocationY,
 	 * Radius at that location, Perimeter for the cell label and the Z and T location

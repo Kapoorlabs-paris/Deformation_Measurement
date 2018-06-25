@@ -115,7 +115,7 @@ public class LabelCurvature implements Runnable {
 				resultlineroi.clear();
 				resultcurvelineroi.clear();
 				resultallcurvelineroi.clear();
-				ellipselineroi.clear();
+			//	ellipselineroi.clear();
 			}
 
 			if (i >= Ordered.size() - 1)
@@ -160,11 +160,14 @@ public class LabelCurvature implements Runnable {
 			if(currentobject.curvelinerois!= null)
 			resultcurvelineroi.addAll(currentobject.curvelinerois);
 			resultallcurvelineroi.addAll(currentobject.curvealllinerois);
+			if(parent.displayIntermediate)
 			ellipselineroi.addAll(currentobject.ellipselinerois);
 
 			Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi, resultcurvelineroi,
 					z, t, celllabel, true);
 			parent.ZTRois.put(uniqueID, currentroiobject);
+			
+			
 			DisplayAuto.Display(parent);
 
 		}
