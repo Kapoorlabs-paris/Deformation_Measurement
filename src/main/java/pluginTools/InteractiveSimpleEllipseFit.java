@@ -113,6 +113,7 @@ import listeners.RedoListener;
 import listeners.RoiListener;
 import listeners.RunCirclemodeListener;
 import listeners.RunPolymodeListener;
+import listeners.SaveAllListener;
 import listeners.SaveListener;
 import listeners.SaverDirectory;
 import listeners.SecDegreeListener;
@@ -732,7 +733,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	//		ImageJFunctions.show(originalimgsuper).setTitle("Super Pixel Segmentation");
 	
 		imp = ImageJFunctions.show(CurrentViewOrig);
-		
+	
 		imp.setTitle("Active Image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 		// Create empty Hyperstack
 
@@ -765,7 +766,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		panelFirst.validate();
 
 		Card();
-		
+		saveFile = new java.io.File(".");
 		
 	}
 
@@ -1349,6 +1350,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JButton Anglebutton = new JButton("Fit Ellipses and track angles");
 	public JButton Curvaturebutton = new JButton("Measure Local Curvature");
 	public JButton Savebutton = new JButton("Save Track");
+	public JButton SaveAllbutton = new JButton("Save All Tracks");
 	public JButton Redobutton = new JButton("Recompute for current view");
 	public JButton Smoothbutton = new JButton("Do Gaussian Smoothing");
 	public JButton Clearmanual = new JButton("Clear Current View");
@@ -1977,6 +1979,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		Original.add(Savebutton, new GridBagConstraints(0, 8, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		
+		Original.add(SaveAllbutton, new GridBagConstraints(0, 9, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		
 		Original.setBorder(origborder);
 
 		
@@ -1984,6 +1990,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		inputtrackField.setEnabled(false);
 		ChooseDirectory.setEnabled(false);
 		Savebutton.setEnabled(false);
+		SaveAllbutton.setEnabled(false);
 		panelSecond.add(Original, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
@@ -2039,6 +2046,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		ChooseDirectory.addActionListener(new SaverDirectory(this));
 		inputField.addTextListener(new ETrackFilenameListener(this));
 		Savebutton.addActionListener(new SaveListener(this));
+		SaveAllbutton.addActionListener(new SaveAllListener(this));
+		
 		ChooseMethod.addActionListener(new DrawListener(this, ChooseMethod));
 		ChooseColor.addActionListener(new ColorListener(this, ChooseColor));
 		panelFirst.setMinimumSize(new Dimension(SizeX, SizeY));

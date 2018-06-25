@@ -79,6 +79,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		parent.inputField.setEnabled(false);
 		parent.inputtrackField.setEnabled(false);
 		parent.Savebutton.setEnabled(false);
+		parent.SaveAllbutton.setEnabled(false);
 		parent.ChooseDirectory.setEnabled(false);
 		return null;
 

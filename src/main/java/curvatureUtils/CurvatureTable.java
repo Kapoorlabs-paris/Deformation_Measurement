@@ -24,7 +24,6 @@ public class CurvatureTable {
 	
 	public static void CreateTableTrackView(final InteractiveSimpleEllipseFit parent) {
 		
-		System.out.println("Creating table");
 		parent.resultAngle = new ArrayList<Pair<String, double[]>>();
 		parent.resultCurvature = new ArrayList<Pair<String, Pair< Integer,ArrayList<double[]>>>>();
 		for (Pair<String, Intersectionobject> currentangle : parent.Tracklist) {
@@ -136,7 +135,8 @@ public class CurvatureTable {
 				GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		parent.Original.add(parent.Savebutton, new GridBagConstraints(0, 8, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-
+		parent.Original.add(parent.SaveAllbutton, new GridBagConstraints(0, 9, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		parent.Original.setBorder(parent.origborder);
 
 		parent.panelSecond.add(parent.Original, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
@@ -144,6 +144,7 @@ public class CurvatureTable {
 		parent.inputField.setEnabled(true);
 		parent.inputtrackField.setEnabled(true);
 		parent.Savebutton.setEnabled(true);
+		parent.SaveAllbutton.setEnabled(true);
 		parent.ChooseDirectory.setEnabled(true);
 		parent.Original.repaint();
 		parent.Original.validate();

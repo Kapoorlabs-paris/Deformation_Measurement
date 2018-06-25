@@ -89,6 +89,7 @@ public class EllipseTrack {
 		GetPixelList(CurrentViewInt);
 		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent);
 		compute.ParallelRansacCurve();
+		
 	}
 	
 	public void TestAuto(int z, int t) {

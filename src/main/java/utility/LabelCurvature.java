@@ -190,7 +190,7 @@ public class LabelCurvature implements Runnable {
 					"Computing Curvature T/Z = " + z + "/" + parent.thirdDimensionSize);
 		else {
 
-			utility.ProgressBar.SetProgressBar(jpb, 100, "Computing Curvature ");
+			utility.ProgressBar.SetProgressBar(jpb, 100* (percent) / (parent.pixellist.size()), "Computing Curvature ");
 		}
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
 		HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>> Bestdelta = new HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>();
