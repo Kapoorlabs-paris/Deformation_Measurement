@@ -81,6 +81,7 @@ import kalmanTracker.NearestRoi;
 import listeners.AngleListener;
 import listeners.AutoEndListener;
 import listeners.AutoStartListener;
+import listeners.ClearDisplayListener;
 import listeners.ClearforManual;
 import listeners.ColorListener;
 import listeners.CurvatureListener;
@@ -1440,7 +1441,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final Checkbox circlemode = new Checkbox("Circle Fits", curvaturemode, circlefits);
 	public boolean displayIntermediate = true;
 	public Checkbox displayCircle = new Checkbox("Display Intermediate Circles", displayIntermediate);
-	
+	public JButton ClearDisplay = new JButton("Clear Display");
    
 	Label maxSearchText = new Label(maxSearchstring + " = " + maxSearchInit, Label.CENTER);
 	Label maxSearchTextS = new Label(maxSearchstring + " = " + maxSearchInit, Label.CENTER);
@@ -2013,7 +2014,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		polymode.addItemListener(new RunPolymodeListener(this));
 		
 		gaussfield.addTextListener(new GaussRadiusListener(this));
-		
+		ClearDisplay.addActionListener(new ClearDisplayListener(this));
 		degreeField.addTextListener(new DegreeListener(this, false));
 		incrementField.addTextListener(new IncrementListener(this, false));
 		secdegreeField.addTextListener(new SecDegreeListener(this, false));
