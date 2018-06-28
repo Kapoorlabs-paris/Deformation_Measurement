@@ -104,18 +104,18 @@ public class LabelCurvature implements Runnable {
 		if (parent.minNumInliers > truths.size())
 			parent.minNumInliers = truths.size();
 
-		if (parent.increment <= 0)
+		if (parent.increment < 0)
 			parent.increment = 1;
-		if(parent.increment >= Ordered.size())
+		if(parent.increment >= Ordered.size() || parent.increment == 0)
 			parent.increment = Ordered.size() - 1;
 		int increment = parent.increment;
 		for (int i = 0; i < Ordered.size(); i += increment) {
 
-			if (i % (increment) == 0) {
+			if (i % (increment) == 5) {
 				resultlineroi.clear();
 				resultcurvelineroi.clear();
 				resultallcurvelineroi.clear();
-			//	ellipselineroi.clear();
+				ellipselineroi.clear();
 			}
 
 			if (i >= Ordered.size() - 1)
@@ -190,7 +190,7 @@ public class LabelCurvature implements Runnable {
 					"Computing Curvature T/Z = " + z + "/" + parent.thirdDimensionSize);
 		else {
 
-			utility.ProgressBar.SetProgressBar(jpb, 100* (percent) / (parent.pixellist.size()), "Computing Curvature ");
+			utility.ProgressBar.SetProgressBar(jpb, 100* (percent ) / (parent.pixellist.size()), "Computing Curvature ");
 		}
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
 		HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>> Bestdelta = new HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>();

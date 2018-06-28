@@ -66,11 +66,9 @@ public class ComputeAngles extends SwingWorker<Void, Void> {
 	
 		HashMap<String, Integer> map = sortByValues(parent.Accountedframes);
 		parent.Accountedframes = map;
-		System.out.println("SortedT");
 		HashMap<String, Integer> mapZ = sortByValues(parent.AccountedZ);
 		parent.AccountedZ = mapZ;
 
-		System.out.println("SortedZ");
 		EllipseTrack newtrack = new EllipseTrack(parent, jpb);
 		newtrack.IntersectandTrack();
 		System.out.println("Invoked Intersection");

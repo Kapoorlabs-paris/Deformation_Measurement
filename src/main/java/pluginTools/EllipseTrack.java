@@ -666,7 +666,7 @@ public class EllipseTrack {
 		int currentLabel = min.get();
 		int currentLabelback = currentLabel;
 		parent.pixellist.clear();
-		
+		parent.pixellist.add(currentLabel);
 		
 		while (intCursor.hasNext()) {
 			intCursor.fwd();
