@@ -216,10 +216,14 @@ public class EllipseTrack {
 		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.emptyWater, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
+		
+
+		System.out.println("Getting Pixel List");
 		GetPixelList(CurrentViewInt);
 		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent);
 		compute.ParallelRansac();
 
+		System.out.println("Invoke Parallel Ransac");
 	}
 
 	public void ManualIntervention() {
@@ -337,8 +341,12 @@ public class EllipseTrack {
 				for (Map.Entry<String, Integer> entryZ : parent.AccountedZ.entrySet()) {
 
 					int z = entryZ.getValue();
+					
+					System.out.println("In Block Repeat Manual");
+					
 					BlockRepeatManual(percent, z, t);
 
+					System.out.println("Invoke Block Repeat Manual");
 				}
 
 			}
@@ -656,12 +664,14 @@ public class EllipseTrack {
 		Cursor<IntType> intCursor = Views.iterable(intimg).cursor();
 		// Neglect the background class label
 		int currentLabel = min.get();
+		int currentLabelback = currentLabel;
 		parent.pixellist.clear();
-		parent.pixellist.add(currentLabel);
+		
+		
 		while (intCursor.hasNext()) {
 			intCursor.fwd();
 			int i = intCursor.get().get();
-			if (i != currentLabel) {
+			if (i != currentLabel && i!=currentLabelback) {
 
 				parent.pixellist.add(i);
 

@@ -92,6 +92,8 @@ public class LabelRansac implements Runnable {
 
 	@Override
 	public void run() {
+		
+		System.out.println("Running...");
 		if(!parent.automode && !parent.supermode) {
 		if (parent.fourthDimensionSize != 0)
 			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.Accountedframes.entrySet().size()),
@@ -106,8 +108,11 @@ public class LabelRansac implements Runnable {
 			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.thirdDimensionSize),
 					"Fitting ellipses and computing angles T/Z = " + z + "/" + parent.thirdDimensionSize);
 		}
+		
+		
 		truths = ConnectedComponentCoordinates.GetCoordinates(ActualRoiimg , new FloatType(0));
-
+		
+		
 		if(parent.fourthDimensionSize > 1)
 		parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension, parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
 		parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension, parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
@@ -116,7 +121,6 @@ public class LabelRansac implements Runnable {
 		// Using the ellipse model to do the fitting
 		ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>> Reducedsamples = RansacEllipsoid.Allsamples(
 				truths, parent.outsideCutoff, parent.insideCutoff, parent.minpercent, parent.minperimeter, parent.maxperimeter, numsol, parent.maxtry, ndims);
-
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
 		if (Reducedsamples != null) {
 			SortSegments.Sort(Reducedsamples);

@@ -106,32 +106,42 @@ public class Computeinwater {
 
 			Watershedobject current;
 
-			if (parent.supermode || parent.automode)
+			if (parent.supermode || parent.automode) {
 				current = utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
-			else
+			System.out.println("Should open in only super or auto mode");	
+			}
+			else {
 				current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, label);
 		
+				System.out.println("Should open in manual mode");
+			}
 		
 			// Neglect the small watershed regions by choosing only those regions which have
 			// more than 9 candidate points for ellipse fitting
 			List<Pair<RealLocalizable, FloatType>> truths = new ArrayList<Pair<RealLocalizable, FloatType>>();
-			if (current.Size > parent.minperimeter / 3 * parent.minperimeter / 3
-					&& current.Size < parent.maxperimeter / 3 * parent.maxperimeter / 3
-					&& current.meanIntensity > parent.minellipsepoints) {
+			
 
+		
+
+			
+			System.out.println(current.source + " " + truths.size() + " " + t + " " + z + " " + resultroi + " " + resultovalroi + " " + resultlineroi + " " + AllPointsofIntersect.size()
+			+ " " + Allintersection.size() + " " + fitmapspecial.size() + " " + parent.jpb  + " " + percent + " " + parent.jpb);
 				tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi,
 						resultovalroi, resultlineroi, AllPointsofIntersect, Allintersection, fitmapspecial, parent.jpb,
 						percent, parent.supermode)));
-
-			}
+			
 
 		}
 
 		try {
+			
+			System.out.println("Executing tasks");
 			taskExecutor.invokeAll(tasks);
 
+			
 			// Get superintersection
 
+			
 			SuperIntersection newintersect = new SuperIntersection(parent);
 			AllPointsofIntersect = new ArrayList<Tangentobject>();
 			Allintersection = new ArrayList<Intersectionobject>();
@@ -140,6 +150,8 @@ public class Computeinwater {
 
 		} catch (InterruptedException e1) {
 
+			System.out.println(e1 + " Task not executed");
+			
 		}
 
 	}

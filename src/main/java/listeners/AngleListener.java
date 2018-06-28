@@ -90,7 +90,7 @@ public class AngleListener implements ActionListener {
 		parent.parentgraphZ =  new 
 				HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
 		parent.StartComputing();
-		
+		System.out.println("Starting computing manual mode");
 		
 		}
 		

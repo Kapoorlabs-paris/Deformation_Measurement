@@ -173,7 +173,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int rowchoice;
 	public int radiusdetection = 5;
 	public int maxtry = 30;
-	public float minpercent = 0.15f;
+	public float minpercent = 0f;
 	public float minpercentINI = 0.65f;
 	public float minpercentINIArc = 0.25f;
 	public final double minSeperation = 5;
@@ -1835,11 +1835,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		Angleselect.add(inputFieldIter, new GridBagConstraints(4, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.RELATIVE, insets, 0, 0));
 
-		Angleselect.add(inputLabelminpercent, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,
-				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		//Angleselect.add(inputLabelminpercent, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,
+		//		GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-		Angleselect.add(inputFieldminpercent, new GridBagConstraints(4, 5, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-				GridBagConstraints.RELATIVE, insets, 0, 0));
+		//Angleselect.add(inputFieldminpercent, new GridBagConstraints(4, 5, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+		//		GridBagConstraints.RELATIVE, insets, 0, 0));
 		
 		Angleselect.add(insideText, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
