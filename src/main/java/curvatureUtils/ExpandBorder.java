@@ -16,6 +16,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.util.Intervals;
 import net.imglib2.view.Views;
 import pluginTools.InteractiveSimpleEllipseFit;
@@ -29,12 +30,13 @@ public class ExpandBorder {
 	 * @param parent
 	 * @param source
 	 */
-	public static  < T extends RealType< T > & NativeType< T >> RandomAccessibleInterval<T> extendBorder(final InteractiveSimpleEllipseFit parent, RandomAccessibleInterval<T> source) {
+	public static  < T extends RealType< T > & NativeType< T >> RandomAccessibleInterval<T> extendBorder(final InteractiveSimpleEllipseFit parent, RandomAccessibleInterval<T> source, int min) {
 		
 		T type = Views.iterable(source).cursor().next().createVariable();
 		RandomAccessibleInterval<T> output =  new ArrayImgFactory<T>().create(source, type);
 		
 		copy(source, Views.iterable(output));
+	
 		
 		final Cursor< T > center =  Views.iterable( source ).cursor();
 		
@@ -50,9 +52,10 @@ public class ExpandBorder {
 	        
 		  for ( final Neighborhood< T > localNeighborhood : shape.neighborhoods( source ) ) 
 		  {
-			  System.out.println(localNeighborhood.getIntPosition(0) + " " + localNeighborhood.getIntPosition(1));
+			  
 			  final T centerValue = center.next();
 			  
+			  if((int)centerValue.getRealDouble() != min) {
 			  boolean isBorderPixel = false;
 			  
 			  
@@ -84,7 +87,7 @@ public class ExpandBorder {
 			  }
 			  
 			
-			  
+			  }
 			  
 		  }
 		return output;

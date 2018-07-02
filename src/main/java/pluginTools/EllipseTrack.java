@@ -8,6 +8,7 @@ import distanceTransform.WatershedBinary;
 
 import javax.swing.JProgressBar;
 
+import curvatureUtils.ExpandBorder;
 import net.imglib2.Cursor;
 import net.imglib2.KDTree;
 import net.imglib2.RandomAccess;
@@ -65,9 +66,17 @@ public class EllipseTrack {
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent, parent.originalimgsuper, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-ImageJFunctions.show(CurrentViewInt);
+       
+		IntType min = new IntType();
+		IntType max = new IntType();
+		computeMinMax(Views.iterable(CurrentViewInt), min, max);
+		// Neglect the background class label
+		int currentLabel = max.get();
+
+           RandomAccessibleInterval<IntType> expanededtotalimg = ExpandBorder.extendBorder(parent, CurrentViewInt, currentLabel);
+           ImageJFunctions.show(expanededtotalimg);
 		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
-		GetPixelList(CurrentViewInt);
+		GetPixelList(expanededtotalimg);
 		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent);
 		compute.ParallelRansac();
 	}
@@ -85,8 +94,16 @@ ImageJFunctions.show(CurrentViewInt);
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent, parent.originalimgsuper, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
+		IntType min = new IntType();
+		IntType max = new IntType();
+		computeMinMax(Views.iterable(CurrentViewInt), min, max);
+		// Neglect the background class label
+		int currentLabel = max.get();
+
+           RandomAccessibleInterval<IntType> expanededtotalimg = ExpandBorder.extendBorder(parent, CurrentViewInt, currentLabel);
+
 		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
-		GetPixelList(CurrentViewInt);
+		GetPixelList(expanededtotalimg);
 		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent);
 		compute.ParallelRansacCurve();
 		
@@ -135,7 +152,16 @@ ImageJFunctions.show(CurrentViewInt);
 
 		}
 
-		GetPixelList(CurrentInt);
+		IntType min = new IntType();
+		IntType max = new IntType();
+		computeMinMax(Views.iterable(CurrentInt), min, max);
+		// Neglect the background class label
+		int currentLabel = max.get();
+
+           RandomAccessibleInterval<IntType> expanededtotalimg = ExpandBorder.extendBorder(parent, CurrentInt, currentLabel);
+
+		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
+		GetPixelList(expanededtotalimg);
 		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentInt, t, z, (int) percent);
 		compute.ParallelRansac();
 
@@ -168,8 +194,16 @@ ImageJFunctions.show(CurrentViewInt);
 
 		}
 
-		
-		GetPixelList(CurrentInt);
+		IntType min = new IntType();
+		IntType max = new IntType();
+		computeMinMax(Views.iterable(CurrentInt), min, max);
+		// Neglect the background class label
+		int currentLabel = max.get();
+
+           RandomAccessibleInterval<IntType> expanededtotalimg = ExpandBorder.extendBorder(parent, CurrentInt, currentLabel);
+
+		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
+		GetPixelList(expanededtotalimg);
 		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentInt, t, z, (int) percent);
 		compute.ParallelRansacCurve();
 
@@ -217,9 +251,16 @@ ImageJFunctions.show(CurrentViewInt);
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
 		
+		IntType min = new IntType();
+		IntType max = new IntType();
+		computeMinMax(Views.iterable(CurrentViewInt), min, max);
+		// Neglect the background class label
+		int currentLabel = max.get();
 
-		System.out.println("Getting Pixel List");
-		GetPixelList(CurrentViewInt);
+           RandomAccessibleInterval<IntType> expanededtotalimg = ExpandBorder.extendBorder(parent, CurrentViewInt, currentLabel);
+
+		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
+		GetPixelList(expanededtotalimg);
 		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent);
 		compute.ParallelRansac();
 
@@ -663,15 +704,14 @@ ImageJFunctions.show(CurrentViewInt);
 		computeMinMax(Views.iterable(intimg), min, max);
 		Cursor<IntType> intCursor = Views.iterable(intimg).cursor();
 		// Neglect the background class label
-		int currentLabel = min.get();
-		int currentLabelback = currentLabel;
+		int currentLabel = max.get();
 		parent.pixellist.clear();
 		parent.pixellist.add(currentLabel);
 		
 		while (intCursor.hasNext()) {
 			intCursor.fwd();
 			int i = intCursor.get().get();
-			if (i != currentLabel && i!=currentLabelback) {
+			if (i != currentLabel) {
 
 				parent.pixellist.add(i);
 

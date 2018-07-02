@@ -121,9 +121,8 @@ public class Slicer {
 		}
 
 		
-		RandomAccessibleInterval<IntType> expanededtotalimg = ExpandBorder.extendBorder(parent, totalimg);
 		
-		return expanededtotalimg;
+		return totalimg;
 
 	}
 
