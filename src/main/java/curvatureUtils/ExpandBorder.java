@@ -2,13 +2,19 @@ package curvatureUtils;
 
 import net.imglib2.Cursor;
 import net.imglib2.Interval;
+import net.imglib2.IterableInterval;
+import net.imglib2.RandomAccess;
+import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.neighborhood.Neighborhood;
 import net.imglib2.algorithm.neighborhood.RectangleShape;
 import net.imglib2.algorithm.region.hypersphere.HyperSphere;
+import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.NativeType;
+import net.imglib2.type.Type;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Intervals;
 import net.imglib2.view.Views;
@@ -23,26 +29,28 @@ public class ExpandBorder {
 	 * @param parent
 	 * @param source
 	 */
-	public static  < T extends RealType< T > & NativeType< T >> void extendBorder(final InteractiveSimpleEllipseFit parent, RandomAccessibleInterval<T> source) {
+	public static  < T extends RealType< T > & NativeType< T >> RandomAccessibleInterval<T> extendBorder(final InteractiveSimpleEllipseFit parent, RandomAccessibleInterval<T> source) {
 		
 		T type = Views.iterable(source).cursor().next().createVariable();
 		RandomAccessibleInterval<T> output =  new ArrayImgFactory<T>().create(source, type);
 		
+		copy(source, Views.iterable(output));
+		
 		final Cursor< T > center =  Views.iterable( source ).cursor();
 		
-		  final RectangleShape shape = new RectangleShape( 1, true );
+		  final RectangleShape shape = new RectangleShape( (int)parent.borderpixel, true );
 		
 		  
 	       // so that the search in the 8-neighborhood (3x3x3...x3) never goes outside
 	        // of the defined interval
-	        Interval interval = Intervals.expand( source, -1 );
+	        Interval interval = Intervals.expand( source, - (int)parent.borderpixel );
 	 
 	        // create a view on the source with this interval
 	        source = Views.interval( source, interval );
 	        
 		  for ( final Neighborhood< T > localNeighborhood : shape.neighborhoods( source ) ) 
 		  {
-			  
+			  System.out.println(localNeighborhood.getIntPosition(0) + " " + localNeighborhood.getIntPosition(1));
 			  final T centerValue = center.next();
 			  
 			  boolean isBorderPixel = false;
@@ -75,12 +83,48 @@ public class ExpandBorder {
 				  
 			  }
 			  
+			
 			  
 			  
 		  }
-		
+		return output;
 		
 	}
+	
+	
+	  /**
+     * Copy from a source that is just RandomAccessible to an IterableInterval. Latter one defines
+     * size and location of the copy operation. It will query the same pixel locations of the
+     * IterableInterval in the RandomAccessible. It is up to the developer to ensure that these
+     * coordinates match.
+     *
+     * Note that both, input and output could be Views, Img or anything that implements
+     * those interfaces.
+     *
+     * @param source - a RandomAccess as source that can be infinite
+     * @param target - an IterableInterval as target
+     */
+    public static < T extends Type< T > > void copy( final RandomAccessible< T > source,
+        final IterableInterval< T > target )
+    {
+        // create a cursor that automatically localizes itself on every move
+        Cursor< T > targetCursor = target.localizingCursor();
+        RandomAccess< T > sourceRandomAccess = source.randomAccess();
+ 
+        // iterate over the input cursor
+        while ( targetCursor.hasNext())
+        {
+            // move input cursor forward
+            targetCursor.fwd();
+ 
+            // set the output cursor to the position of the input cursor
+            sourceRandomAccess.setPosition( targetCursor );
+ 
+            // set the value of this pixel of the output image, every Type supports T.set( T type )
+            targetCursor.get().set( sourceRandomAccess.get() );
+        }
+    }
+
 	
 	
 }

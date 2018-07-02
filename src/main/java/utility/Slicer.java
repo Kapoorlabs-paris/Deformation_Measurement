@@ -3,6 +3,7 @@ package utility;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
+import curvatureUtils.ExpandBorder;
 import ij.IJ;
 import ij.gui.Roi;
 import mpicbg.imglib.util.Util;
@@ -93,7 +94,7 @@ public class Slicer {
 
 	}
 
-	public static RandomAccessibleInterval<IntType> getCurrentViewInt(RandomAccessibleInterval<IntType> originalimg,
+	public static RandomAccessibleInterval<IntType> getCurrentViewInt(InteractiveSimpleEllipseFit parent, RandomAccessibleInterval<IntType> originalimg,
 			int thirdDimension, int thirdDimensionSize, int fourthDimension, int fourthDimensionSize) {
 
 		final IntType type = originalimg.randomAccess().get().createVariable();
@@ -119,7 +120,10 @@ public class Slicer {
 			totalimg = Views.hyperSlice(pretotalimg, 2, fourthDimension - 1);
 		}
 
-		return totalimg;
+		
+		RandomAccessibleInterval<IntType> expanededtotalimg = ExpandBorder.extendBorder(parent, totalimg);
+		
+		return expanededtotalimg;
 
 	}
 

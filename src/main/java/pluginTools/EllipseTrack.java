@@ -63,9 +63,9 @@ public class EllipseTrack {
 
 		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.originalimgsuper, z,
+		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent, parent.originalimgsuper, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-
+ImageJFunctions.show(CurrentViewInt);
 		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
 		GetPixelList(CurrentViewInt);
 		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent);
@@ -83,7 +83,7 @@ public class EllipseTrack {
 
 		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.originalimgsuper, z,
+		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent, parent.originalimgsuper, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
 		GetPixelList(CurrentViewInt);
@@ -213,7 +213,7 @@ public class EllipseTrack {
 		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
-		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.emptyWater, z,
+		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent, parent.emptyWater, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
 		
