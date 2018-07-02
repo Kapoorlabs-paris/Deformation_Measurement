@@ -126,11 +126,16 @@ public class Computeinwater {
 			
 			System.out.println(current.source + " " + truths.size() + " " + t + " " + z + " " + resultroi + " " + resultovalroi + " " + resultlineroi + " " + AllPointsofIntersect.size()
 			+ " " + Allintersection.size() + " " + fitmapspecial.size() + " " + parent.jpb  + " " + percent + " " + parent.jpb);
+			
+			if (current.Size > parent.minperimeter / 3 * parent.minperimeter / 3
+					&& current.Size < parent.maxperimeter / 3 * parent.maxperimeter / 3
+					&& current.meanIntensity > parent.minellipsepoints) {
 				tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi,
 						resultovalroi, resultlineroi, AllPointsofIntersect, Allintersection, fitmapspecial, parent.jpb,
 						percent, parent.supermode)));
 			
 
+			}
 		}
 
 		try {

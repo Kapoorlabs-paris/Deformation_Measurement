@@ -81,6 +81,7 @@ import kalmanTracker.NearestRoi;
 import listeners.AngleListener;
 import listeners.AutoEndListener;
 import listeners.AutoStartListener;
+import listeners.BlackBorderListener;
 import listeners.ClearDisplayListener;
 import listeners.ClearforManual;
 import listeners.ColorListener;
@@ -99,6 +100,7 @@ import listeners.IlastikListener;
 import listeners.IncrementListener;
 import listeners.InsideCutoffListener;
 import listeners.InsideLocListener;
+import listeners.LostFrameListener;
 import listeners.LowProbListener;
 import listeners.ManualInterventionListener;
 import listeners.MaxTryListener;
@@ -352,6 +354,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	
 	public int maxSearchInit = 100;
 	public int maxframegap = 10;
+	public float borderpixel = 0;
+	
 	public static enum ValueChange {
 		ROI, ALL, THIRDDIMmouse, FOURTHDIMmouse, DISPLAYROI, RADIUS, INSIDE, OUTSIDE, RESULT, RectRoi, SEG, Watershow, CURVERESULT
 	}
@@ -701,8 +705,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 			thirdDimensionSize = (int) originalimg.dimension(2);
 			fourthDimensionSize = (int) originalimg.dimension(3);
-			AutostartTime = thirdDimension;
-			AutoendTime = thirdDimensionSize;
+			AutostartTime = fourthDimension;
+			AutoendTime = fourthDimensionSize;
 			prestack = new ImageStack((int) originalimg.dimension(0), (int) originalimg.dimension(1),
 					java.awt.image.ColorModel.getRGBdefault());
 		}
@@ -1351,7 +1355,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JButton Curvaturebutton = new JButton("Measure Local Curvature");
 	public JButton Savebutton = new JButton("Save Track");
 	public JButton SaveAllbutton = new JButton("Save All Tracks");
-	public JButton Redobutton = new JButton("Recompute for current view");
+	public JButton Redobutton = new JButton("Compute/Recompute for current view");
+	
+	
 	public JButton Smoothbutton = new JButton("Do Gaussian Smoothing");
 	public JButton Clearmanual = new JButton("Clear Current View");
 	public JButton ManualCompute = new JButton("Manual Computation");
@@ -1424,8 +1430,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public final JButton ChooseDirectory = new JButton("Choose Directory to save results in");
 	public JComboBox<String> ChooseMethod;
 	public JComboBox<String> ChooseColor;
-	public Label lostlabel, autoTstart, autoTend;
-	public TextField lostframe;
+	public Label lostlabel, autoTstart, autoTend, blackcorrectionlabel;
+	public TextField lostframe, bordercorrection;
 	public Border origborder = new CompoundBorder(new TitledBorder("Enter filename for results files"),
 			new EmptyBorder(c.insets));
 	JPanel controlprev = new JPanel();
@@ -1481,12 +1487,17 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		lostframe = new TextField(1);
 		lostframe.setText(Integer.toString(maxframegap));
 		
+		blackcorrectionlabel = new Label("Expand or contract border");
+		bordercorrection = new TextField(1);
+		bordercorrection.setText(Float.toString(borderpixel));
+		
+		
 		autoTstart = new Label("Start time for automation");
-		startT = new TextField(1);
+		startT = new TextField(5);
 		startT.setText(Integer.toString(AutostartTime));
 		
 		autoTend = new Label("End time for automation");
-		endT = new TextField(1);
+		endT = new TextField(5);
 		endT.setText(Integer.toString(AutoendTime));
 		
 		
@@ -1835,11 +1846,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		Angleselect.add(inputFieldIter, new GridBagConstraints(4, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.RELATIVE, insets, 0, 0));
 
-		//Angleselect.add(inputLabelminpercent, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,
-		//		GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		Angleselect.add(inputLabelminpercent, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-		//Angleselect.add(inputFieldminpercent, new GridBagConstraints(4, 5, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-		//		GridBagConstraints.RELATIVE, insets, 0, 0));
+		Angleselect.add(inputFieldminpercent, new GridBagConstraints(4, 5, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				GridBagConstraints.RELATIVE, insets, 0, 0));
 		
 		Angleselect.add(insideText, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
@@ -1891,13 +1902,18 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		KalmanPanel.add(lostframe, new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		
+		
+		KalmanPanel.add(blackcorrectionlabel, new GridBagConstraints(3, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		KalmanPanel.add(bordercorrection, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 	
 		KalmanPanel.add(maxSearchText, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		KalmanPanel.add(maxSearchS, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		
-		KalmanPanel.add(Anglebutton, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		KalmanPanel.add(Anglebutton, new GridBagConstraints(3, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		KalmanPanel.add(Redobutton, new GridBagConstraints(3, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
@@ -2021,6 +2037,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		polymode.addItemListener(new RunPolymodeListener(this));
 		
 		gaussfield.addTextListener(new GaussRadiusListener(this));
+		bordercorrection.addTextListener(new BlackBorderListener(this));
+		lostframe.addTextListener(new LostFrameListener(this));
+		
 		ClearDisplay.addActionListener(new ClearDisplayListener(this));
 		degreeField.addTextListener(new DegreeListener(this, false));
 		incrementField.addTextListener(new IncrementListener(this, false));

@@ -199,7 +199,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 			
 			// Tracking and Measurement is done with imageA 
 	        
-		  org.apache.log4j.BasicConfigurator.configure();
+		    org.apache.log4j.BasicConfigurator.configure();
 			RandomAccessibleInterval<FloatType> image = new ImgOpener().openImgs(impA.getOriginalFileInfo().directory + impA.getOriginalFileInfo().fileName , new FloatType()).iterator().next();
 			RandomAccessibleInterval<FloatType> imagebefore = new ImgOpener().openImgs(impOrig.getOriginalFileInfo().directory + impOrig.getOriginalFileInfo().fileName, new FloatType()).iterator().next();
 			
