@@ -119,45 +119,24 @@ public class CurvatureFunction {
 					totalinterpolatedCurvature.addAll(leftinterpolatedCurvature);
 				}
 
-				else {
-
-					WrongLeftnodes.add(node);
-					continue;
-				}
+				
 			}
 
 			if (rightlocal != null) {
-				if (!rightlocal.getA()) {
+				
 					perimeter += rightlocal.getB();
 					totalfunctions.addAll(rightfunctions);
 					totalinterpolatedCurvature.addAll(rightinterpolatedCurvature);
-				}
+				
 
-				else {
-					WrongRightnodes.add(node);
-					continue;
-				}
+				
 			}
 			if (sizein >= truths.size())
 				break;
 
 		}
 
-		// Correct for wrong nodes using recursion
-
-		// Reduce size of window
-		 CorrectCurvature.CorrectCurvaturebySize(WrongLeftnodes, parent, maxError,
-		 minNumInliers, ndims, Label, degree, secdegree, t, z);
-
-		 CorrectCurvature.CorrectCurvaturebySize(WrongRightnodes, parent, maxError,
-		 minNumInliers, ndims, Label, degree, secdegree, t, z);
-
-		// Increase degree of fit polynomial by Ransac
-		 CorrectCurvature.CorrectCurvaturebyDegree(WrongLeftnodes, parent, maxError,
-		 minNumInliers, ndims, Label, degree, secdegree, t, z);
-
-		 CorrectCurvature.CorrectCurvaturebyDegree(WrongRightnodes, parent, maxError,
-		 minNumInliers, ndims, Label, degree, secdegree, t, z);
+	
 
 		for (int indexx = 0; indexx < totalinterpolatedCurvature.size(); ++indexx) {
 
@@ -170,7 +149,7 @@ public class CurvatureFunction {
 
 		}
 
-		// Only correct nodes are returned
+		// All nodes are returned
 
 		return new ValuePair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>(totalfunctions, curveobject);
 

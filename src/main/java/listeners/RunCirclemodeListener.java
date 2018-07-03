@@ -50,7 +50,9 @@ public class RunCirclemodeListener implements ItemListener {
 					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 		parent.Angleselect.add(parent.displayCircle , new GridBagConstraints(1, 1, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));	
-		parent.Angleselect.add(parent.ClearDisplay , new GridBagConstraints(1, 2, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+		parent.Angleselect.add(parent.displaySegments , new GridBagConstraints(1, 2, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));	
+		parent.Angleselect.add(parent.ClearDisplay , new GridBagConstraints(1, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));	
 		
 	    

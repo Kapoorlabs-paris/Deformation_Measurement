@@ -38,6 +38,18 @@ public class DisplaySelected {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 
+			
+
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+
 				int x = canvas.offScreenX(e.getX());
 				int y = canvas.offScreenY(e.getY());
 				parent.Clickedpoints[0] = x;
@@ -51,17 +63,7 @@ public class DisplaySelected {
 						parent.jFreeChartFrame = utility.ChartMaker.display(parent.chart, new Dimension(500, 500));
 
 				}
-
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
+				
 			}
 
 			@Override

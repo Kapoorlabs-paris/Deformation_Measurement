@@ -3,6 +3,7 @@ package utility;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -87,6 +88,21 @@ public class DisplayAuto {
 						}
 
 					}
+					
+					if (currentobject.segmentrect != null) {
+						for (int i = 0; i < currentobject.segmentrect.size(); ++i) {
+
+							OvalRoi ellipse = currentobject.segmentrect.get(i);
+							ellipse.setStrokeColor(parent.colorLineA);
+
+							
+							parent.overlay.add(ellipse);
+						
+
+						}
+
+					}
+					
 					
 					
 

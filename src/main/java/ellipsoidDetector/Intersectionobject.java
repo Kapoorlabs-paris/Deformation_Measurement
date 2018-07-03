@@ -1,5 +1,6 @@
 package ellipsoidDetector;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,6 +31,7 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 	public final ArrayList<OvalRoi> curvelinerois;
 	public final ArrayList<OvalRoi> curvealllinerois;
 	public final ArrayList<EllipseRoi> ellipselinerois;
+	public final ArrayList<OvalRoi> segmentrect;
 	private String name;
 	private final int ID;
 	private final ConcurrentHashMap< String, Double > features = new ConcurrentHashMap< String, Double >();
@@ -52,6 +54,7 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 		this.curvelinerois = null;
 		this.curvealllinerois = null;
 		this.ellipselinerois = null;
+		this.segmentrect = null;
 		putFeature(Time,  (double) t);
 		putFeature(ZPOSITION, (double) z);
 		putFeature(XPOSITION, Intersectionpoint[0]);
@@ -70,7 +73,7 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 	 * 
 	 */
 	public Intersectionobject(final double[] Intersectionpoint, ArrayList<double[]> linelist, final ArrayList<Line> linerois, final ArrayList<OvalRoi> curvelinerois,
-			final ArrayList<OvalRoi> curvealllinerois, final ArrayList<EllipseRoi> ellipselinerois,  final double perimeter,  final int celllabel, final int t, final int z) {
+			final ArrayList<OvalRoi> curvealllinerois, final ArrayList<EllipseRoi> ellipselinerois,final ArrayList<OvalRoi> segmentrect, final double perimeter,  final int celllabel, final int t, final int z) {
 		super(3);
 		this.Intersectionpoint = Intersectionpoint;
 		this.angle = 0;
@@ -80,6 +83,7 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 		this.curvelinerois = curvelinerois;
 		this.curvealllinerois = curvealllinerois;
 		this.ellipselinerois = ellipselinerois;
+		this.segmentrect = segmentrect;
 		this.ellipsepair = null;
 		this.t = t;
 		this.z = z;

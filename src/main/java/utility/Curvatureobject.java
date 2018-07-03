@@ -33,6 +33,7 @@ public class Curvatureobject extends AbstractEuclideanSpace implements RealLocal
 	public final int t;
 	public final int z;
 	public final double[] cord;
+
 	public final int Label;
 	public final double signedradiusCurvature;
 	public final double Intensity;
@@ -50,6 +51,7 @@ public class Curvatureobject extends AbstractEuclideanSpace implements RealLocal
 		this.ID = IDcounter.incrementAndGet();
 		this.name = "ID" + ID;
 		this.Label = Label;
+		
 	};
 		
 	
@@ -107,66 +109,12 @@ public class Curvatureobject extends AbstractEuclideanSpace implements RealLocal
 	
 	public static final String LocationY = "LocationY";
 	
-	/** The curvature features. */
-	public final static String[] Curvature_features = new String[] { Radius, Perimeter, LABEL, LocationX, LocationY };
+
 	
 	
-	/**
-	 * The 7 features for curvatrue object include, LocationX and LocationY,
-	 * Radius at that location, Perimeter for the cell label and the Z and T location
-	 * of the cell
-	 * .
-	 */
-	static int featurenumber = 7;
-	public final static Collection< String > FEATURES = new ArrayList< >( featurenumber );
 
-	public final static Map< String, String > FEATURE_NAMES = new HashMap< >( featurenumber );
 
-	public final static Map< String, String > FEATURE_SHORT_NAMES = new HashMap< >( featurenumber );
-
-	public final static Map< String, linkers.Dimension > FEATURE_DIMENSIONS = new HashMap< >( featurenumber );
-
-	public final static Map< String, Boolean > IS_INT = new HashMap< >( featurenumber );
-
-	static
-	{
-		FEATURES.add( Radius );
-		FEATURES.add( Perimeter );
-		FEATURES.add( Z );
-		FEATURES.add( LABEL );
-		FEATURES.add( Time );
-		FEATURES.add( LocationX );
-		FEATURES.add( LocationY );
-		
-
-		FEATURE_NAMES.put( Radius, "R" );
-		FEATURE_NAMES.put( Perimeter, "P" );
-		FEATURE_NAMES.put( Z, "Z" );
-		FEATURE_NAMES.put( LABEL, "L" );
-		FEATURE_NAMES.put( Time, "T" );
-		FEATURE_NAMES.put( LocationX, "LocationX" );
-		FEATURE_NAMES.put( LocationY, "LocationY" );
-
-		FEATURE_SHORT_NAMES.put( Radius, "X" );
-		FEATURE_SHORT_NAMES.put( Perimeter, "Y" );
-		FEATURE_SHORT_NAMES.put( Z, "Z" );
-		FEATURE_SHORT_NAMES.put( LABEL, "S" );
-		FEATURE_SHORT_NAMES.put( Time, "T" );
-		FEATURE_SHORT_NAMES.put( LocationX, "LocationX" );
-		FEATURE_SHORT_NAMES.put( LocationY, "LocationY" );
-
-		
-
-		IS_INT.put( Radius, Boolean.FALSE );
-		IS_INT.put( Perimeter, Boolean.FALSE );
-		IS_INT.put( Z, Boolean.TRUE );
-		IS_INT.put( LABEL, Boolean.TRUE );
-		IS_INT.put( Time, Boolean.TRUE );
-
-		IS_INT.put( LocationX, Boolean.FALSE );
-		IS_INT.put( LocationY, Boolean.FALSE );
-		
-	}
+	
 	@Override
 	public int compareTo(Curvatureobject o) {
 		return hashCode() - o.hashCode();

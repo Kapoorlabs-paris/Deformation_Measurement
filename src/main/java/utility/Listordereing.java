@@ -143,8 +143,10 @@ public class Listordereing {
 		List<RealLocalizable> copytruths = getCopyList(truths);
 		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
 		// Get the starting minX and minY co-ordinates
-		RealLocalizable minCord = getMinCord(copytruths);
-
+		RealLocalizable minCord;
+		
+		minCord = getMinCord(copytruths);
+		
 		
 		
 		RealLocalizable meanCord = getMeanCord(copytruths);
@@ -190,6 +192,28 @@ public class Listordereing {
 		
 		return orderedtruths;
 	}
+
+	
+	
+	public static RealLocalizable GetCurrentRefpoint(List<RealLocalizable> truths, RealLocalizable Refpoint, RealLocalizable SecRefpoint) {
+		
+
+		RealLocalizable returnCord;
+		List<RealLocalizable> copytruths = getCopyList(truths);
+		
+		RealLocalizable nextCord = getNextNearest(Refpoint, copytruths);
+		
+		RealLocalizable SecnextCord = getNextNearest(SecRefpoint, copytruths);
+		
+		double distanceA = Distance.DistanceSqrt(nextCord, Refpoint) + Distance.DistanceSqrt(nextCord, SecRefpoint);
+		
+		double distanceB = Distance.DistanceSqrt(SecnextCord, Refpoint) + Distance.DistanceSqrt(SecnextCord, SecRefpoint);
+		
+		returnCord = (distanceA <= distanceB) ? nextCord : SecnextCord; 
+		
+		return returnCord;
+	}
+	
 	
 	/**
 	 * Return an ordered list of XY coordinates starting from the min X position to
@@ -285,7 +309,9 @@ public class Listordereing {
 	public static RealLocalizable getMinCord(
 			List<RealLocalizable> truths) {
 
-		RealPoint minCord = new RealPoint(new double[] { Double.MAX_VALUE, Double.MAX_VALUE });
+		
+		RealLocalizable meanCord = getMeanCord(truths);
+		
 		RealLocalizable minobject = null;
 		Iterator<RealLocalizable> iter = truths.iterator();
 
@@ -293,12 +319,9 @@ public class Listordereing {
 
 			RealLocalizable currentpair = iter.next();
 
-			RealLocalizable currentpoint = currentpair;
 
-			if (currentpoint.getDoublePosition(0) <= minCord.getDoublePosition(0)
-					&& currentpoint.getDoublePosition(1) <= minCord.getDoublePosition(1)) {
+			if (currentpair.getDoublePosition(0) <= meanCord.getDoublePosition(0)) {
 
-				minCord = new RealPoint(currentpoint);
 				minobject = currentpair;
 
 			}

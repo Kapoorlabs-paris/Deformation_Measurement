@@ -1,5 +1,6 @@
 package utility;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,13 +49,14 @@ public class LabelCurvature implements Runnable {
 	final ArrayList<OvalRoi> resultcurvelineroi;
 	final ArrayList<OvalRoi> resultallcurvelineroi;
 	final ArrayList<EllipseRoi> ellipselineroi;
+	final ArrayList<OvalRoi> segmentrect;
 	final JProgressBar jpb;
 	ArrayList<Intersectionobject> AllCurveintersection;
 
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
 			final RandomAccessibleInterval<FloatType> ActualRoiimg, List<RealLocalizable> truths,
 			ArrayList<Line> resultlineroi, ArrayList<OvalRoi> resultcurvelineroi,
-			ArrayList<OvalRoi> resultallcurvelineroi,ArrayList<EllipseRoi> ellipselineroi, ArrayList<Intersectionobject> AllCurveintersection, final int t,
+			ArrayList<OvalRoi> resultallcurvelineroi,ArrayList<EllipseRoi> ellipselineroi, ArrayList<OvalRoi> segmentrect,  ArrayList<Intersectionobject> AllCurveintersection, final int t,
 			final int z, final int celllabel) {
 
 		this.parent = parent;
@@ -70,12 +72,13 @@ public class LabelCurvature implements Runnable {
 		this.resultallcurvelineroi = resultallcurvelineroi;
 		this.ellipselineroi = ellipselineroi;
 		this.celllabel = celllabel;
+		this.segmentrect = segmentrect;
 	}
 
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
 			final RandomAccessibleInterval<FloatType> ActualRoiimg, List<RealLocalizable> truths,
 			ArrayList<Line> resultlineroi, ArrayList<OvalRoi> resultcurvelineroi,
-			ArrayList<OvalRoi> resultallcurvelineroi,ArrayList<EllipseRoi> ellipselineroi, ArrayList<Intersectionobject> AllCurveintersection, final int t,
+			ArrayList<OvalRoi> resultallcurvelineroi,ArrayList<EllipseRoi> ellipselineroi,ArrayList<OvalRoi> segmentrect, ArrayList<Intersectionobject> AllCurveintersection, final int t,
 			final int z, final JProgressBar jpb, final int percent, final int celllabel) {
 
 		this.parent = parent;
@@ -91,6 +94,7 @@ public class LabelCurvature implements Runnable {
 		this.percent = percent;
 		this.AllCurveintersection = AllCurveintersection;
 		this.celllabel = celllabel;
+		this.segmentrect = segmentrect;
 	}
 
 	
@@ -118,8 +122,8 @@ public class LabelCurvature implements Runnable {
 				ellipselineroi.clear();
 			}
 
-			if (i >= Ordered.size() - 1)
-				break;
+		
+
 
 			// Get the sparse list of points
 
@@ -162,8 +166,10 @@ public class LabelCurvature implements Runnable {
 			resultallcurvelineroi.addAll(currentobject.curvealllinerois);
 			if(parent.displayIntermediate)
 			ellipselineroi.addAll(currentobject.ellipselinerois);
+			if(parent.displayIntermediateBox)
+			segmentrect.addAll(currentobject.segmentrect);
 
-			Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi, resultcurvelineroi,
+			Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi, resultcurvelineroi, segmentrect,
 					z, t, celllabel, true);
 			parent.ZTRois.put(uniqueID, currentroiobject);
 			
@@ -236,40 +242,7 @@ public class LabelCurvature implements Runnable {
 			CurveI.add(I[index]);
 			
 			
-			
-			for (int i = 1; i < count; ++i) {
-
-				Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> testpair = Bestdelta.get(i);
-
-				ArrayList<Curvatureobject> testlocalCurvature = testpair.getB();
-
-				double[] Xtest = new double[testlocalCurvature.size()];
-				double[] Ytest = new double[testlocalCurvature.size()];
-				double[] Ztest = new double[testlocalCurvature.size()];
-				double[] signZtest = new double[testlocalCurvature.size()];
-				double[] Itest = new double[testlocalCurvature.size()];
-				
-				CurvePeri.add(testlocalCurvature.get(0).perimeter);
-				for (int testindex = 0; testindex < testlocalCurvature.size(); ++testindex) {
-
-					Xtest[testindex] = testlocalCurvature.get(testindex).cord[0];
-					Ytest[testindex] = testlocalCurvature.get(testindex).cord[1];
-					Ztest[testindex] = testlocalCurvature.get(testindex).radiusCurvature;
-					signZtest[index] = testlocalCurvature.get(testindex).signedradiusCurvature;
-					Itest[index] = testlocalCurvature.get(testindex).Intensity;
-
-					if (X[index] == Xtest[testindex] && Y[index] == Ytest[testindex]) {
-
-						CurveXY.add(Ztest[testindex]);
-						CurveXYSign.add(signZtest[index]);
-						CurveI.add(Itest[index]);
-						
-						
-					}
-
-				}
-
-			}
+		
 		
 			double frequdeltaperi = localCurvature.get(0).perimeter ;
 			double frequdelta = Z[index];

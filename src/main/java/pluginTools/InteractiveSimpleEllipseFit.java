@@ -88,6 +88,7 @@ import listeners.ColorListener;
 import listeners.CurvatureListener;
 import listeners.DegreeListener;
 import listeners.DeltasepListener;
+import listeners.DisplayBoxListener;
 import listeners.DisplayListener;
 import listeners.DoSmoothingListener;
 import listeners.DrawListener;
@@ -1448,7 +1449,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final Checkbox polymode = new Checkbox("Polynomial Fits", curvaturemode, polynomialfits);
 	final Checkbox circlemode = new Checkbox("Circle Fits", curvaturemode, circlefits);
 	public boolean displayIntermediate = true;
+	public boolean displayIntermediateBox = true;
 	public Checkbox displayCircle = new Checkbox("Display Intermediate Circles", displayIntermediate);
+	public Checkbox displaySegments = new Checkbox("Display Segments", displayIntermediateBox);
 	public JButton ClearDisplay = new JButton("Clear Display");
    
 	Label maxSearchText = new Label(maxSearchstring + " = " + maxSearchInit, Label.CENTER);
@@ -2046,6 +2049,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		secdegreeField.addTextListener(new SecDegreeListener(this, false));
 		Smoothbutton.addActionListener(new DoSmoothingListener(this));
 		displayCircle.addItemListener(new DisplayListener(this));
+		displaySegments.addItemListener(new DisplayBoxListener(this));
 		Curvaturebutton.addActionListener(new CurvatureListener(this));
 		Anglebutton.addActionListener(new AngleListener(this));
 		startT.addTextListener(new AutoStartListener(this));

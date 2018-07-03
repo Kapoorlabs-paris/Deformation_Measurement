@@ -1,5 +1,6 @@
 package pluginTools;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -108,24 +109,19 @@ public class Computeinwater {
 
 			if (parent.supermode || parent.automode) {
 				current = utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
+				
 			System.out.println("Should open in only super or auto mode");	
 			}
 			else {
 				current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, label);
 		
-				System.out.println("Should open in manual mode");
+			System.out.println("Should open in manual mode");
 			}
 		
 			// Neglect the small watershed regions by choosing only those regions which have
 			// more than 9 candidate points for ellipse fitting
 			List<Pair<RealLocalizable, FloatType>> truths = new ArrayList<Pair<RealLocalizable, FloatType>>();
 			
-
-		
-
-			
-			System.out.println(current.source + " " + truths.size() + " " + t + " " + z + " " + resultroi + " " + resultovalroi + " " + resultlineroi + " " + AllPointsofIntersect.size()
-			+ " " + Allintersection.size() + " " + fitmapspecial.size() + " " + parent.jpb  + " " + percent + " " + parent.jpb);
 			
 			if (current.Size > parent.minperimeter / 3 * parent.minperimeter / 3
 					&& current.Size < parent.maxperimeter / 3 * parent.maxperimeter / 3
@@ -172,15 +168,15 @@ public class Computeinwater {
 		ArrayList<OvalRoi> resultcurvelineroi = new ArrayList<OvalRoi>();
 		ArrayList<OvalRoi> resultallcurvelineroi = new ArrayList<OvalRoi>();
 		ArrayList<EllipseRoi> ellipselineroi = new ArrayList<EllipseRoi>();
+		ArrayList<OvalRoi>Segmentrect = new ArrayList<OvalRoi>();
 		// Obtain the points of intersections
 
 		Iterator<Integer> setiter = parent.pixellist.iterator();
 		parent.superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>>();
 		 ArrayList<Intersectionobject> AllCurveintersection = new ArrayList<Intersectionobject>();
 		 
-		 // Skip the background label
-		 if (setiter.hasNext())
-				 setiter.next();
+		
+		
 		 
 		while (setiter.hasNext()) {
 
@@ -196,7 +192,7 @@ public class Computeinwater {
 		
 			List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
 			
-			tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, resultcurvelineroi,resultallcurvelineroi,ellipselineroi,  AllCurveintersection, t, z,
+			tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, resultcurvelineroi,resultallcurvelineroi,ellipselineroi, Segmentrect,  AllCurveintersection, t, z,
 					parent.jpb, percent, label)));
 		}
 
@@ -208,7 +204,7 @@ public class Computeinwater {
 
 			String uniqueID = Integer.toString(z) + Integer.toString(t);
 			parent.ALLIntersections.put(uniqueID, AllCurveintersection);
-			Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi, resultcurvelineroi, z, t, -1, true);
+			Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi, resultcurvelineroi,Segmentrect, z, t, -1, true);
 			parent.ZTRois.put(uniqueID, currentroiobject);
 			DisplayAuto.Display(parent);
 		} catch (InterruptedException e1) {
