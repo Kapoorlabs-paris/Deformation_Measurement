@@ -77,7 +77,7 @@ public class EllipseTrack {
            ImageJFunctions.show(expanededtotalimg);
 		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
 		GetPixelList(expanededtotalimg);
-		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent);
+		Computeinwater compute = new Computeinwater(parent, CurrentView, expanededtotalimg, t, z, (int) percent);
 		compute.ParallelRansac();
 	}
 	
@@ -104,7 +104,7 @@ public class EllipseTrack {
 
 		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
 		GetPixelList(expanededtotalimg);
-		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent);
+		Computeinwater compute = new Computeinwater(parent, CurrentView, expanededtotalimg, t, z, (int) percent);
 		compute.ParallelRansacCurve();
 		
 	}
@@ -162,7 +162,7 @@ public class EllipseTrack {
 
 		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
 		GetPixelList(expanededtotalimg);
-		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentInt, t, z, (int) percent);
+		Computeinwater compute = new Computeinwater(parent, CurrentView, expanededtotalimg, t, z, (int) percent);
 		compute.ParallelRansac();
 
 	}
@@ -204,7 +204,7 @@ public class EllipseTrack {
 
 		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
 		GetPixelList(expanededtotalimg);
-		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentInt, t, z, (int) percent);
+		Computeinwater compute = new Computeinwater(parent, CurrentView, expanededtotalimg, t, z, (int) percent);
 		compute.ParallelRansacCurve();
 
 	}
@@ -261,7 +261,7 @@ public class EllipseTrack {
 
 		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
 		GetPixelList(expanededtotalimg);
-		Computeinwater compute = new Computeinwater(parent, CurrentView, CurrentViewInt, t, z, (int) percent);
+		Computeinwater compute = new Computeinwater(parent, CurrentView, expanededtotalimg, t, z, (int) percent);
 		compute.ParallelRansac();
 
 		System.out.println("Invoke Parallel Ransac");
@@ -705,13 +705,14 @@ public class EllipseTrack {
 		Cursor<IntType> intCursor = Views.iterable(intimg).cursor();
 		// Neglect the background class label
 		int currentLabel = max.get();
+		int currentlabelmax = max.get();
 		parent.pixellist.clear();
-		parent.pixellist.add(currentLabel);
+		
 		
 		while (intCursor.hasNext()) {
 			intCursor.fwd();
 			int i = intCursor.get().get();
-			if (i != currentLabel) {
+			if (i != currentLabel && i!=currentlabelmax) {
 
 				parent.pixellist.add(i);
 

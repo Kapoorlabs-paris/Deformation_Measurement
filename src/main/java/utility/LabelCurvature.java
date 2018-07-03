@@ -115,14 +115,16 @@ public class LabelCurvature implements Runnable {
 		int increment = parent.increment;
 		for (int i = 0; i < Ordered.size(); i += increment) {
 
-			if (i % (increment) == 5) {
+			if (i % (increment) == 2 ) {
 				resultlineroi.clear();
 				resultcurvelineroi.clear();
 				resultallcurvelineroi.clear();
 				ellipselineroi.clear();
+				parent.imp.updateAndDraw();
 			}
 
-		
+			if (i >= Ordered.size() - 1)
+				break;
 
 
 			// Get the sparse list of points
@@ -241,7 +243,39 @@ public class LabelCurvature implements Runnable {
 			CurveXYSign.add(signZ[index]);
 			CurveI.add(I[index]);
 			
-			
+			for (int i = 1; i < count; ++i) {
+
+				Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> testpair = Bestdelta.get(i);
+
+				ArrayList<Curvatureobject> testlocalCurvature = testpair.getB();
+
+				double[] Xtest = new double[testlocalCurvature.size()];
+				double[] Ytest = new double[testlocalCurvature.size()];
+				double[] Ztest = new double[testlocalCurvature.size()];
+				double[] signZtest = new double[testlocalCurvature.size()];
+				double[] Itest = new double[testlocalCurvature.size()];
+				
+				CurvePeri.add(testlocalCurvature.get(0).perimeter);
+				for (int testindex = 0; testindex < testlocalCurvature.size(); ++testindex) {
+
+					Xtest[testindex] = testlocalCurvature.get(testindex).cord[0];
+					Ytest[testindex] = testlocalCurvature.get(testindex).cord[1];
+					Ztest[testindex] = testlocalCurvature.get(testindex).radiusCurvature;
+					signZtest[index] = testlocalCurvature.get(testindex).signedradiusCurvature;
+					Itest[index] = testlocalCurvature.get(testindex).Intensity;
+
+					if (X[index] == Xtest[testindex] && Y[index] == Ytest[testindex]) {
+
+						CurveXY.add(Ztest[testindex]);
+						CurveXYSign.add(signZtest[index]);
+						CurveI.add(Itest[index]);
+						
+						
+					}
+
+				}
+
+			}
 		
 		
 			double frequdeltaperi = localCurvature.get(0).perimeter ;

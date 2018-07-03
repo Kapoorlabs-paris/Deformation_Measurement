@@ -183,6 +183,8 @@ public class Computeinwater {
 			percent++;
 
 			int label = setiter.next();
+			
+			System.out.println(label + "Label");
 			// Creating a binary image in the integer image region from the boundary
 			// probability map
 			Watershedobject current =
