@@ -40,18 +40,27 @@ public class RunCirclemodeListener implements ItemListener {
 			parent.Angleselect.add(parent.incrementField, new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 			
+			
+			parent.Angleselect.add(parent.maxsizeText, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
+
+			parent.Angleselect.add(parent.maxSizeField, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
+			
+			
 	    SliderBoxGUI combominInlier = new SliderBoxGUI(parent.mininlierstring, parent.minInlierslider, parent.minInlierField, parent.minInlierText, parent.scrollbarSize, parent.minNumInliers, parent.minNumInliersmax);
 			
-	    parent.Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+	    parent.Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
-			
-			
-	    parent.Angleselect.add(parent.Curvaturebutton, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+	    parent.Angleselect.add(parent.Curvaturebutton, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
+	    
+	    
 		parent.Angleselect.add(parent.displayCircle , new GridBagConstraints(1, 1, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));	
 		parent.Angleselect.add(parent.displaySegments , new GridBagConstraints(1, 2, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));	
+		
 		parent.Angleselect.add(parent.ClearDisplay , new GridBagConstraints(1, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));	
 		

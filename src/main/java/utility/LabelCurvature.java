@@ -123,8 +123,19 @@ public class LabelCurvature implements Runnable {
 				parent.imp.updateAndDraw();
 			}
 
-			if (i >= Ordered.size() - 1)
+			if (i >= Ordered.size() - 1) {
+			
+				resultlineroi.clear();
+				resultcurvelineroi.clear();
+				resultallcurvelineroi.clear();
+				ellipselineroi.clear();
+				parent.imp.updateAndDraw();
+				
+				
 				break;
+				
+				
+			}
 
 
 			// Get the sparse list of points
@@ -145,6 +156,8 @@ public class LabelCurvature implements Runnable {
 				treedepth = 0;
 
 			CurvatureFunction computecurve = new CurvatureFunction(parent);
+			
+			
 			Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> resultpair = computecurve.getCurvature(
 					allorderedtruths, parent.insideCutoff, parent.minNumInliers, ndims, celllabel,
 					Math.abs(Math.max(parent.degree, parent.secdegree)),
@@ -186,7 +199,7 @@ public class LabelCurvature implements Runnable {
 
 	@Override
 	public void run() {
-
+		String uniqueID = Integer.toString(z) + Integer.toString(t);
 		parent.Allnodes.clear();
 		parent.Nodemap.clear();
 
@@ -200,19 +213,28 @@ public class LabelCurvature implements Runnable {
 
 			utility.ProgressBar.SetProgressBar(jpb, 100* (percent ) / (parent.pixellist.size()), "Computing Curvature ");
 		}
+		
+		// Get the candidate points for fitting
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
+		
+		// A Hash map for the slider loop from reference point, 0 to incremental positions
 		HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>> Bestdelta = new HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>();
 
+		
+		// Get mean co-ordinate from the candidate points
 		RealLocalizable centerpoint = Listordereing.getMeanCord(truths);
 
 		// Get the sparse list of points
 		List<RealLocalizable> Ordered = Listordereing.getOrderedList(truths);
 
+		// Start sliding
 		Pair<Integer, HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>> slider = SliderLoop(
 				Ordered, centerpoint);
 
 		Bestdelta = slider.getB();
 		int count = slider.getA();
+		
+		// Default result
 		Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> resultpair = Bestdelta.get(0);
 		
 		ArrayList<Curvatureobject> RefinedCurvature = new ArrayList<Curvatureobject>();
@@ -355,14 +377,14 @@ public class LabelCurvature implements Runnable {
 		Intersectionobject currentobject = PointExtractor.CurvaturetoIntersection(parent.localCurvature,
 				parent.functions, centerpoint, parent.smoothing);
 
-		// resultlineroi.addAll(currentobject.linerois);
-		// resultcurvelineroi.addAll(currentobject.curvelinerois);
-		// resultallcurvelineroi.addAll(currentobject.curvealllinerois);
+		 resultlineroi.addAll(currentobject.linerois);
+		 resultcurvelineroi.addAll(currentobject.curvelinerois);
+		 resultallcurvelineroi.addAll(currentobject.curvealllinerois);
 
-		// Roiobject currentroiobject = new Roiobject(null, resultallcurvelineroi,
-		// resultlineroi, resultcurvelineroi, z, t, celllabel, true);
-		// parent.ZTRois.put(uniqueID, currentroiobject);
-		// DisplayAuto.Display(parent);
+		 Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi, resultcurvelineroi, segmentrect,
+					z, t, celllabel, true);
+			parent.ZTRois.put(uniqueID, currentroiobject);
+		 DisplayAuto.Display(parent);
 		AllCurveintersection.add(currentobject);
 
 		parent.AlllocalCurvature.add(parent.localCurvature);

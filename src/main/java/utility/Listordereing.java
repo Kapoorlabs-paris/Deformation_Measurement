@@ -127,9 +127,8 @@ public class Listordereing {
 	return orderedtruths;
 	}
 	/**
-	 * Return an ordered list of XY coordinates starting from the min X position to
-	 * the end of the list
-	 * 
+	 * Return an ordered list of XY coordinates starting from the reference position 
+	 * which is the lowest point below the center of the list of points
 	 * 
 	 * @param truths
 	 * @return

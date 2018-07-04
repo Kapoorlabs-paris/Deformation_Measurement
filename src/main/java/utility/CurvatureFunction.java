@@ -236,7 +236,6 @@ public class CurvatureFunction {
 		RegressionFunction Leftresultcurvature = getLocalcurvature(LeftCordlist, smoothing, maxError, minNumInliers,
 				degree, secdegree);
 
-		// Detect correctness
 
 		// Draw the function
 		double perimeter = 0;
@@ -277,7 +276,6 @@ public class CurvatureFunction {
 		RegressionFunction Rightresultcurvature = getLocalcurvature(RightCordlist, smoothing, maxError, minNumInliers,
 				degree, secdegree);
 
-		// Detect correctness
 
 		// Draw the function
 		double perimeter = 0;
@@ -376,13 +374,15 @@ public class CurvatureFunction {
 
 		}
 
-		// Use Ransac to fit a quadratic function if it fails do it via regression
+		// Here you choose which method is used to detect curvature
 
 		RegressionFunction finalfunction;
 	
+		// Circle fits
 		if(parent.circlefits)
 		finalfunction = RansacEllipseBlock(list, 2);
 
+		// Polynomial fits
 		else
 			
 		finalfunction =  RansacBlock(pointlist, smoothing, maxError, minNumInliers, degree, secdegree);

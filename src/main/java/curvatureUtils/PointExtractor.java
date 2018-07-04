@@ -56,6 +56,8 @@ public class PointExtractor {
 
 			RegressionFunction regression = functions.get(i);
 			for (int index = 0; index < regression.Curvaturepoints.size() - 1; ++index) {
+
+				/*
 				int xs = (int) regression.Curvaturepoints.get(index)[0];
 				int xe = (int) regression.Curvaturepoints.get(index + 1)[0];
 
@@ -83,14 +85,13 @@ public class PointExtractor {
 					ye = (int) (regression.back).predict(xe);
 
 				}
-
+*/
 				// Store the information to draw a line as a lineroi
-				Line line = new Line(xs, ys, xe, ye);
-				resultlineroi.add(line);
+			//	Line line = new Line(xs, ys, xe, ye);
+			//	resultlineroi.add(line);
 			}
 			if (regression.ellipse != null) {
 
-				System.out.println(regression.ellipse.getStart()[0] + " " + regression.ellipse.getStart()[1]);
 				EllipseRoi ellipse = DisplayasROI.create2DCircle(regression.ellipse.getCenter(),
 						regression.ellipse.getRadii() * regression.ellipse.getRadii());
 				ellipsecurveline.add(ellipse);

@@ -173,7 +173,7 @@ public class Computeinwater {
 
 		Iterator<Integer> setiter = parent.pixellist.iterator();
 		parent.superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>>();
-		 ArrayList<Intersectionobject> AllCurveintersection = new ArrayList<Intersectionobject>();
+		ArrayList<Intersectionobject> AllCurveintersection = new ArrayList<Intersectionobject>();
 		 
 		
 		
@@ -191,11 +191,14 @@ public class Computeinwater {
 
 					utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
 
-		
-			List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
+
 			
+			List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
+		if(current.Size < parent.maxsize) {
 			tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, resultcurvelineroi,resultallcurvelineroi,ellipselineroi, Segmentrect,  AllCurveintersection, t, z,
 					parent.jpb, percent, label)));
+			
+		}
 		}
 
 		try {

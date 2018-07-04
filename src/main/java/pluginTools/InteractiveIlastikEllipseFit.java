@@ -25,13 +25,13 @@ public class InteractiveIlastikEllipseFit {
 		///Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/RealCurveRaw.tif
 		///Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/BoundaryProbability.tif
 		///Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/MultiCut.tif
-		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/RealCurveRaw.tif");
+		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/MembraneSignal/Ilastik/Raw.tif");
 		impB.show();
 		
-		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/BoundaryProbability.tif");
+		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/MembraneSignal/Ilastik/Probability.tif");
 		impC.show();
 		
-		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/MultiCut.tif");
+		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/MembraneSignal/Ilastik/MultiCut.tif");
 		impA.show();
 		IlastikEllipseFileChooser panel = new IlastikEllipseFileChooser();
 
