@@ -108,32 +108,15 @@ public class LabelCurvature implements Runnable {
 		if (parent.minNumInliers > truths.size())
 			parent.minNumInliers = truths.size();
 
-		if (parent.increment < 0)
-			parent.increment = 1;
-		if(parent.increment >= Ordered.size() || parent.increment == 0)
-			parent.increment = Ordered.size() - 1;
+		
 		int increment = parent.increment;
-		for (int i = 0; i < Ordered.size(); i += increment) {
+	
+		for (int i = 1; i < Ordered.size() - 1; i += increment) {
 
-			if (i % (increment) == 2 ) {
-				resultlineroi.clear();
-				resultcurvelineroi.clear();
-				resultallcurvelineroi.clear();
-				ellipselineroi.clear();
-				parent.imp.updateAndDraw();
-			}
-
+			
 			if (i >= Ordered.size() - 1) {
 			
-				resultlineroi.clear();
-				resultcurvelineroi.clear();
-				resultallcurvelineroi.clear();
-				ellipselineroi.clear();
-				parent.imp.updateAndDraw();
-				
-				
 				break;
-				
 				
 			}
 
@@ -157,7 +140,7 @@ public class LabelCurvature implements Runnable {
 
 			CurvatureFunction computecurve = new CurvatureFunction(parent);
 			
-			
+			System.out.println("Getting curvature" + i + " " + Ordered.size() + " " + truths.size());
 			Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> resultpair = computecurve.getCurvature(
 					allorderedtruths, parent.insideCutoff, parent.minNumInliers, ndims, celllabel,
 					Math.abs(Math.max(parent.degree, parent.secdegree)),
@@ -190,9 +173,11 @@ public class LabelCurvature implements Runnable {
 			
 			
 			DisplayAuto.Display(parent);
+			if(increment == 0)
+				break;
 
 		}
-
+		
 		return new ValuePair<Integer, HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>>(
 				count, Bestdelta);
 	}

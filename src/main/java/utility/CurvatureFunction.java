@@ -131,7 +131,9 @@ public class CurvatureFunction {
 
 				
 			}
-			if (sizein >= truths.size())
+			
+			System.out.println(sizein + " " + truths.size());
+			if (sizein >= truths.size( ))
 				break;
 
 		}
@@ -300,6 +302,7 @@ public class CurvatureFunction {
 	public  void MakeTree(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int depthint,
 			String depth, int maxdepth) {
 
+		
 		int size = truths.size();
 		if (size <= 3)
 			return;

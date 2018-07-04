@@ -140,7 +140,7 @@ public class Listordereing {
 		
 		
 		List<RealLocalizable> copytruths = getCopyList(truths);
-		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
+		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>(truths.size());
 		// Get the starting minX and minY co-ordinates
 		RealLocalizable minCord;
 		
@@ -185,8 +185,13 @@ public class Listordereing {
 		
 			copytruths.remove(chosenCord);
 			}
-			else break;
-		} while (copytruths.size() > 1);
+			else {
+			
+				orderedtruths.add(nextCord);
+				break;
+			
+			}
+		} while (copytruths.size() >= 0);
 
 		
 		return orderedtruths;
