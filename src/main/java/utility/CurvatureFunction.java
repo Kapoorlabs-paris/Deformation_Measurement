@@ -143,7 +143,7 @@ public class CurvatureFunction {
 		for (int indexx = 0; indexx < totalinterpolatedCurvature.size(); ++indexx) {
 
 			Curvatureobject currentobject = new Curvatureobject(
-					totalinterpolatedCurvature.get(indexx)[2], perimeter, totalinterpolatedCurvature.get(indexx)[4], totalinterpolatedCurvature.get(indexx)[5], Label, new double[] {
+					totalinterpolatedCurvature.get(indexx)[2], perimeter, totalinterpolatedCurvature.get(indexx)[5], Label, new double[] {
 							totalinterpolatedCurvature.get(indexx)[0], totalinterpolatedCurvature.get(indexx)[1] },
 					t, z);
 
@@ -474,7 +474,7 @@ public class CurvatureFunction {
 
 		double[] center = ellipsesegment.function.getCenter();
 		double radii = ellipsesegment.function.getRadii();
-		double sign = ellipsesegment.function.getSign();
+		int sign = (int)ellipsesegment.function.getSign();
 		double[] newpos = new double[ndims];
 		long[] longnewpos = new long[ndims];
 		

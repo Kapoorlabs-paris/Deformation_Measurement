@@ -35,16 +35,14 @@ public class Curvatureobject extends AbstractEuclideanSpace implements RealLocal
 	public final double[] cord;
 
 	public final int Label;
-	public final double signedradiusCurvature;
 	public final double Intensity;
 	
 	
-	public Curvatureobject(final double radiusCurvature, final double perimeter, final double signedradiusCurvature, final double Intensity, final int Label, final double[] cord, final int t, final int z) {
+	public Curvatureobject(final double radiusCurvature, final double perimeter, final double Intensity, final int Label, final double[] cord, final int t, final int z) {
 		super(3);
 		this.radiusCurvature = radiusCurvature;
 		this.perimeter = perimeter;
 		this.cord = cord;
-		this.signedradiusCurvature = signedradiusCurvature;
 		this.Intensity = Intensity;
 		this.t = t;
 		this.z = z;

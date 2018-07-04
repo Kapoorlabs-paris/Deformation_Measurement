@@ -228,7 +228,6 @@ public class LabelCurvature implements Runnable {
 		double[] X = new double[localCurvature.size()];
 		double[] Y = new double[localCurvature.size()];
 		double[] Z = new double[localCurvature.size()];
-		double[] signZ = new double[localCurvature.size()];
 		double[] I = new double[localCurvature.size()];
 
 		ArrayList<Double> CurvePeri = new ArrayList<Double>();
@@ -242,12 +241,10 @@ public class LabelCurvature implements Runnable {
 			X[index] = localCurvature.get(index).cord[0];
 			Y[index] = localCurvature.get(index).cord[1];
 			Z[index] = localCurvature.get(index).radiusCurvature;
-			signZ[index] = localCurvature.get(index).signedradiusCurvature;
 			I[index] = localCurvature.get(index).Intensity;
 			
 			
 			CurveXY.add(Z[index]);
-			CurveXYSign.add(signZ[index]);
 			CurveI.add(I[index]);
 			
 			for (int i = 1; i < count; ++i) {
@@ -259,7 +256,6 @@ public class LabelCurvature implements Runnable {
 				double[] Xtest = new double[testlocalCurvature.size()];
 				double[] Ytest = new double[testlocalCurvature.size()];
 				double[] Ztest = new double[testlocalCurvature.size()];
-				double[] signZtest = new double[testlocalCurvature.size()];
 				double[] Itest = new double[testlocalCurvature.size()];
 				
 				CurvePeri.add(testlocalCurvature.get(0).perimeter);
@@ -268,13 +264,11 @@ public class LabelCurvature implements Runnable {
 					Xtest[testindex] = testlocalCurvature.get(testindex).cord[0];
 					Ytest[testindex] = testlocalCurvature.get(testindex).cord[1];
 					Ztest[testindex] = testlocalCurvature.get(testindex).radiusCurvature;
-					signZtest[index] = testlocalCurvature.get(testindex).signedradiusCurvature;
 					Itest[index] = testlocalCurvature.get(testindex).Intensity;
 
 					if (X[index] == Xtest[testindex] && Y[index] == Ytest[testindex]) {
 
 						CurveXY.add(Ztest[testindex]);
-						CurveXYSign.add(signZtest[index]);
 						CurveI.add(Itest[index]);
 						
 						
@@ -287,7 +281,6 @@ public class LabelCurvature implements Runnable {
 		
 			double frequdeltaperi = localCurvature.get(0).perimeter ;
 			double frequdelta = Z[index];
-			double signfrequdelta = signZ[index];
 			double intensitydelta = I[index];
 				
 				
@@ -316,16 +309,7 @@ public class LabelCurvature implements Runnable {
 				
 				
 
-				Iterator<Double> signsetiter = CurveXYSign.iterator();
-				while (signsetiter.hasNext()) {
-
-					Double s = signsetiter.next();
-
-				signfrequdelta+=s;
-
-				}
-
-				signfrequdelta/=CurveXYSign.size();
+				
 				
 				
 				Iterator<Double> Iiter = CurveI.iterator();
@@ -345,7 +329,7 @@ public class LabelCurvature implements Runnable {
 				
 				
 			
-			Curvatureobject newobject = new Curvatureobject((float) frequdelta, frequdeltaperi, signfrequdelta, intensitydelta,
+			Curvatureobject newobject = new Curvatureobject((float) frequdelta, frequdeltaperi, intensitydelta,
 					localCurvature.get(index).Label, localCurvature.get(index).cord, localCurvature.get(index).t,
 					localCurvature.get(index).z);
 		
@@ -368,8 +352,9 @@ public class LabelCurvature implements Runnable {
 
 		 Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi, resultcurvelineroi, segmentrect,
 					z, t, celllabel, true);
-			parent.ZTRois.put(uniqueID, currentroiobject);
-		 DisplayAuto.Display(parent);
+		 
+		parent.ZTRois.put(uniqueID, currentroiobject);
+		DisplayAuto.Display(parent);
 		AllCurveintersection.add(currentobject);
 
 		parent.AlllocalCurvature.add(parent.localCurvature);

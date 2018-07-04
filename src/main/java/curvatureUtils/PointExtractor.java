@@ -121,11 +121,10 @@ public class PointExtractor {
 			X[index] = localCurvature.get(index).cord[0];
 			Y[index] = localCurvature.get(index).cord[1];
 			Z[index] = localCurvature.get(index).radiusCurvature;
-			signZ[index] = localCurvature.get(index).signedradiusCurvature;
 			I[index] = localCurvature.get(index).Intensity;
 
 			// Make the line list for making intersection object
-			linelist.add(new double[] { X[index], Y[index], Z[index], signZ[index], I[index] });
+			linelist.add(new double[] { X[index], Y[index], Z[index], I[index] });
 
 		}
 
