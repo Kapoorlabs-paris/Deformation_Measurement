@@ -140,7 +140,6 @@ public class LabelCurvature implements Runnable {
 
 			CurvatureFunction computecurve = new CurvatureFunction(parent);
 			
-			System.out.println("Getting curvature" + i + " " + Ordered.size() + " " + truths.size());
 			Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> resultpair = computecurve.getCurvature(
 					allorderedtruths, parent.insideCutoff, parent.minNumInliers, ndims, celllabel,
 					Math.abs(Math.max(parent.degree, parent.secdegree)),
@@ -210,12 +209,13 @@ public class LabelCurvature implements Runnable {
 		RealLocalizable centerpoint = Listordereing.getMeanCord(truths);
 
 		// Get the sparse list of points
-		List<RealLocalizable> Ordered = Listordereing.getOrderedList(truths);
+		Pair<RealLocalizable, List<RealLocalizable>> Ordered = Listordereing.getOrderedList(truths);
 
 		// Start sliding
 		Pair<Integer, HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>> slider = SliderLoop(
-				Ordered, centerpoint);
+				Ordered.getB(), centerpoint);
 
+		parent.Refcord = Ordered.getA();
 		Bestdelta = slider.getB();
 		int count = slider.getA();
 		

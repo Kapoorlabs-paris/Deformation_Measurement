@@ -14,6 +14,7 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Pair;
+import net.imglib2.util.ValuePair;
 
 public class Listordereing {
 
@@ -134,7 +135,7 @@ public class Listordereing {
 	 * @return
 	 */
 
-	public static List<RealLocalizable> getOrderedList(
+	public static Pair<RealLocalizable, List<RealLocalizable>> getOrderedList(
 			List<RealLocalizable> truths) {
 
 		
@@ -145,7 +146,7 @@ public class Listordereing {
 		RealLocalizable minCord;
 		
 		minCord = getMinCord(copytruths);
-		
+		RealLocalizable refcord = minCord;
 		
 		
 		RealLocalizable meanCord = getMeanCord(copytruths);
@@ -194,7 +195,7 @@ public class Listordereing {
 		} while (copytruths.size() >= 0);
 
 		
-		return orderedtruths;
+		return new ValuePair<RealLocalizable, List<RealLocalizable>>(refcord, orderedtruths);
 	}
 
 	
@@ -324,7 +325,7 @@ public class Listordereing {
 			RealLocalizable currentpair = iter.next();
 
 
-			if (currentpair.getDoublePosition(0) <= meanCord.getDoublePosition(0)) {
+			if (Math.abs(currentpair.getDoublePosition(0) - meanCord.getDoublePosition(0)) <= 5) {
 
 				minobject = currentpair;
 

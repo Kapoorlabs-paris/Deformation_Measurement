@@ -9,7 +9,7 @@ import javax.swing.JScrollBar;
 import listeners.RimSelectionListener;
 import pluginTools.InteractiveSimpleEllipseFit;
 
-public class RectoffsetListener implements AdjustmentListener {
+public class RectoffsetYListener implements AdjustmentListener {
 	final Label label;
 	final String string;
 	RimSelectionListener parent;
@@ -19,7 +19,7 @@ public class RectoffsetListener implements AdjustmentListener {
 	float max;
 	final JScrollBar deltaScrollbar;
 
-	public RectoffsetListener(final RimSelectionListener parent, final InteractiveSimpleEllipseFit grandparent,  final Label label, final String string, final float min, float max,
+	public RectoffsetYListener(final RimSelectionListener parent, final InteractiveSimpleEllipseFit grandparent,  final Label label, final String string, final float min, float max,
 			final int scrollbarSize, final JScrollBar deltaScrollbar) {
 		this.label = label;
 		this.parent = parent;
@@ -34,16 +34,16 @@ public class RectoffsetListener implements AdjustmentListener {
 	@Override
 	public void adjustmentValueChanged(AdjustmentEvent e) {
 		
-		max = parent.maxoffsetX;
+		max = parent.maxoffsetY;
 		
-		parent.offset = (int) utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize);
+		parent.offsetY = (int) utility.Slicer.computeValueFromScrollbarPosition(e.getValue(), min, max, scrollbarSize);
 
 		deltaScrollbar
-				.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.offset, min, max, scrollbarSize));
+				.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.offsetY, min, max, scrollbarSize));
 
-		label.setText(string +  " = "  + (parent.offset) + "      ");
+		label.setText(string +  " = "  + (parent.offsetY) + "      ");
 		if(e.getValueIsAdjusting())
-		parent.offsetField.setText(Integer.toString(parent.offset));
+		parent.offsetYField.setText(Integer.toString(parent.offsetY));
 		parent.IntensityRegion.validate();
 		parent.IntensityRegion.repaint();
 	

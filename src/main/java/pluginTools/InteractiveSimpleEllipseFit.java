@@ -291,7 +291,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float alphaMax = 1;
 	public float betaMin = 0;
 	public float betaMax = 1;
-	public int increment = 10;
+	public int increment = 0;
 	public int maxSearchradiusInit = (int) maxSearchradius;
 	public float maxSearchradiusMin = 1;
 	public float maxSearchradiusMax = 1000;
@@ -349,6 +349,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public boolean supermode;
 	public boolean curveautomode;
 	public boolean curvesupermode;
+	public RealLocalizable Refcord;
 	public double mindistance = 200;
 	public int alphaInit = 1;
 	public int betaInit = 0;
