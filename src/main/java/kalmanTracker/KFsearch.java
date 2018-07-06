@@ -218,7 +218,6 @@ public class KFsearch implements IntersectionTracker {
 				final JaqamanLinker<Intersectionobject, Intersectionobject> newLinker = new JaqamanLinker<Intersectionobject, Intersectionobject>(
 						ic);
 
-				System.out.println(newLinker.checkInput() + " " + newLinker.process());
 				if (!newLinker.checkInput() || !newLinker.process()) {
 					errorMessage = BASE_ERROR_MSG + "Error linking Blobs from frame " + (uniqueIDnext)
 							+ " to next frame " + ": " + newLinker.getErrorMessage();
@@ -315,7 +314,6 @@ public class KFsearch implements IntersectionTracker {
 		public double linkingCost(final ComparableRealPoint state, final Intersectionobject Blob) {
 			final double dx = state.getDoublePosition(0) - Blob.Intersectionpoint[0];
 			final double dy = state.getDoublePosition(1) - Blob.Intersectionpoint[1];
-			System.out.println((dx * dx));
 			return dx * dx + dy * dy + Double.MIN_NORMAL;
 			// So that it's never 0
 

@@ -54,6 +54,8 @@ public class AngleListener implements ActionListener {
 		parent.table.repaint();
 		parent.Tracklist.clear();
 		parent.overlay.clear();
+		parent.imp.getCanvas().removeMouseListener(parent.mvl);
+		parent.imp.getCanvas().removeMouseMotionListener(parent.ml);
 		if (parent.supermode) {
 		
 			

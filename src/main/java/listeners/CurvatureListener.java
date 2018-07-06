@@ -31,7 +31,8 @@ public class CurvatureListener implements ActionListener {
 		parent.AlllocalCurvature.clear();
 		parent.overlay.clear();
 		parent.Tracklist.clear();
-		
+		parent.imp.getCanvas().removeMouseListener(parent.mvl);
+		parent.imp.getCanvas().removeMouseMotionListener(parent.ml);
 		if(parent.curveautomode) {
 			
 			parent.emptysmooth = utility.Binarization.CreateBinaryBit(parent.originalimgsmooth, parent.lowprob, parent.highprob);

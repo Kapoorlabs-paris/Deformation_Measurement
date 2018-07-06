@@ -114,6 +114,7 @@ import listeners.MinperimeterListener;
 import listeners.OutsideCutoffListener;
 import listeners.RListener;
 import listeners.RedoListener;
+import listeners.RimSelectionListener;
 import listeners.RoiListener;
 import listeners.RunCirclemodeListener;
 import listeners.RunPolymodeListener;
@@ -1455,6 +1456,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Checkbox displayCircle = new Checkbox("Display Intermediate Circles", displayIntermediate);
 	public Checkbox displaySegments = new Checkbox("Display Segments", displayIntermediateBox);
 	public JButton ClearDisplay = new JButton("Clear Display");
+	public JButton SelectRim = new JButton("Rim selection for Intensity");
    
 	Label maxSearchText = new Label(maxSearchstring + " = " + maxSearchInit, Label.CENTER);
 	Label maxSearchTextS = new Label(maxSearchstring + " = " + maxSearchInit, Label.CENTER);
@@ -2049,6 +2051,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		lostframe.addTextListener(new LostFrameListener(this));
 		
 		ClearDisplay.addActionListener(new ClearDisplayListener(this));
+		SelectRim.addActionListener(new RimSelectionListener(this));
 		degreeField.addTextListener(new DegreeListener(this, false));
 		incrementField.addTextListener(new IncrementListener(this, false));
 		secdegreeField.addTextListener(new SecDegreeListener(this, false));

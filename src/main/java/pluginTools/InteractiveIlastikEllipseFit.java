@@ -19,7 +19,7 @@ public class InteractiveIlastikEllipseFit {
 		// /Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/Stage3Training/TestEtrack/TestTimeLapse/Test3_1/BoundaryProbability.tif
 		///Users/aimachine/Documents/TalkCurie
 		///Users/aimachine/Documents/CurvatureTest/MultiCircles.tif
-		///Users/aimachine/Documents/CurvatureTest/Circles.tif
+		///Users/aimachine/Documents/CurvatureTest/Circles.tif	
 		//"/Users/aimachine/Documents/CurvatureTest/GroundTruthEllipseTest/RawImage.tif"
 				//"/Users/aimachine/Documents/CurvatureTest/GroundTruthEllipseTest/FakeMultiActual.tif"
 		///Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/RealCurveRaw.tif

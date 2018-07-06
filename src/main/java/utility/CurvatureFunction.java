@@ -143,7 +143,7 @@ public class CurvatureFunction {
 		for (int indexx = 0; indexx < totalinterpolatedCurvature.size(); ++indexx) {
 
 			Curvatureobject currentobject = new Curvatureobject(
-					totalinterpolatedCurvature.get(indexx)[2], perimeter, totalinterpolatedCurvature.get(indexx)[5], Label, new double[] {
+					totalinterpolatedCurvature.get(indexx)[2], perimeter, totalinterpolatedCurvature.get(indexx)[4], Label, new double[] {
 							totalinterpolatedCurvature.get(indexx)[0], totalinterpolatedCurvature.get(indexx)[1] },
 					t, z);
 
@@ -474,7 +474,6 @@ public class CurvatureFunction {
 
 		double[] center = ellipsesegment.function.getCenter();
 		double radii = ellipsesegment.function.getRadii();
-		int sign = (int)ellipsesegment.function.getSign();
 		double[] newpos = new double[ndims];
 		long[] longnewpos = new long[ndims];
 		
@@ -486,12 +485,12 @@ public class CurvatureFunction {
 			
 			
 			 
-			Kappa = sign / radii;
+			Kappa = 1.0 / radii;
 			for (int d = 0; d < newpos.length; ++d)
 				longnewpos[d] = (long) newpos[d];
 			net.imglib2.Point intpoint = new net.imglib2.Point(longnewpos);
 			double Intensity = getIntensity(intpoint);
-			Curvaturepoints.add(new double[] { newpos[0], newpos[1], Math.abs(Kappa), perimeter, Kappa, Intensity });
+			Curvaturepoints.add(new double[] { newpos[0], newpos[1], Math.abs(Kappa), perimeter, Intensity });
 		}
 
 		RegressionFunction finalfunctionransac = new RegressionFunction(ellipsesegment.function, Curvaturepoints);
