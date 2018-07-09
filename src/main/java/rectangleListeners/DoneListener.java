@@ -25,6 +25,8 @@ public class DoneListener implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		parent.Cardframe.dispose();
 	
+		
+		grandparent.imp.getCanvas().removeMouseListener(grandparent.ovalml);
 		RoiManager roimanager = RoiManager.getInstance();
 		if(roimanager!=null)
 			roimanager.dispose();

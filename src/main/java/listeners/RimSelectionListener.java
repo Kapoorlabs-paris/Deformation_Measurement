@@ -22,6 +22,8 @@ import ij.plugin.frame.RoiManager;
 import mpicbg.imglib.image.display.Display;
 import pluginTools.InteractiveSimpleEllipseFit;
 import rectangleListeners.DoneListener;
+import rectangleListeners.MarkCenterListener;
+import rectangleListeners.MarkListener;
 import rectangleListeners.RectheightListener;
 import rectangleListeners.RectheightLocListener;
 import rectangleListeners.RectoffsetListener;
@@ -54,6 +56,10 @@ public class RimSelectionListener implements ActionListener {
 	public int minoffsetY = -100;
 	public int maxoffsetY = 100;
 	public JButton Donebutton = new JButton("Done");
+	public JButton Resetbutton = new JButton("Reset Offset");
+	public JButton Markbutton = new JButton("Mark boundary point");
+	public JButton Markcenterbutton = new JButton("Mark center point");
+	
 	public int scrollbarSize = 1000;
 	public int height = 5;
 	public int width = 5;
@@ -90,7 +96,7 @@ public class RimSelectionListener implements ActionListener {
 	public Rectangle standardRectangle;
 	public void RectangleSelectDialog() {
 		
-		
+		parent.usedefaultrim = false;
 		minoffsetX = -(int) parent.originalimg.dimension(0) / 2;
 		 maxoffsetX = (int)parent.originalimg.dimension(0) / 2;
 		 minoffsetY = -(int) parent.originalimg.dimension(1) / 2;
@@ -154,8 +160,18 @@ public class RimSelectionListener implements ActionListener {
 		IntensityRegion.add(combooffsetY.BuildDisplay(), new GridBagConstraints(4, 2, 3, 1, 0.0, 0.0,
 				GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 		
-		IntensityRegion.add(Donebutton,  new GridBagConstraints(4, 3, 3, 1, 0.0, 0.0,
+		IntensityRegion.add(Resetbutton,  new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0,
 				GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
+		
+		IntensityRegion.add(Markbutton,  new GridBagConstraints(4, 3, 3, 1, 0.0, 0.0,
+				GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
+		
+		IntensityRegion.add(Markcenterbutton,  new GridBagConstraints(4, 4, 3, 1, 0.0, 0.0,
+				GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
+		
+		IntensityRegion.add(Donebutton,  new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0,
+				GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
+		
 		
 		heightslider.addAdjustmentListener(
 				new RectheightListener(this, parent, heightText, heightstring, minVal, maxheight, scrollbarSize, heightslider));
@@ -172,6 +188,10 @@ public class RimSelectionListener implements ActionListener {
         offsetField.addTextListener(new RectoffsetLocListener(this, parent, false)); 	
         offsetYField.addTextListener(new RectoffsetYLocListener(this,parent,  false)); 
 		Donebutton.addActionListener(new DoneListener(this, parent));
+		Resetbutton.addActionListener(new ResetListener(this, parent));
+		Markbutton.addActionListener(new MarkListener(this, parent));
+		Markcenterbutton.addActionListener(new MarkCenterListener(this, parent));
+		
 		
 		IntensityRegion.setPreferredSize(new Dimension(parent.SizeX, parent.SizeY));
 		Cardframe.add(IntensityRegion, "Center");

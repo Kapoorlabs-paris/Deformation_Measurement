@@ -279,6 +279,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public ImagePlus resultimp;
 	public ImagePlus emptyimp;
 	public int ndims;
+	public boolean usedefaultrim = true;
+	public MouseListener ovalml;
+	public int[] boundarypoint;
+	public int[] midpoint;
 	public float initialSearchradius = 100;
 	public float maxSearchradius = 15;
 	public float maxSearchradiusS = 15;
