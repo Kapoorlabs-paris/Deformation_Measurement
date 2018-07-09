@@ -141,7 +141,7 @@ public class LabelCurvature implements Runnable {
 			CurvatureFunction computecurve = new CurvatureFunction(parent);
 			
 			Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> resultpair = computecurve.getCurvature(
-					allorderedtruths, parent.insideCutoff, parent.minNumInliers, ndims, celllabel,
+					allorderedtruths,centerpoint, parent.insideCutoff, parent.minNumInliers, ndims, celllabel,
 					Math.abs(Math.max(parent.degree, parent.secdegree)),
 					Math.abs(Math.min(parent.degree, parent.secdegree)), t, z);
 

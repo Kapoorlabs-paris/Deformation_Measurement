@@ -28,7 +28,6 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
-import pluginTools.CorrectCurvature;
 import pluginTools.InteractiveSimpleEllipseFit;
 import ransac.PointFunctionMatch.PointFunctionMatch;
 import ransac.loadFiles.Tracking;
@@ -42,7 +41,6 @@ import ransacPoly.RansacFunction;
 import ransacPoly.RegressionFunction;
 import ransacPoly.Sort;
 import ransacPoly.Threepointfit;
-import sliderPolynomial.PolynomialSlider;
 
 public class CurvatureFunction {
 
@@ -68,7 +66,7 @@ public class CurvatureFunction {
 	 * @return
 	 */
 	public  ValuePair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> getCurvature(
-			 List<RealLocalizable> truths, double maxError, int minNumInliers,
+			 List<RealLocalizable> truths, RealLocalizable centerpoint, double maxError, int minNumInliers,
 			int ndims, int Label, int degree, int secdegree, int t, int z) {
 
 		ArrayList<Curvatureobject> curveobject = new ArrayList<Curvatureobject>();
@@ -104,11 +102,11 @@ public class CurvatureFunction {
 			// Output is the local perimeter of the fitted function
 			Pair<Boolean, Double> leftlocal = null, rightlocal = null;
 			if (node.leftTree != null)
-				leftlocal = FitonLeftsubTree(parent, node, leftinterpolatedCurvature, leftfunctions, smoothing,
+				leftlocal = FitonLeftsubTree(parent,centerpoint, node, leftinterpolatedCurvature, leftfunctions, smoothing,
 						maxError, minNumInliers, degree, secdegree);
 
 			if (node.rightTree != null)
-				rightlocal = FitonRightsubTree(parent, node, rightinterpolatedCurvature, rightfunctions, smoothing,
+				rightlocal = FitonRightsubTree(parent,centerpoint, node, rightinterpolatedCurvature, rightfunctions, smoothing,
 						maxError, minNumInliers, degree, secdegree);
 
 			// Add only the correct regions
@@ -132,7 +130,6 @@ public class CurvatureFunction {
 				
 			}
 			
-			System.out.println(sizein + " " + truths.size());
 			if (sizein >= truths.size( ))
 				break;
 
@@ -220,7 +217,7 @@ public class CurvatureFunction {
 		
 	}
 
-	public  Pair<Boolean, Double> FitonLeftsubTree(InteractiveSimpleEllipseFit parent, Node<RealLocalizable> leaf,
+	public  Pair<Boolean, Double> FitonLeftsubTree(InteractiveSimpleEllipseFit parent, RealLocalizable centerpoint, Node<RealLocalizable> leaf,
 			ArrayList<double[]> interpolatedCurvature, ArrayList<RegressionFunction> functions, double smoothing,
 			double maxError, int minNumInliers, int degree, int secdegree) {
 
@@ -235,7 +232,7 @@ public class CurvatureFunction {
 					Leftsubtruths.get(i).getDoublePosition(1) });
 
 		}
-		RegressionFunction Leftresultcurvature = getLocalcurvature(LeftCordlist, smoothing, maxError, minNumInliers,
+		RegressionFunction Leftresultcurvature = getLocalcurvature(LeftCordlist, centerpoint, smoothing, maxError, minNumInliers,
 				degree, secdegree);
 
 
@@ -259,7 +256,7 @@ public class CurvatureFunction {
 
 	}
 
-	public  Pair<Boolean, Double> FitonRightsubTree(InteractiveSimpleEllipseFit parent,
+	public  Pair<Boolean, Double> FitonRightsubTree(InteractiveSimpleEllipseFit parent, RealLocalizable centerpoint,
 			Node<RealLocalizable> leaf, ArrayList<double[]> interpolatedCurvature,
 			ArrayList<RegressionFunction> functions, double smoothing, double maxError, int minNumInliers, int degree,
 			int secdegree) {
@@ -275,7 +272,7 @@ public class CurvatureFunction {
 					Rightsubtruths.get(i).getDoublePosition(1) });
 
 		}
-		RegressionFunction Rightresultcurvature = getLocalcurvature(RightCordlist, smoothing, maxError, minNumInliers,
+		RegressionFunction Rightresultcurvature = getLocalcurvature(RightCordlist,centerpoint, smoothing, maxError, minNumInliers,
 				degree, secdegree);
 
 
@@ -359,7 +356,7 @@ public class CurvatureFunction {
 	 * @return
 	 */
 
-	public  RegressionFunction getLocalcurvature(ArrayList<double[]> Cordlist, double smoothing, double maxError,
+	public  RegressionFunction getLocalcurvature(ArrayList<double[]> Cordlist, RealLocalizable centerpoint, double smoothing, double maxError,
 			int minNumInliers, int degree, int secdegree) {
 
 		double[] x = new double[Cordlist.size()];
@@ -383,12 +380,12 @@ public class CurvatureFunction {
 	
 		// Circle fits
 		if(parent.circlefits)
-		finalfunction = RansacEllipseBlock(list, 2);
+		finalfunction = RansacEllipseBlock(list, centerpoint, 2);
 
 		// Polynomial fits
 		else
 			
-		finalfunction =  RansacBlock(pointlist, smoothing, maxError, minNumInliers, degree, secdegree);
+		finalfunction =  RansacBlock(pointlist, centerpoint, smoothing, maxError, minNumInliers, degree, secdegree);
 
 		return finalfunction;
 
@@ -401,7 +398,7 @@ public class CurvatureFunction {
 	 * @param points
 	 * @return
 	 */
-	public  RegressionFunction RegressionBlock(ArrayList<Point> points, int degree) {
+	public  RegressionFunction RegressionBlock(ArrayList<Point> points, RealLocalizable center, int degree) {
 
 		// DO not use this
 		double[] x = new double[points.size()];
@@ -443,7 +440,7 @@ public class CurvatureFunction {
 
 			long[] posf = new long[] { (long)points.get(index).getW()[0],  (long)points.get(index).getW()[1]};
 			net.imglib2.Point point = new net.imglib2.Point(posf);
-			double Intensity = getIntensity(point);
+			double Intensity = getIntensity(point, center);
 			
 			Curvaturepoints.add(new double[] { points.get(index).getW()[0], points.get(index).getW()[1],
 					Math.abs(Kappa), perimeter, Kappa, Intensity });
@@ -464,7 +461,7 @@ public class CurvatureFunction {
 	 * @return
 	 */
 
-	public  RegressionFunction RansacEllipseBlock(final ArrayList<RealLocalizable> pointlist, int ndims) {
+	public  RegressionFunction RansacEllipseBlock(final ArrayList<RealLocalizable> pointlist, RealLocalizable centerpoint, int ndims) {
 
 		final RansacFunctionEllipsoid ellipsesegment = FitLocalEllipsoid.findLocalEllipsoid(pointlist, ndims);
 
@@ -489,7 +486,7 @@ public class CurvatureFunction {
 			for (int d = 0; d < newpos.length; ++d)
 				longnewpos[d] = (long) newpos[d];
 			net.imglib2.Point intpoint = new net.imglib2.Point(longnewpos);
-			double Intensity = getIntensity(intpoint);
+			double Intensity = getIntensity(intpoint, centerpoint);
 			Curvaturepoints.add(new double[] { newpos[0], newpos[1], Math.abs(Kappa), perimeter, Intensity });
 		}
 
@@ -509,7 +506,7 @@ public class CurvatureFunction {
 	 * @return
 	 */
 
-	public  RegressionFunction RansacBlock(final ArrayList<Point> pointlist, double smoothing, double maxError,
+	public  RegressionFunction RansacBlock(final ArrayList<Point> pointlist, RealLocalizable center, double smoothing, double maxError,
 			int minNumInliers, int degree, int secdegree) {
 
 		// Ransac block
@@ -553,7 +550,7 @@ public class CurvatureFunction {
 				
 				long[] posf = new long[] { (long)p.getP1().getW()[0],  (long)p.getP1().getW()[1]};
 				net.imglib2.Point point = new net.imglib2.Point(posf);
-				double Intensity = getIntensity(point);
+				double Intensity = getIntensity(point, center);
 				Curvaturepoints
 						.add(new double[] { p.getP1().getW()[0], p.getP1().getW()[1], Math.abs(Kappa), perimeter, Kappa, Intensity });
 				
@@ -684,12 +681,21 @@ public class CurvatureFunction {
 		return perimeter;
 	}
 	
-	public double getIntensity(Localizable point) {
+	/**
+	 * Obtain intensity in the user defined 
+	 * 
+	 * @param point
+	 * @return
+	 */
+	
+	public double getIntensity(Localizable point, RealLocalizable center) {
 		
 		
 		RandomAccess<FloatType> ranac = parent.CurrentViewOrig.randomAccess();
 		
 		ranac.setPosition(point);
+		
+		
 		
 		double Intensity = ranac.get().getRealDouble();
 		

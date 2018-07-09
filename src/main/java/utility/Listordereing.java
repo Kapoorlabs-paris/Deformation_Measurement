@@ -283,6 +283,37 @@ public class Listordereing {
 	
 	/**
 	 * 
+	 * Get the mean XY co-ordinates from the list
+	 * 
+	 * @param truths
+	 * @return
+	 */
+
+	public static double[] getMeanCordDouble(
+			List<double[]> truths) {
+
+		Iterator<double[]> iter = truths.iterator();
+        double Xmean = 0, Ymean = 0;
+		while (iter.hasNext()) {
+
+			double[] currentpair = iter.next();
+
+			double[] currentpoint = currentpair;
+
+			Xmean+= currentpoint[0];
+			Ymean+= currentpoint[1];
+			
+			
+
+		}
+		
+		
+
+		return new double[] {Xmean / truths.size(), Ymean / truths.size()};
+	}
+	
+	/**
+	 * 
 	 * Get the starting XY co-ordinates to create an ordered list, start from minX and minY
 	 * 
 	 * @param truths

@@ -37,7 +37,7 @@ import utility.DisplayAuto;
 public class RimSelectionListener implements ActionListener {
 
 	final InteractiveSimpleEllipseFit parent;
-
+	RoiManager roimanager;
 	public RimSelectionListener(final InteractiveSimpleEllipseFit parent) {
 
 		this.parent = parent;
@@ -45,7 +45,11 @@ public class RimSelectionListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		 roimanager = RoiManager.getInstance();
 
+		if (roimanager == null) {
+			roimanager = new RoiManager();
+		}
 		RectangleSelectDialog();
 
 	}
@@ -96,7 +100,6 @@ public class RimSelectionListener implements ActionListener {
 	public Rectangle standardRectangle;
 	public void RectangleSelectDialog() {
 		
-		parent.usedefaultrim = false;
 		minoffsetX = -(int) parent.originalimg.dimension(0) / 2;
 		 maxoffsetX = (int)parent.originalimg.dimension(0) / 2;
 		 minoffsetY = -(int) parent.originalimg.dimension(1) / 2;
@@ -105,11 +108,7 @@ public class RimSelectionListener implements ActionListener {
 	    maxheight = (int) parent.originalimg.dimension(1);
 		 maxwidth = (int) parent.originalimg.dimension(0);
 		
-		RoiManager roimanager = RoiManager.getInstance();
-
-		if (roimanager == null) {
-			roimanager = new RoiManager();
-		}
+		
 		
 		standardRectangle = new Rectangle((int)parent.originalimg.dimension(0) / 2, (int)parent.originalimg.dimension(0) / 2, height,
 				width);
@@ -166,8 +165,8 @@ public class RimSelectionListener implements ActionListener {
 		IntensityRegion.add(Markbutton,  new GridBagConstraints(4, 3, 3, 1, 0.0, 0.0,
 				GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 		
-		IntensityRegion.add(Markcenterbutton,  new GridBagConstraints(4, 4, 3, 1, 0.0, 0.0,
-				GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
+		//IntensityRegion.add(Markcenterbutton,  new GridBagConstraints(4, 4, 3, 1, 0.0, 0.0,
+			//	GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 		
 		IntensityRegion.add(Donebutton,  new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0,
 				GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
