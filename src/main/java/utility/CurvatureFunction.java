@@ -695,11 +695,60 @@ public class CurvatureFunction {
 		
 		ranac.setPosition(point);
 		
+		double maxindistance;
+		double maxoutdistance;
+		if(parent.usedefaultrim) {
+			
+			
+			maxindistance = 1;
+			maxoutdistance = 1;
+		}
 		
+		else {
+			 maxindistance = parent.insidedistance;
+			 maxoutdistance = parent.outsidedistance;
+			
+		}
+	
+		double fcteps = 1.0E-30;
+		long step = point.getLongPosition(0) - (long)center.getFloatPosition(0);
 		
+		int signum;
+		if(step < 0)
+			signum = 1;
+		else
+			signum = -1;
+		
+		long movestep = 1;
+		long slope = (long) (( point.getLongPosition(1) - (long)center.getFloatPosition(1) ) / ( step + fcteps));
+		long intercept = point.getLongPosition(1) - slope * point.getLongPosition(0);
 		double Intensity = ranac.get().getRealDouble();
+		int i = 0;
 		
+		do {
+		long x = ranac.getLongPosition(0) + i * movestep * signum;
+		long y = slope * ranac.getLongPosition(0) + intercept;
+		ranac.setPosition(new long[] {x, y});
+		i++;
+		Intensity+=ranac.get().getRealDouble();
+		if(Distance.DistanceSq(new double[] {point.getDoublePosition(0), point.getDoublePosition(1)}, new double[] {x, y})<= maxindistance * maxindistance)
+			break;
+		}while(true);
 		
+		 i = 0;
+			
+			do {
+			long x = ranac.getLongPosition(0) - i * movestep * signum;
+			long y = slope * ranac.getLongPosition(0) + intercept;
+			ranac.setPosition(new long[] {x, y});
+			i++;
+			Intensity+=ranac.get().getRealDouble();
+			if(Distance.DistanceSq(new double[] {point.getDoublePosition(0), point.getDoublePosition(1)}, new double[] {x, y})<= maxoutdistance * maxoutdistance)
+				break;
+			}while(true);
+			
+		
+		System.out.println(Intensity + " " + maxoutdistance + " " + maxindistance);
 		return Intensity;
 		
 	}
