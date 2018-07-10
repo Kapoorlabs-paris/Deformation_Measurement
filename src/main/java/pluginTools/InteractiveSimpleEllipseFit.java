@@ -1743,7 +1743,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 			Roiselect.setBorder(roitools);
-			Roiselect.setPreferredSize(new Dimension(SizeX, SizeY));
+		//	Roiselect.setPreferredSize(new Dimension(SizeX, SizeY));
 			panelFirst.add(Roiselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 		}
@@ -1782,7 +1782,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				
 			}
 	
-			Probselect.setPreferredSize(new Dimension(SizeX, SizeY));
+		//	Probselect.setPreferredSize(new Dimension(SizeX, SizeY));
 			Probselect.setBorder(probborder);
 
 			panelFirst.add(Probselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
@@ -1825,7 +1825,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			
 			Probselect.add(IlastikAuto, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-			Probselect.setPreferredSize(new Dimension(SizeX, SizeY));
+		//	Probselect.setPreferredSize(new Dimension(SizeX, SizeY));
 			Probselect.setBorder(probborder);
 
 			panelFirst.add(Probselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
@@ -1878,7 +1878,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			Angleselect.setBorder(circletools);
-			Angleselect.setPreferredSize(new Dimension(SizeX + 100, SizeY + 100));
+			//Angleselect.setPreferredSize(new Dimension(SizeX + 100, SizeY + 100));
 			panelFirst.add(Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
@@ -1920,7 +1920,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 
 		Angleselect.setBorder(ellipsetools);
-		Angleselect.setPreferredSize(new Dimension(SizeX, SizeY));
+		//Angleselect.setPreferredSize(new Dimension(SizeX, SizeY));
 		
 		
 		
@@ -1986,7 +1986,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		KalmanPanel.setBorder(Kalmanborder);
 		
-		KalmanPanel.setPreferredSize(new Dimension(SizeX, SizeY));
+	//	KalmanPanel.setPreferredSize(new Dimension(SizeX, SizeY));
 
 		int span = 5;
 		
@@ -2008,7 +2008,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		  
 		  ManualIntervention.setBorder(ManualInterventionborder);
 			
-		  ManualIntervention.setPreferredSize(new Dimension(SizeX, SizeY));
+		//  ManualIntervention.setPreferredSize(new Dimension(SizeX, SizeY));
 		  
 
 			panelFirst.add(ManualIntervention, new GridBagConstraints(5, 2, 5, 1, 0.0, 0.0, GridBagConstraints.ABOVE_BASELINE,
@@ -2021,7 +2021,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		
 	  
-		table.setPreferredSize(new Dimension(500, 500));
+		table.setPreferredSize(new Dimension(SizeX, SizeY));
 		table.setFillsViewportHeight(true);
 
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
