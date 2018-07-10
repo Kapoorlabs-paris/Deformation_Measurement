@@ -28,11 +28,16 @@ public class InteractiveIlastikEllipseFit {
 		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/RealCurveRaw.tif");
 		impB.show();
 		
+		ImagePlus impD = new Opener().openImage("/Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/RealCurveRaw.tif");
+		impD.show();
+		
 		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/BoundaryProbability.tif");
 		impC.show();
 		
 		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/MultiCut.tif");
 		impA.show();
+		
+		
 		IlastikEllipseFileChooser panel = new IlastikEllipseFileChooser();
 
 		frame.getContentPane().add(panel, "Center");

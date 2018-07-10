@@ -248,6 +248,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JFreeChart chart;
 	public JFreeChart contchart;
 	public RandomAccessibleInterval<FloatType> originalimg;
+	public RandomAccessibleInterval<FloatType> originalSecimg;
 	public RandomAccessibleInterval<IntType> originalimgsuper;
 	public RandomAccessibleInterval<FloatType> originalimgbefore;
 	
@@ -307,6 +308,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public RandomAccessibleInterval<FloatType> CurrentView;
 	public RandomAccessibleInterval<FloatType> CurrentViewSmooth;
 	public RandomAccessibleInterval<FloatType> CurrentViewOrig;
+	public RandomAccessibleInterval<FloatType> CurrentViewSecOrig;
 	public RandomAccessibleInterval<FloatType> CurrentResultView;
 	public Color confirmedRois = Color.BLUE;
 	public Color defaultRois = Color.YELLOW;
@@ -640,6 +642,35 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		
 	}
+	
+	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, RandomAccessibleInterval<FloatType> originalSecimg,
+			RandomAccessibleInterval<FloatType> originalimgbefore, RandomAccessibleInterval<IntType> originalimgsuper,
+			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode, String inputdirectory) {
+		
+		this.inputfile = null;
+		this.inputdirectory = inputdirectory;
+		this.originalSecimg = originalSecimg;
+		this.originalimg = originalimg;
+		this.originalimgsuper = originalimgsuper;
+		this.originalimgbefore = originalimgbefore;
+		this.ndims = originalimg.numDimensions();
+		this.dataset = new XYSeriesCollection();
+		this.contdataset = new XYSeriesCollection();
+		this.visdataset = new DefaultContourDataset();
+		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
+		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
+		this.jFreeChartFrame.setVisible(false);
+		nf = NumberFormat.getInstance(Locale.ENGLISH);
+		nf.setMaximumFractionDigits(decimalplaces);
+		this.automode = automode;
+		this.supermode = supermode;
+		this.curveautomode = curveautomode;
+		this.curvesupermode = curvesupermode;
+		
+		
+	}
+	
+	
 
 	public void run(String arg0) {
 		
@@ -732,17 +763,22 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			originalimgbefore = originalimg;
 		setTime(fourthDimension);
 		setZ(thirdDimension);
-		CurrentView = utility.Slicer.getCurrentView(originalimg, fourthDimension, thirdDimensionSize, thirdDimension,
+		CurrentView = utility.Slicer.getCurrentView(originalimg, thirdDimension, thirdDimensionSize, fourthDimension,
 				fourthDimensionSize);
 		 if(automode || curveautomode ) 
-		CurrentViewSmooth = utility.Slicer.getCurrentView(originalimgsmooth, fourthDimension, thirdDimensionSize, thirdDimension,
+		CurrentViewSmooth = utility.Slicer.getCurrentView(originalimgsmooth, thirdDimension, thirdDimensionSize, fourthDimension,
 				fourthDimensionSize);
 		if (originalimgbefore != null) {
-			CurrentViewOrig = utility.Slicer.getCurrentView(originalimgbefore, fourthDimension, thirdDimensionSize,
-					thirdDimension, fourthDimensionSize);
-
+			CurrentViewOrig = utility.Slicer.getCurrentView(originalimgbefore, thirdDimension, thirdDimensionSize,
+					fourthDimension, fourthDimensionSize);
 			
 		}
+		if(originalSecimg != null) {
+			
+			CurrentViewSecOrig = utility.Slicer.getCurrentView(originalSecimg, thirdDimension, thirdDimensionSize,
+					fourthDimension, fourthDimensionSize);
+		}
+
 
 	//	if(originalimgsuper!=null)
 	//		ImageJFunctions.show(originalimgsuper).setTitle("Super Pixel Segmentation");
@@ -1064,6 +1100,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 						CurrentView = utility.Slicer.getCurrentView(originalimg, thirdDimension,
 								thirdDimensionSize, fourthDimension, fourthDimensionSize);
 					
+					if(originalSecimg != null) 
+						
+						CurrentViewSecOrig = utility.Slicer.getCurrentView(originalSecimg, thirdDimension, thirdDimensionSize,
+								fourthDimension, fourthDimensionSize);
+						
 					
 			}
 			

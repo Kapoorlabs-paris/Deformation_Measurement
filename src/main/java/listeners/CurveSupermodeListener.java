@@ -25,7 +25,7 @@ public class CurveSupermodeListener implements ItemListener {
 			parent.curvesimple = false;
 			parent.superpixel = false;
 			parent.simple = false;
-			
+			parent.Godouble.setEnabled(false);
 		}
 		
 		else if (e.getStateChange() == ItemEvent.SELECTED) {
@@ -35,7 +35,7 @@ public class CurveSupermodeListener implements ItemListener {
 			parent.superpixel = false;
 			parent.simple = false;
 			
-			
+			parent.Godouble.setEnabled(true);
 			parent.Panelsuperfile.setEnabled(true);
 			parent.ChoosesuperImage.setEnabled(true);
 			

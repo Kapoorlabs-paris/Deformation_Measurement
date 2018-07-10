@@ -100,7 +100,7 @@ public class SaveListener implements ActionListener {
 					break;
 					}
 				}
-				bw.write("\tX-coordinates\tY-coordinates\tCurvature\t \t Intensity\n");
+				bw.write("\tX-coordinates\tY-coordinates\tCurvature\t \t Intensity \t \t IntensitySec\n");
 				ArrayList<Pair<String, Pair< Integer,ArrayList<double[]>>>> currentresultCurv = new ArrayList<Pair<String, Pair< Integer,ArrayList<double[]>>>>();
 				for(Pair<String, Pair< Integer,ArrayList<double[]>>> currentCurvature : parent.resultCurvature) {
 					
@@ -126,7 +126,7 @@ public class SaveListener implements ActionListener {
 					
 					
 					double[] Intensity = new double[currentpair.getB().getB().size()];
-
+					double[] IntensitySec = new double[currentpair.getB().getB().size()];
 					if(time == z ) {
 						
 					
@@ -136,8 +136,8 @@ public class SaveListener implements ActionListener {
 							Y[i] = currentpair.getB().getB().get(i)[1];
 							I[i] = currentpair.getB().getB().get(i)[2];
 							Intensity[i] = currentpair.getB().getB().get(i)[3];
-						
-						bw.write("\t"+ X[i] +  "\t" + "\t" + Y[i] + "\t" + "\t" + I[i] + "\t"  + "\t"+  "\t" + "\t" + Intensity[i] + "\t" + "\t" + 
+							IntensitySec[i] = currentpair.getB().getB().get(i)[4];
+						bw.write("\t"+ X[i] +  "\t" + "\t" + Y[i] + "\t" + "\t" + I[i] + "\t"  + "\t"+  "\t" + "\t" + Intensity[i] + "\t" + "\t"  + IntensitySec[i] +
 								"\n");
 						
 					}

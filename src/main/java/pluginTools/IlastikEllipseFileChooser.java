@@ -28,9 +28,11 @@ import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import listeners.ChooseOrigMap;
 import listeners.ChooseProbMap;
+import listeners.ChoosesecOrigMap;
 import listeners.ChoosesuperProbMap;
 import listeners.CurveSimplemodeListener;
 import listeners.CurveSupermodeListener;
+import listeners.DoubleChannelListener;
 import listeners.SimplemodeListener;
 import listeners.SupermodeListener;
 import net.imglib2.RandomAccessibleInterval;
@@ -46,8 +48,8 @@ public class IlastikEllipseFileChooser extends JPanel {
 	private static final long serialVersionUID = 1L;
 	public JFrame Cardframe = new JFrame("Ilastik based Ellipsoid detector");
 	  public JPanel panelCont = new JPanel();
-	  public ImagePlus impA, impOrig, impsuper;
-	  public File impAfile, impOrigfile, impsuperfile;
+	  public ImagePlus impA, impOrig, impsuper, impSec;
+	  public File impAfile, impOrigfile, impsuperfile, impsecfile;
 	  public JPanel panelFirst = new JPanel();
 	  public JPanel Panelfile = new JPanel();
 	  public JPanel Panelsuperfile = new JPanel();
@@ -61,16 +63,22 @@ public class IlastikEllipseFileChooser extends JPanel {
 	  public JComboBox<String> ChooseImage;
 	  public JComboBox<String> ChoosesuperImage;
 	  public JComboBox<String> ChooseoriginalImage;
+	  public JComboBox<String> ChoosesecImage;
 	  public JButton Done =  new JButton("Finished choosing files, start ETrack");
 	  public boolean superpixel = false;
-	  public boolean simple = true;
-	  public boolean curvesuper = false;
+	  public boolean simple = false;
+	  public boolean curvesuper = true;
 	  public boolean curvesimple = false;
+	  public boolean twochannel = false;
+	  
 	  public CheckboxGroup runmode = new CheckboxGroup();
 	  public Checkbox Gosuper = new Checkbox("Angle tracking with Multicut Trained segmentation", superpixel, runmode);
 	  public Checkbox Gosimple = new Checkbox("Angle tracking with Pixel Classification output only", simple, runmode);
 	  
-	  public Checkbox Gocurvesuper = new Checkbox("Curvature Measurment with Pixel + Multi", curvesuper, runmode);
+	  public Checkbox Godouble = new Checkbox("Load a second channel", twochannel);
+	  
+	  
+	  public Checkbox Gocurvesuper = new Checkbox("Curvature Measurment with Multicut Trained segmentation", curvesuper, runmode);
 	  public Checkbox Gocurvesimple = new Checkbox("Curvature Measurment with Pixel only", curvesimple, runmode);
 	  
 	  public Border choosefile = new CompoundBorder(new TitledBorder("Probability Map chooser"),
@@ -107,28 +115,32 @@ public class IlastikEllipseFileChooser extends JPanel {
 				blankimageNames[i + 1] = imageNames[i];
 			
 			ChooseImage = new JComboBox<String>(blankimageNames);
-			
 			ChooseoriginalImage = new JComboBox<String>(blankimageNames);
-			
+			ChoosesecImage = new JComboBox<String>(blankimageNames);
 			ChoosesuperImage = new JComboBox<String>(blankimageNames);
 			
 			Panelrun.add(Gosuper, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-			Panelrun.add(Gosimple, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		//	Panelrun.add(Gosimple, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		//			GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Panelrun.add(Gocurvesuper, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-			Panelrun.add(Gocurvesimple, new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		//	Panelrun.add(Gocurvesimple, new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		//			GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Panelrun.setBorder(runmodetrack);
 			panelFirst.add(Panelrun, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
-			Panelfileoriginal.add(ChooseoriginalImage, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			
+			Panelfileoriginal.add(Godouble,  new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Panelfileoriginal.add(ChooseoriginalImage, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Panelfileoriginal.setBorder(chooseoriginalfile);
 			panelFirst.add(Panelfileoriginal, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			
+			
 			Panelfile.add(ChooseImage, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Panelfile.setBorder(choosefile);
@@ -154,18 +166,19 @@ public class IlastikEllipseFileChooser extends JPanel {
 			
 			ChooseImage.addActionListener(new ChooseProbMap(this, ChooseImage));
 			ChooseoriginalImage.addActionListener(new ChooseOrigMap(this, ChooseoriginalImage));
-
+			ChoosesecImage.addActionListener(new ChoosesecOrigMap(this, ChoosesecImage));
 			Done.addActionListener(new DoneListener());
 			ChoosesuperImage.addActionListener(new ChoosesuperProbMap(this, ChoosesuperImage));
 			
 			panelFirst.setVisible(true);
 			cl.show(panelCont, "1");
 			Cardframe.add(panelCont, "Center");
-			Panelsuperfile.setEnabled(false);
-			ChoosesuperImage.setEnabled(false);
+			Panelsuperfile.setEnabled(true);
+			ChoosesuperImage.setEnabled(true);
+		    Godouble.setEnabled(true);
 			Gosuper.addItemListener(new SupermodeListener(this));
 			Gosimple.addItemListener(new SimplemodeListener(this) );
-			
+			Godouble.addItemListener(new DoubleChannelListener(this));
 			Gocurvesimple.addItemListener(new CurveSimplemodeListener(this));
 			Gocurvesuper.addItemListener(new CurveSupermodeListener(this));
 			Cardframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -204,27 +217,35 @@ public class IlastikEllipseFileChooser extends JPanel {
 			RandomAccessibleInterval<FloatType> imagebefore = new ImgOpener().openImgs(impOrig.getOriginalFileInfo().directory + impOrig.getOriginalFileInfo().fileName, new FloatType()).iterator().next();
 			
 			WindowManager.closeAllWindows();
-			if(superpixel) {
+			if(superpixel && !twochannel) {
 			
 				RandomAccessibleInterval<IntType> imagesuper = new ImgOpener().openImgs(impsuper.getOriginalFileInfo().directory + impsuper.getOriginalFileInfo().fileName, new IntType()).iterator().next();
 				new InteractiveSimpleEllipseFit(image, imagebefore, imagesuper, simple, superpixel, impsuper.getOriginalFileInfo().directory).run(null);
 			
 			}
-			if (simple)
+			if (simple && !twochannel)
 			new InteractiveSimpleEllipseFit(image, imagebefore, simple, impA.getOriginalFileInfo().directory).run(null);
 			
-			if (curvesimple) {
+			if (curvesimple && !twochannel) {
 				// Activate curvature measurment simple
 				new InteractiveSimpleEllipseFit(image, imagebefore, simple, superpixel, curvesimple, curvesuper, impA.getOriginalFileInfo().directory).run(null);
 				
 			}
-			if(curvesuper) {
+			if(curvesuper && !twochannel) {
 				// Activate curvature measurment super
 			
 				RandomAccessibleInterval<IntType> imagesuper = new ImgOpener().openImgs(impsuper.getOriginalFileInfo().directory + impsuper.getOriginalFileInfo().fileName, new IntType()).iterator().next();
 				new InteractiveSimpleEllipseFit(image, imagebefore, imagesuper, simple, superpixel, curvesimple, curvesuper, impA.getOriginalFileInfo().directory).run(null);
 			}
 			
+			
+			if(curvesuper && twochannel) {
+				// Activate curvature measurment super
+			
+				RandomAccessibleInterval<IntType> imagesuper = new ImgOpener().openImgs(impsuper.getOriginalFileInfo().directory + impsuper.getOriginalFileInfo().fileName, new IntType()).iterator().next();
+				RandomAccessibleInterval<FloatType> secimage = new ImgOpener().openImgs(impSec.getOriginalFileInfo().directory + impSec.getOriginalFileInfo().fileName, new FloatType()).iterator().next();
+				new InteractiveSimpleEllipseFit(image, secimage, imagebefore, imagesuper, simple, superpixel, curvesimple, curvesuper, impA.getOriginalFileInfo().directory).run(null);
+			}
 			
 			close(parent);
 			

@@ -28,10 +28,13 @@ public class SupermodeListener implements ItemListener {
 			parent.simple = false;
 			parent.curvesuper = false;
 			parent.curvesimple = false;
+			parent.Godouble.setEnabled(false);
 		}
 		
 		else if (e.getStateChange() == ItemEvent.SELECTED) {
 			
+			
+			parent.Godouble.setEnabled(false);
 			parent.superpixel = true;
 			parent.simple = false;
 			parent.curvesuper = false;

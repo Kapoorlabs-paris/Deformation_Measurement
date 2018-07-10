@@ -195,7 +195,7 @@ public class LabelCurvature implements Runnable {
 					"Computing Curvature T/Z = " + z + "/" + parent.thirdDimensionSize);
 		else {
 
-			utility.ProgressBar.SetProgressBar(jpb, 100* (percent ) / (parent.pixellist.size()), "Computing Curvature ");
+			utility.ProgressBar.SetProgressBar(jpb, 100 * (percent ) / (parent.pixellist.size()), "Computing Curvature ");
 		}
 		
 		// Get the candidate points for fitting
@@ -203,7 +203,6 @@ public class LabelCurvature implements Runnable {
 		
 		// A Hash map for the slider loop from reference point, 0 to incremental positions
 		HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>> Bestdelta = new HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>();
-
 		
 		// Get mean co-ordinate from the candidate points
 		RealLocalizable centerpoint = Listordereing.getMeanCord(truths);
@@ -229,6 +228,7 @@ public class LabelCurvature implements Runnable {
 		double[] Y = new double[localCurvature.size()];
 		double[] Z = new double[localCurvature.size()];
 		double[] I = new double[localCurvature.size()];
+		double[] ISec = new double[localCurvature.size()];
 
 		ArrayList<Double> CurvePeri = new ArrayList<Double>();
 		CurvePeri.add(localCurvature.get(0).perimeter);
@@ -237,16 +237,17 @@ public class LabelCurvature implements Runnable {
 			ArrayList<Double> CurveXY = new ArrayList<Double>();
 			ArrayList<Double> CurveXYSign = new ArrayList<Double>();
 			ArrayList<Double> CurveI = new ArrayList<Double>();
+			ArrayList<Double> CurveISec = new ArrayList<Double>();
 			
 			X[index] = localCurvature.get(index).cord[0];
 			Y[index] = localCurvature.get(index).cord[1];
 			Z[index] = localCurvature.get(index).radiusCurvature;
 			I[index] = localCurvature.get(index).Intensity;
-			
+			ISec[index] = localCurvature.get(index).SecIntensity;
 			
 			CurveXY.add(Z[index]);
 			CurveI.add(I[index]);
-			
+			CurveISec.add(ISec[index]);
 			for (int i = 1; i < count; ++i) {
 
 				Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> testpair = Bestdelta.get(i);
@@ -257,6 +258,7 @@ public class LabelCurvature implements Runnable {
 				double[] Ytest = new double[testlocalCurvature.size()];
 				double[] Ztest = new double[testlocalCurvature.size()];
 				double[] Itest = new double[testlocalCurvature.size()];
+				double[] ISectest = new double[testlocalCurvature.size()];
 				
 				CurvePeri.add(testlocalCurvature.get(0).perimeter);
 				for (int testindex = 0; testindex < testlocalCurvature.size(); ++testindex) {
@@ -265,12 +267,12 @@ public class LabelCurvature implements Runnable {
 					Ytest[testindex] = testlocalCurvature.get(testindex).cord[1];
 					Ztest[testindex] = testlocalCurvature.get(testindex).radiusCurvature;
 					Itest[index] = testlocalCurvature.get(testindex).Intensity;
-
+					ISectest[index] = testlocalCurvature.get(testindex).SecIntensity;
 					if (X[index] == Xtest[testindex] && Y[index] == Ytest[testindex]) {
 
 						CurveXY.add(Ztest[testindex]);
 						CurveI.add(Itest[index]);
-						
+						CurveISec.add(ISectest[index]);
 						
 					}
 
@@ -282,6 +284,7 @@ public class LabelCurvature implements Runnable {
 			double frequdeltaperi = localCurvature.get(0).perimeter ;
 			double frequdelta = Z[index];
 			double intensitydelta = I[index];
+			double intensitySecdelta = ISec[index];
 				
 				
 				
@@ -324,12 +327,23 @@ public class LabelCurvature implements Runnable {
 				intensitydelta/=CurveI.size();
 				
 				
-			
+
+				
+				Iterator<Double> ISeciter = CurveISec.iterator();
+				while (ISeciter.hasNext()) {
+
+					Double s = ISeciter.next();
+
+					intensitySecdelta+=s;
+
+				}
+
+				intensitySecdelta/=CurveISec.size();
 				
 				
 				
 			
-			Curvatureobject newobject = new Curvatureobject((float) frequdelta, frequdeltaperi, intensitydelta,
+			Curvatureobject newobject = new Curvatureobject((float) frequdelta, frequdeltaperi, intensitydelta, intensitySecdelta, 
 					localCurvature.get(index).Label, localCurvature.get(index).cord, localCurvature.get(index).t,
 					localCurvature.get(index).z);
 		

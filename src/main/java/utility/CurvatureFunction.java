@@ -140,7 +140,7 @@ public class CurvatureFunction {
 		for (int indexx = 0; indexx < totalinterpolatedCurvature.size(); ++indexx) {
 
 			Curvatureobject currentobject = new Curvatureobject(
-					totalinterpolatedCurvature.get(indexx)[2], perimeter, totalinterpolatedCurvature.get(indexx)[4], Label, new double[] {
+					totalinterpolatedCurvature.get(indexx)[2], perimeter, totalinterpolatedCurvature.get(indexx)[4],totalinterpolatedCurvature.get(indexx)[5], Label, new double[] {
 							totalinterpolatedCurvature.get(indexx)[0], totalinterpolatedCurvature.get(indexx)[1] },
 					t, z);
 
@@ -440,10 +440,10 @@ public class CurvatureFunction {
 
 			long[] posf = new long[] { (long)points.get(index).getW()[0],  (long)points.get(index).getW()[1]};
 			net.imglib2.Point point = new net.imglib2.Point(posf);
-			double Intensity = getIntensity(point, center);
+			Pair< Double, Double> Intensity = getIntensity(point, center);
 			
 			Curvaturepoints.add(new double[] { points.get(index).getW()[0], points.get(index).getW()[1],
-					Math.abs(Kappa), perimeter, Kappa, Intensity });
+					Math.abs(Kappa), perimeter, Kappa, Intensity.getA(), Intensity.getB() });
 
 		}
 
@@ -486,8 +486,8 @@ public class CurvatureFunction {
 			for (int d = 0; d < newpos.length; ++d)
 				longnewpos[d] = (long) newpos[d];
 			net.imglib2.Point intpoint = new net.imglib2.Point(longnewpos);
-			double Intensity = getIntensity(intpoint, centerpoint);
-			Curvaturepoints.add(new double[] { newpos[0], newpos[1], Math.abs(Kappa), perimeter, Intensity });
+			Pair<Double, Double> Intensity = getIntensity(intpoint, centerpoint);
+			Curvaturepoints.add(new double[] { newpos[0], newpos[1], Math.abs(Kappa), perimeter, Intensity.getA(), Intensity.getB() });
 		}
 
 		RegressionFunction finalfunctionransac = new RegressionFunction(ellipsesegment.function, Curvaturepoints);
@@ -550,9 +550,9 @@ public class CurvatureFunction {
 				
 				long[] posf = new long[] { (long)p.getP1().getW()[0],  (long)p.getP1().getW()[1]};
 				net.imglib2.Point point = new net.imglib2.Point(posf);
-				double Intensity = getIntensity(point, center);
+				Pair<Double, Double> Intensity = getIntensity(point, center);
 				Curvaturepoints
-						.add(new double[] { p.getP1().getW()[0], p.getP1().getW()[1], Math.abs(Kappa), perimeter, Kappa, Intensity });
+						.add(new double[] { p.getP1().getW()[0], p.getP1().getW()[1], Math.abs(Kappa), perimeter, Kappa, Intensity.getA(), Intensity.getB() });
 				
 					
 						
@@ -688,12 +688,23 @@ public class CurvatureFunction {
 	 * @return
 	 */
 	
-	public double getIntensity(Localizable point, RealLocalizable center) {
+	public Pair<Double, Double> getIntensity(Localizable point, RealLocalizable center) {
 		
 		
 		RandomAccess<FloatType> ranac = parent.CurrentViewOrig.randomAccess();
 		
+		
+		RandomAccess<FloatType> ranacsec;
+        if(parent.CurrentViewSecOrig != null) 
+			ranacsec = parent.CurrentViewSecOrig.randomAccess();
+        else
+        	   ranacsec = ranac;
+		
+	
+		
 		ranac.setPosition(point);
+		ranacsec.setPosition(ranac);
+		
 		
 		double maxindistance;
 		double maxoutdistance;
@@ -723,14 +734,19 @@ public class CurvatureFunction {
 		long slope = (long) (( point.getLongPosition(1) - (long)center.getFloatPosition(1) ) / ( step + fcteps));
 		long intercept = point.getLongPosition(1) - slope * point.getLongPosition(0);
 		double Intensity = ranac.get().getRealDouble();
+		double IntensitySec = ranacsec.get().getRealDouble();
+		
 		int i = 0;
 		
 		do {
 		long x = ranac.getLongPosition(0) + i * movestep * signum;
 		long y = slope * ranac.getLongPosition(0) + intercept;
 		ranac.setPosition(new long[] {x, y});
+		ranacsec.setPosition(ranac);
 		i++;
 		Intensity+=ranac.get().getRealDouble();
+		IntensitySec+=ranacsec.get().getRealDouble();
+		
 		if(Distance.DistanceSq(new double[] {point.getDoublePosition(0), point.getDoublePosition(1)}, new double[] {x, y})<= maxindistance * maxindistance)
 			break;
 		}while(true);
@@ -741,15 +757,17 @@ public class CurvatureFunction {
 			long x = ranac.getLongPosition(0) - i * movestep * signum;
 			long y = slope * ranac.getLongPosition(0) + intercept;
 			ranac.setPosition(new long[] {x, y});
+			ranacsec.setPosition(ranac);
 			i++;
 			Intensity+=ranac.get().getRealDouble();
+			IntensitySec+=ranacsec.get().getRealDouble();
 			if(Distance.DistanceSq(new double[] {point.getDoublePosition(0), point.getDoublePosition(1)}, new double[] {x, y})<= maxoutdistance * maxoutdistance)
 				break;
 			}while(true);
 			
 		
-		System.out.println(Intensity + " " + maxoutdistance + " " + maxindistance);
-		return Intensity;
+		System.out.println(Intensity + " " + maxoutdistance + " " + maxindistance + " " + IntensitySec);
+		return new ValuePair<Double, Double>(Intensity, IntensitySec);
 		
 	}
 	

@@ -41,6 +41,7 @@ public class PointExtractor {
 		double[] Z = new double[localCurvature.size()];
 		double[] signZ = new double[localCurvature.size()];
 		double[] I = new double[localCurvature.size()];
+		double[] Isec = new double[localCurvature.size()];
 		int celllabel, t, z;
 		double perimeter;
 		celllabel = localCurvature.get(0).Label;
@@ -122,9 +123,10 @@ public class PointExtractor {
 			Y[index] = localCurvature.get(index).cord[1];
 			Z[index] = localCurvature.get(index).radiusCurvature;
 			I[index] = localCurvature.get(index).Intensity;
+			Isec[index] = localCurvature.get(index).SecIntensity;
 
 			// Make the line list for making intersection object
-			linelist.add(new double[] { X[index], Y[index], Z[index], I[index] });
+			linelist.add(new double[] { X[index], Y[index], Z[index], I[index], Isec[index] });
 
 		}
 
