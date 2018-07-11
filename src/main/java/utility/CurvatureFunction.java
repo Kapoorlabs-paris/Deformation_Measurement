@@ -766,7 +766,6 @@ public class CurvatureFunction {
 			}while(true);
 			
 		
-		System.out.println(Intensity + " " + maxoutdistance + " " + maxindistance + " " + IntensitySec);
 		return new ValuePair<Double, Double>(Intensity, IntensitySec);
 		
 	}

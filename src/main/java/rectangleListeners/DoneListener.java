@@ -31,7 +31,9 @@ public class DoneListener implements ActionListener {
 			roimanager.close();
 		if (grandparent.imp != null) {
 
-			grandparent.imp.getOverlay().clear();
+			Roi roi = grandparent.imp.getRoi();
+			if(roi.getType() == Roi.RECTANGLE)
+			grandparent.imp.getOverlay().remove(roi);
 
 		}
 		grandparent.imp.updateAndDraw();

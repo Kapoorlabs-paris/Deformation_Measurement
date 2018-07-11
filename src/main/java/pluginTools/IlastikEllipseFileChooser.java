@@ -24,6 +24,7 @@ import javax.swing.border.TitledBorder;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.WindowManager;
+import ij.text.TextWindow;
 import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import listeners.ChooseOrigMap;
@@ -46,7 +47,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public JFrame Cardframe = new JFrame("Ilastik based Ellipsoid detector");
+	  public JFrame Cardframe = new JFrame("Ilastik based Ellipsoid detector");
 	  public JPanel panelCont = new JPanel();
 	  public ImagePlus impA, impOrig, impsuper, impSec;
 	  public File impAfile, impOrigfile, impsuperfile, impsecfile;
@@ -69,7 +70,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 	  public boolean simple = false;
 	  public boolean curvesuper = true;
 	  public boolean curvesimple = false;
-	  public boolean twochannel = false;
+	  public boolean twochannel = true;
 	  
 	  public CheckboxGroup runmode = new CheckboxGroup();
 	  public Checkbox Gosuper = new Checkbox("Angle tracking with Multicut Trained segmentation", superpixel, runmode);
@@ -135,6 +136,9 @@ public class IlastikEllipseFileChooser extends JPanel {
 			Panelfileoriginal.add(Godouble,  new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Panelfileoriginal.add(ChooseoriginalImage, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			if(twochannel)
+			Panelfileoriginal.add(ChoosesecImage,  new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Panelfileoriginal.setBorder(chooseoriginalfile);
 			panelFirst.add(Panelfileoriginal, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,

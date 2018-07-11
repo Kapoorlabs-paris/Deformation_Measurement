@@ -25,16 +25,16 @@ public class InteractiveIlastikEllipseFit {
 		///Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/RealCurveRaw.tif
 		///Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/BoundaryProbability.tif
 		///Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/MultiCut.tif
-		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/RealCurveRaw.tif");
+		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/JLMCurvature/PixelClassification/Raw.tif");
 		impB.show();
 		
-		ImagePlus impD = new Opener().openImage("/Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/RealCurveRaw.tif");
+		ImagePlus impD = new Opener().openImage("/Users/aimachine/Documents/JLMCurvature/PixelClassification/C3-LifeActGFP-mTmGAC-15-1.tif");
 		impD.show();
 		
-		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/BoundaryProbability.tif");
+		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/JLMCurvature/PixelClassification/Boundary.tif");
 		impC.show();
 		
-		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/MultiCut.tif");
+		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/JLMCurvature/PixelClassification/Multicut.tif");
 		impA.show();
 		
 		

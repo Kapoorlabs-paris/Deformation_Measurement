@@ -58,7 +58,7 @@ public class Markpoint {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (SwingUtilities.isLeftMouseButton(e) && e.isShiftDown() == true) {
+				if (SwingUtilities.isLeftMouseButton(e) && e.isAltDown() == true) {
 
 					int x = canvas.offScreenX(e.getX());
 					int y = canvas.offScreenY(e.getY());
@@ -126,7 +126,7 @@ public class Markpoint {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (SwingUtilities.isLeftMouseButton(e) && e.isShiftDown() == true) {
+				if (SwingUtilities.isLeftMouseButton(e) && e.isAltDown() == true) {
 
 					int x = canvas.offScreenX(e.getX());
 					int y = canvas.offScreenY(e.getY());
