@@ -111,6 +111,7 @@ import listeners.MinInlierListener;
 import listeners.MinInlierLocListener;
 import listeners.MinpercentListener;
 import listeners.MinperimeterListener;
+import listeners.MinsizeListener;
 import listeners.OutsideCutoffListener;
 import listeners.RListener;
 import listeners.RedoListener;
@@ -190,6 +191,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int minNumInliers = 100;
 	public int depth = 4;
 	public int maxsize = 100;
+	public int minsize = 100;
 	public int span = 2;
 	public int minperimeter = 100;
 	public int numseg = 10;
@@ -287,7 +289,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public double outsidedistance = 0;
 	public int[] boundarypoint;
 	public int[] midpoint;
-	public float initialSearchradius = 200;
+	public float initialSearchradius = 100;
 	public float maxSearchradius = 100;
 	public float maxSearchradiusS = 100;
 	public int missedframes = 20;
@@ -678,6 +680,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		displaymax = 1;
 		
 		maxsize = (int)  (originalimg.dimension(0) * originalimg.dimension(1));
+		minsize = (int)  ( 0.5 * originalimg.dimension(0) * originalimg.dimension(1));
         if((automode) || (curveautomode)) {
         	
         	
@@ -737,7 +740,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			thirdDimensionSize = (int) originalimg.dimension(2);
 			AutostartTime = thirdDimension;
 			AutoendTime = thirdDimensionSize;
-
+			maxframegap = thirdDimensionSize;
 		}
 
 		if (ndims == 4) {
@@ -1386,7 +1389,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JCheckBox IlastikAuto = new JCheckBox("Show Watershed Image", showWater);
 
 	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField, gaussfield, numsegField, cutoffField, minInlierField, degreeField, secdegreeField, incrementField;
-	public TextField inputFieldZ, startT, endT, maxSizeField;
+	public TextField inputFieldZ, startT, endT, maxSizeField, minSizeField;
 	public TextField inputFieldmaxtry;
 	public TextField inputFieldminpercent;
 	public TextField inputFieldmaxellipse;
@@ -1430,7 +1433,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Label insideText = new Label("Cutoff distance  = " + insideCutoff,
 			Label.CENTER);
 	public Label degreeText = new Label("Choose degree of polynomial");
-	public Label incrementText = new Label("Choose increment stride (pixels)");
+	public Label incrementText = new Label("Ref point seperation (px)");
 	public Label secdegreeText = new Label("Choose degree of second polynomial");
 	public Label minInlierText = new Label(mininlierstring +  " = " + minNumInliers,
 			Label.CENTER);
@@ -1440,8 +1443,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	final Label minperiText = new Label("Minimum ellipse perimeter" );
 	final Label maxperiText = new Label("Maximum ellipse perimeter" );
-	public final Label maxsizeText = new Label("Maximum region size" );
-	
+	public final Label maxsizeText = new Label("Maximum region size (px)" );
+	public final Label minsizeText = new Label("Minimum region size (px)" );
 	final Label numsegText = new Label("Number of segments" );
 	final Label lowprobText = new Label("Lower probability level = " + lowprob, Label.CENTER);
 	final Label highporbText = new Label("Higher probability level = " + highprob, Label.CENTER);
@@ -1604,6 +1607,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		maxSizeField = new TextField(10);
 		maxSizeField.setText(Integer.toString(maxsize));
+		
+		minSizeField = new TextField(10);
+		minSizeField.setText(Integer.toString(minsize));
 		
 		numsegField = new TextField(5);
 		numsegField.setText(Integer.toString(depth));
@@ -2118,6 +2124,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		minInlierField.addTextListener(new MinInlierLocListener(this, false));
 		minperimeterField.addTextListener(new MinperimeterListener(this));
 		maxSizeField.addTextListener(new MaxsizeListener(this));
+		minSizeField.addTextListener(new MinsizeListener(this));
 		numsegField.addTextListener(new DeltasepListener(this));
 		maxperimeterField.addTextListener(new MaxperimeterListener(this));
 		inputFieldT.addTextListener(new TlocListener(this, false));

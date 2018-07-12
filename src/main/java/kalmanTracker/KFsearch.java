@@ -246,10 +246,11 @@ public class KFsearch implements IntersectionTracker {
 						// Add edge to the graph.
 						graph.addVertex(source);
 						graph.addVertex(target);
+						if(source.hashCode()!=target.hashCode()) {
 						final DefaultWeightedEdge edge = graph.addEdge(source, target);
 						final double cost = assignmentCosts.get(source);
 						graph.setEdgeWeight(edge, cost);
-
+						}
 					}
 
 				}

@@ -18,208 +18,163 @@ import net.imglib2.util.ValuePair;
 
 public class Listordereing {
 
-	
-	//@VKapoor
-	
-	
+	// @VKapoor
+
 	public static List<RealLocalizable> getCopyList(List<RealLocalizable> copytruths) {
-		
+
 		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
 		Iterator<RealLocalizable> iter = copytruths.iterator();
-		
-		while(iter.hasNext()) {
-			
+
+		while (iter.hasNext()) {
+
 			orderedtruths.add(iter.next());
-			
-			
-			
+
 		}
-		
+
 		return orderedtruths;
 	}
-	
-	
-	public static List<RealLocalizable> getList(
-			List<RealLocalizable> truths, int index) {
-		
-		
+
+	public static List<RealLocalizable> getList(List<RealLocalizable> truths, int index) {
+
 		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
-		
-		for (int i = index; i < truths.size() ; ++i) {
-			
-			
+
+		for (int i = index; i < truths.size(); ++i) {
+
 			orderedtruths.add(truths.get(i));
-			
+
 		}
-	     for (int i = 0; i < index ; ++i) {
-			
-			
+		for (int i = 0; i < index; ++i) {
+
 			orderedtruths.add(truths.get(i));
-			
+
 		}
-		
-		
+
 		return orderedtruths;
-		
+
 	}
-	
-	public static List<RealLocalizable> getSparseOrderedList(
-			List<RealLocalizable> truths, double deltasep) {
+
+	public static List<RealLocalizable> getSparseOrderedList(List<RealLocalizable> truths, double deltasep) {
 		List<RealLocalizable> copytruths = getCopyList(truths);
 		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
 		// Get the starting minX and minY co-ordinates
 		RealLocalizable minCord = getMinCord(copytruths);
 
-		
-		
 		RealLocalizable meanCord = getMeanCord(copytruths);
-             orderedtruths.add(minCord);
-             copytruths.remove(minCord);
-	do {
-		
-		
-		RealLocalizable nextCord = getNextNearest(minCord, copytruths);
-		if (Distance.DistanceSqrt(minCord, nextCord) > deltasep) {
-		minCord = nextCord;
 		orderedtruths.add(minCord);
-		}
-		copytruths.remove(nextCord);
-		
-	} while (copytruths.size() > 0);
-	copytruths = getCopyList(orderedtruths);
-	do {
-		
-		
-		RealLocalizable nextCord = getNextNearest(minCord, copytruths);
-		copytruths.remove(nextCord);
-		if(copytruths.size()!=0) {
-		RealLocalizable secondnextCord = getNextNearest(minCord, copytruths);
-		copytruths.add(nextCord);
-		
-		double nextangle = Distance.AngleVectors(minCord, nextCord, meanCord);
-		double secondnextangle = Distance.AngleVectors(minCord, secondnextCord, meanCord);
-		RealLocalizable chosenCord = null;
-		
-		if(nextangle >= 0 && secondnextangle >= 0 && nextangle <= secondnextangle)
-			chosenCord = nextCord;
-		if(nextangle >= 0 && secondnextangle >= 0 && nextangle > secondnextangle)
-			chosenCord = secondnextCord;
-		
-		if(nextangle < 0 && secondnextangle > 0)
-			chosenCord = nextCord;
-		if(nextangle > 0 && secondnextangle < 0)
-			chosenCord = secondnextCord;
-		
-		else if (nextangle < 0 || secondnextangle < 0)
-		
-		chosenCord = (nextangle >= secondnextangle) ? nextCord: secondnextCord; 
-		
+		copytruths.remove(minCord);
+		do {
 
-		minCord = chosenCord;
-		orderedtruths.add(minCord);
-		
-	
-		copytruths.remove(chosenCord);
-		}
-		else break;
-	} while (copytruths.size() > 1);
+			RealLocalizable nextCord = getNextNearest(minCord, copytruths);
+			if (Distance.DistanceSqrt(minCord, nextCord) > deltasep) {
+				minCord = nextCord;
+				orderedtruths.add(minCord);
+			}
+			copytruths.remove(nextCord);
 
-	
-	return orderedtruths;
+		} while (copytruths.size() > 0);
+		copytruths = getCopyList(orderedtruths);
+		do {
+
+			RealLocalizable nextCord = getNextNearest(minCord, copytruths);
+			copytruths.remove(nextCord);
+			if (copytruths.size() != 0) {
+				RealLocalizable secondnextCord = getNextNearest(minCord, copytruths);
+				copytruths.add(nextCord);
+
+				double nextangle = Distance.AngleVectors(minCord, nextCord, meanCord);
+				double secondnextangle = Distance.AngleVectors(minCord, secondnextCord, meanCord);
+				RealLocalizable chosenCord = null;
+
+				if (nextangle >= 0 && secondnextangle >= 0 && nextangle <= secondnextangle)
+					chosenCord = nextCord;
+				if (nextangle >= 0 && secondnextangle >= 0 && nextangle > secondnextangle)
+					chosenCord = secondnextCord;
+
+				if (nextangle < 0 && secondnextangle > 0)
+					chosenCord = nextCord;
+				if (nextangle > 0 && secondnextangle < 0)
+					chosenCord = secondnextCord;
+
+				else if (nextangle < 0 || secondnextangle < 0)
+
+					chosenCord = (nextangle >= secondnextangle) ? nextCord : secondnextCord;
+
+				minCord = chosenCord;
+				orderedtruths.add(minCord);
+
+				copytruths.remove(chosenCord);
+			} else
+				break;
+		} while (copytruths.size() > 1);
+
+		return orderedtruths;
 	}
+
 	/**
-	 * Return an ordered list of XY coordinates starting from the reference position 
+	 * Return an ordered list of XY coordinates starting from the reference position
 	 * which is the lowest point below the center of the list of points
 	 * 
 	 * @param truths
 	 * @return
 	 */
 
-	public static Pair<RealLocalizable, List<RealLocalizable>> getOrderedList(
-			List<RealLocalizable> truths) {
+	public static Pair<RealLocalizable, List<RealLocalizable>> getOrderedList(List<RealLocalizable> truths) {
 
-		
-		
 		List<RealLocalizable> copytruths = getCopyList(truths);
 		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>(truths.size());
 		// Get the starting minX and minY co-ordinates
 		RealLocalizable minCord;
-		
+
 		minCord = getMinCord(copytruths);
 		RealLocalizable refcord = minCord;
-		
-		
+
 		RealLocalizable meanCord = getMeanCord(copytruths);
-             orderedtruths.add(minCord);
-             copytruths.remove(minCord);
+		orderedtruths.add(minCord);
+		copytruths.remove(minCord);
 		do {
-		
-			
+
 			RealLocalizable nextCord = getNextNearest(minCord, copytruths);
 			copytruths.remove(nextCord);
-			if(copytruths.size()!=0) {
-			RealLocalizable secondnextCord = getNextNearest(minCord, copytruths);
-			copytruths.add(nextCord);
-			
-			double nextangle = Distance.AngleVectors(minCord, nextCord, meanCord);
-			double secondnextangle = Distance.AngleVectors(minCord, secondnextCord, meanCord);
-			RealLocalizable chosenCord = null;
-			
-			if(nextangle >= 0 && secondnextangle >= 0 && nextangle <= secondnextangle)
-				chosenCord = nextCord;
-			if(nextangle >= 0 && secondnextangle >= 0 && nextangle > secondnextangle)
-				chosenCord = secondnextCord;
-			
-			if(nextangle < 0 && secondnextangle > 0)
-				chosenCord = nextCord;
-			if(nextangle > 0 && secondnextangle < 0)
-				chosenCord = secondnextCord;
-			
-			else if (nextangle < 0 || secondnextangle < 0)
-			
-			chosenCord = (nextangle >= secondnextangle) ? nextCord: secondnextCord; 
-			
+			if (copytruths.size() != 0) {
+				copytruths.add(nextCord);
 
-			minCord = chosenCord;
-			orderedtruths.add(minCord);
-			
-		
-			copytruths.remove(chosenCord);
-			}
-			else {
-			
+				RealLocalizable chosenCord = nextCord;
+
+				minCord = chosenCord;
+				orderedtruths.add(minCord);
+
+				copytruths.remove(chosenCord);
+			} else {
+
 				orderedtruths.add(nextCord);
 				break;
-			
+
 			}
 		} while (copytruths.size() >= 0);
 
-		
 		return new ValuePair<RealLocalizable, List<RealLocalizable>>(refcord, orderedtruths);
 	}
 
-	
-	
-	public static RealLocalizable GetCurrentRefpoint(List<RealLocalizable> truths, RealLocalizable Refpoint, RealLocalizable SecRefpoint) {
-		
+	public static RealLocalizable GetCurrentRefpoint(List<RealLocalizable> truths, RealLocalizable Refpoint,
+			RealLocalizable SecRefpoint) {
 
 		RealLocalizable returnCord;
 		List<RealLocalizable> copytruths = getCopyList(truths);
-		
+
 		RealLocalizable nextCord = getNextNearest(Refpoint, copytruths);
-		
+
 		RealLocalizable SecnextCord = getNextNearest(SecRefpoint, copytruths);
-		
+
 		double distanceA = Distance.DistanceSqrt(nextCord, Refpoint) + Distance.DistanceSqrt(nextCord, SecRefpoint);
-		
-		double distanceB = Distance.DistanceSqrt(SecnextCord, Refpoint) + Distance.DistanceSqrt(SecnextCord, SecRefpoint);
-		
-		returnCord = (distanceA <= distanceB) ? nextCord : SecnextCord; 
-		
+
+		double distanceB = Distance.DistanceSqrt(SecnextCord, Refpoint)
+				+ Distance.DistanceSqrt(SecnextCord, SecRefpoint);
+
+		returnCord = (distanceA <= distanceB) ? nextCord : SecnextCord;
+
 		return returnCord;
 	}
-	
-	
+
 	/**
 	 * Return an ordered list of XY coordinates starting from the min X position to
 	 * the end of the list
@@ -229,10 +184,7 @@ public class Listordereing {
 	 * @return
 	 */
 
-
-
-	public static  List<RealLocalizable> copyList(
-			List<RealLocalizable> truths) {
+	public static List<RealLocalizable> copyList(List<RealLocalizable> truths) {
 
 		List<RealLocalizable> copytruths = new ArrayList<RealLocalizable>();
 
@@ -257,30 +209,25 @@ public class Listordereing {
 	 * @return
 	 */
 
-	public static RealLocalizable getMeanCord(
-			List<RealLocalizable> truths) {
+	public static RealLocalizable getMeanCord(List<RealLocalizable> truths) {
 
 		Iterator<RealLocalizable> iter = truths.iterator();
-        double Xmean = 0, Ymean = 0;
+		double Xmean = 0, Ymean = 0;
 		while (iter.hasNext()) {
 
 			RealLocalizable currentpair = iter.next();
 
 			RealLocalizable currentpoint = currentpair;
 
-			Xmean+= currentpoint.getDoublePosition(0);
-			Ymean+= currentpoint.getDoublePosition(1);
-			
-			
+			Xmean += currentpoint.getDoublePosition(0);
+			Ymean += currentpoint.getDoublePosition(1);
 
 		}
-		RealPoint meanCord = new RealPoint(new double[] {Xmean / truths.size(), Ymean / truths.size()});
-		
-		
+		RealPoint meanCord = new RealPoint(new double[] { Xmean / truths.size(), Ymean / truths.size() });
 
 		return meanCord;
 	}
-	
+
 	/**
 	 * 
 	 * Get the mean XY co-ordinates from the list
@@ -289,72 +236,59 @@ public class Listordereing {
 	 * @return
 	 */
 
-	public static double[] getMeanCordDouble(
-			List<double[]> truths) {
+	public static double[] getMeanCordDouble(List<double[]> truths) {
 
 		Iterator<double[]> iter = truths.iterator();
-        double Xmean = 0, Ymean = 0;
+		double Xmean = 0, Ymean = 0;
 		while (iter.hasNext()) {
 
 			double[] currentpair = iter.next();
 
 			double[] currentpoint = currentpair;
 
-			Xmean+= currentpoint[0];
-			Ymean+= currentpoint[1];
-			
-			
+			Xmean += currentpoint[0];
+			Ymean += currentpoint[1];
 
 		}
-		
-		
 
-		return new double[] {Xmean / truths.size(), Ymean / truths.size()};
+		return new double[] { Xmean / truths.size(), Ymean / truths.size() };
 	}
-	
+
 	/**
 	 * 
-	 * Get the starting XY co-ordinates to create an ordered list, start from minX and minY
+	 * Get the starting XY co-ordinates to create an ordered list, start from minX
+	 * and minY
 	 * 
 	 * @param truths
 	 * @return
 	 */
 
-	public static RealLocalizable getRandomCord(
-			List<RealLocalizable> truths, int index) {
+	public static RealLocalizable getRandomCord(List<RealLocalizable> truths, int index) {
 
-
-	
-			
 		RealLocalizable minobject = truths.get(index);
-			
-			
-		
-	
 
 		return minobject;
 	}
+
 	/**
 	 * 
-	 * Get the starting XY co-ordinates to create an ordered list, start from minX and minY
+	 * Get the starting XY co-ordinates to create an ordered list, start from minX
+	 * and minY
 	 * 
 	 * @param truths
 	 * @return
 	 */
 
-	public static RealLocalizable getMinCord(
-			List<RealLocalizable> truths) {
+	public static RealLocalizable getMinCord(List<RealLocalizable> truths) {
 
-		
 		RealLocalizable meanCord = getMeanCord(truths);
-		
+
 		RealLocalizable minobject = null;
 		Iterator<RealLocalizable> iter = truths.iterator();
 
 		while (iter.hasNext()) {
 
 			RealLocalizable currentpair = iter.next();
-
 
 			if (Math.abs(currentpair.getDoublePosition(0) - meanCord.getDoublePosition(0)) <= 5) {
 
@@ -377,14 +311,12 @@ public class Listordereing {
 	 * @return
 	 */
 
-	public static  RealLocalizable getNextNearest(
-			RealLocalizable minCord, List<RealLocalizable> truths) {
+	public static RealLocalizable getNextNearest(RealLocalizable minCord, List<RealLocalizable> truths) {
 
 		RealLocalizable nextobject = null;
 
 		final List<RealPoint> targetCoords = new ArrayList<RealPoint>(truths.size());
-		final List<FlagNode<RealLocalizable>> targetNodes = new ArrayList<FlagNode<RealLocalizable>>(
-				truths.size());
+		final List<FlagNode<RealLocalizable>> targetNodes = new ArrayList<FlagNode<RealLocalizable>>(truths.size());
 
 		for (RealLocalizable localcord : truths) {
 
@@ -394,11 +326,10 @@ public class Listordereing {
 
 		if (targetNodes.size() > 0 && targetCoords.size() > 0) {
 
-			final KDTree<FlagNode<RealLocalizable>> Tree = new KDTree<FlagNode<RealLocalizable>>(
-					targetNodes, targetCoords);
+			final KDTree<FlagNode<RealLocalizable>> Tree = new KDTree<FlagNode<RealLocalizable>>(targetNodes,
+					targetCoords);
 
-			final NNFlagsearchKDtree<RealLocalizable> Search = new NNFlagsearchKDtree<RealLocalizable>(
-					Tree);
+			final NNFlagsearchKDtree<RealLocalizable> Search = new NNFlagsearchKDtree<RealLocalizable>(Tree);
 
 			Search.search(minCord);
 
@@ -410,9 +341,7 @@ public class Listordereing {
 		return nextobject;
 
 	}
-	
-	
-	
+
 	/**
 	 * 
 	 * 
@@ -423,8 +352,8 @@ public class Listordereing {
 	 * @return
 	 */
 
-	public static Pair<RealLocalizable, Double> getNextNearestPoint(
-			RealLocalizable minCord, List<Pair<RealLocalizable, Double>> truths) {
+	public static Pair<RealLocalizable, Double> getNextNearestPoint(RealLocalizable minCord,
+			List<Pair<RealLocalizable, Double>> truths) {
 
 		Pair<RealLocalizable, Double> nextobject = null;
 

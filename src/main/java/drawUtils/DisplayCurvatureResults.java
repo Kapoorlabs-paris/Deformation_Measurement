@@ -33,7 +33,7 @@ public class DisplayCurvatureResults {
 	public static RandomAccessibleInterval<FloatType> Display(InteractiveSimpleEllipseFit parent,
 			RandomAccessibleInterval<FloatType> originalimg,
 			ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>> currentresultCurv) {
-
+		System.gc();
 		RandomAccessibleInterval<FloatType> probImg = new ArrayImgFactory<FloatType>().create(originalimg,
 				new FloatType());
 

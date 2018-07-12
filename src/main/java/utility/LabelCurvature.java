@@ -200,7 +200,6 @@ public class LabelCurvature implements Runnable {
 		
 		// Get the candidate points for fitting
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
-		
 		// A Hash map for the slider loop from reference point, 0 to incremental positions
 		HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>> Bestdelta = new HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>();
 		
