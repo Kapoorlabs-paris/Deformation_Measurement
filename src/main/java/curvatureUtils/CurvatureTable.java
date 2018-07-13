@@ -33,6 +33,7 @@ public class CurvatureTable {
 			
 			Pair< Integer,ArrayList<double[]>> timelist = new ValuePair<Integer, ArrayList<double[]>>(currentangle.getB().t, currentangle.getB().linelist);
 			parent.resultCurvature.add(new ValuePair<String, Pair< Integer, ArrayList<double[]>>>(currentangle.getA(),timelist));
+			parent.HashresultCurvature.put(currentangle.getB().t, currentangle.getB().linelist);
 			
 			}
 			else {
@@ -40,6 +41,7 @@ public class CurvatureTable {
 						new double[] { currentangle.getB().z, currentangle.getB().perimeter }));
 				Pair< Integer,ArrayList<double[]>> timelist = new ValuePair<Integer, ArrayList<double[]>>(currentangle.getB().z, currentangle.getB().linelist);
 				parent.resultCurvature.add(new ValuePair<String, Pair< Integer, ArrayList<double[]>>>(currentangle.getA(),timelist));
+				parent.HashresultCurvature.put(currentangle.getB().z, currentangle.getB().linelist);
 			}
 
 		}

@@ -1,0 +1,76 @@
+package curvatureUtils;
+
+import java.util.ArrayList;
+
+import net.imglib2.Cursor;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.Views;
+
+public class ProcessSliceDisplay implements Runnable {
+
+	
+	final RandomAccessibleInterval<FloatType> OutputSlice;
+    final double minIntensity;
+    final double maxIntensity;
+    final ArrayList<double[]> TimeCurveList;
+	
+	public ProcessSliceDisplay(final RandomAccessibleInterval<FloatType> OutputSlice, ArrayList<double[]> TimeCurveList, double minIntensity, double maxIntensity  ) {
+		
+		
+		this.OutputSlice = OutputSlice;
+		this.TimeCurveList = TimeCurveList;
+		this.minIntensity = minIntensity;
+		this.maxIntensity = maxIntensity;
+		
+	}
+	
+	
+	@Override
+	public void run() {
+	
+		double[] X = new double[TimeCurveList.size()];
+		double[] Y = new double[TimeCurveList.size()];
+		double[] Curvature = new double[TimeCurveList.size()];
+		double[] Intensity = new double[TimeCurveList.size()];
+		double[] IntensitySec = new double[TimeCurveList.size()];
+		
+		
+		for (int index = 0; index < TimeCurveList.size(); ++index) {
+			
+			
+			X[index] = TimeCurveList.get(index)[0];
+			Y[index] = TimeCurveList.get(index)[1];
+			Curvature[index] = TimeCurveList.get(index)[2];
+			Intensity[index] = TimeCurveList.get(index)[3];
+			IntensitySec[index] = TimeCurveList.get(index)[4];
+			
+			final Cursor<FloatType> cursor = Views.iterable(OutputSlice).localizingCursor();
+
+			while (cursor.hasNext()) {
+
+				cursor.fwd();
+
+			
+
+					if ((Math.abs(cursor.getFloatPosition(0) - X[index])) == 0
+							&& (Math.abs(cursor.getFloatPosition(1) - Y[index])) == 0) {
+
+						cursor.get().setReal(Curvature[index]);
+
+					}
+					
+					double lambda = (cursor.getFloatPosition(0) - OutputSlice.min(0) ) / (OutputSlice.max(0) - OutputSlice.min(0));
+					if(cursor.getDoublePosition(1) >= OutputSlice.max(1) - OutputSlice.min(1) - 5)
+						cursor.get().setReal( minIntensity + lambda * (maxIntensity - minIntensity));
+
+				
+
+			}
+			
+		}
+		
+	}
+
+}

@@ -203,8 +203,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float lowprobmin = 0f;
 	public float highprobmin = 0f;
 
-	public boolean polynomialfits = true;
-	public boolean circlefits = false;
+	public boolean polynomialfits = false;
+	public boolean circlefits = true;
 	public boolean redoing;
 	public boolean showWater = false;
 	public float lowprobmax = 1.0f;
@@ -344,6 +344,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> parentgraph;
 	public HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> parentgraphZ;
 	public HashMap<String, ArrayList<Intersectionobject>> ALLIntersections;
+	public HashMap<Integer, ArrayList<double[]>> HashresultCurvature;
 	public Set<Integer> pixellist;
 	ColorProcessor cp = null;
 	public HashMap<String, Intersectionobject> Finalresult;
@@ -711,6 +712,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		IntersectionZTRois = new HashMap<String, Roiobject>();
 		Clickedpoints = new int[2];
 		ALLIntersections = new HashMap<String, ArrayList<Intersectionobject>>();
+		HashresultCurvature = new HashMap<Integer, ArrayList<double[]>>();
 		Finalresult = new HashMap<String, Intersectionobject>();
 		Finalcurvatureresult = new HashMap<Integer, Curvatureobject>();
 		Tracklist = new ArrayList<Pair<String, Intersectionobject>>();
@@ -1841,7 +1843,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 		if (curvesupermode || curveautomode ) {
 			
-		
+		if(polynomialfits) {
 			
 			Angleselect.add(degreeText, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.EAST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
@@ -1884,10 +1886,64 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			Angleselect.setBorder(circletools);
-			//Angleselect.setPreferredSize(new Dimension(SizeX + 100, SizeY + 100));
+			Angleselect.setPreferredSize(new Dimension(SizeX , SizeY ));
 			panelFirst.add(Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		}
+		
+		if(circlefits) {
 			
+			
+			Angleselect.add(incrementText, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+			Angleselect.add(incrementField, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0,
+					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+			Angleselect.add(maxsizeText, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0,
+					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+			Angleselect.add(maxSizeField, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0,
+					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+			SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider,
+					minInlierField, minInlierText, scrollbarSize, minNumInliers,
+					minNumInliersmax);
+
+			Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0,
+					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0,
+					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+			Angleselect.add(displayCircle, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0,
+					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			Angleselect.add(displaySegments, new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0,
+					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+			Angleselect.add(minsizeText, new GridBagConstraints(3, 2, 3, 1, 0.0, 0.0,
+					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+			Angleselect.add(minSizeField, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0,
+					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			
+			Angleselect.add(ClearDisplay, new GridBagConstraints(3, 4, 3, 1, 0.0, 0.0,
+					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			
+			Angleselect.add(SelectRim, new GridBagConstraints(3, 5, 3, 1, 0.0, 0.0,
+					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			
+		
+			Angleselect.setPreferredSize(new Dimension(SizeX , SizeY ));
+
+			Angleselect.setBorder(circletools);
+			panelFirst.add(Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0,
+					GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			
+			
+		}
+		
+		
+		
 		}
 
 		if(!curvesupermode && !curveautomode) {

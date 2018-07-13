@@ -74,7 +74,7 @@ public class RunPolymodeListener implements ItemListener {
 					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 			
 			parent.Angleselect.setBorder(parent.circletools);
-			parent.Angleselect.setPreferredSize(new Dimension(parent.SizeX + 100, parent.SizeY + 100));
+			parent.Angleselect.setPreferredSize(new Dimension(parent.SizeX , parent.SizeY ));
 			parent.panelFirst.add(parent.Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 			   parent.Angleselect.validate();

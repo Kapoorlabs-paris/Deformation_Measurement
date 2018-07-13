@@ -193,7 +193,6 @@ public class Computeinwater {
 
 			
 			List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
-			System.out.println(current.Size + "Size");
 		if(current.Size < parent.maxsize && current.Size > parent.minsize) {
 			tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, resultcurvelineroi,resultallcurvelineroi,ellipselineroi, Segmentrect,  AllCurveintersection, t, z,
 					parent.jpb, percent, label)));

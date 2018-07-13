@@ -29,20 +29,18 @@ import net.imglib2.view.Views;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.ChartMaker;
-import drawUtils.DisplayCurvatureResults;
 import utility.Curvatureobject;
 
 public class CurvatureTableDisplay {
 
 	public static void displayclicked(InteractiveSimpleEllipseFit parent, int trackindex) {
 
-		
-		System.out.println("This is for curvature");
+		IJ.log("Creating Result Image stack, this may take some time");
 		// Make something happen
 		parent.row = trackindex;
 		String ID = (String) parent.table.getValueAt(trackindex, 0);
 		ArrayList<Pair<String, double[]>> currentresultPeri = new ArrayList<Pair<String, double[]>>();
-		ArrayList<Pair<String, Pair< Integer,ArrayList<double[]>>>> currentresultCurv = new ArrayList<Pair<String, Pair< Integer,ArrayList<double[]>>>>();
+		ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>> currentresultCurv = new ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>>();
 
 		for (Pair<String, double[]> currentperi : parent.resultAngle) {
 
@@ -53,17 +51,15 @@ public class CurvatureTableDisplay {
 			}
 
 		}
-		
-		for(Pair<String, Pair< Integer,ArrayList<double[]>>> currentCurvature : parent.resultCurvature) {
-			
-			
+
+		for (Pair<String, Pair<Integer, ArrayList<double[]>>> currentCurvature : parent.resultCurvature) {
+
 			if (ID.equals(currentCurvature.getA())) {
-				
+
 				currentresultCurv.add(currentCurvature);
-				
-				
+
 			}
-			
+
 		}
 
 		if (parent.imp != null) {
@@ -76,20 +72,12 @@ public class CurvatureTableDisplay {
 
 		parent.chart = utility.ChartMaker.makeChart(parent.contdataset, "Perimeter Evolution", "Time", "Perimeter");
 
-		RandomAccessibleInterval<FloatType> result = DisplayCurvatureResults.Display(parent, parent.originalimgbefore, currentresultCurv );
 		
+		ParallelResultDisplay display = new ParallelResultDisplay(parent, currentresultCurv);
+		display.ResultDisplay();
 		
-		
-		
-		
-		ImagePlus imp = ImageJFunctions.show(result);
-		imp.setTitle("Curvature Result");
-		IJ.run("Fire");
-		
-		
+	
 
- 
-		
 		parent.jFreeChartFrame.dispose();
 		parent.jFreeChartFrame.repaint();
 
