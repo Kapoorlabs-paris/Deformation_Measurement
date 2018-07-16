@@ -186,6 +186,7 @@ public class LabelCurvature implements Runnable {
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
 		parent.Allnodes.clear();
 		parent.Nodemap.clear();
+		parent.Listmap.clear();
 
 		if (parent.fourthDimensionSize != 0 && parent.Accountedframes.size() != 0 && parent.Accountedframes != null)
 			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.pixellist.size()), "Computing Curvature = "
@@ -234,7 +235,6 @@ public class LabelCurvature implements Runnable {
 		for (int index = 0; index < localCurvature.size(); ++index) {
 
 			ArrayList<Double> CurveXY = new ArrayList<Double>();
-			ArrayList<Double> CurveXYSign = new ArrayList<Double>();
 			ArrayList<Double> CurveI = new ArrayList<Double>();
 			ArrayList<Double> CurveISec = new ArrayList<Double>();
 			

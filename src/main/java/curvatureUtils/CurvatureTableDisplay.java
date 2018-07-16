@@ -35,7 +35,7 @@ public class CurvatureTableDisplay {
 
 	public static void displayclicked(InteractiveSimpleEllipseFit parent, int trackindex) {
 
-		IJ.log("Creating Result Image stack, this may take some time");
+		
 		// Make something happen
 		parent.row = trackindex;
 		String ID = (String) parent.table.getValueAt(trackindex, 0);

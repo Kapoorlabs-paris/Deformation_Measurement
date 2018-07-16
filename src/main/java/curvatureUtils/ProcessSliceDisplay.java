@@ -16,7 +16,7 @@ public class ProcessSliceDisplay implements Runnable {
     final double maxIntensity;
     final ArrayList<double[]> TimeCurveList;
 	
-	public ProcessSliceDisplay(final RandomAccessibleInterval<FloatType> OutputSlice, ArrayList<double[]> TimeCurveList, double minIntensity, double maxIntensity  ) {
+	public ProcessSliceDisplay(final RandomAccessibleInterval<FloatType> OutputSlice,  ArrayList<double[]> TimeCurveList, double minIntensity, double maxIntensity  ) {
 		
 		
 		this.OutputSlice = OutputSlice;
@@ -70,6 +70,32 @@ public class ProcessSliceDisplay implements Runnable {
 			}
 			
 		}
+		
+	}
+	
+	
+	public  double GetMax() {
+		
+		double MAX = Double.MIN_VALUE;
+		
+		double[] Curvature = new double[TimeCurveList.size()];
+		
+		
+		
+		for (int index = 0; index < TimeCurveList.size(); ++index) {
+			
+			Curvature[index] = TimeCurveList.get(index)[2];
+			
+			if(Curvature[index] >= MAX) {
+				
+				MAX = Curvature[index];
+				
+			}
+			
+		}
+		
+		
+		return MAX;
 		
 	}
 

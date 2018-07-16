@@ -16,6 +16,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import ellipsoidDetector.Distance;
+import ij.IJ;
 import ij.gui.ImageCanvas;
 import ij.gui.Line;
 import pluginTools.InteractiveSimpleEllipseFit;
@@ -44,7 +45,7 @@ public class DisplaySelected {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-
+				
 			}
 
 			@Override
@@ -56,7 +57,7 @@ public class DisplaySelected {
 				parent.Clickedpoints[1] = y;
 
 				if (SwingUtilities.isLeftMouseButton(e) && e.isShiftDown()) {
-
+					
 					CurvatureTableDisplay.displayclicked(parent, parent.rowchoice);
 
 					if (!parent.jFreeChartFrame.isVisible())

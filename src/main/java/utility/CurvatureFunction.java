@@ -72,12 +72,15 @@ public class CurvatureFunction {
 		ArrayList<Curvatureobject> curveobject = new ArrayList<Curvatureobject>();
 		ArrayList<double[]> leftinterpolatedCurvature = new ArrayList<double[]>();
 		ArrayList<double[]> rightinterpolatedCurvature = new ArrayList<double[]>();
+		ArrayList<double[]> interpolatedCurvature = new ArrayList<double[]>();
+		
 		ArrayList<double[]> totalinterpolatedCurvature = new ArrayList<double[]>();
 		ArrayList<Node<RealLocalizable>> WrongLeftnodes = new ArrayList<Node<RealLocalizable>>();
 		ArrayList<Node<RealLocalizable>> WrongRightnodes = new ArrayList<Node<RealLocalizable>>();
 
 		ArrayList<RegressionFunction> leftfunctions = new ArrayList<RegressionFunction>();
 		ArrayList<RegressionFunction> rightfunctions = new ArrayList<RegressionFunction>();
+		ArrayList<RegressionFunction> functions = new ArrayList<RegressionFunction>();
 
 		ArrayList<RegressionFunction> totalfunctions = new ArrayList<RegressionFunction>();
 
@@ -87,8 +90,33 @@ public class CurvatureFunction {
 		int maxdepth = Getdepth(parent);
 
 		// Fill the node map
-		MakeTree(parent, truths, 0, Integer.toString(0), maxdepth);
+		//MakeTree(parent, truths, 0, Integer.toString(0), maxdepth);
 
+		
+		// Make sublist, fixed size approach
+		
+		MakeSegments(parent, truths, minNumInliers);
+		
+		// Now do the fitting
+		
+		for(Map.Entry<Integer, List<RealLocalizable>> entry : parent.Listmap.entrySet()) {
+		
+			
+			List<RealLocalizable> sublist = entry.getValue();
+			System.out.println(entry.getKey() + " " + "in the list map");
+		Pair<Boolean, Double> local = FitonList(parent, centerpoint, sublist, functions, interpolatedCurvature, smoothing, maxError, minNumInliers, degree, secdegree); 
+		
+		if(local!=null) {
+			
+			perimeter+=local.getB();
+			totalfunctions.addAll(functions);
+			totalinterpolatedCurvature.addAll(interpolatedCurvature);
+		}
+				
+				
+		}
+		/**Compute by TREE**/
+		/*
 		HashMap<String, Node<RealLocalizable>> SortedNodemap = SortNodes.sortByValues(parent.Nodemap, minNumInliers);
 		HashMap<String, Node<RealLocalizable>> SortedRightNodemap = SortNodes.sortByRightValues(SortedNodemap,
 				minNumInliers);
@@ -135,7 +163,7 @@ public class CurvatureFunction {
 
 		}
 
-	
+	*/
 
 		for (int indexx = 0; indexx < totalinterpolatedCurvature.size(); ++indexx) {
 
@@ -256,6 +284,57 @@ public class CurvatureFunction {
 
 	}
 
+	/**
+	 * 
+	 * Function to fit on a list of points which are not tree based
+	 * 
+	 * @param parent
+	 * @param centerpoint
+	 * @param sublist
+	 * @param functions
+	 * @param interpolatedCurvature
+	 * @param smoothing
+	 * @param maxError
+	 * @param minNumInliers
+	 * @param degree
+	 * @param secdegree
+	 * @return
+	 */
+	public Pair<Boolean, Double> FitonList(InteractiveSimpleEllipseFit parent, RealLocalizable centerpoint, List<RealLocalizable> sublist, 
+			ArrayList<RegressionFunction> functions,ArrayList<double[]> interpolatedCurvature, double smoothing, double maxError, int minNumInliers, int degree,
+			int secdegree) {
+		
+		
+		ArrayList<double[]> Cordlist = new ArrayList<double[]>();
+		
+		for (int i = 0; i <sublist.size(); ++i) {
+			
+			
+			Cordlist.add(new double[] { sublist.get(i).getDoublePosition(0), sublist.get(i).getDoublePosition(1) });
+		}
+		
+		
+		RegressionFunction resultcurvature = getLocalcurvature(Cordlist, centerpoint, smoothing, maxError, minNumInliers, degree, secdegree);
+		
+		
+		// Draw the function
+		
+		double perimeter = 0;
+		
+		if(resultcurvature!=null) {
+			
+			functions.add(resultcurvature);
+			interpolatedCurvature.addAll(resultcurvature.Curvaturepoints);
+			perimeter = resultcurvature.Curvaturepoints.get(0)[3];
+			Pair<Boolean, Double> leftpair = new ValuePair<Boolean, Double>(true, perimeter);
+
+			return leftpair;
+			
+		}
+		else return null;
+		
+	}
+	
 	public  Pair<Boolean, Double> FitonRightsubTree(InteractiveSimpleEllipseFit parent, RealLocalizable centerpoint,
 			Node<RealLocalizable> leaf, ArrayList<double[]> interpolatedCurvature,
 			ArrayList<RegressionFunction> functions, double smoothing, double maxError, int minNumInliers, int degree,
@@ -296,6 +375,46 @@ public class CurvatureFunction {
 
 	}
 
+	
+	public void MakeSegments( InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int numSeg ) {
+		
+		int size = truths.size();
+		
+		int maxpoints = size / numSeg;
+		if (maxpoints <= 1)
+			maxpoints = 3;
+		int segmentLabel = 1;
+		
+		Iterator<RealLocalizable> iterator = truths.iterator();
+		
+		List<RealLocalizable> sublist = new ArrayList<RealLocalizable>();
+		
+		
+		int count = 0;
+		
+		while(iterator.hasNext()) {
+		
+			RealLocalizable current = iterator.next();
+			
+			sublist.add(current);
+			
+			count++;
+			
+			if(count>=maxpoints) {
+				
+				parent.Listmap.put(segmentLabel, sublist);
+				count = 0;
+				segmentLabel++;
+				sublist = new ArrayList<RealLocalizable>();
+			}
+			
+		}
+		
+		
+		
+		
+	}
+	
 	public  void MakeTree(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int depthint,
 			String depth, int maxdepth) {
 

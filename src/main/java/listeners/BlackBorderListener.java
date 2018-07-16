@@ -13,7 +13,6 @@ public class BlackBorderListener implements TextListener {
 	
 	public BlackBorderListener(final InteractiveSimpleEllipseFit parent) {
 	
-		
 		this.parent = parent;
 	
 	}

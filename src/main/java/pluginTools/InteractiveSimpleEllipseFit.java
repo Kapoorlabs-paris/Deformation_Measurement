@@ -170,7 +170,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public double smoothing = 0;
 	public ArrayList<Node<RealLocalizable>> Allnodes = new ArrayList<Node<RealLocalizable>>();
 	public HashMap<String, Node<RealLocalizable>> Nodemap = new HashMap<String, Node<RealLocalizable>>();
+	public HashMap<Integer, List<RealLocalizable>> Listmap = new HashMap<Integer, List<RealLocalizable>>();
 	public Overlay overlay;
+	public int numSeg = 1;
 	public Overlay emptyoverlay;
 	public int thirdDimensionslider = 1;
 	public int thirdDimensionsliderInit = 1;
@@ -216,7 +218,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int smoothslidermax = 1;
 	public float minNumInliersmin = 0;
 	public float minNumInliersmax = 100;
-	
+	public int KymoDimension = 0;
 	public int AutostartTime, AutoendTime;
 	public float insideCutoffmax = 500;
 	public float outsideCutoffmax = 500;
@@ -1425,7 +1427,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public String insidestring = "Cutoff distance";
 	public String outsidestring = "Cutoff distance";
 	public String smoothsliderstring = "Ratio of functions ";
-	public String mininlierstring = "Window Width (pixels)";
+	public String mininlierstring = "Number of Segments";
 	
 	public Label timeText = new Label("Current T = " + 1, Label.CENTER);
 	public Label zText = new Label("Current Z = " + 1, Label.CENTER);
@@ -1548,7 +1550,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		lostframe = new TextField(1);
 		lostframe.setText(Integer.toString(maxframegap));
 		
-		blackcorrectionlabel = new Label("Expand or contract border");
+		blackcorrectionlabel = new Label("Expand border");
 		bordercorrection = new TextField(1);
 		bordercorrection.setText(Float.toString(borderpixel));
 		
