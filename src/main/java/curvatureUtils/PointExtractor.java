@@ -126,7 +126,7 @@ public class PointExtractor {
 			Isec[index] = localCurvature.get(index).SecIntensity;
 
 			// Make the line list for making intersection object
-			linelist.add(new double[] { X[index], Y[index], Z[index], I[index], Isec[index] });
+			linelist.add(new double[] { X[index], Y[index], Z[index], I[index], Isec[index], perimeter });
 
 		}
 

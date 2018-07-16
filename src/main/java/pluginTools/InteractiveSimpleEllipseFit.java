@@ -366,6 +366,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public RealLocalizable Refcord;
 	public double mindistance = 200;
 	public int alphaInit = 1;
+	public int maxperi = Integer.MIN_VALUE;
 	public int betaInit = 0;
 	public int minSizeInit = 50;
 	public int maxSizeInit = 500;

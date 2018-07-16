@@ -157,6 +157,8 @@ public class LabelCurvature implements Runnable {
 			Intersectionobject currentobject = PointExtractor.CurvaturetoIntersection(parent.localCurvature,
 					parent.functions, centerpoint, parent.smoothing);
 
+			if (parent.maxperimeter >=currentobject.perimeter)
+				parent.maxperimeter = (int)Math.round(currentobject.perimeter);
 			resultlineroi.addAll(currentobject.linerois);
 			if(currentobject.curvelinerois!= null)
 			resultcurvelineroi.addAll(currentobject.curvelinerois);

@@ -37,6 +37,7 @@ public class ParallelResultDisplay  {
 	}
 	
 
+	
 	public void ResultDisplay() {
 		// set up executor service
 		int nThreads = Runtime.getRuntime().availableProcessors();
@@ -93,7 +94,7 @@ public class ParallelResultDisplay  {
 				parent.KymoDimension = listsize;
 				
 			}
-			
+			System.out.println(listsize);
 			
 			RandomAccessibleInterval<FloatType> CurrentViewprobImg = utility.Slicer.getCurrentView(probImg, time,
 					parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
@@ -115,7 +116,7 @@ public class ParallelResultDisplay  {
 			IJ.run("Fire");
 			
 			// Make Kymographs
-			long[] size = new long[] { (int)parent.AccountedZ.size(),parent.KymoDimension };
+			long[] size = new long[] { (int)parent.AccountedZ.size() + 1,parent.KymoDimension };
 			
 			MakeKymo(size);
 			
@@ -155,7 +156,7 @@ public class ParallelResultDisplay  {
 			
 			for (int index = 0; index < TimeCurveList.size(); ++index) {
 				
-				
+				System.out.println(count + " motehr counter");
 				X[index] = TimeCurveList.get(index)[0];
 				Y[index] = TimeCurveList.get(index)[1];
 				Curvature[index] = TimeCurveList.get(index)[2];

@@ -606,7 +606,24 @@ public class CurvatureFunction {
 		long[] longnewpos = new long[ndims];
 		
 		perimeter = Distance.DistanceSqrt(pointlist.get(0), pointlist.get(pointlist.size() - 1));
+		int size = pointlist.size();
+		final double[] pointA = new double[ndims];
+		final double[] pointB = new double[ndims];
+		final double[] pointC = new double[ndims];
+		 double meanIntensity = 0;
+		 double meanSecIntensity = 0;
+		int splitindex;
+		if (size % 2 == 0)
+			splitindex = size / 2;
+		else
+			splitindex = (size - 1) / 2;
 		
+			for (int i = 0; i < ndims; ++i) {
+			pointA[i] = pointlist.get(0).getDoublePosition(i);
+			pointB[i] = pointlist.get(splitindex).getDoublePosition(i);
+			pointC[i] = pointlist.get(size - 1).getDoublePosition(i);
+			
+			}
 		for (RealLocalizable point : pointlist) {
 
 			point.localize(newpos);
@@ -618,9 +635,16 @@ public class CurvatureFunction {
 				longnewpos[d] = (long) newpos[d];
 			net.imglib2.Point intpoint = new net.imglib2.Point(longnewpos);
 			Pair<Double, Double> Intensity = getIntensity(intpoint, centerpoint);
-			Curvaturepoints.add(new double[] { newpos[0], newpos[1], Math.abs(Kappa), perimeter, Intensity.getA(), Intensity.getB() });
+			meanIntensity+=Intensity.getA();
+			meanSecIntensity+=Intensity.getB();
+			
 		}
-
+		
+		
+		meanIntensity/= size;
+		meanSecIntensity/=size;
+		
+		Curvaturepoints.add(new double[] { pointB[0], pointB[1], Math.abs(Kappa), perimeter, meanIntensity,meanSecIntensity });
 		RegressionFunction finalfunctionransac = new RegressionFunction(ellipsesegment.function, Curvaturepoints);
 
 		return finalfunctionransac;
