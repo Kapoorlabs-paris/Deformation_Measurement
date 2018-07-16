@@ -9,6 +9,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import ch.qos.logback.classic.gaffer.GafferConfigurator;
 import ij.IJ;
 import ij.ImagePlus;
 import net.imglib2.RandomAccess;

@@ -103,7 +103,6 @@ public class CurvatureFunction {
 		
 			
 			List<RealLocalizable> sublist = entry.getValue();
-			System.out.println(entry.getKey() + " " + "in the list map");
 		Pair<Boolean, Double> local = FitonList(parent, centerpoint, sublist, functions, interpolatedCurvature, smoothing, maxError, minNumInliers, degree, secdegree); 
 		
 		if(local!=null) {
@@ -402,17 +401,30 @@ public class CurvatureFunction {
 			
 			if(count>=maxpoints) {
 				
-				parent.Listmap.put(segmentLabel, sublist);
+				parent.Listmap.put(segmentLabel, CopyList(sublist));
 				count = 0;
 				segmentLabel++;
-				sublist = new ArrayList<RealLocalizable>();
+				 sublist.clear();
 			}
 			
 		}
 		
 		
+	}
+	
+	public List<RealLocalizable> CopyList(List<RealLocalizable> truths){
+		
+		List<RealLocalizable> sublist = new ArrayList<RealLocalizable>();
+		Iterator<RealLocalizable> subiter = truths.iterator();
+		
+		while(subiter.hasNext()) {
+			
+			sublist.add(subiter.next());
+			
+		}
 		
 		
+		return sublist;
 	}
 	
 	public  void MakeTree(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int depthint,

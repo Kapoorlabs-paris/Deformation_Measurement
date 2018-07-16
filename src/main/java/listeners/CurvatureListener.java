@@ -32,6 +32,12 @@ public class CurvatureListener implements ActionListener {
 		parent.Tracklist.clear();
 		parent.imp.getCanvas().removeMouseListener(parent.mvl);
 		parent.imp.getCanvas().removeMouseMotionListener(parent.ml);
+		
+		
+		parent.displayCircle.setState(false);
+		parent.displaySegments.setState(false);
+		parent.displayIntermediate = false;
+		parent.displayIntermediateBox = false;
 		if (parent.curveautomode) {
 
 			parent.emptysmooth = utility.Binarization.CreateBinaryBit(parent.originalimgsmooth, parent.lowprob,
@@ -42,6 +48,8 @@ public class CurvatureListener implements ActionListener {
 					DefaultWeightedEdge.class);
 			parent.parentgraphZ = new HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
 			parent.StartCurvatureComputing();
+			
+			
 		}
 
 		if (parent.curvesupermode) {
