@@ -94,7 +94,6 @@ public class ParallelResultDisplay  {
 				parent.KymoDimension = listsize;
 				
 			}
-			System.out.println(listsize + " " + time);
 			
 			RandomAccessibleInterval<FloatType> CurrentViewprobImg = utility.Slicer.getCurrentView(probImg, time,
 					parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
