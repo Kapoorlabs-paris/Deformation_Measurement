@@ -11,7 +11,4 @@ import net.imglib2.algorithm.OutputAlgorithm;
 public interface SegmentIntersectionTracker extends OutputAlgorithm< SimpleWeightedGraph< Segmentobject, DefaultWeightedEdge >> {
 	
 	
-		
-		
-
 }

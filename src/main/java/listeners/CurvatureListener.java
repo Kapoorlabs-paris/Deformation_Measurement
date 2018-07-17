@@ -8,6 +8,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import ellipsoidDetector.Intersectionobject;
+import kalmanForSegments.Segmentobject;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import pluginTools.InteractiveSimpleEllipseFit;
 
@@ -47,6 +48,9 @@ public class CurvatureListener implements ActionListener {
 			parent.parentgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(
 					DefaultWeightedEdge.class);
 			parent.parentgraphZ = new HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
+			
+			parent.parentgraphSegZ = new HashMap<String, SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge>>();
+			
 			parent.StartCurvatureComputing();
 			
 			
@@ -58,7 +62,8 @@ public class CurvatureListener implements ActionListener {
 					DefaultWeightedEdge.class);
 			parent.parentgraphZ = new HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
 			parent.empty = utility.Binarization.CreateBinaryBit(parent.originalimg, parent.lowprob, parent.highprob);
-
+			parent.parentgraphSegZ = new HashMap<String, SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge>>();
+			
 			parent.StartCurvatureComputing();
 		}
 

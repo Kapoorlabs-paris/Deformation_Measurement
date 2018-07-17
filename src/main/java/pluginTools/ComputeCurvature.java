@@ -36,6 +36,8 @@ import ellipsoidDetector.Intersectionobject;
 import hashMapSorter.SortTimeorZ;
 import ij.ImageStack;
 import ij.gui.Line;
+import kalmanForSegments.Segmentobject;
+import kalmanForSegments.TrackSegmentModel;
 import kalmanTracker.ETrackCostFunction;
 import kalmanTracker.IntersectionobjectCollection;
 import kalmanTracker.KFsearch;
@@ -117,7 +119,9 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 				
 			}
 			
-			CurvedLineage();
+		//	CurvedLineage();
+			
+			CurvedSegmentLineage();
 		}
 
 		else {
@@ -126,7 +130,13 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			parent.parentgraphZ.put(Integer.toString(1), simplegraph);
 			
-			CurvedLineage();
+			SimpleWeightedGraph< Segmentobject, DefaultWeightedEdge > simpleSegmentgraph = track.TrackSegmentfunction();
+			
+			parent.parentgraphSegZ.put(Integer.toString(1), simpleSegmentgraph);
+			
+			// CurvedLineage();
+			
+			 CurvedSegmentLineage();
 		}
 
 
@@ -288,6 +298,141 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 							}
 							parent.Finalresult.put(Integer.toString(id) + entryZ.getKey(), bestangle);
+
+						}
+
+					}
+				}
+			}
+			curvatureUtils.CurvatureTable.CreateTableTrackView(parent);
+			
+			
+			
+		}
+		
+	}
+	
+	
+	
+	
+public void CurvedSegmentLineage() {
+
+		
+
+		if(parent.ndims >= 3) {
+		
+			
+			
+			for (Map.Entry<String, SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge>> entryZ : parent.parentgraphSegZ
+					.entrySet()) {
+
+				TrackSegmentModel model = new TrackSegmentModel(entryZ.getValue());
+
+				int minid = Integer.MAX_VALUE;
+				int maxid = Integer.MIN_VALUE;
+
+				for (final Integer id : model.trackIDs(true)) {
+
+					if (id > maxid)
+						maxid = id;
+
+					if (id < minid)
+						minid = id;
+
+				}
+
+
+				if (minid != Integer.MAX_VALUE) {
+
+					for (final Integer id : model.trackIDs(true)) {
+
+						Comparator<Pair<String, Segmentobject>> ThirdDimcomparison = new Comparator<Pair<String, Segmentobject>>() {
+
+							@Override
+							public int compare(final Pair<String, Segmentobject> A,
+									final Pair<String, Segmentobject> B) {
+
+								return A.getB().time - B.getB().time;
+
+							}
+
+						};
+
+						Comparator<Pair<String, Segmentobject>> FourthDimcomparison = new Comparator<Pair<String, Segmentobject>>() {
+
+							@Override
+							public int compare(final Pair<String, Segmentobject> A,
+									final Pair<String, Segmentobject> B) {
+
+								return A.getB().time - B.getB().time;
+
+							}
+
+						};
+
+						model.setName(id, "Track" + id + entryZ.getKey());
+
+						final HashSet<Segmentobject> Angleset = model.trackSegmentobjects(id);
+
+						Iterator<Segmentobject> Angleiter = Angleset.iterator();
+
+						while (Angleiter.hasNext()) {
+
+							Segmentobject currentangle = Angleiter.next();
+							parent.SegmentTracklist.add(new ValuePair<String, Segmentobject>(
+									Integer.toString(id) + entryZ.getKey(), currentangle));
+						}
+						Collections.sort(parent.SegmentTracklist, ThirdDimcomparison);
+						if (parent.fourthDimensionSize > 1)
+						Collections.sort(parent.SegmentTracklist, FourthDimcomparison);
+
+					}
+
+					for (int id = minid; id <= maxid; ++id) {
+						Segmentobject bestangle = null;
+						if (model.trackSegmentobjects(id) != null) {
+
+							List<Segmentobject> sortedList = new ArrayList<Segmentobject>(
+									model.trackSegmentobjects(id));
+
+							Collections.sort(sortedList, new Comparator<Segmentobject>() {
+
+								@Override
+								public int compare(Segmentobject o1, Segmentobject o2) {
+
+									return o1.time - o2.time;
+								}
+
+							});
+
+							Iterator<Segmentobject> iterator = sortedList.iterator();
+
+							int count = 0;
+							while (iterator.hasNext()) {
+
+								Segmentobject currentangle = iterator.next();
+								if (count == 0)
+									bestangle = currentangle;
+								if(parent.originalimg.numDimensions() > 3) {
+								if (currentangle.time  == parent.fourthDimension) {
+									bestangle = currentangle;
+									count++;
+								    break;	
+								}
+								}
+								else if (parent.originalimg.numDimensions()<= 3){
+									if (currentangle.time  == parent.thirdDimension) {
+										bestangle = currentangle;
+										count++;
+									    break;	
+									 
+									}
+									
+									
+								}
+
+							}
+							parent.SegmentFinalresult.put(Integer.toString(id) + entryZ.getKey(), bestangle);
 
 						}
 

@@ -16,9 +16,15 @@ public class Segmentobject extends AbstractEuclideanSpace implements RealLocaliz
 	
 	public final int time;
 	
-	public final ArrayList<Integer> segmentLabel;
+	public final int segmentLabel;
 	
-	public RealLocalizable centralpoint;
+	public final RealLocalizable centralpoint;
+	
+	public final double Curvature;
+	
+	public final double IntensityA;
+	
+	public final double IntensityB;
 	
 	public static AtomicInteger IDcounter = new AtomicInteger( -1 );
 	
@@ -29,7 +35,7 @@ public class Segmentobject extends AbstractEuclideanSpace implements RealLocaliz
 	private final ConcurrentHashMap< String, Double > features = new ConcurrentHashMap< String, Double >();
 	
 	
-	public Segmentobject ( final RealLocalizable centralpoint, final ArrayList<Integer> segmentLabel, final int cellLabel, final int time) {
+	public Segmentobject ( final RealLocalizable centralpoint, final double Curvature, final double IntensityA, final double IntensityB, final int segmentLabel, final int cellLabel, final int time) {
 		
 		
 		super(3);
@@ -44,11 +50,20 @@ public class Segmentobject extends AbstractEuclideanSpace implements RealLocaliz
 		
 		this.time = time;
 		
+		this.Curvature = Curvature;
+		
+		this.IntensityA = IntensityA;
+		
+		this.IntensityB = IntensityB;
 		
 		this.name = "ID" + ID;
 		
+		putFeature(IntensityAlabel , IntensityA);
+		putFeature(IntensityBlabel , IntensityB);
+		putFeature(Curvaturelabel, Curvature);
 		
 		putFeature(Celllabel , (double)cellLabel);
+		putFeature(Segmentlabel , (double)cellLabel);
 		putFeature(Time , (double)time);
 		putFeature(XPOSITION , centralpoint.getDoublePosition(0));
 		putFeature(YPOSITION , centralpoint.getDoublePosition(1));
@@ -77,10 +92,21 @@ public class Segmentobject extends AbstractEuclideanSpace implements RealLocaliz
 	/** The name of the blob Y position feature. */
 	public static final String Time = "Time";
 
-
+	/** The name of the frame feature. */
+	public static final String Segmentlabel = "Segmentlabel";
 
 	/** The name of the frame feature. */
 	public static final String Celllabel = "Celllabel";
+	
+
+	/** The name of the frame feature. */
+	public static final String Curvaturelabel = "Curvaturelabel";
+
+	/** The name of the frame feature. */
+	public static final String IntensityAlabel = "IntensityAlabel";
+	
+	/** The name of the frame feature. */
+	public static final String IntensityBlabel = "IntensityBlabel";
 
 	
 

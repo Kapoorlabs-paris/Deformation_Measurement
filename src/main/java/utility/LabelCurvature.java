@@ -24,6 +24,7 @@ import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
 import ij.gui.Roi;
+import kalmanForSegments.Segmentobject;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.ransac.RansacModels.*;
@@ -158,6 +159,9 @@ public class LabelCurvature implements Runnable {
 			Intersectionobject currentobject = PointExtractor.CurvaturetoIntersection(parent.localCurvature,
 					parent.functions, centerpoint, parent.smoothing);
 
+			
+		
+			
 			if (parent.maxperimeter >=currentobject.perimeter)
 				parent.maxperimeter = (int)Math.round(currentobject.perimeter);
 			resultlineroi.addAll(currentobject.linerois);

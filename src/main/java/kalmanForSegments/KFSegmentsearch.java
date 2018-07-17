@@ -189,7 +189,7 @@ public class KFSegmentsearch implements SegmentIntersectionTracker {
 					final DefaultWeightedEdge edge = graph.addEdge(source, target);
 					final double cost = costs.get(cm);
 					graph.setEdgeWeight(edge, cost);
-
+					
 					// Update Kalman filter
 					kf.update(MeasureBlob(target));
 

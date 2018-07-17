@@ -11,6 +11,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import ellipsoidDetector.Intersectionobject;
+import kalmanForSegments.Segmentobject;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
@@ -71,6 +72,56 @@ public class CurvatureTable {
 
 		makeGUI(parent);
 	}
+	
+	
+	
+public static void CreateSegTableTrackView(final InteractiveSimpleEllipseFit parent) {
+		
+		parent.resultSegCurvature = new ArrayList<Pair<String, Pair< Integer,Double>>>();
+		for (Pair<String, Segmentobject> currentangle : parent.SegmentTracklist) {
+			if(parent.originalimg.numDimensions() > 3) {
+
+			
+			Pair< Integer,Double> timelist = new ValuePair<Integer, Double>(currentangle.getB().time, currentangle.getB().Curvature);
+			parent.resultSegCurvature.add(new ValuePair<String, Pair< Integer, Double>>(currentangle.getA(),timelist));
+			parent.HashresultSegCurvature.put(currentangle.getB().time, currentangle.getB().Curvature);
+			
+			}
+			else {
+			
+				Pair< Integer,Double> timelist = new ValuePair<Integer, Double>(currentangle.getB().time, currentangle.getB().Curvature);
+				parent.resultSegCurvature.add(new ValuePair<String, Pair< Integer, Double>>(currentangle.getA(),timelist));
+				parent.HashresultSegCurvature.put(currentangle.getB().time, currentangle.getB().Curvature);
+			}
+
+		}
+		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Location Z/T", "Perimeter"};
+
+		Object[][] rowvalues = new Object[0][colnames.length];
+
+		rowvalues = new Object[parent.Finalresult.size()][colnames.length];
+
+		parent.table = new JTable(rowvalues, colnames);
+		parent.row = 0;
+		NumberFormat f = NumberFormat.getInstance();
+		for (Map.Entry<String, Segmentobject> entry : parent.SegmentFinalresult.entrySet()) {
+
+			Segmentobject currentangle = entry.getValue();
+			parent.table.getModel().setValueAt(entry.getKey(), parent.row, 0);
+			parent.table.getModel().setValueAt(f.format(currentangle.centralpoint.getDoublePosition(0)), parent.row, 1);
+			parent.table.getModel().setValueAt(f.format(currentangle.centralpoint.getDoublePosition(1)), parent.row, 2);
+			parent.table.getModel().setValueAt(f.format(currentangle.time), parent.row, 3);
+			parent.table.getModel().setValueAt(f.format(currentangle.Curvature), parent.row, 4);
+			
+
+			parent.row++;
+
+			parent.tablesize = parent.row;
+		}
+
+		makeGUI(parent);
+	}
+	
 	
 	public static void CreateTableView(final InteractiveSimpleEllipseFit parent) {
 
