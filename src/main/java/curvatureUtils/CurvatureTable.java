@@ -95,11 +95,11 @@ public static void CreateSegTableTrackView(final InteractiveSimpleEllipseFit par
 			}
 
 		}
-		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Location Z/T", "Perimeter"};
+		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Location Z/T", "Curvature"};
 
 		Object[][] rowvalues = new Object[0][colnames.length];
 
-		rowvalues = new Object[parent.Finalresult.size()][colnames.length];
+		rowvalues = new Object[parent.SegmentFinalresult.size()][colnames.length];
 
 		parent.table = new JTable(rowvalues, colnames);
 		parent.row = 0;

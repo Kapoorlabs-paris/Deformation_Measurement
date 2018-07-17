@@ -529,7 +529,6 @@ public class TrackSegmentModel
 	 * Returns the set of track IDs managed by this model, ordered by track
 	 * names (alpha-numerically sorted).
 	 *
-	 * @param visibleOnly
 	 *            if <code>true</code>, only visible track IDs will be returned.
 	 * @return a new set of track IDs.
 	 */

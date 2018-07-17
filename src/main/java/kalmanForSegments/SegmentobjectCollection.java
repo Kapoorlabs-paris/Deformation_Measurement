@@ -1164,7 +1164,7 @@ public class SegmentobjectCollection implements MultiThreaded
 		final SegmentobjectCollection sc = new SegmentobjectCollection();
 		for ( final Segmentobject Segmentobject : ThreeDRoiobjects )
 		{
-			final String Time =  Double.toString(Segmentobject.getFeature( Segmentobject.Segmentlabel )) + Double.toString(Segmentobject.getFeature( Segmentobject.Time )) + Double.toString(Segmentobject.getFeature( Segmentobject.Celllabel )) 
+			final String Time =   Double.toString(Segmentobject.getFeature( Segmentobject.Time )) + Double.toString(Segmentobject.getFeature( Segmentobject.Celllabel )) 
 			  ;
 			Set< Segmentobject > fc = sc.content.get( Time );
 			if ( null == fc )

@@ -82,6 +82,49 @@ public class CurvatureTableDisplay {
 		parent.jFreeChartFrame.repaint();
 
 	}
+	
+public static void displayclickedSegment(InteractiveSimpleEllipseFit parent, int trackindex) {
+
+		
+		// Make something happen
+		parent.row = trackindex;
+		String ID = (String) parent.table.getValueAt(trackindex, 0);
+		ArrayList<Pair<String, double[]>> currentresultPeri = new ArrayList<Pair<String, double[]>>();
+		ArrayList<Pair<String, Pair<Integer, Double>>> currentresultCurv = new ArrayList<Pair<String, Pair<Integer, Double>>>();
+
+	
+
+		for (Pair<String, Pair<Integer, Double>> currentCurvature : parent.resultSegCurvature) {
+
+			
+			if (ID.equals(currentCurvature.getA())) {
+
+				currentresultCurv.add(currentCurvature);
+
+			}
+
+		}
+
+		if (parent.imp != null) {
+			parent.imp.setOverlay(parent.overlay);
+			parent.imp.updateAndDraw();
+		}
+
+		parent.contdataset.removeAllSeries();
+		parent.contdataset.addSeries(ChartMaker.drawCurveSegPoints(currentresultCurv));
+
+		parent.chart = utility.ChartMaker.makeChart(parent.contdataset, "Segment Curvature Evolution", "Time", "Curvature");
+
+		
+	
+		
+	
+
+		parent.jFreeChartFrame.dispose();
+		parent.jFreeChartFrame.repaint();
+
+	}
+	
 
 	public static Pair<Double, Double> RangePlot(ArrayList<Curvatureobject> currentresultCurvature, int index) {
 

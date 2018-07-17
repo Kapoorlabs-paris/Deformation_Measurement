@@ -331,6 +331,7 @@ public void CurvedSegmentLineage() {
 				int minid = Integer.MAX_VALUE;
 				int maxid = Integer.MIN_VALUE;
 
+				
 				for (final Integer id : model.trackIDs(true)) {
 
 					if (id > maxid)
@@ -421,6 +422,7 @@ public void CurvedSegmentLineage() {
 								}
 								}
 								else if (parent.originalimg.numDimensions()<= 3){
+									
 									if (currentangle.time  == parent.thirdDimension) {
 										bestangle = currentangle;
 										count++;
@@ -434,12 +436,14 @@ public void CurvedSegmentLineage() {
 							}
 							parent.SegmentFinalresult.put(Integer.toString(id) + entryZ.getKey(), bestangle);
 
+							System.out.println(Integer.toString(id) + " " + bestangle.Curvature);
 						}
 
 					}
 				}
 			}
-			curvatureUtils.CurvatureTable.CreateTableTrackView(parent);
+			
+			curvatureUtils.CurvatureTable.CreateSegTableTrackView(parent);
 			
 			
 			

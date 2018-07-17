@@ -351,7 +351,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> parentgraphZ;
 	public HashMap<String, SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge>> parentgraphSegZ;
 	public HashMap<String, ArrayList<Intersectionobject>> ALLIntersections;
-	public HashMap<String, Segmentobject> ALLSegments;
+	public HashMap<String, ArrayList<Segmentobject>> ALLSegments;
 	public HashMap<Integer, ArrayList<double[]>> HashresultCurvature;
 	public HashMap<Integer, Double> HashresultSegCurvature;
 	public Set<Integer> pixellist;
@@ -723,7 +723,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		IntersectionZTRois = new HashMap<String, Roiobject>();
 		Clickedpoints = new int[2];
 		ALLIntersections = new HashMap<String, ArrayList<Intersectionobject>>();
-		ALLSegments = new HashMap<String, Segmentobject>();
+		ALLSegments = new HashMap<String, ArrayList<Segmentobject>>();
 		HashresultCurvature = new HashMap<Integer, ArrayList<double[]>>();
 		HashresultSegCurvature = new HashMap<Integer, Double>();
 		Finalresult = new HashMap<String, Intersectionobject>();

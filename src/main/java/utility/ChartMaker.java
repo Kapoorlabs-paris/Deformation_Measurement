@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Paint;
 import java.awt.Shape;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -106,7 +107,16 @@ public class ChartMaker {
 		}
 		return series;
 	}
+	public static XYSeries drawSegPoints(final ArrayList<Pair<String, Pair<Integer, Double>>> mts, final String name) {
+		XYSeries series = new XYSeries(name);
 
+		if(mts!=null) {
+		   for (Pair<String, Pair<Integer, Double>> mt : mts)
+				series.add(mt.getB().getA(), mt.getB().getB());
+				
+		}
+		return series;
+	}
 	public static XYSeries drawPointsInt(final List<Pair<Integer, double[]>> mts) {
 		return drawPointsInt(mts, "Curvature measurement");
 	}
@@ -139,6 +149,10 @@ public class ChartMaker {
 		return drawPoints(mts, "Perimeter evolution");
 	}
 
+	public static XYSeries drawCurveSegPoints(final ArrayList<Pair<String, Pair<Integer, Double>>> mts) {
+		return drawSegPoints(mts, "Curvature evolution");
+	}
+	
 	public static XYSeries drawCurvePoints(final List<Pair<String, double[]>> mts, final String name) {
 		XYSeries series = new XYSeries(name);
 

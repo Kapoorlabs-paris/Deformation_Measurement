@@ -99,6 +99,7 @@ public class CurvatureFunction {
 		MakeSegments(parent, truths, minNumInliers, Label, z);
 
 		// Now do the fitting
+		ArrayList<Segmentobject> Allcellsegment = new ArrayList<Segmentobject>();
 		
 		System.out.println(parent.Listmap.size() + " map");
 		
@@ -118,13 +119,15 @@ public class CurvatureFunction {
 			double IntensityB = localfunction.getB().get(0)[5];
 			Segmentobject cellsegment = new Segmentobject(Cord, Curvature, IntensityA, IntensityB, entry.getKey(), Label, z);
 
-			String uniqueID = Integer.toString(entry.getKey()) + Integer.toString(z) + Integer.toString(Label);
 			
-			System.out.println(uniqueID + "Segment ID");
-			// Create the hash map entry for the particular cell
-			parent.ALLSegments.put(uniqueID, cellsegment);
+			Allcellsegment.add(cellsegment);
+			
+		
 
 		}
+		String uniqueID = Integer.toString(z) + Integer.toString(Label);
+		// Create the hash map entry for the particular cell
+		parent.ALLSegments.put(uniqueID, Allcellsegment);
 		/** Compute by TREE **/
 		/*
 		 * HashMap<String, Node<RealLocalizable>> SortedNodemap =

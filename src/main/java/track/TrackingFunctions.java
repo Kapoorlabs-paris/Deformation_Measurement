@@ -59,16 +59,16 @@ public class TrackingFunctions {
 
 		SegmentobjectCollection coll = new SegmentobjectCollection();
 
-		System.out.println(parent.ALLSegments.size() + " " + "Size of All segments");
-		for (Map.Entry<String, Segmentobject> entry : parent.ALLSegments.entrySet()) {
+		for (Map.Entry<String, ArrayList<Segmentobject>> entry : parent.ALLSegments.entrySet()) {
 
 			String ID = entry.getKey();
-			Segmentobject blobs = entry.getValue();
+			ArrayList<Segmentobject> bloblist = entry.getValue();
 
+			for (Segmentobject blobs : bloblist) {
 
 				coll.add(blobs, ID);
 				
-				System.out.println(blobs.Curvature + " " + blobs.segmentLabel + "  " +  blobs.time  + " In Kalman loop" + " " + ID);
+			}
 
 		}
 
