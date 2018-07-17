@@ -103,15 +103,12 @@ public class CurvatureFunction {
 		
 			
 			List<RealLocalizable> sublist = entry.getValue();
-		Pair<Boolean, Double> local = FitonList(parent, centerpoint, sublist, functions, interpolatedCurvature, smoothing, maxError, minNumInliers, degree, secdegree); 
+		Pair<RegressionFunction, ArrayList<double[]>> localfunction = FitonList(parent, centerpoint, sublist, smoothing, maxError, minNumInliers, degree, secdegree); 
+	
+	   perimeter+= localfunction.getA().Curvaturepoints.get(0)[3];
+	   totalfunctions.add(localfunction.getA());
+	   totalinterpolatedCurvature.addAll(localfunction.getB());
 		
-		if(local!=null) {
-			
-			perimeter+=local.getB();
-			totalfunctions.addAll(functions);
-			totalinterpolatedCurvature.addAll(interpolatedCurvature);
-		}
-				
 				
 		}
 		/**Compute by TREE**/
@@ -259,20 +256,20 @@ public class CurvatureFunction {
 					Leftsubtruths.get(i).getDoublePosition(1) });
 
 		}
-		RegressionFunction Leftresultcurvature = getLocalcurvature(LeftCordlist, centerpoint, smoothing, maxError, minNumInliers,
+		Pair<RegressionFunction, ArrayList<double[]>> Leftresultcurvature = getLocalcurvature(LeftCordlist, centerpoint, smoothing, maxError, minNumInliers,
 				degree, secdegree);
 
 
 		// Draw the function
 		double perimeter = 0;
 		if (Leftresultcurvature != null) {
-			functions.add(Leftresultcurvature);
+			functions.add(Leftresultcurvature.getA());
 
-			interpolatedCurvature.addAll(Leftresultcurvature.Curvaturepoints);
+			interpolatedCurvature.addAll(Leftresultcurvature.getB());
 
-			perimeter = Leftresultcurvature.Curvaturepoints.get(0)[3];
+			perimeter = Leftresultcurvature.getA().Curvaturepoints.get(0)[3];
 
-			boolean leftcorrected = CorrectSegmentRegression(Leftresultcurvature);
+			boolean leftcorrected = CorrectSegmentRegression(Leftresultcurvature.getA());
 
 			Pair<Boolean, Double> leftpair = new ValuePair<Boolean, Double>(leftcorrected, perimeter);
 
@@ -299,8 +296,8 @@ public class CurvatureFunction {
 	 * @param secdegree
 	 * @return
 	 */
-	public Pair<Boolean, Double> FitonList(InteractiveSimpleEllipseFit parent, RealLocalizable centerpoint, List<RealLocalizable> sublist, 
-			ArrayList<RegressionFunction> functions,ArrayList<double[]> interpolatedCurvature, double smoothing, double maxError, int minNumInliers, int degree,
+	public Pair<RegressionFunction, ArrayList<double[]>> FitonList(InteractiveSimpleEllipseFit parent, RealLocalizable centerpoint, List<RealLocalizable> sublist, 
+			 double smoothing, double maxError, int minNumInliers, int degree,
 			int secdegree) {
 		
 		
@@ -313,24 +310,19 @@ public class CurvatureFunction {
 		}
 		
 		
-		RegressionFunction resultcurvature = getLocalcurvature(Cordlist, centerpoint, smoothing, maxError, minNumInliers, degree, secdegree);
+	
 		
+		Pair<RegressionFunction, ArrayList<double[]>> resultcurvature = getLocalcurvature(Cordlist, centerpoint, smoothing, maxError, minNumInliers, degree, secdegree);
+	
 		
 		// Draw the function
 		
-		double perimeter = 0;
 		
-		if(resultcurvature!=null) {
 			
-			functions.add(resultcurvature);
-			interpolatedCurvature.addAll(resultcurvature.Curvaturepoints);
-			perimeter = resultcurvature.Curvaturepoints.get(0)[3];
-			Pair<Boolean, Double> leftpair = new ValuePair<Boolean, Double>(true, perimeter);
+		
 
-			return leftpair;
+			return resultcurvature;
 			
-		}
-		else return null;
 		
 	}
 	
@@ -350,7 +342,7 @@ public class CurvatureFunction {
 					Rightsubtruths.get(i).getDoublePosition(1) });
 
 		}
-		RegressionFunction Rightresultcurvature = getLocalcurvature(RightCordlist,centerpoint, smoothing, maxError, minNumInliers,
+		Pair<RegressionFunction, ArrayList<double[]>> Rightresultcurvature = getLocalcurvature(RightCordlist,centerpoint, smoothing, maxError, minNumInliers,
 				degree, secdegree);
 
 
@@ -358,13 +350,13 @@ public class CurvatureFunction {
 		double perimeter = 0;
 		if (Rightresultcurvature != null) {
 
-			functions.add(Rightresultcurvature);
+			functions.add(Rightresultcurvature.getA());
 
-			interpolatedCurvature.addAll(Rightresultcurvature.Curvaturepoints);
+			interpolatedCurvature.addAll(Rightresultcurvature.getB());
 
-			perimeter = Rightresultcurvature.Curvaturepoints.get(0)[3];
+			perimeter = Rightresultcurvature.getA().Curvaturepoints.get(0)[3];
 
-			boolean rightcorrected = CorrectSegmentRegression(Rightresultcurvature);
+			boolean rightcorrected = CorrectSegmentRegression(Rightresultcurvature.getA());
 			Pair<Boolean, Double> rightpair = new ValuePair<Boolean, Double>(rightcorrected, perimeter);
 			return rightpair;
 		}
@@ -487,7 +479,7 @@ public class CurvatureFunction {
 	 * @return
 	 */
 
-	public  RegressionFunction getLocalcurvature(ArrayList<double[]> Cordlist, RealLocalizable centerpoint, double smoothing, double maxError,
+	public  Pair<RegressionFunction, ArrayList<double[]>> getLocalcurvature(ArrayList<double[]> Cordlist, RealLocalizable centerpoint, double smoothing, double maxError,
 			int minNumInliers, int degree, int secdegree) {
 
 		double[] x = new double[Cordlist.size()];
@@ -507,18 +499,22 @@ public class CurvatureFunction {
 
 		// Here you choose which method is used to detect curvature
 
-		RegressionFunction finalfunction;
-	
+		
+		Pair<RegressionFunction, ArrayList<double[]>> finalfunctionandList;
+		
 		// Circle fits
-		if(parent.circlefits)
-		finalfunction = RansacEllipseBlock(list, centerpoint, 2);
+		if(parent.circlefits) {
+			finalfunctionandList = RansacEllipseBlock(list, centerpoint, 2);
 
+		}
 		// Polynomial fits
-		else
+		else {
 			
-		finalfunction =  RansacBlock(pointlist, centerpoint, smoothing, maxError, minNumInliers, degree, secdegree);
-
-		return finalfunction;
+			finalfunctionandList = RansacBlock(pointlist, centerpoint, smoothing, maxError, minNumInliers, degree, secdegree);
+			
+			
+		}
+		return finalfunctionandList;
 
 	}
 
@@ -592,13 +588,16 @@ public class CurvatureFunction {
 	 * @return
 	 */
 
-	public  RegressionFunction RansacEllipseBlock(final ArrayList<RealLocalizable> pointlist, RealLocalizable centerpoint, int ndims) {
+	public  Pair<RegressionFunction, ArrayList<double[]>> RansacEllipseBlock(final ArrayList<RealLocalizable> pointlist, RealLocalizable centerpoint, int ndims) {
 
 		final RansacFunctionEllipsoid ellipsesegment = FitLocalEllipsoid.findLocalEllipsoid(pointlist, ndims);
 
 		double Kappa = 0;
 		double perimeter = 0;
 		ArrayList<double[]> Curvaturepoints = new ArrayList<double[]>();
+		
+		ArrayList<double[]> AllCurvaturepoints = new ArrayList<double[]>();
+		
 
 		double[] center = ellipsesegment.function.getCenter();
 		double radii = ellipsesegment.function.getRadii();
@@ -637,7 +636,7 @@ public class CurvatureFunction {
 			Pair<Double, Double> Intensity = getIntensity(intpoint, centerpoint);
 			meanIntensity+=Intensity.getA();
 			meanSecIntensity+=Intensity.getB();
-			
+			AllCurvaturepoints.add(new double[] { newpos[0], newpos[1], Math.abs(Kappa), perimeter, meanIntensity,meanSecIntensity });
 		}
 		
 		
@@ -647,7 +646,7 @@ public class CurvatureFunction {
 		Curvaturepoints.add(new double[] { pointB[0], pointB[1], Math.abs(Kappa), perimeter, meanIntensity,meanSecIntensity });
 		RegressionFunction finalfunctionransac = new RegressionFunction(ellipsesegment.function, Curvaturepoints);
 
-		return finalfunctionransac;
+		return new ValuePair<RegressionFunction, ArrayList<double[]>>(finalfunctionransac, AllCurvaturepoints);
 	}
 
 	/**
@@ -661,7 +660,7 @@ public class CurvatureFunction {
 	 * @return
 	 */
 
-	public  RegressionFunction RansacBlock(final ArrayList<Point> pointlist, RealLocalizable center, double smoothing, double maxError,
+	public  Pair<RegressionFunction, ArrayList<double[]>> RansacBlock(final ArrayList<Point> pointlist, RealLocalizable center, double smoothing, double maxError,
 			int minNumInliers, int degree, int secdegree) {
 
 		// Ransac block
@@ -719,7 +718,7 @@ public class CurvatureFunction {
 			RegressionFunction finalfunctionransac = new RegressionFunction(segment.mixedfunction, Curvaturepoints,
 					segment.inliers, segment.candidates);
 
-			return finalfunctionransac;
+			return new ValuePair<RegressionFunction, ArrayList<double[]>>(finalfunctionransac, Curvaturepoints);
 
 		}
 

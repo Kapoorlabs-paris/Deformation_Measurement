@@ -120,7 +120,6 @@ public class LabelCurvature implements Runnable {
 				
 			}
 
-
 			// Get the sparse list of points
 
 			List<RealLocalizable> allorderedtruths = Listordereing.getList(Ordered, i);
@@ -154,6 +153,8 @@ public class LabelCurvature implements Runnable {
 			parent.functions = resultpair.getA();
 			// Make intersection object here
 
+		
+			
 			Intersectionobject currentobject = PointExtractor.CurvaturetoIntersection(parent.localCurvature,
 					parent.functions, centerpoint, parent.smoothing);
 

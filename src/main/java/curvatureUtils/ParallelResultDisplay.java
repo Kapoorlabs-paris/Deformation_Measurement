@@ -94,7 +94,7 @@ public class ParallelResultDisplay  {
 				parent.KymoDimension = listsize;
 				
 			}
-			System.out.println(listsize);
+			System.out.println(listsize + " " + time);
 			
 			RandomAccessibleInterval<FloatType> CurrentViewprobImg = utility.Slicer.getCurrentView(probImg, time,
 					parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
@@ -156,12 +156,13 @@ public class ParallelResultDisplay  {
 			
 			for (int index = 0; index < TimeCurveList.size(); ++index) {
 				
-				System.out.println(count + " motehr counter");
+				
 				X[index] = TimeCurveList.get(index)[0];
 				Y[index] = TimeCurveList.get(index)[1];
 				Curvature[index] = TimeCurveList.get(index)[2];
 				Intensity[index] = TimeCurveList.get(index)[3];
 				IntensitySec[index] = TimeCurveList.get(index)[4];
+				
 			ranac.setPosition(time, 0);
 			ranac.setPosition(count, 1);
 			ranac.get().setReal(Curvature[index]);

@@ -1783,6 +1783,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Probselect.add(endT, new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+	
+			/*
 			if(curvesupermode) {
 				
 				Probselect.add(polymode, new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, GridBagConstraints.EAST,
@@ -1792,7 +1794,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				
 				
 			}
-	
+	*/
 		//	Probselect.setPreferredSize(new Dimension(SizeX, SizeY));
 			Probselect.setBorder(probborder);
 
