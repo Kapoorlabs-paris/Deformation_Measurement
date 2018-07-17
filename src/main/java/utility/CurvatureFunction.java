@@ -101,7 +101,6 @@ public class CurvatureFunction {
 		// Now do the fitting
 		ArrayList<Segmentobject> Allcellsegment = new ArrayList<Segmentobject>();
 		
-		System.out.println(parent.Listmap.size() + " map");
 		
 		for (Map.Entry<Integer, List<RealLocalizable>> entry : parent.Listmap.entrySet()) {
 
@@ -126,6 +125,7 @@ public class CurvatureFunction {
 
 		}
 		String uniqueID = Integer.toString(z) + Integer.toString(Label);
+		System.out.println(uniqueID + "UID");
 		// Create the hash map entry for the particular cell
 		parent.ALLSegments.put(uniqueID, Allcellsegment);
 		/** Compute by TREE **/

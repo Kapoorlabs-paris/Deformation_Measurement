@@ -292,15 +292,15 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public double outsidedistance = 0;
 	public int[] boundarypoint;
 	public int[] midpoint;
-	public float initialSearchradius = 100;
-	public float maxSearchradius = 100;
-	public float maxSearchradiusS = 100;
-	public int missedframes = 20;
+	public float initialSearchradius = 10000;
+	public float maxSearchradius = 10000;
+	public float maxSearchradiusS = 10;
+	public int missedframes = 2000;
 	public int initialSearchradiusInit = 10;
 	public CostFunction<Intersectionobject, Intersectionobject> UserchosenCostFunction;
 	public CostFunction<Segmentobject, Segmentobject> UserchosenSegmentCostFunction;
 	public float initialSearchradiusMin = 1;
-	public float initialSearchradiusMax = 1000;
+	public float initialSearchradiusMax = initialSearchradius;
 	public float alphaMin = 0;
 	public float alphaMax = 1;
 	public float betaMin = 0;
@@ -308,9 +308,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int increment = 0;
 	public int maxSearchradiusInit = (int) maxSearchradius;
 	public float maxSearchradiusMin = 1;
-	public float maxSearchradiusMax = 1000;
+	public float maxSearchradiusMax = maxSearchradius;
 	public float maxSearchradiusMinS = 1;
-	public float maxSearchradiusMaxS = 1000;
+	public float maxSearchradiusMaxS = maxSearchradius;
 	public RandomAccessibleInterval<FloatType> CurrentView;
 	public RandomAccessibleInterval<FloatType> CurrentViewSmooth;
 	public RandomAccessibleInterval<FloatType> CurrentViewOrig;
@@ -775,7 +775,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		if (ndims > 4) {
 
-			System.out.println("Image has wrong dimensionality, upload an XYZT/XYT/XYZ/XY image");
+			System.out.println("Image has wrong dimensionality, upload an XYT/XYZ/XY image");
 			return;
 		}
 
@@ -1103,7 +1103,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				
 				
 			}
+       if(SegmentTracklist.size() > 0 && (curveautomode || curvesupermode)) {
+				
+				ComputeCurvature current = new ComputeCurvature(this, null);
 			
+				current.CurvedSegmentLineage();
+				
+				
+			}
 			
 			if (automode || supermode || curveautomode || curvesupermode) {
 				

@@ -69,7 +69,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 	@Override
 	protected Void doInBackground() throws Exception {
 
-	
 		HashMap<String, Integer> map = SortTimeorZ.sortByValues(parent.Accountedframes);
 		parent.Accountedframes = map;
 
@@ -87,8 +86,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	}
 
-
-
 	@Override
 	protected void done() {
 
@@ -98,47 +95,44 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		parent.prestack = new ImageStack((int) parent.originalimg.dimension(0), (int) parent.originalimg.dimension(1),
 				java.awt.image.ColorModel.getRGBdefault());
 
-          
-
 		parent.resultDraw.clear();
-		
 		parent.Tracklist.clear();
+		parent.SegmentTracklist.clear();
 
-		 TrackingFunctions track = new TrackingFunctions(parent);
+		TrackingFunctions track = new TrackingFunctions(parent);
 		if (parent.ndims > 3) {
-			
+
 			Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
-			
+
 			while (itZ.hasNext()) {
 
 				int z = itZ.next().getValue();
-			
-				SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > simplegraph = track.Trackfunction();
-				
+
+				SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
+
 				parent.parentgraphZ.put(Integer.toString(z), simplegraph);
-				
+
 			}
-			
-		//	CurvedLineage();
-			
+
+			// CurvedLineage();
+
 			CurvedSegmentLineage();
 		}
 
 		else {
-		
-			SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > simplegraph = track.Trackfunction();
+
+			SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
 
 			parent.parentgraphZ.put(Integer.toString(1), simplegraph);
-			
-			SimpleWeightedGraph< Segmentobject, DefaultWeightedEdge > simpleSegmentgraph = track.TrackSegmentfunction();
-			
-			parent.parentgraphSegZ.put(Integer.toString(1), simpleSegmentgraph);
-			
-			// CurvedLineage();
-			
-			 CurvedSegmentLineage();
-		}
 
+			SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge> simpleSegmentgraph = track.TrackSegmentfunction();
+
+			parent.parentgraphSegZ.put(Integer.toString(1), simpleSegmentgraph);
+
+			// CurvedLineage();
+
+			CurvedSegmentLineage();
+		}
 
 		try {
 			get();
@@ -152,42 +146,37 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	public void CurvedLineage() {
 
-		
+		if (parent.ndims < 3) {
+			DisplaySelected.mark(parent);
+			DisplaySelected.select(parent);
 
-		if(parent.ndims < 3) {
-		DisplaySelected.mark(parent);
-		DisplaySelected.select(parent);
-		
-		for (ArrayList<Curvatureobject> local: parent.AlllocalCurvature) {
-		Iterator<Curvatureobject> iterator = local.iterator();
+			for (ArrayList<Curvatureobject> local : parent.AlllocalCurvature) {
+				Iterator<Curvatureobject> iterator = local.iterator();
 
+				while (iterator.hasNext()) {
 
-		while (iterator.hasNext()) {
+					Curvatureobject currentcurvature = iterator.next();
 
-			Curvatureobject currentcurvature = iterator.next();
+					if (parent.originalimg.numDimensions() > 3) {
+						if (currentcurvature.t == parent.fourthDimension) {
+							parent.Finalcurvatureresult.put(currentcurvature.Label, currentcurvature);
+						}
+					} else if (parent.originalimg.numDimensions() <= 3) {
+						if (currentcurvature.z == parent.thirdDimension) {
+							parent.Finalcurvatureresult.put(currentcurvature.Label, currentcurvature);
 
+						}
 
-			if (parent.originalimg.numDimensions() > 3) {
-				if (currentcurvature.t == parent.fourthDimension) {
-					parent.Finalcurvatureresult.put(currentcurvature.Label, currentcurvature);
+					}
+
 				}
-			} else if (parent.originalimg.numDimensions() <= 3) {
-				if (currentcurvature.z == parent.thirdDimension) {
-					parent.Finalcurvatureresult.put(currentcurvature.Label, currentcurvature);
-
-				}
-
 			}
+			curvatureUtils.CurvatureTable.CreateTableView(parent);
 
 		}
-		}
-		curvatureUtils.CurvatureTable.CreateTableView(parent);
 
-	}
-		
 		else {
-			
-			
+
 			for (Map.Entry<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> entryZ : parent.parentgraphZ
 					.entrySet()) {
 
@@ -205,7 +194,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 						minid = id;
 
 				}
-
 
 				if (minid != Integer.MAX_VALUE) {
 
@@ -249,7 +237,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 						}
 						Collections.sort(parent.Tracklist, ThirdDimcomparison);
 						if (parent.fourthDimensionSize > 1)
-						Collections.sort(parent.Tracklist, FourthDimcomparison);
+							Collections.sort(parent.Tracklist, FourthDimcomparison);
 
 					}
 
@@ -278,22 +266,20 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 								Intersectionobject currentangle = iterator.next();
 								if (count == 0)
 									bestangle = currentangle;
-								if(parent.originalimg.numDimensions() > 3) {
-								if (currentangle.t  == parent.fourthDimension) {
-									bestangle = currentangle;
-									count++;
-								    break;	
-								}
-								}
-								else if (parent.originalimg.numDimensions()<= 3){
-									if (currentangle.z  == parent.thirdDimension) {
+								if (parent.originalimg.numDimensions() > 3) {
+									if (currentangle.t == parent.fourthDimension) {
 										bestangle = currentangle;
 										count++;
-									    break;	
-									 
+										break;
 									}
-									
-									
+								} else if (parent.originalimg.numDimensions() <= 3) {
+									if (currentangle.z == parent.thirdDimension) {
+										bestangle = currentangle;
+										count++;
+										break;
+
+									}
+
 								}
 
 							}
@@ -305,24 +291,15 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 				}
 			}
 			curvatureUtils.CurvatureTable.CreateTableTrackView(parent);
-			
-			
-			
+
 		}
-		
+
 	}
-	
-	
-	
-	
-public void CurvedSegmentLineage() {
 
-		
+	public void CurvedSegmentLineage() {
 
-		if(parent.ndims >= 3) {
-		
-			
-			
+		if (parent.ndims >= 3) {
+
 			for (Map.Entry<String, SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge>> entryZ : parent.parentgraphSegZ
 					.entrySet()) {
 
@@ -331,7 +308,6 @@ public void CurvedSegmentLineage() {
 				int minid = Integer.MAX_VALUE;
 				int maxid = Integer.MIN_VALUE;
 
-				
 				for (final Integer id : model.trackIDs(true)) {
 
 					if (id > maxid)
@@ -341,7 +317,6 @@ public void CurvedSegmentLineage() {
 						minid = id;
 
 				}
-
 
 				if (minid != Integer.MAX_VALUE) {
 
@@ -359,17 +334,7 @@ public void CurvedSegmentLineage() {
 
 						};
 
-						Comparator<Pair<String, Segmentobject>> FourthDimcomparison = new Comparator<Pair<String, Segmentobject>>() {
-
-							@Override
-							public int compare(final Pair<String, Segmentobject> A,
-									final Pair<String, Segmentobject> B) {
-
-								return A.getB().time - B.getB().time;
-
-							}
-
-						};
+						
 
 						model.setName(id, "Track" + id + entryZ.getKey());
 
@@ -384,15 +349,14 @@ public void CurvedSegmentLineage() {
 									Integer.toString(id) + entryZ.getKey(), currentangle));
 						}
 						Collections.sort(parent.SegmentTracklist, ThirdDimcomparison);
-						if (parent.fourthDimensionSize > 1)
-						Collections.sort(parent.SegmentTracklist, FourthDimcomparison);
+					
 
 					}
 
 					for (int id = minid; id <= maxid; ++id) {
 						Segmentobject bestangle = null;
+						
 						if (model.trackSegmentobjects(id) != null) {
-
 							List<Segmentobject> sortedList = new ArrayList<Segmentobject>(
 									model.trackSegmentobjects(id));
 
@@ -414,42 +378,35 @@ public void CurvedSegmentLineage() {
 								Segmentobject currentangle = iterator.next();
 								if (count == 0)
 									bestangle = currentangle;
-								if(parent.originalimg.numDimensions() > 3) {
-								if (currentangle.time  == parent.fourthDimension) {
-									bestangle = currentangle;
-									count++;
-								    break;	
-								}
-								}
-								else if (parent.originalimg.numDimensions()<= 3){
-									
-									if (currentangle.time  == parent.thirdDimension) {
+								if (parent.originalimg.numDimensions() > 3) {
+									if (currentangle.time == parent.fourthDimension) {
 										bestangle = currentangle;
 										count++;
-									    break;	
-									 
+										break;
 									}
-									
-									
+								} else if (parent.originalimg.numDimensions() <= 3) {
+									if (currentangle.time == parent.thirdDimension) {
+										bestangle = currentangle;
+										count++;
+										break;
+
+									}
+
 								}
 
 							}
 							parent.SegmentFinalresult.put(Integer.toString(id) + entryZ.getKey(), bestangle);
 
-							System.out.println(Integer.toString(id) + " " + bestangle.Curvature);
 						}
 
 					}
 				}
 			}
-			
+
 			curvatureUtils.CurvatureTable.CreateSegTableTrackView(parent);
-			
-			
-			
+
 		}
-		
+
 	}
-	
 
 }

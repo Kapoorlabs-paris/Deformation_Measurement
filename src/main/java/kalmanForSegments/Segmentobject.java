@@ -63,7 +63,7 @@ public class Segmentobject extends AbstractEuclideanSpace implements RealLocaliz
 		putFeature(Curvaturelabel, Curvature);
 		
 		putFeature(Celllabel , (double)cellLabel);
-		putFeature(Segmentlabel , (double)cellLabel);
+		putFeature(Segmentlabel , (double)segmentLabel);
 		putFeature(Time , (double)time);
 		putFeature(XPOSITION , centralpoint.getDoublePosition(0));
 		putFeature(YPOSITION , centralpoint.getDoublePosition(1));

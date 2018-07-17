@@ -50,7 +50,7 @@ public class CurvatureListener implements ActionListener {
 			parent.parentgraphZ = new HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
 			
 			parent.parentgraphSegZ = new HashMap<String, SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge>>();
-			
+			parent.ALLSegments.clear();
 			parent.StartCurvatureComputing();
 			
 			
@@ -63,7 +63,7 @@ public class CurvatureListener implements ActionListener {
 			parent.parentgraphZ = new HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
 			parent.empty = utility.Binarization.CreateBinaryBit(parent.originalimg, parent.lowprob, parent.highprob);
 			parent.parentgraphSegZ = new HashMap<String, SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge>>();
-			
+			parent.ALLSegments.clear();
 			parent.StartCurvatureComputing();
 		}
 
