@@ -635,7 +635,7 @@ public class CurvatureFunction {
 			net.imglib2.Point intpoint = new net.imglib2.Point(longnewpos);
 			Pair<Double, Double> Intensity = getIntensity(intpoint, centerpoint);
 			
-			// Average the intensity
+			// Average the intensity.
 			meanIntensity += Intensity.getA();
 			meanSecIntensity += Intensity.getB();
 			AllCurvaturepoints.add(
