@@ -5,6 +5,7 @@ import java.util.Map;
 
 import distanceTransform.DistWatershedBinary;
 import distanceTransform.WatershedBinary;
+import ij.IJ;
 
 import javax.swing.JProgressBar;
 
@@ -104,6 +105,7 @@ public class EllipseTrack {
 
 		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
 		GetPixelList(expanededtotalimg);
+		
 		Computeinwater compute = new Computeinwater(parent, CurrentView, expanededtotalimg, t, z, (int) percent);
 		compute.ParallelRansacCurve();
 		

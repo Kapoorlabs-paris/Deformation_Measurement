@@ -11,7 +11,7 @@
 
 	<groupId>net.kapoor</groupId>
 	<artifactId>E_Track</artifactId>
-	<version>0.1.1</version>
+	<version>1.0.0</version>
 
 	<name>Ellipsoid Detector</name>
 	<description>Ellipsoid detector and angle measurement.</description>
@@ -91,6 +91,8 @@
 			<id>imagej.public</id>
 			<url>http://maven.imagej.net/content/groups/public</url>
 		</repository>
+		
+     
 	</repositories>
 
 	<dependencies>
@@ -98,17 +100,17 @@
 		
 
 		<!-- ImageJ dependencies -->
-		<dependency>
-			<groupId>net.imagej</groupId>
-			<artifactId>ij</artifactId>
-		</dependency>
+	
 
 		<!-- Fiji dependencies -->
+		<!-- https://mvnrepository.com/artifact/net.imagej/ij -->
+
+	<dependency>
+  <groupId>net.imagej</groupId>
+  <artifactId>ij</artifactId>
+  <version>1.51s</version>
+</dependency>
 		
-		<dependency>
-			<groupId>sc.fiji</groupId>
-			<artifactId>fiji-lib</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>legacy-imglib1</artifactId>

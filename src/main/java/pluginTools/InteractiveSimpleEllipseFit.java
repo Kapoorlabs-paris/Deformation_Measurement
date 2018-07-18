@@ -50,8 +50,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import org.jfree.chart.JFreeChart;
-import org.jfree.data.contour.ContourDataset;
-import org.jfree.data.contour.DefaultContourDataset;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -260,7 +258,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	
 	
 	
-	public DefaultContourDataset visdataset;
 	
 	public double displaymin, displaymax;
 	public JFreeChart chart;
@@ -652,7 +649,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		
 		this.contdataset = new XYSeriesCollection();
-		this.visdataset = new DefaultContourDataset();
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
@@ -694,7 +690,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.ndims = originalimg.numDimensions();
 		this.dataset = new XYSeriesCollection();
 		this.contdataset = new XYSeriesCollection();
-		this.visdataset = new DefaultContourDataset();
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
@@ -739,7 +734,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.ndims = originalimg.numDimensions();
 		this.dataset = new XYSeriesCollection();
 		this.contdataset = new XYSeriesCollection();
-		this.visdataset = new DefaultContourDataset();
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
@@ -1976,11 +1970,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			
-			Angleselect.add(incrementText, new GridBagConstraints(5, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		//	Angleselect.add(incrementText, new GridBagConstraints(5, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		//			GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(incrementField, new GridBagConstraints(5, 3, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		//	Angleselect.add(incrementField, new GridBagConstraints(5, 3, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		//			GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			
 			SliderBoxGUI combocutoff = new SliderBoxGUI(insidestring, insideslider, cutoffField, insideText, scrollbarSize, insideCutoff, insideCutoffmax);
@@ -2006,11 +2000,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		if(circlefits) {
 			
 			
-			Angleselect.add(incrementText, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
-					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		//	Angleselect.add(incrementText, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+		//			GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(incrementField, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0,
-					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		//	Angleselect.add(incrementField, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0,
+		//			GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 			Angleselect.add(maxsizeText, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0,
 					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
@@ -2027,7 +2021,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0,
 					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(displayCircle, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0,
+			Angleselect.add(displayCircle, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0,
 					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			Angleselect.add(displaySegments, new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0,
 					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));

@@ -1,46 +1,30 @@
 package utility;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
 import curvatureUtils.Node;
-import drawUtils.DrawFunction;
 import ellipsoidDetector.Distance;
-import hashMapSorter.SortNodes;
-import ij.ImagePlus;
 import kalmanForSegments.Segmentobject;
 import mpicbg.models.Point;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
-import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.algorithm.ransac.RansacModels.FitLocalEllipsoid;
 import net.imglib2.algorithm.ransac.RansacModels.RansacFunctionEllipsoid;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
 import ransac.PointFunctionMatch.PointFunctionMatch;
 import ransac.loadFiles.Tracking;
-import ransacPoly.AbstractFunction2D;
 import ransacPoly.HigherOrderPolynomialFunction;
-import ransacPoly.LinearFunction;
 import ransacPoly.MixedPolynomial;
 import ransacPoly.MixedPolynomialFunction;
-import ransacPoly.QuadraticFunction;
 import ransacPoly.RansacFunction;
 import ransacPoly.RegressionFunction;
-import ransacPoly.Sort;
 import ransacPoly.Threepointfit;
 
 public class CurvatureFunction {
@@ -374,7 +358,7 @@ public class CurvatureFunction {
 
 		int size = truths.size();
 
-		int maxpoints = size / numSeg;
+		int maxpoints = Math.round (size / numSeg);
 		if (maxpoints <= 1)
 			maxpoints = 3;
 		int segmentLabel = 1;

@@ -12,7 +12,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
@@ -24,31 +24,12 @@
 	</classpathentry>
 	<classpathentry kind="src" path="/imglib2-algorithm"/>
 	<classpathentry kind="src" path="/Preprocessing"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/imglib2-roi"/>
 	<classpathentry kind="src" path="/scifio"/>
 	<classpathentry kind="lib" path="/Applications/Fiji.app/jars/macosx/ffmpeg-2.6.1-0.11-macosx-x86_64.jar"/>
 	<classpathentry kind="lib" path="/Applications/Fiji.app/jars/macosx/gluegen-rt-2.3.2-natives-macosx-universal.jar"/>
 	<classpathentry kind="lib" path="/Applications/Fiji.app/jars/macosx/joal-2.3.2-natives-macosx-universal.jar"/>
 	<classpathentry kind="lib" path="/Applications/Fiji.app/jars/macosx/jocl-2.3.2-natives-macosx-universal.jar"/>
 	<classpathentry kind="lib" path="/Applications/Fiji.app/jars/macosx/jogl-all-2.3.2-natives-macosx-universal.jar"/>
-	<classpathentry kind="lib" path="/Users/aimachine/.m2/repository/sc/fiji/3D_Viewer/4.0.2/3D_Viewer-4.0.2.jar">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-			<attribute name="maven.groupId" value="sc.fiji"/>
-			<attribute name="maven.artifactId" value="3D_Viewer"/>
-			<attribute name="maven.version" value="4.0.2"/>
-			<attribute name="maven.scope" value="compile"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/Users/aimachine/.m2/repository/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-			<attribute name="maven.groupId" value="org.apache.commons"/>
-			<attribute name="maven.artifactId" value="commons-math3"/>
-			<attribute name="maven.version" value="3.6.1"/>
-			<attribute name="maven.scope" value="test"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="/Users/aimachine/Downloads/java3d-1_5_1-macosx/jzy3d/jzy3d-api-0.9.1.jar"/>
 	<classpathentry kind="lib" path="/Users/aimachine/Downloads/java3d-1_5_1-macosx/jzy3d/jzy3d-jdt-core-0.9.1.jar"/>
 	<classpathentry kind="lib" path="/Users/aimachine/Downloads/java3d-1_5_1-macosx/jzy3d/jzy3d-swt-0.9.1.jar"/>

@@ -8,6 +8,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import ellipsoidDetector.Intersectionobject;
+import ij.IJ;
 import kalmanForSegments.Segmentobject;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import pluginTools.InteractiveSimpleEllipseFit;
@@ -26,14 +27,13 @@ public class CurvatureListener implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 
 		
-
 		ClearStuff();
 		if (parent.curveautomode) {
 
 	
 			parent.StartCurvatureComputing();
 			
-			
+		
 		}
 
 		if (parent.curvesupermode) {

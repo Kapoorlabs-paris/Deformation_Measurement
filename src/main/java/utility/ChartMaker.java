@@ -3,33 +3,18 @@ package utility;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Paint;
 import java.awt.Shape;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import ij3d.*;
-import mpicbg.models.Point;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.ColorBar;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.plot.ContourPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.GrayPaintScale;
-import org.jfree.chart.renderer.PaintScale;
-import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
-import org.jfree.chart.renderer.xy.XYBlockRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
-import org.jfree.chart.title.PaintScaleLegend;
-import org.jfree.chart.util.PaintAlpha;
-import org.jfree.data.contour.ContourDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -76,23 +61,7 @@ public class ChartMaker {
 		return chart;
 	}
 
-	@SuppressWarnings("deprecation")
-	public static JFreeChart makeContourChart(final ContourDataset dataset, final String title, double minX,
-			double maxX, double minY, double maxY) {
 
-		NumberAxis xAxis = new NumberAxis("X");
-		xAxis.setRange(minX, maxX);
-
-		NumberAxis yAxis = new NumberAxis("Y");
-		yAxis.setRange(minY, maxY);
-		yAxis.setInverted(true);
-		ColorBar colorbar = new ColorBar("Curvature");
-		colorbar.autoAdjustRange();
-		ContourPlot contourplot = new ContourPlot(dataset, xAxis, yAxis, colorbar);
-		JFreeChart chart = new JFreeChart("Curvature Plot", contourplot);
-
-		return chart;
-	}
 
 	public static XYSeries drawPoints(final List<Pair<String, double[]>> mts) {
 		return drawPoints(mts, "Angle evolution");

@@ -20,11 +20,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import angleUtils.TableDisplay;
 import curvatureUtils.DisplaySelected;
 import ellipsoidDetector.Distance;
-import ij.gui.EllipseRoi;
-import ij.gui.ImageCanvas;
-import ij.gui.Line;
-import ij.gui.OvalRoi;
-import ij.gui.Roi;
+import ij.gui.*;
 import kalmanTracker.NearestRoi;
 import pluginTools.InteractiveSimpleEllipseFit;
 import ransac.PointFunctionMatch.PointFunctionMatch;
@@ -34,8 +30,9 @@ import ransacPoly.RegressionFunction;
 public class DisplayAuto {
 
 	public static void Display(final InteractiveSimpleEllipseFit parent) {
+		
+		
 		parent.overlay.clear();
-
 		if (parent.ZTRois.size() > 0) {
 
 			for (Map.Entry<String, Roiobject> entry : parent.ZTRois.entrySet()) {

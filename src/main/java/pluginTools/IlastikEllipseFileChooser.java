@@ -21,10 +21,14 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import org.apache.log4j.BasicConfigurator;
+
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.text.TextWindow;
+import io.scif.config.SCIFIOConfig;
+import io.scif.config.SCIFIOConfig.ImgMode;
 import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import listeners.ChooseOrigMap;
@@ -214,13 +218,13 @@ public class IlastikEllipseFileChooser extends JPanel {
 	
 	  public void DoneCurr(Frame parent) throws ImgIOException{
 			
-			// Tracking and Measurement is done with imageA 
-	        
-		    org.apache.log4j.BasicConfigurator.configure();
+		
 			RandomAccessibleInterval<FloatType> image = new ImgOpener().openImgs(impA.getOriginalFileInfo().directory + impA.getOriginalFileInfo().fileName , new FloatType()).iterator().next();
 			RandomAccessibleInterval<FloatType> imagebefore = new ImgOpener().openImgs(impOrig.getOriginalFileInfo().directory + impOrig.getOriginalFileInfo().fileName, new FloatType()).iterator().next();
-			
+			BasicConfigurator.configure();
+			System.setProperty("scijava.log.level", "none");
 			WindowManager.closeAllWindows();
+			
 			if(superpixel && !twochannel) {
 			
 				RandomAccessibleInterval<IntType> imagesuper = new ImgOpener().openImgs(impsuper.getOriginalFileInfo().directory + impsuper.getOriginalFileInfo().fileName, new IntType()).iterator().next();
