@@ -12,42 +12,40 @@ import java.util.concurrent.Executors;
 import ch.qos.logback.classic.gaffer.GafferConfigurator;
 import ij.IJ;
 import ij.ImagePlus;
+import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
+import net.imglib2.view.Views;
 import pluginTools.InteractiveSimpleEllipseFit;
 
-public class ParallelResultDisplay  {
+public class ParallelResultDisplay {
 
 	/**
-	 * This parallel code processes nThreads image slices at once to create a final result N Dimension image of the same size as the original image
+	 * This parallel code processes nThreads image slices at once to create a final
+	 * result N Dimension image of the same size as the original image
 	 * 
 	 */
 	final InteractiveSimpleEllipseFit parent;
 	final ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>> currentresultCurv;
-	
-	// Create a constructor
-	public  ParallelResultDisplay(InteractiveSimpleEllipseFit parent,  ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>> currentresultCurv ) {
-           
-		this.parent = parent;
-	    this.currentresultCurv = currentresultCurv;
-	}
-	
 
-	
+	// Create a constructor
+	public ParallelResultDisplay(InteractiveSimpleEllipseFit parent,
+			ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>> currentresultCurv) {
+
+		this.parent = parent;
+		this.currentresultCurv = currentresultCurv;
+	}
+
 	public void ResultDisplay() {
-		// set up executor service
-		int nThreads = Runtime.getRuntime().availableProcessors();
-		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
-		List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
-		
-        // Make an image of same size as the original image in N-dimension
+
+
+		// Make an image of same size as the original image in N-dimension
 		RandomAccessibleInterval<FloatType> probImg = new ArrayImgFactory<FloatType>().create(parent.originalimgbefore,
 				new FloatType());
-		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 
 		double minCurvature = Double.MAX_VALUE;
 		double maxCurvature = Double.MIN_VALUE;
@@ -68,111 +66,35 @@ public class ParallelResultDisplay  {
 				if (Curvature[i] >= maxCurvature)
 					maxCurvature = Curvature[i];
 			}
-		}
 
-		
-	
-		
-		
-		
-		
-		
-		// Iterate over the time points computation was performed
-		while (itZ.hasNext()) {
+			int time = currentpair.getB().getA();
 
-			int time = itZ.next().getValue();
+			ArrayList<double[]> TimeCurveList = currentpair.getB().getB();
 
-			ArrayList<double[]> TimeCurveList = parent.HashresultCurvature.get(time);
-			
-			
-			if(TimeCurveList!=null) {
-			int listsize = TimeCurveList.size();
-			
-			
-			if (listsize >= parent.KymoDimension) {
-				
-				parent.KymoDimension = listsize;
-				
-			}
-			
 			RandomAccessibleInterval<FloatType> CurrentViewprobImg = utility.Slicer.getCurrentView(probImg, time,
 					parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
+			new ProcessSliceDisplay(CurrentViewprobImg, TimeCurveList, minCurvature, maxCurvature).run();
+		}
 
-			
-			
-			// Add all the tasks to be executed in parallel
-			tasks.add(Executors
-					.callable(new ProcessSliceDisplay(CurrentViewprobImg,  TimeCurveList, minCurvature, maxCurvature)));
+		final Cursor<FloatType> cursor = Views.iterable(probImg).localizingCursor();
+
+		while (cursor.hasNext()) {
+
+			cursor.fwd();
+
+			double lambda = (cursor.getFloatPosition(0) - probImg.min(0)) / (probImg.max(0) - probImg.min(0));
+			if (cursor.getDoublePosition(1) >= probImg.max(1) - probImg.min(1) - 5)
+				cursor.get().setReal(minCurvature + lambda * (maxCurvature - minCurvature));
 
 		}
 
-		}
-		try {
-			taskExecutor.invokeAll(tasks);
+		ImagePlus imp = ImageJFunctions.show(probImg);
+		imp.setTitle("Curvature Result");
+		IJ.run("Fire");
 
-			ImagePlus imp = ImageJFunctions.show(probImg);
-			imp.setTitle("Curvature Result");
-			IJ.run("Fire");
-			
-			// Make Kymographs
-			long[] size = new long[] { (int)parent.AccountedZ.size() + 1,parent.KymoDimension };
-			
-			MakeKymo(size);
-			
-			
-		} catch (InterruptedException e) {
-
-			e.printStackTrace();
-		}
-		
-		
 		
 
 	}
-	
-	
-	public void MakeKymo(long[] size) {
-		
-		RandomAccessibleInterval<FloatType> CurvatureKymo = new ArrayImgFactory<FloatType>().create(size,  new FloatType());  
-	
-		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
-		
-		RandomAccess<FloatType> ranac = CurvatureKymo.randomAccess();
-		// Iterate over the time points computation was performed
-		while (itZ.hasNext()) {
 
-			int time = itZ.next().getValue();
-
-			ArrayList<double[]> TimeCurveList = parent.HashresultCurvature.get(time);
-			if(TimeCurveList!=null) {
-			int count = 0;
-			double[] X = new double[TimeCurveList.size()];
-			double[] Y = new double[TimeCurveList.size()];
-			double[] Curvature = new double[TimeCurveList.size()];
-			double[] Intensity = new double[TimeCurveList.size()];
-			double[] IntensitySec = new double[TimeCurveList.size()];
-			
-			
-			for (int index = 0; index < TimeCurveList.size(); ++index) {
-				
-				
-				X[index] = TimeCurveList.get(index)[0];
-				Y[index] = TimeCurveList.get(index)[1];
-				Curvature[index] = TimeCurveList.get(index)[2];
-				Intensity[index] = TimeCurveList.get(index)[3];
-				IntensitySec[index] = TimeCurveList.get(index)[4];
-				
-			ranac.setPosition(time, 0);
-			ranac.setPosition(count, 1);
-			ranac.get().setReal(Curvature[index]);
-			count++;
-		}
-		
-			}
-	}
-		
-		ImageJFunctions.show(CurvatureKymo).setTitle("Curvature Kymo");
-	}
 	
-
 }

@@ -116,7 +116,18 @@ public class CurvatureFunction {
 			double Curvature = localfunction.getB().get(0)[2];
 			double IntensityA = localfunction.getB().get(0)[4];
 			double IntensityB = localfunction.getB().get(0)[5];
-			Segmentobject cellsegment = new Segmentobject(Cord, Curvature, IntensityA, IntensityB, entry.getKey(), Label, z);
+			double SegPeri = localfunction.getB().get(0)[3];
+			
+			Iterator<RealLocalizable> iter = sublist.iterator();
+			ArrayList<double[]> curvelist = new ArrayList<double[]>();
+			while(iter.hasNext()) {
+				
+				RealLocalizable current = iter.next();
+				
+				curvelist.add(new double[] {current.getDoublePosition(0) , current.getDoublePosition(1), Curvature, IntensityA, IntensityB});
+			}
+			
+			Segmentobject cellsegment = new Segmentobject(curvelist, Cord, Curvature, IntensityA, IntensityB, SegPeri, entry.getKey(), Label, z);
 
 			
 			Allcellsegment.add(cellsegment);
@@ -623,6 +634,8 @@ public class CurvatureFunction {
 				longnewpos[d] = (long) newpos[d];
 			net.imglib2.Point intpoint = new net.imglib2.Point(longnewpos);
 			Pair<Double, Double> Intensity = getIntensity(intpoint, centerpoint);
+			
+			// Average the intensity
 			meanIntensity += Intensity.getA();
 			meanSecIntensity += Intensity.getB();
 			AllCurvaturepoints.add(
@@ -841,20 +854,25 @@ public class CurvatureFunction {
 
 		ranac.setPosition(point);
 		ranacsec.setPosition(ranac);
-
+		double Intensity = ranac.get().getRealDouble();
+		double IntensitySec = ranacsec.get().getRealDouble();
+		
+		
 		double maxindistance;
 		double maxoutdistance;
 		if (parent.usedefaultrim) {
 
 			maxindistance = 1;
 			maxoutdistance = 1;
+			return new ValuePair<Double, Double>(Intensity, IntensitySec);
+			
 		}
 
 		else {
 			maxindistance = parent.insidedistance;
 			maxoutdistance = parent.outsidedistance;
 
-		}
+		
 
 		double fcteps = 1.0E-30;
 		long step = point.getLongPosition(0) - (long) center.getFloatPosition(0);
@@ -868,8 +886,7 @@ public class CurvatureFunction {
 		long movestep = 1;
 		long slope = (long) ((point.getLongPosition(1) - (long) center.getFloatPosition(1)) / (step + fcteps));
 		long intercept = point.getLongPosition(1) - slope * point.getLongPosition(0);
-		double Intensity = ranac.get().getRealDouble();
-		double IntensitySec = ranacsec.get().getRealDouble();
+		
 
 		int i = 0;
 
@@ -903,7 +920,7 @@ public class CurvatureFunction {
 		} while (true);
 
 		return new ValuePair<Double, Double>(Intensity, IntensitySec);
-
+		}
 	}
 
 }

@@ -5,6 +5,8 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JScrollPane;
@@ -12,6 +14,7 @@ import javax.swing.JTable;
 
 import ellipsoidDetector.Intersectionobject;
 import kalmanForSegments.Segmentobject;
+import net.imglib2.RealLocalizable;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
@@ -19,34 +22,33 @@ import utility.Curvatureobject;
 
 public class CurvatureTable {
 
-	
-	
-	
-	
 	public static void CreateTableTrackView(final InteractiveSimpleEllipseFit parent) {
-		
+
 		parent.resultAngle = new ArrayList<Pair<String, double[]>>();
-		parent.resultCurvature = new ArrayList<Pair<String, Pair< Integer,ArrayList<double[]>>>>();
+		parent.resultCurvature = new ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>>();
 		for (Pair<String, Intersectionobject> currentangle : parent.Tracklist) {
-			if(parent.originalimg.numDimensions() > 3) {
-			parent.resultAngle.add(new ValuePair<String, double[]>(currentangle.getA(),
-					new double[] { currentangle.getB().t, currentangle.getB().perimeter }));
-			
-			Pair< Integer,ArrayList<double[]>> timelist = new ValuePair<Integer, ArrayList<double[]>>(currentangle.getB().t, currentangle.getB().linelist);
-			parent.resultCurvature.add(new ValuePair<String, Pair< Integer, ArrayList<double[]>>>(currentangle.getA(),timelist));
-			parent.HashresultCurvature.put(currentangle.getB().t, currentangle.getB().linelist);
-			
-			}
-			else {
+			if (parent.originalimg.numDimensions() > 3) {
+				parent.resultAngle.add(new ValuePair<String, double[]>(currentangle.getA(),
+						new double[] { currentangle.getB().t, currentangle.getB().perimeter }));
+
+				Pair<Integer, ArrayList<double[]>> timelist = new ValuePair<Integer, ArrayList<double[]>>(
+						currentangle.getB().t, currentangle.getB().linelist);
+				parent.resultCurvature
+						.add(new ValuePair<String, Pair<Integer, ArrayList<double[]>>>(currentangle.getA(), timelist));
+				parent.HashresultCurvature.put(currentangle.getB().t, currentangle.getB().linelist);
+
+			} else {
 				parent.resultAngle.add(new ValuePair<String, double[]>(currentangle.getA(),
 						new double[] { currentangle.getB().z, currentangle.getB().perimeter }));
-				Pair< Integer,ArrayList<double[]>> timelist = new ValuePair<Integer, ArrayList<double[]>>(currentangle.getB().z, currentangle.getB().linelist);
-				parent.resultCurvature.add(new ValuePair<String, Pair< Integer, ArrayList<double[]>>>(currentangle.getA(),timelist));
+				Pair<Integer, ArrayList<double[]>> timelist = new ValuePair<Integer, ArrayList<double[]>>(
+						currentangle.getB().z, currentangle.getB().linelist);
+				parent.resultCurvature
+						.add(new ValuePair<String, Pair<Integer, ArrayList<double[]>>>(currentangle.getA(), timelist));
 				parent.HashresultCurvature.put(currentangle.getB().z, currentangle.getB().linelist);
 			}
 
 		}
-		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Location Z/T", "Perimeter"};
+		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Location Z/T", "Perimeter" };
 
 		Object[][] rowvalues = new Object[0][colnames.length];
 
@@ -63,7 +65,6 @@ public class CurvatureTable {
 			parent.table.getModel().setValueAt(f.format(currentangle.Intersectionpoint[1]), parent.row, 2);
 			parent.table.getModel().setValueAt(f.format(currentangle.z), parent.row, 3);
 			parent.table.getModel().setValueAt(f.format(currentangle.perimeter), parent.row, 4);
-			
 
 			parent.row++;
 
@@ -72,30 +73,90 @@ public class CurvatureTable {
 
 		makeGUI(parent);
 	}
-	
-	
-	
-public static void CreateSegTableTrackView(final InteractiveSimpleEllipseFit parent) {
-		
-		parent.resultSegCurvature = new ArrayList<Pair<String, Pair< Integer,Double>>>();
+
+	public static void CreateSegTableTrackView(final InteractiveSimpleEllipseFit parent) {
+
+		parent.resultSegCurvature = new ArrayList<Pair<String, Pair<Integer, Double>>>();
+		parent.resultSegIntensityA = new ArrayList<Pair<String, Pair<Integer, Double>>>();
+		parent.resultSegIntensityB = new ArrayList<Pair<String, Pair<Integer, Double>>>();
+		parent.resultSegPerimeter = new ArrayList<Pair<String, Pair<Integer, Double>>>();
+		parent.resultCurvature = new ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>>();
+		parent.resultAngle = new ArrayList<Pair<String, double[]>>();
+		parent.SubresultCurvature = new ArrayList<Pair<String, Pair<Integer, List<RealLocalizable>>>>();
+
 		for (Pair<String, Segmentobject> currentangle : parent.SegmentTracklist) {
-			if(parent.originalimg.numDimensions() > 3) {
+			if (parent.originalimg.numDimensions() > 3) {
+
+				Pair<Integer, Double> timelist = new ValuePair<Integer, Double>(currentangle.getB().time,
+						currentangle.getB().Curvature);
+				parent.resultSegCurvature
+						.add(new ValuePair<String, Pair<Integer, Double>>(currentangle.getA(), timelist));
+				parent.HashresultSegCurvature.put(currentangle.getB().time, currentangle.getB().Curvature);
 
 			
-			Pair< Integer,Double> timelist = new ValuePair<Integer, Double>(currentangle.getB().time, currentangle.getB().Curvature);
-			parent.resultSegCurvature.add(new ValuePair<String, Pair< Integer, Double>>(currentangle.getA(),timelist));
-			parent.HashresultSegCurvature.put(currentangle.getB().time, currentangle.getB().Curvature);
-			
-			}
-			else {
-			
-				Pair< Integer,Double> timelist = new ValuePair<Integer, Double>(currentangle.getB().time, currentangle.getB().Curvature);
-				parent.resultSegCurvature.add(new ValuePair<String, Pair< Integer, Double>>(currentangle.getA(),timelist));
+
+				Pair<Integer, ArrayList<double[]>> linelist = new ValuePair<Integer, ArrayList<double[]>>(
+						currentangle.getB().time, currentangle.getB().sublist);
+				parent.resultCurvature
+						.add(new ValuePair<String, Pair<Integer, ArrayList<double[]>>>(currentangle.getA(), linelist));
+
+				parent.HashresultCurvature.put(currentangle.getB().time, currentangle.getB().sublist);
+
+				Pair<Integer, Double> IntensityAtimelist = new ValuePair<Integer, Double>(currentangle.getB().time,
+						currentangle.getB().IntensityA);
+				Pair<Integer, Double> IntensityBtimelist = new ValuePair<Integer, Double>(currentangle.getB().time,
+						currentangle.getB().IntensityB);
+				Pair<Integer, Double> Perimetertimelist = new ValuePair<Integer, Double>(currentangle.getB().time,
+						currentangle.getB().Perimeter);
+
+				parent.resultSegIntensityA
+						.add(new ValuePair<String, Pair<Integer, Double>>(currentangle.getA(), IntensityAtimelist));
+				parent.resultSegIntensityB
+						.add(new ValuePair<String, Pair<Integer, Double>>(currentangle.getA(), IntensityBtimelist));
+				parent.resultSegPerimeter
+						.add(new ValuePair<String, Pair<Integer, Double>>(currentangle.getA(), Perimetertimelist));
+
+				parent.HashresultSegIntensityA.put(currentangle.getB().time, currentangle.getB().IntensityA);
+				parent.HashresultSegIntensityB.put(currentangle.getB().time, currentangle.getB().IntensityB);
+				parent.HashresultSegPerimeter.put(currentangle.getB().time, currentangle.getB().Perimeter);
+			} else {
+
+				Pair<Integer, Double> timelist = new ValuePair<Integer, Double>(currentangle.getB().time,
+						currentangle.getB().Curvature);
+				parent.resultSegCurvature
+						.add(new ValuePair<String, Pair<Integer, Double>>(currentangle.getA(), timelist));
 				parent.HashresultSegCurvature.put(currentangle.getB().time, currentangle.getB().Curvature);
+
+			
+
+				Pair<Integer, ArrayList<double[]>> linelist = new ValuePair<Integer, ArrayList<double[]>>(
+						currentangle.getB().time, currentangle.getB().sublist);
+				parent.resultCurvature
+				.add(new ValuePair<String, Pair<Integer, ArrayList<double[]>>>(currentangle.getA(), linelist));
+
+		        parent.HashresultCurvature.put(currentangle.getB().time, currentangle.getB().sublist);
+
+				Pair<Integer, Double> IntensityAtimelist = new ValuePair<Integer, Double>(currentangle.getB().time,
+						currentangle.getB().IntensityA);
+				Pair<Integer, Double> IntensityBtimelist = new ValuePair<Integer, Double>(currentangle.getB().time,
+						currentangle.getB().IntensityB);
+				Pair<Integer, Double> Perimetertimelist = new ValuePair<Integer, Double>(currentangle.getB().time,
+						currentangle.getB().Perimeter);
+
+				parent.resultSegIntensityA
+						.add(new ValuePair<String, Pair<Integer, Double>>(currentangle.getA(), IntensityAtimelist));
+				parent.resultSegIntensityB
+						.add(new ValuePair<String, Pair<Integer, Double>>(currentangle.getA(), IntensityBtimelist));
+				parent.resultSegPerimeter
+						.add(new ValuePair<String, Pair<Integer, Double>>(currentangle.getA(), Perimetertimelist));
+
+				parent.HashresultSegIntensityA.put(currentangle.getB().time, currentangle.getB().IntensityA);
+				parent.HashresultSegIntensityB.put(currentangle.getB().time, currentangle.getB().IntensityB);
+
 			}
 
 		}
-		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Location Z/T", "Curvature"};
+		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Location Z/T", "Curvature" };
 
 		Object[][] rowvalues = new Object[0][colnames.length];
 
@@ -112,7 +173,6 @@ public static void CreateSegTableTrackView(final InteractiveSimpleEllipseFit par
 			parent.table.getModel().setValueAt(f.format(currentangle.centralpoint.getDoublePosition(1)), parent.row, 2);
 			parent.table.getModel().setValueAt(f.format(currentangle.time), parent.row, 3);
 			parent.table.getModel().setValueAt(f.format(currentangle.Curvature), parent.row, 4);
-			
 
 			parent.row++;
 
@@ -121,11 +181,9 @@ public static void CreateSegTableTrackView(final InteractiveSimpleEllipseFit par
 
 		makeGUI(parent);
 	}
-	
-	
+
 	public static void CreateTableView(final InteractiveSimpleEllipseFit parent) {
 
-	
 		Object[] colnames = new Object[] { "Cell Id", "Location X", "Location Y", "Location Z", "Perimeter",
 				"Curvature" };
 
@@ -149,14 +207,13 @@ public static void CreateSegTableTrackView(final InteractiveSimpleEllipseFit par
 
 			parent.tablesize = parent.row;
 		}
-	
+
 		makeGUI(parent);
 
 	}
-	
-	
+
 	public static void makeGUI(final InteractiveSimpleEllipseFit parent) {
-		
+
 		parent.PanelSelectFile.removeAll();
 
 		parent.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -209,8 +266,7 @@ public static void CreateSegTableTrackView(final InteractiveSimpleEllipseFit par
 		parent.panelSecond.validate();
 		parent.Cardframe.repaint();
 		parent.Cardframe.validate();
-		
+
 	}
-	
 
 }

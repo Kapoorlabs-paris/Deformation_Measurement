@@ -15,6 +15,7 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 import ellipsoidDetector.Intersectionobject;
 import hashMapSorter.SortCoordinates;
 import ij.IJ;
+import kalmanForSegments.Segmentobject;
 import net.imglib2.util.Pair;
 import pluginTools.InteractiveSimpleEllipseFit;
 import utility.Curvatureobject;
@@ -32,6 +33,14 @@ public class SaveAllListener implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		
 		
+		
+	NewSave();
+	IJ.log("All trackes saved in: " + parent.saveFile.getAbsolutePath());
+	}
+	
+	
+	
+	public void OldSave() {
 		
 		
 		for(int tablepos = 0; tablepos< parent.table.getRowCount(); ++tablepos) {
@@ -167,6 +176,56 @@ public class SaveAllListener implements ActionListener {
 			
 		}
 		
+		
+		
+	}
+	
+	
+	public void NewSave() {
+		
+		
+   for(int tablepos = 0; tablepos< parent.table.getRowCount(); ++tablepos) {
+			
+			String ID = (String) parent.table.getValueAt(tablepos, 0);
+		
+		
+			try {
+				File fichier = new File(
+						parent.saveFile + "//" + parent.addToName + "SegmentID" +ID + ".txt");
+
+				FileWriter fw = new FileWriter(fichier);
+				BufferedWriter bw = new BufferedWriter(fw);
+				bw.write("\tTrackID" + "\t" + "\t" + ID+ "\n");
+				bw.write("\tX-coordinates\tY-coordinates\tCurvature\t Perimeter\t \t Intensity \t \t IntensitySec\n");
+				for (Pair<String, Segmentobject> currentangle : parent.SegmentTracklist) {
+					
+					String currentID = currentangle.getA();
+					if(currentID.equals(ID)) {
+						
+						
+						bw.write("\t"+ parent.nf.format(currentangle.getB().centralpoint.getDoublePosition(0)) +  "\t" + "\t" + parent.nf.format(currentangle.getB().centralpoint.getDoublePosition(1))
+								+ "\t" + "\t" +parent.nf.format(currentangle.getB().Curvature) + "\t"  + "\t"+  "\t" + "\t" + parent.nf.format(currentangle.getB().Perimeter) + "\t" + "\t"  
+								+ parent.nf.format(currentangle.getB().IntensityA) +
+								
+								"\t" + "\t"  + parent.nf.format(currentangle.getB().IntensityB) + 
+								"\n");
+						
+						
+					}
+				
+				
+			}
+			
+			
+	    bw.close();
+		fw.close();
+		}
+		catch (IOException te) {
+		}
+		
+		
+		
+	}
 	}
 	
 }

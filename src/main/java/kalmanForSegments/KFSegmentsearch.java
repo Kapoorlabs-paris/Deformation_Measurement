@@ -55,7 +55,6 @@ public class KFSegmentsearch implements SegmentIntersectionTracker {
 		this.maxsearchRadius = maxsearchRadius;
 		this.maxframeGap = maxframeGap;
 		this.Accountedframes = Accountedframes;
-System.out.println(maxframeGap + " " + initialsearchRadius + " " + maxsearchRadius);
 	}
 
 	@Override
@@ -138,9 +137,7 @@ System.out.println(maxframeGap + " " + initialsearchRadius + " " + maxsearchRadi
 		while (frameIteratorcopy.hasNext()) {
 
 			uniqueIDnext = frameIteratorcopy.next();
-			System.out.println(uniqueIDnext + "in kalman");
 			List<Segmentobject> measurements = generateSpotList(Allblobs, uniqueIDnext);
-			System.out.println(measurements.size() + " measurment list" + kalmanFiltersMap.size());
 			// Make the preditiction map
 			final Map<ComparableRealPoint, CVMKalmanFilter> predictionMap = new HashMap<ComparableRealPoint, CVMKalmanFilter>(
 					kalmanFiltersMap.size());

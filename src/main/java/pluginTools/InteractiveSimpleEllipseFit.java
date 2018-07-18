@@ -243,14 +243,33 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public File userfile;
 	public File saveFile;
 	public Frame jFreeChartFrame;
+	public Frame jFreeChartFrameIntensityA;
+	public Frame jFreeChartFrameIntensityB;
+	public Frame jFreeChartFramePerimeter;
+	
+	
+	
+	
 	public Frame contjFreeChartFrame;
 	public NumberFormat nf;
 	public XYSeriesCollection dataset;
 	public XYSeriesCollection contdataset;
+	public XYSeriesCollection IntensityAdataset;
+	public XYSeriesCollection IntensityBdataset;
+	public XYSeriesCollection Perimeterdataset;
+	
+	
+	
 	public DefaultContourDataset visdataset;
 	
 	public double displaymin, displaymax;
 	public JFreeChart chart;
+	public JFreeChart chartIntensityA;
+	public JFreeChart chartIntensityB;
+	public JFreeChart chartPerimeter;
+	
+	
+	
 	public JFreeChart contchart;
 	public RandomAccessibleInterval<FloatType> originalimg;
 	public RandomAccessibleInterval<FloatType> originalSecimg;
@@ -343,7 +362,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public ArrayList<Pair<String, Segmentobject>> SegmentTracklist;
 	public ArrayList<Pair<String, double[]>> resultAngle;
 	public ArrayList<Pair<String, Pair< Integer,ArrayList<double[]>>>> resultCurvature;
+	public ArrayList<Pair<String, Pair< Integer,List<RealLocalizable>>>> SubresultCurvature;
+	
 	public ArrayList<Pair<String, Pair< Integer,Double>>> resultSegCurvature;
+	public ArrayList<Pair<String, Pair< Integer,Double>>> resultSegIntensityA;
+	public ArrayList<Pair<String, Pair< Integer,Double>>> resultSegIntensityB;
+	public ArrayList<Pair<String, Pair< Integer,Double>>> resultSegPerimeter;
+	
+	
 	public HashMap<String, Pair<ArrayList<double[]>, ArrayList<Line>>> resultDraw;
 	public HashMap<String, ArrayList<Line>> resultDrawLine;
 	public KeyListener kl;
@@ -353,7 +379,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public HashMap<String, ArrayList<Intersectionobject>> ALLIntersections;
 	public HashMap<String, ArrayList<Segmentobject>> ALLSegments;
 	public HashMap<Integer, ArrayList<double[]>> HashresultCurvature;
+	public HashMap<Integer, List<RealLocalizable>> SubHashresultCurvature;
+	
 	public HashMap<Integer, Double> HashresultSegCurvature;
+	public HashMap<Integer, Double> HashresultSegIntensityA;
+	public HashMap<Integer, Double> HashresultSegIntensityB;
+	public HashMap<Integer, Double> HashresultSegPerimeter;
+	
 	public Set<Integer> pixellist;
 	ColorProcessor cp = null;
 	public HashMap<String, Intersectionobject> Finalresult;
@@ -616,12 +648,31 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.originalimgbefore = originalimgbefore;
 		this.ndims = originalimg.numDimensions();
 		this.dataset = new XYSeriesCollection();
+		
+		
+		
 		this.contdataset = new XYSeriesCollection();
 		this.visdataset = new DefaultContourDataset();
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
 	
+		this.IntensityAdataset =  new XYSeriesCollection();
+		this.IntensityBdataset =  new XYSeriesCollection();
+		this.Perimeterdataset =  new XYSeriesCollection();
+		this.chartIntensityA = utility.ChartMaker.makeChart(dataset, "Segment Intensity evolution", "Timepoint", "IntensityA");
+		this.jFreeChartFrameIntensityA = utility.ChartMaker.display(chartIntensityA, new Dimension(500, 500));
+		this.jFreeChartFrameIntensityA.setVisible(false);
+		
+		this.chartIntensityB = utility.ChartMaker.makeChart(dataset, "Segment Intensity evolution", "Timepoint", "IntensityB");
+		this.jFreeChartFrameIntensityB = utility.ChartMaker.display(chartIntensityB, new Dimension(500, 500));
+		this.jFreeChartFrameIntensityB.setVisible(false);
+		
+		this.chartPerimeter = utility.ChartMaker.makeChart(dataset, "Segment Perimeter evolution", "Timepoint", "Perimeter");
+		this.jFreeChartFramePerimeter = utility.ChartMaker.display(chartPerimeter, new Dimension(500, 500));
+		this.jFreeChartFramePerimeter.setVisible(false);
+		
+		
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(decimalplaces);
 		this.automode = automode;
@@ -647,6 +698,24 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
+		
+		
+		
+		this.IntensityAdataset =  new XYSeriesCollection();
+		this.IntensityBdataset =  new XYSeriesCollection();
+		this.Perimeterdataset =  new XYSeriesCollection();
+		this.chartIntensityA = utility.ChartMaker.makeChart(dataset, "Segment Intensity evolution", "Timepoint", "IntensityA");
+		this.jFreeChartFrameIntensityA = utility.ChartMaker.display(chartIntensityA, new Dimension(500, 500));
+		this.jFreeChartFrameIntensityA.setVisible(false);
+		
+		this.chartIntensityB = utility.ChartMaker.makeChart(dataset, "Segment Intensity evolution", "Timepoint", "IntensityB");
+		this.jFreeChartFrameIntensityB = utility.ChartMaker.display(chartIntensityB, new Dimension(500, 500));
+		this.jFreeChartFrameIntensityB.setVisible(false);
+		
+		this.chartPerimeter = utility.ChartMaker.makeChart(dataset, "Segment Perimeter evolution", "Timepoint", "Perimeter");
+		this.jFreeChartFramePerimeter = utility.ChartMaker.display(chartPerimeter, new Dimension(500, 500));
+		this.jFreeChartFramePerimeter.setVisible(false);
+		
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(decimalplaces);
 		this.automode = automode;
@@ -674,6 +743,21 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
+		
+		this.IntensityAdataset =  new XYSeriesCollection();
+		this.IntensityBdataset =  new XYSeriesCollection();
+		this.Perimeterdataset =  new XYSeriesCollection();
+		this.chartIntensityA = utility.ChartMaker.makeChart(dataset, "Segment Intensity evolution", "Timepoint", "IntensityA");
+		this.jFreeChartFrameIntensityA = utility.ChartMaker.display(chartIntensityA, new Dimension(500, 500));
+		this.jFreeChartFrameIntensityA.setVisible(false);
+		
+		this.chartIntensityB = utility.ChartMaker.makeChart(dataset, "Segment Intensity evolution", "Timepoint", "IntensityB");
+		this.jFreeChartFrameIntensityB = utility.ChartMaker.display(chartIntensityB, new Dimension(500, 500));
+		this.jFreeChartFrameIntensityB.setVisible(false);
+		
+		this.chartPerimeter = utility.ChartMaker.makeChart(dataset, "Segment Perimeter evolution", "Timepoint", "Perimeter");
+		this.jFreeChartFramePerimeter = utility.ChartMaker.display(chartPerimeter, new Dimension(500, 500));
+		this.jFreeChartFramePerimeter.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(decimalplaces);
 		this.automode = automode;
@@ -725,7 +809,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		ALLIntersections = new HashMap<String, ArrayList<Intersectionobject>>();
 		ALLSegments = new HashMap<String, ArrayList<Segmentobject>>();
 		HashresultCurvature = new HashMap<Integer, ArrayList<double[]>>();
+		SubHashresultCurvature = new HashMap<Integer, List<RealLocalizable>>();
 		HashresultSegCurvature = new HashMap<Integer, Double>();
+		HashresultSegIntensityA = new HashMap<Integer, Double>();
+		HashresultSegIntensityB = new HashMap<Integer, Double>();
+		HashresultSegPerimeter = new HashMap<Integer, Double>();
 		Finalresult = new HashMap<String, Intersectionobject>();
 		SegmentFinalresult = new HashMap<String, Segmentobject>();
 		Finalcurvatureresult = new HashMap<Integer, Curvatureobject>();

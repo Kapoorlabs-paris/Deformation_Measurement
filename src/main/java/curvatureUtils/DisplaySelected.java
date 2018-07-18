@@ -66,6 +66,15 @@ public class DisplaySelected {
 					if (!parent.jFreeChartFrame.isVisible())
 						parent.jFreeChartFrame = utility.ChartMaker.display(parent.chart, new Dimension(500, 500));
 
+					if (!parent.jFreeChartFrameIntensityA.isVisible())
+						parent.jFreeChartFrameIntensityA = utility.ChartMaker.display(parent.chartIntensityA, new Dimension(500, 500));
+					
+					if (!parent.jFreeChartFrameIntensityB.isVisible())
+						parent.jFreeChartFrameIntensityB = utility.ChartMaker.display(parent.chartIntensityB, new Dimension(500, 500));
+					
+					
+					if (!parent.jFreeChartFramePerimeter.isVisible())
+						parent.jFreeChartFramePerimeter = utility.ChartMaker.display(parent.chartPerimeter, new Dimension(500, 500));
 				}
 				
 			}

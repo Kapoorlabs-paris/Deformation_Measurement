@@ -283,6 +283,7 @@ public class Listordereing {
 
 		RealLocalizable meanCord = getMeanCord(truths);
 
+		double minVal = Double.MAX_VALUE;
 		RealLocalizable minobject = null;
 		Iterator<RealLocalizable> iter = truths.iterator();
 
@@ -290,13 +291,15 @@ public class Listordereing {
 
 			RealLocalizable currentpair = iter.next();
 
-			if (Math.abs(currentpair.getDoublePosition(0) - meanCord.getDoublePosition(0)) <= 5) {
+			if (Math.abs(currentpair.getDoublePosition(0) - meanCord.getDoublePosition(0)) <= 5 && currentpair.getDoublePosition(0) < minVal) {
 
 				minobject = currentpair;
+				minVal = currentpair.getDoublePosition(0);
 
 			}
 
 		}
+		//System.out.println(minobject.getDoublePosition(0) + " " + minobject.getDoublePosition(1) + "Ref cord");
 
 		return minobject;
 	}

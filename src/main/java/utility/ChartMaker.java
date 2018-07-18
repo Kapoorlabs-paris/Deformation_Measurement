@@ -146,11 +146,11 @@ public class ChartMaker {
 	}
 
 	public static XYSeries drawCurvePoints(final List<Pair<String, double[]>> mts) {
-		return drawPoints(mts, "Perimeter evolution");
+		return drawPoints(mts, "Evolution");
 	}
 
 	public static XYSeries drawCurveSegPoints(final ArrayList<Pair<String, Pair<Integer, Double>>> mts) {
-		return drawSegPoints(mts, "Curvature evolution");
+		return drawSegPoints(mts, "Evolution");
 	}
 	
 	public static XYSeries drawCurvePoints(final List<Pair<String, double[]>> mts, final String name) {

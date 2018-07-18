@@ -19,6 +19,7 @@ import ij.gui.Line;
 import ij.process.LUT;
 import net.imagej.display.ColorTables;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.RealLocalizable;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.Type;
@@ -51,15 +52,7 @@ public class CurvatureTableDisplay {
 
 		}
 
-		for (Pair<String, Pair<Integer, ArrayList<double[]>>> currentCurvature : parent.resultCurvature) {
-
-			if (ID.equals(currentCurvature.getA())) {
-
-				currentresultCurv.add(currentCurvature);
-
-			}
-
-		}
+	
 
 		if (parent.imp != null) {
 			parent.imp.setOverlay(parent.overlay);
@@ -70,7 +63,16 @@ public class CurvatureTableDisplay {
 		parent.contdataset.addSeries(ChartMaker.drawCurvePoints(currentresultPeri));
 
 		parent.chart = utility.ChartMaker.makeChart(parent.contdataset, "Perimeter Evolution", "Time", "Perimeter");
+		
+		for (Pair<String, Pair<Integer, ArrayList<double[]>>> currentCurvature : parent.resultCurvature) {
 
+			if (ID.equals(currentCurvature.getA())) {
+
+				currentresultCurv.add(currentCurvature);
+
+			}
+
+		}
 		ParallelResultDisplay display = new ParallelResultDisplay(parent, currentresultCurv);
 		display.ResultDisplay();
 
@@ -86,15 +88,62 @@ public class CurvatureTableDisplay {
 		String ID = (String) parent.table.getValueAt(trackindex, 0);
 		ArrayList<Pair<String, double[]>> currentresultPeri = new ArrayList<Pair<String, double[]>>();
 		ArrayList<Pair<String, Pair<Integer, Double>>> currentresultCurv = new ArrayList<Pair<String, Pair<Integer, Double>>>();
-
-		for (Pair<String, Pair<Integer, Double>> currentCurvature : parent.resultSegCurvature) {
+		ArrayList<Pair<String, Pair<Integer, Double>>> currentresultIntensityA = new ArrayList<Pair<String, Pair<Integer, Double>>>();
+		ArrayList<Pair<String, Pair<Integer, Double>>> currentresultIntensityB = new ArrayList<Pair<String, Pair<Integer, Double>>>();
+		ArrayList<Pair<String, Pair<Integer, Double>>> currentresultPerimeter = new ArrayList<Pair<String, Pair<Integer, Double>>>();
+		
+		
+		ArrayList<Pair<String, Pair<Integer, List<RealLocalizable>>>> SubcurrentresultCurv = 
+				new ArrayList<Pair<String, Pair<Integer, List<RealLocalizable>>>>();
+		
+		
+		for (Pair<String, Pair<Integer, List<RealLocalizable>>> currentCurvature : parent.SubresultCurvature) {
 
 			if (ID.equals(currentCurvature.getA())) {
-				currentresultCurv.add(currentCurvature);
+
+				SubcurrentresultCurv.add(currentCurvature);
 
 			}
 
 		}
+		
+		for (Pair<String, Pair<Integer, Double>> currentCurvature : parent.resultSegCurvature) {
+
+			if (ID.equals(currentCurvature.getA())) {
+				currentresultCurv.add(currentCurvature);
+             
+			}
+
+		}
+		
+		
+		for (Pair<String, Pair<Integer, Double>> currentCurvature : parent.resultSegIntensityA) {
+
+			if (ID.equals(currentCurvature.getA())) {
+				currentresultIntensityA.add(currentCurvature);
+             
+			}
+
+		}
+		
+		for (Pair<String, Pair<Integer, Double>> currentCurvature : parent.resultSegIntensityB) {
+
+			if (ID.equals(currentCurvature.getA())) {
+				currentresultIntensityB.add(currentCurvature);
+             
+			}
+
+		}
+		
+		for (Pair<String, Pair<Integer, Double>> currentCurvature : parent.resultSegPerimeter) {
+
+			if (ID.equals(currentCurvature.getA())) {
+				currentresultPerimeter.add(currentCurvature);
+             
+			}
+
+		}
+		
 
 		if (parent.imp != null) {
 			parent.imp.setOverlay(parent.overlay);
@@ -109,6 +158,49 @@ public class CurvatureTableDisplay {
 
 		parent.jFreeChartFrame.dispose();
 		parent.jFreeChartFrame.repaint();
+		
+		parent.IntensityAdataset.removeAllSeries();
+		parent.IntensityAdataset.addSeries(ChartMaker.drawCurveSegPoints(currentresultIntensityA));
+
+		parent.chartIntensityA = utility.ChartMaker.makeChart(parent.IntensityAdataset, "Segment Intensity Evolution", "Time",
+				"IntensityA");
+
+		parent.jFreeChartFrameIntensityA.dispose();
+		parent.jFreeChartFrameIntensityA.repaint();
+		
+		
+		parent.IntensityBdataset.removeAllSeries();
+		parent.IntensityBdataset.addSeries(ChartMaker.drawCurveSegPoints(currentresultIntensityB));
+
+		parent.chartIntensityB = utility.ChartMaker.makeChart(parent.IntensityBdataset, "Segment Intensity Evolution", "Time",
+				"IntensityB");
+
+		parent.jFreeChartFrameIntensityB.dispose();
+		parent.jFreeChartFrameIntensityB.repaint();
+		
+		
+		parent.Perimeterdataset.removeAllSeries();
+		parent.Perimeterdataset.addSeries(ChartMaker.drawCurveSegPoints(currentresultPerimeter));
+
+		parent.chartPerimeter = utility.ChartMaker.makeChart(parent.Perimeterdataset, "Segment Perimeter Evolution", "Time",
+				"Perimeter");
+
+		parent.jFreeChartFramePerimeter.dispose();
+		parent.jFreeChartFramePerimeter.repaint();
+		
+		ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>> AllcurrentresultCurv = new ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>>();
+		
+		for (Pair<String, Pair<Integer, ArrayList<double[]>>> currentCurvature : parent.resultCurvature) {
+
+			if (ID.equals(currentCurvature.getA())) {
+
+				AllcurrentresultCurv.add(currentCurvature);
+
+			}
+
+		}
+		ParallelResultDisplay display = new ParallelResultDisplay(parent, AllcurrentresultCurv);
+		display.ResultDisplay();
 
 	}
 
