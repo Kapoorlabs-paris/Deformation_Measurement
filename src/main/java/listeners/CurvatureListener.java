@@ -25,6 +25,27 @@ public class CurvatureListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
+		
+
+		ClearStuff();
+		if (parent.curveautomode) {
+
+	
+			parent.StartCurvatureComputing();
+			
+			
+		}
+
+		if (parent.curvesupermode) {
+
+		
+			parent.StartCurvatureComputing();
+		}
+
+	}
+	
+	public  void ClearStuff() {
+		
 		parent.table.removeAll();
 		parent.table.repaint();
 		parent.localCurvature.clear();
@@ -39,34 +60,15 @@ public class CurvatureListener implements ActionListener {
 		parent.displaySegments.setState(false);
 		parent.displayIntermediate = false;
 		parent.displayIntermediateBox = false;
-		if (parent.curveautomode) {
-
-			parent.emptysmooth = utility.Binarization.CreateBinaryBit(parent.originalimgsmooth, parent.lowprob,
-					parent.highprob);
-			parent.empty = utility.Binarization.CreateBinaryBit(parent.originalimg, parent.lowprob, parent.highprob);
-
-			parent.parentgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(
-					DefaultWeightedEdge.class);
-			parent.parentgraphZ = new HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
-			
-			parent.parentgraphSegZ = new HashMap<String, SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge>>();
-			parent.ALLSegments.clear();
-			parent.StartCurvatureComputing();
-			
-			
-		}
-
-		if (parent.curvesupermode) {
-
-			parent.parentgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(
-					DefaultWeightedEdge.class);
-			parent.parentgraphZ = new HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
-			parent.empty = utility.Binarization.CreateBinaryBit(parent.originalimg, parent.lowprob, parent.highprob);
-			parent.parentgraphSegZ = new HashMap<String, SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge>>();
-			parent.ALLSegments.clear();
-			parent.StartCurvatureComputing();
-		}
-
+		parent.parentgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(
+				DefaultWeightedEdge.class);
+		parent.parentgraphZ = new HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
+		parent.empty = utility.Binarization.CreateBinaryBit(parent.originalimg, parent.lowprob, parent.highprob);
+		parent.parentgraphSegZ = new HashMap<String, SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge>>();
+		parent.ALLSegments.clear();
+		parent.SegmentFinalresult.clear();
+		parent.overlay.clear();
+		parent.imp.getCanvas().removeMouseListener(parent.mvl);
 	}
 
 }

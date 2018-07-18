@@ -98,6 +98,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		parent.resultDraw.clear();
 		parent.Tracklist.clear();
 		parent.SegmentTracklist.clear();
+		parent.table.removeAll();
 
 		TrackingFunctions track = new TrackingFunctions(parent);
 		if (parent.ndims > 3) {
@@ -108,9 +109,13 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 				int z = itZ.next().getValue();
 
-				SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
+			//	SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
 
-				parent.parentgraphZ.put(Integer.toString(z), simplegraph);
+			//	parent.parentgraphZ.put(Integer.toString(z), simplegraph);
+				
+				SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge> simpleSegmentgraph = track.TrackSegmentfunction();
+
+				parent.parentgraphSegZ.put(Integer.toString(z), simpleSegmentgraph);
 
 			}
 
@@ -121,9 +126,9 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		else {
 
-			SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
+		//	SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
 
-			parent.parentgraphZ.put(Integer.toString(1), simplegraph);
+		//	parent.parentgraphZ.put(Integer.toString(1), simplegraph);
 
 			SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge> simpleSegmentgraph = track.TrackSegmentfunction();
 

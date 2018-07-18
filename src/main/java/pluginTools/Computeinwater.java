@@ -168,7 +168,7 @@ public class Computeinwater {
 		ArrayList<OvalRoi> resultcurvelineroi = new ArrayList<OvalRoi>();
 		ArrayList<OvalRoi> resultallcurvelineroi = new ArrayList<OvalRoi>();
 		ArrayList<EllipseRoi> ellipselineroi = new ArrayList<EllipseRoi>();
-		ArrayList<OvalRoi>Segmentrect = new ArrayList<OvalRoi>();
+		ArrayList<Roi>Segmentrect = new ArrayList<Roi>();
 		// Obtain the points of intersections
 
 		Iterator<Integer> setiter = parent.pixellist.iterator();

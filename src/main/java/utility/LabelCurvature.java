@@ -50,14 +50,14 @@ public class LabelCurvature implements Runnable {
 	final ArrayList<OvalRoi> resultcurvelineroi;
 	final ArrayList<OvalRoi> resultallcurvelineroi;
 	final ArrayList<EllipseRoi> ellipselineroi;
-	final ArrayList<OvalRoi> segmentrect;
+	final ArrayList<Roi> segmentrect;
 	final JProgressBar jpb;
 	ArrayList<Intersectionobject> AllCurveintersection;
 
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
 			final RandomAccessibleInterval<FloatType> ActualRoiimg, List<RealLocalizable> truths,
 			ArrayList<Line> resultlineroi, ArrayList<OvalRoi> resultcurvelineroi,
-			ArrayList<OvalRoi> resultallcurvelineroi,ArrayList<EllipseRoi> ellipselineroi, ArrayList<OvalRoi> segmentrect,  ArrayList<Intersectionobject> AllCurveintersection, final int t,
+			ArrayList<OvalRoi> resultallcurvelineroi,ArrayList<EllipseRoi> ellipselineroi, ArrayList<Roi> segmentrect,  ArrayList<Intersectionobject> AllCurveintersection, final int t,
 			final int z, final int celllabel) {
 
 		this.parent = parent;
@@ -79,7 +79,7 @@ public class LabelCurvature implements Runnable {
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
 			final RandomAccessibleInterval<FloatType> ActualRoiimg, List<RealLocalizable> truths,
 			ArrayList<Line> resultlineroi, ArrayList<OvalRoi> resultcurvelineroi,
-			ArrayList<OvalRoi> resultallcurvelineroi,ArrayList<EllipseRoi> ellipselineroi,ArrayList<OvalRoi> segmentrect, ArrayList<Intersectionobject> AllCurveintersection, final int t,
+			ArrayList<OvalRoi> resultallcurvelineroi,ArrayList<EllipseRoi> ellipselineroi,ArrayList<Roi> segmentrect, ArrayList<Intersectionobject> AllCurveintersection, final int t,
 			final int z, final JProgressBar jpb, final int percent, final int celllabel) {
 
 		this.parent = parent;
@@ -376,7 +376,6 @@ public class LabelCurvature implements Runnable {
 		 
 		parent.ZTRois.put(uniqueID, currentroiobject);
 		
-		System.out.println(uniqueID + " " + segmentrect.size());
 		DisplayAuto.Display(parent);
 		AllCurveintersection.add(currentobject);
 

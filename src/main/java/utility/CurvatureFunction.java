@@ -125,7 +125,6 @@ public class CurvatureFunction {
 
 		}
 		String uniqueID = Integer.toString(z) + Integer.toString(Label);
-		System.out.println(uniqueID + "UID");
 		// Create the hash map entry for the particular cell
 		parent.ALLSegments.put(uniqueID, Allcellsegment);
 		/** Compute by TREE **/

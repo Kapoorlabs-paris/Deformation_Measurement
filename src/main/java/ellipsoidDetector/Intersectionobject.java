@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
+import ij.gui.Roi;
 import net.imglib2.AbstractEuclideanSpace;
 import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
@@ -31,7 +32,7 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 	public final ArrayList<OvalRoi> curvelinerois;
 	public final ArrayList<OvalRoi> curvealllinerois;
 	public final ArrayList<EllipseRoi> ellipselinerois;
-	public final ArrayList<OvalRoi> segmentrect;
+	public final ArrayList<Roi> segmentrect;
 	private String name;
 	private final int ID;
 	private final ConcurrentHashMap< String, Double > features = new ConcurrentHashMap< String, Double >();
@@ -73,7 +74,7 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 	 * 
 	 */
 	public Intersectionobject(final double[] Intersectionpoint, ArrayList<double[]> linelist, final ArrayList<Line> linerois, final ArrayList<OvalRoi> curvelinerois,
-			final ArrayList<OvalRoi> curvealllinerois, final ArrayList<EllipseRoi> ellipselinerois,final ArrayList<OvalRoi> segmentrect, final double perimeter,  final int celllabel, final int t, final int z) {
+			final ArrayList<OvalRoi> curvealllinerois, final ArrayList<EllipseRoi> ellipselinerois,final ArrayList<Roi> segmentrect, final double perimeter,  final int celllabel, final int t, final int z) {
 		super(3);
 		this.Intersectionpoint = Intersectionpoint;
 		this.angle = 0;

@@ -12,6 +12,7 @@ import ellipsoidDetector.Intersectionobject;
 import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
+import ij.gui.Roi;
 import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.ransac.RansacModels.DisplayasROI;
 import net.imglib2.util.Pair;
@@ -51,7 +52,7 @@ public class PointExtractor {
 		ArrayList<OvalRoi> resultcurveline = new ArrayList<OvalRoi>();
 		ArrayList<EllipseRoi> ellipsecurveline = new ArrayList<EllipseRoi>();
 		ArrayList<OvalRoi> resultallcurveline = new ArrayList<OvalRoi>();
-		ArrayList<OvalRoi> resultrectangle = new ArrayList<OvalRoi>();
+		ArrayList<Roi> resultrectangle = new ArrayList<Roi>();
 
 		for (int i = 0; i < functions.size(); ++i) {
 
@@ -97,12 +98,12 @@ public class PointExtractor {
 						regression.ellipse.getRadii() * regression.ellipse.getRadii());
 				ellipsecurveline.add(ellipse);
 
-				OvalRoi rect = new OvalRoi(
-						(int) Math.min(regression.ellipse.getStart()[0], regression.ellipse.getEnd()[0]),
-						(int) Math.min(regression.ellipse.getStart()[1], regression.ellipse.getEnd()[1]),
-						(int) Math.abs(regression.ellipse.getStart()[0] - regression.ellipse.getEnd()[0]),
-						(int) Math.abs(regression.ellipse.getStart()[1] - regression.ellipse.getEnd()[1]));
-				resultrectangle.add(rect);
+				double fixedwidth = Math.sqrt(Distance.DistanceSq(regression.ellipse.getStart(), regression.ellipse.getEnd()));
+				Roi rectangle = new Roi((int) (regression.ellipse.getMid()[0] - fixedwidth / 2),
+						(int)(regression.ellipse.getMid()[1] - fixedwidth / 2), (int)fixedwidth ,
+						(int) fixedwidth);
+				
+				resultrectangle.add(rectangle);
 
 			}
 

@@ -106,15 +106,15 @@ public class NearestRoi {
 	
 	
 	
-public static OvalRoi getNearestSegmentRois(Roiobject roi, double[] Clickedpoint, final InteractiveSimpleEllipseFit parent ) {
+public static Roi getNearestSegmentRois(Roiobject roi, double[] Clickedpoint, final InteractiveSimpleEllipseFit parent ) {
 		
 
-		ArrayList<OvalRoi> Allrois = roi.segmentrect;
+		ArrayList<Roi> Allrois = roi.segmentrect;
 		
-		OvalRoi KDtreeroi = null;
+		Roi KDtreeroi = null;
 
 		final List<RealPoint> targetCoords = new ArrayList<RealPoint>(Allrois.size());
-		final List<FlagNode<OvalRoi>> targetNodes = new ArrayList<FlagNode<OvalRoi>>(Allrois.size());
+		final List<FlagNode<Roi>> targetNodes = new ArrayList<FlagNode<Roi>>(Allrois.size());
 		for (int index = 0; index < Allrois.size(); ++index) {
 
 			 Roi r = Allrois.get(index);
@@ -123,21 +123,21 @@ public static OvalRoi getNearestSegmentRois(Roiobject roi, double[] Clickedpoint
 			 targetCoords.add( new RealPoint(rect.x + rect.width/2.0, rect.y + rect.height/2.0 ) );
 			 
 
-			targetNodes.add(new FlagNode<OvalRoi>(Allrois.get(index)));
+			targetNodes.add(new FlagNode<Roi>(Allrois.get(index)));
 
 		}
 
 		if (targetNodes.size() > 0 && targetCoords.size() > 0) {
 
-			final KDTree<FlagNode<OvalRoi>> Tree = new KDTree<FlagNode<OvalRoi>>(targetNodes, targetCoords);
+			final KDTree<FlagNode<Roi>> Tree = new KDTree<FlagNode<Roi>>(targetNodes, targetCoords);
 
-			final NNFlagsearchKDtree<OvalRoi> Search = new NNFlagsearchKDtree<OvalRoi>(Tree);
+			final NNFlagsearchKDtree<Roi> Search = new NNFlagsearchKDtree<Roi>(Tree);
 
 
 				final double[] source = Clickedpoint;
 				final RealPoint sourceCoords = new RealPoint(source);
 				Search.search(sourceCoords);
-				final FlagNode<OvalRoi> targetNode = Search.getSampler().get();
+				final FlagNode<Roi> targetNode = Search.getSampler().get();
 
 				KDtreeroi = targetNode.getValue();
 

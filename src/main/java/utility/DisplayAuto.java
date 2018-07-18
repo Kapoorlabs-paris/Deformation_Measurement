@@ -89,14 +89,16 @@ public class DisplayAuto {
 
 					}
 					
-					if (currentobject.segmentrect != null) {
+					if (currentobject.segmentrect != null && parent.displayIntermediateBox) {
 						for (int i = 0; i < currentobject.segmentrect.size(); ++i) {
 
-							OvalRoi ellipse = currentobject.segmentrect.get(i);
-							ellipse.setStrokeColor(parent.colorLineA);
+							Roi rect = currentobject.segmentrect.get(i);
+							
+							
+							rect.setStrokeColor(parent.colorLineA);
 
 							
-							parent.overlay.add(ellipse);
+							parent.overlay.add(rect);
 						
 
 						}

@@ -15,7 +15,7 @@ public class Roiobject {
 	public ArrayList<OvalRoi> resultovalroi;
 	public ArrayList<Line> resultlineroi;
 	public ArrayList<OvalRoi> resultcurvelineroi;
-	public ArrayList<OvalRoi> segmentrect;
+	public ArrayList<Roi> segmentrect;
 	public final int fourthDimension;
 	public final int thirdDimension;
 	public final boolean isCreated;
@@ -62,7 +62,7 @@ public class Roiobject {
 	}
 
 	public Roiobject(final ArrayList<EllipseRoi> resultroi, ArrayList<OvalRoi> resultovalroi, 
-			ArrayList<Line> resultlineroi,ArrayList<OvalRoi> resultcurvelineroi, ArrayList<OvalRoi> rect,  final int thirdDimension, final int fourthDimension, final int Celllabel, final boolean isCreated)
+			ArrayList<Line> resultlineroi,ArrayList<OvalRoi> resultcurvelineroi, ArrayList<Roi> rect,  final int thirdDimension, final int fourthDimension, final int Celllabel, final boolean isCreated)
 
 	{
 		this.resultroi = resultroi;
