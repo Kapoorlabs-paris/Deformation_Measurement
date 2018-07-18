@@ -98,7 +98,6 @@ public static void displayclickedSegment(InteractiveSimpleEllipseFit parent, int
 
 			
 			if (ID.equals(currentCurvature.getA())) {
-
 				currentresultCurv.add(currentCurvature);
 
 			}

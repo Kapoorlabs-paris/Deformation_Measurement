@@ -19,8 +19,11 @@ import ellipsoidDetector.Distance;
 import ij.IJ;
 import ij.gui.ImageCanvas;
 import ij.gui.Line;
+import ij.gui.Roi;
+import kalmanTracker.NearestRoi;
 import pluginTools.InteractiveSimpleEllipseFit;
 import utility.Curvatureobject;
+import utility.Roiobject;
 
 public class DisplaySelected {
 
@@ -151,6 +154,8 @@ public class DisplaySelected {
 						}
 					});
 
+					if(parent.curvesupermode)
+						HighlightNearest(parent, new double[] { x, y });
 					parent.table.validate();
 					parent.scrollPane.validate();
 					parent.panelSecond.repaint();
@@ -168,4 +173,35 @@ public class DisplaySelected {
 		});
 
 	}
+	
+	public static void HighlightNearest(final InteractiveSimpleEllipseFit parent, double[] Clickedpoint) {
+		
+		String uniqueID = Integer.toString(parent.thirdDimension) + Integer.toString(parent.fourthDimension);
+		
+		Roiobject currentobject = parent.ZTRois.get(uniqueID);
+		if(currentobject.segmentrect!=null) {
+			
+			Roi nearestRoi = NearestRoi.getNearestSegmentRois(currentobject, Clickedpoint, parent);
+			
+			for (Roi otherRois: currentobject.segmentrect) {
+				if(otherRois!=nearestRoi)
+					otherRois.setStrokeColor(parent.defaultRois);
+				else
+					otherRois.setStrokeColor(Color.PINK);
+				
+			}
+				
+			
+			
+			
+			parent.overlay.add(nearestRoi);
+			parent.imp.updateAndDraw();
+			
+		}
+		
+		
+	}
+	
+	
+	
 }

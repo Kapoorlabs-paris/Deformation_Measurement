@@ -104,6 +104,51 @@ public class NearestRoi {
 		
 	}
 	
+	
+	
+public static OvalRoi getNearestSegmentRois(Roiobject roi, double[] Clickedpoint, final InteractiveSimpleEllipseFit parent ) {
+		
+
+		ArrayList<OvalRoi> Allrois = roi.segmentrect;
+		
+		OvalRoi KDtreeroi = null;
+
+		final List<RealPoint> targetCoords = new ArrayList<RealPoint>(Allrois.size());
+		final List<FlagNode<OvalRoi>> targetNodes = new ArrayList<FlagNode<OvalRoi>>(Allrois.size());
+		for (int index = 0; index < Allrois.size(); ++index) {
+
+			 Roi r = Allrois.get(index);
+			 Rectangle rect = r.getBounds();
+			 
+			 targetCoords.add( new RealPoint(rect.x + rect.width/2.0, rect.y + rect.height/2.0 ) );
+			 
+
+			targetNodes.add(new FlagNode<OvalRoi>(Allrois.get(index)));
+
+		}
+
+		if (targetNodes.size() > 0 && targetCoords.size() > 0) {
+
+			final KDTree<FlagNode<OvalRoi>> Tree = new KDTree<FlagNode<OvalRoi>>(targetNodes, targetCoords);
+
+			final NNFlagsearchKDtree<OvalRoi> Search = new NNFlagsearchKDtree<OvalRoi>(Tree);
+
+
+				final double[] source = Clickedpoint;
+				final RealPoint sourceCoords = new RealPoint(source);
+				Search.search(sourceCoords);
+				final FlagNode<OvalRoi> targetNode = Search.getSampler().get();
+
+				KDtreeroi = targetNode.getValue();
+
+		}
+
+		return KDtreeroi;
+		
+	}
+	
+	
+	
 public static Line getNearestLineRois(Roiobject roi, int[] clickedpoints, final InteractiveSimpleEllipseFit parent ) {
 		
 

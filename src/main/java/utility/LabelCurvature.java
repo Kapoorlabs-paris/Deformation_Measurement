@@ -369,11 +369,14 @@ public class LabelCurvature implements Runnable {
 		 resultlineroi.addAll(currentobject.linerois);
 		 resultcurvelineroi.addAll(currentobject.curvelinerois);
 		 resultallcurvelineroi.addAll(currentobject.curvealllinerois);
+		 segmentrect.addAll(currentobject.segmentrect);
 
 		 Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi, resultcurvelineroi, segmentrect,
 					z, t, celllabel, true);
 		 
 		parent.ZTRois.put(uniqueID, currentroiobject);
+		
+		System.out.println(uniqueID + " " + segmentrect.size());
 		DisplayAuto.Display(parent);
 		AllCurveintersection.add(currentobject);
 
