@@ -97,6 +97,7 @@ public class PointExtractor {
 				EllipseRoi ellipse = DisplayasROI.create2DCircle(regression.ellipse.getCenter(),
 						regression.ellipse.getRadii() * regression.ellipse.getRadii());
 				ellipsecurveline.add(ellipse);
+			
 
 				double fixedwidth = Math.sqrt(Distance.DistanceSq(regression.ellipse.getStart(), regression.ellipse.getEnd()));
 				Roi rectangle = new Roi((int) (regression.ellipse.getMid()[0] - fixedwidth / 2),

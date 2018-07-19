@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import ellipsoidDetector.Distance;
+import ij.IJ;
 import mpicbg.models.Point;
 import net.imglib2.KDTree;
 import net.imglib2.RealLocalizable;
@@ -38,6 +39,11 @@ public class Listordereing {
 
 		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
 
+		if(index > truths.size())
+			index = truths.size();
+		
+		IJ.log(truths.get(index).getDoublePosition(0) + " " + truths.get(index).getDoublePosition(1) + " New ref point");
+		
 		for (int i = index; i < truths.size(); ++i) {
 
 			orderedtruths.add(truths.get(i));
@@ -128,8 +134,9 @@ public class Listordereing {
 		minCord = getMinCord(copytruths);
 		RealLocalizable refcord = minCord;
 
-		RealLocalizable meanCord = getMeanCord(copytruths);
 		orderedtruths.add(minCord);
+		
+		IJ.log(minCord.getDoublePosition(0) + " " + minCord.getDoublePosition(1) + " Default ref point");
 		copytruths.remove(minCord);
 		do {
 

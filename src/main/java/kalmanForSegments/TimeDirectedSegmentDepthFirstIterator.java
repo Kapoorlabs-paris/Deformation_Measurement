@@ -17,14 +17,14 @@ public class TimeDirectedSegmentDepthFirstIterator extends SortedSegmentDepthFir
 	
     protected void addUnseenChildrenOf(Segmentobject vertex) {
     	
-    	int ts = vertex.getFeature(Segmentobject.Time).intValue();
+    	int ts = vertex.getFeature(Segmentobject.Z).intValue();
         for (DefaultWeightedEdge edge : specifics.edgesOf(vertex)) {
             if (nListeners != 0) {
                 fireEdgeTraversed(createEdgeTraversalEvent(edge));
             }
 
             Segmentobject oppositeV = Graphs.getOppositeVertex(graph, edge, vertex);
-            int tt = oppositeV.getFeature(Segmentobject.Time).intValue();
+            int tt = oppositeV.getFeature(Segmentobject.Z).intValue();
             if (tt <= ts) {
             	continue;
             }

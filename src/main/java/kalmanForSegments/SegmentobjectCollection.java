@@ -446,9 +446,9 @@ public class SegmentobjectCollection implements MultiThreaded
 	 * @return a new list, with of at most <code>n</code> ThreeDRoiobjects, ordered by
 	 *         increasing distance from the specified location.
 	 */
-	public final List< Segmentobject > getNClosestThreeDRoiobjects( final Segmentobject location, final int Time, int n, final boolean visibleThreeDRoiobjectsOnly )
+	public final List< Segmentobject > getNClosestThreeDRoiobjects( final Segmentobject location, final int Z, int n, final boolean visibleThreeDRoiobjectsOnly )
 	{
-		final Set< Segmentobject > ThreeDRoiobjects = content.get( Time );
+		final Set< Segmentobject > ThreeDRoiobjects = content.get( Z );
 		final TreeMap< Double, Segmentobject > distanceToThreeDRoiobject = new TreeMap< >();
 
 		double d2;
@@ -515,11 +515,11 @@ public class SegmentobjectCollection implements MultiThreaded
 	 *            ThreeDRoiobjects.
 	 * @return the number of ThreeDRoiobjects at the given Time.
 	 */
-	public int getNThreeDRoiobjects( final String Time, final boolean visibleThreeDRoiobjectsOnly )
+	public int getNThreeDRoiobjects( final String Z, final boolean visibleThreeDRoiobjectsOnly )
 	{
 		if ( visibleThreeDRoiobjectsOnly )
 		{
-			final Iterator< Segmentobject > it = iterator( Time, true );
+			final Iterator< Segmentobject > it = iterator( Z, true );
 			int nThreeDRoiobjects = 0;
 			while ( it.hasNext() )
 			{
@@ -529,7 +529,7 @@ public class SegmentobjectCollection implements MultiThreaded
 			return nThreeDRoiobjects;
 		}
 
-		final Set< Segmentobject > ThreeDRoiobjects = content.get( Time );
+		final Set< Segmentobject > ThreeDRoiobjects = content.get( Z );
 		if ( null == ThreeDRoiobjects )
 			return 0;
 		

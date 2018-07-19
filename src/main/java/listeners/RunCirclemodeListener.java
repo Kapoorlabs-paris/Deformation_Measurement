@@ -33,11 +33,11 @@ public class RunCirclemodeListener implements ItemListener {
 
 			parent.Angleselect.removeAll();
 
-		//	parent.Angleselect.add(parent.incrementText, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
-		//			GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
+			parent.Angleselect.add(parent.incrementText, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 
-		//	parent.Angleselect.add(parent.incrementField, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0,
-		//			GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
+			parent.Angleselect.add(parent.incrementField, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0,
+					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 
 			parent.Angleselect.add(parent.maxsizeText, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0,
 					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
@@ -54,7 +54,7 @@ public class RunCirclemodeListener implements ItemListener {
 			parent.Angleselect.add(parent.Curvaturebutton, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0,
 					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 
-			parent.Angleselect.add(parent.displayCircle, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0,
+			parent.Angleselect.add(parent.displayCircle, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0,
 					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 			parent.Angleselect.add(parent.displaySegments, new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0,
 					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
@@ -71,6 +71,7 @@ public class RunCirclemodeListener implements ItemListener {
 			parent.Angleselect.add(parent.SelectRim, new GridBagConstraints(3, 5, 3, 1, 0.0, 0.0,
 					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 			
+		
 		
 		
 

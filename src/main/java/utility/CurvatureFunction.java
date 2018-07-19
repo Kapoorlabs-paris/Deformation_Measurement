@@ -18,6 +18,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
+import pluginTools.RegressionCurveSegment;
 import ransac.PointFunctionMatch.PointFunctionMatch;
 import ransac.loadFiles.Tracking;
 import ransacPoly.HigherOrderPolynomialFunction;
@@ -51,29 +52,21 @@ public class CurvatureFunction {
 	 * @param z
 	 * @return
 	 */
-	public ValuePair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> getCurvature(
+	public RegressionCurveSegment getCurvature(
 			List<RealLocalizable> truths, RealLocalizable centerpoint, double maxError, int minNumInliers, int ndims,
-			int Label, int degree, int secdegree, int t, int z) {
+			int Label, int degree, int secdegree, int z, int t) {
 
 		ArrayList<Curvatureobject> curveobject = new ArrayList<Curvatureobject>();
-		ArrayList<double[]> leftinterpolatedCurvature = new ArrayList<double[]>();
-		ArrayList<double[]> rightinterpolatedCurvature = new ArrayList<double[]>();
-		ArrayList<double[]> interpolatedCurvature = new ArrayList<double[]>();
+		
 
 		ArrayList<double[]> totalinterpolatedCurvature = new ArrayList<double[]>();
-		ArrayList<Node<RealLocalizable>> WrongLeftnodes = new ArrayList<Node<RealLocalizable>>();
-		ArrayList<Node<RealLocalizable>> WrongRightnodes = new ArrayList<Node<RealLocalizable>>();
 
-		ArrayList<RegressionFunction> leftfunctions = new ArrayList<RegressionFunction>();
-		ArrayList<RegressionFunction> rightfunctions = new ArrayList<RegressionFunction>();
-		ArrayList<RegressionFunction> functions = new ArrayList<RegressionFunction>();
 
 		ArrayList<RegressionFunction> totalfunctions = new ArrayList<RegressionFunction>();
 
 		double perimeter = 0;
 
 		double smoothing = parent.smoothing;
-		int maxdepth = Getdepth(parent);
 
 		// Fill the node map
 		// MakeTree(parent, truths, 0, Integer.toString(0), maxdepth);
@@ -111,7 +104,8 @@ public class CurvatureFunction {
 				curvelist.add(new double[] {current.getDoublePosition(0) , current.getDoublePosition(1), Curvature, IntensityA, IntensityB});
 			}
 			
-			Segmentobject cellsegment = new Segmentobject(curvelist, Cord, Curvature, IntensityA, IntensityB, SegPeri, entry.getKey(), Label, z);
+			Segmentobject cellsegment = new Segmentobject(curvelist, Cord, Curvature, IntensityA, IntensityB, SegPeri, entry.getKey(), Label,
+					z, t);
 
 			
 			Allcellsegment.add(cellsegment);
@@ -119,61 +113,15 @@ public class CurvatureFunction {
 		
 
 		}
-		String uniqueID = Integer.toString(z) + Integer.toString(Label);
-		// Create the hash map entry for the particular cell
-		parent.ALLSegments.put(uniqueID, Allcellsegment);
-		/** Compute by TREE **/
-		/*
-		 * HashMap<String, Node<RealLocalizable>> SortedNodemap =
-		 * SortNodes.sortByValues(parent.Nodemap, minNumInliers); HashMap<String,
-		 * Node<RealLocalizable>> SortedRightNodemap =
-		 * SortNodes.sortByRightValues(SortedNodemap, minNumInliers); int sizein = 0;
-		 * for (Map.Entry<String, Node<RealLocalizable>> entry :
-		 * SortedRightNodemap.entrySet()) {
-		 * 
-		 * sizein += entry.getValue().parent.size();
-		 * 
-		 * Node<RealLocalizable> node = entry.getValue();
-		 * 
-		 * // Output is the local perimeter of the fitted function Pair<Boolean, Double>
-		 * leftlocal = null, rightlocal = null; if (node.leftTree != null) leftlocal =
-		 * FitonLeftsubTree(parent,centerpoint, node, leftinterpolatedCurvature,
-		 * leftfunctions, smoothing, maxError, minNumInliers, degree, secdegree);
-		 * 
-		 * if (node.rightTree != null) rightlocal =
-		 * FitonRightsubTree(parent,centerpoint, node, rightinterpolatedCurvature,
-		 * rightfunctions, smoothing, maxError, minNumInliers, degree, secdegree);
-		 * 
-		 * // Add only the correct regions if (leftlocal != null) { if
-		 * (!leftlocal.getA()) { perimeter += leftlocal.getB();
-		 * totalfunctions.addAll(leftfunctions);
-		 * totalinterpolatedCurvature.addAll(leftinterpolatedCurvature); }
-		 * 
-		 * 
-		 * }
-		 * 
-		 * if (rightlocal != null) {
-		 * 
-		 * perimeter += rightlocal.getB(); totalfunctions.addAll(rightfunctions);
-		 * totalinterpolatedCurvature.addAll(rightinterpolatedCurvature);
-		 * 
-		 * 
-		 * 
-		 * }
-		 * 
-		 * if (sizein >= truths.size( )) break;
-		 * 
-		 * }
-		 * 
-		 */
-
+		
+		
 		for (int indexx = 0; indexx < totalinterpolatedCurvature.size(); ++indexx) {
 
 			Curvatureobject currentobject = new Curvatureobject(
 					totalinterpolatedCurvature.get(indexx)[2], perimeter, totalinterpolatedCurvature.get(indexx)[4],
 					totalinterpolatedCurvature.get(indexx)[5], Label, new double[] {
 							totalinterpolatedCurvature.get(indexx)[0], totalinterpolatedCurvature.get(indexx)[1] },
-					t, z);
+					z, t);
 
 			curveobject.add(currentobject);
 
@@ -181,7 +129,8 @@ public class CurvatureFunction {
 
 		// All nodes are returned
 
-		return new ValuePair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>(totalfunctions, curveobject);
+		RegressionCurveSegment returnSeg = new RegressionCurveSegment(totalfunctions, curveobject, Allcellsegment);
+		return returnSeg;
 
 	}
 

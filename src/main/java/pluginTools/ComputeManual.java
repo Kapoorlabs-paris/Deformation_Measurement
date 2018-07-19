@@ -245,7 +245,7 @@ public class ComputeManual extends SwingWorker<Void, Void> {
 			
 		}
 		
-		KFsearch Tsearch = new KFsearch(coll, parent.UserchosenCostFunction, parent.maxSearchradius, parent.initialSearchradius, parent.maxframegap, parent.AccountedZ, parent.jpb);
+		KFsearch Tsearch = new KFsearch(coll, parent.UserchosenCostFunction, parent.maxSearchradius, parent.maxSearchradius, parent.maxframegap, parent.AccountedZ, parent.jpb);
 		Tsearch.process();
 		SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > simplegraph = Tsearch.getResult();
 		

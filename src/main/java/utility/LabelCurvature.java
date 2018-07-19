@@ -14,6 +14,8 @@ import java.util.Random;
 
 import javax.swing.JProgressBar;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
+
 import curvatureUtils.DisplaySelected;
 import curvatureUtils.PointExtractor;
 import ellipsoidDetector.Distance;
@@ -36,6 +38,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
+import pluginTools.RegressionCurveSegment;
 import ransacPoly.RegressionFunction;
 
 public class LabelCurvature implements Runnable {
@@ -54,11 +57,13 @@ public class LabelCurvature implements Runnable {
 	final ArrayList<Roi> segmentrect;
 	final JProgressBar jpb;
 	ArrayList<Intersectionobject> AllCurveintersection;
+	ArrayList<Segmentobject> AllCurveSegments;
 
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
 			final RandomAccessibleInterval<FloatType> ActualRoiimg, List<RealLocalizable> truths,
 			ArrayList<Line> resultlineroi, ArrayList<OvalRoi> resultcurvelineroi,
-			ArrayList<OvalRoi> resultallcurvelineroi,ArrayList<EllipseRoi> ellipselineroi, ArrayList<Roi> segmentrect,  ArrayList<Intersectionobject> AllCurveintersection, final int t,
+			ArrayList<OvalRoi> resultallcurvelineroi,ArrayList<EllipseRoi> ellipselineroi, ArrayList<Roi> segmentrect,
+			ArrayList<Intersectionobject> AllCurveintersection,ArrayList<Segmentobject> AllCurveSegments, final int t,
 			final int z, final int celllabel) {
 
 		this.parent = parent;
@@ -67,6 +72,7 @@ public class LabelCurvature implements Runnable {
 		this.t = t;
 		this.z = z;
 		this.AllCurveintersection = AllCurveintersection;
+		this.AllCurveSegments = AllCurveSegments;
 		this.jpb = null;
 		this.percent = 0;
 		this.resultlineroi = resultlineroi;
@@ -80,7 +86,8 @@ public class LabelCurvature implements Runnable {
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
 			final RandomAccessibleInterval<FloatType> ActualRoiimg, List<RealLocalizable> truths,
 			ArrayList<Line> resultlineroi, ArrayList<OvalRoi> resultcurvelineroi,
-			ArrayList<OvalRoi> resultallcurvelineroi,ArrayList<EllipseRoi> ellipselineroi,ArrayList<Roi> segmentrect, ArrayList<Intersectionobject> AllCurveintersection, final int t,
+			ArrayList<OvalRoi> resultallcurvelineroi,ArrayList<EllipseRoi> ellipselineroi,ArrayList<Roi> segmentrect,
+			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Segmentobject> AllCurveSegments, final int t,
 			final int z, final JProgressBar jpb, final int percent, final int celllabel) {
 
 		this.parent = parent;
@@ -95,32 +102,26 @@ public class LabelCurvature implements Runnable {
 		this.jpb = jpb;
 		this.percent = percent;
 		this.AllCurveintersection = AllCurveintersection;
+		this.AllCurveSegments = AllCurveSegments;
 		this.celllabel = celllabel;
 		this.segmentrect = segmentrect;
 	}
 
 	
-	private Pair<Integer, HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>> SliderLoop(
+	private void SliderLoop(
 			List<RealLocalizable> Ordered, RealLocalizable centerpoint) {
 
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
 		// Get the sparse list of points
-		HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>> Bestdelta = new HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>();
+		HashMap<Integer, RegressionCurveSegment> Bestdelta = new HashMap<Integer, RegressionCurveSegment>();
 		int count = 0;
 		if (parent.minNumInliers > truths.size())
 			parent.minNumInliers = truths.size();
 
 		
-		int increment = parent.increment;
+		int i = parent.increment;
 	
-		for (int i = 1; i < Ordered.size() - 1; i += increment) {
-
-			
-			if (i >= Ordered.size() - 1) {
-			
-				break;
-				
-			}
+		
 
 			// Get the sparse list of points
 
@@ -141,21 +142,21 @@ public class LabelCurvature implements Runnable {
 
 			CurvatureFunction computecurve = new CurvatureFunction(parent);
 			
-			Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> resultpair = computecurve.getCurvature(
+			RegressionCurveSegment resultpair = computecurve.getCurvature(
 					allorderedtruths,centerpoint, parent.insideCutoff, parent.minNumInliers, ndims, celllabel,
 					Math.abs(Math.max(parent.degree, parent.secdegree)),
-					Math.abs(Math.min(parent.degree, parent.secdegree)), t, z);
+					Math.abs(Math.min(parent.degree, parent.secdegree)), z, t);
 
 			// Here counter the segments where the number of inliers was too low
 
 			Bestdelta.put(count, resultpair);
 			count++;
 
-			parent.localCurvature = resultpair.getB();
-			parent.functions = resultpair.getA();
+			parent.localCurvature = resultpair.Curvelist;
+			parent.functions = resultpair.functionlist;
+			parent.localSegment = resultpair.Seglist;
 			// Make intersection object here
 
-		
 			
 			Intersectionobject currentobject = PointExtractor.CurvaturetoIntersection(parent.localCurvature,
 					parent.functions, centerpoint, parent.smoothing);
@@ -165,14 +166,14 @@ public class LabelCurvature implements Runnable {
 			
 			if (parent.maxperimeter >=currentobject.perimeter)
 				parent.maxperimeter = (int)Math.round(currentobject.perimeter);
-			resultlineroi.addAll(currentobject.linerois);
-			if(currentobject.curvelinerois!= null)
-			resultcurvelineroi.addAll(currentobject.curvelinerois);
-			resultallcurvelineroi.addAll(currentobject.curvealllinerois);
-			if(parent.displayIntermediate)
-			ellipselineroi.addAll(currentobject.ellipselinerois);
-			if(parent.displayIntermediateBox)
-			segmentrect.addAll(currentobject.segmentrect);
+			
+			 resultlineroi.addAll(currentobject.linerois);
+			 resultcurvelineroi.addAll(currentobject.curvelinerois);
+			 resultallcurvelineroi.addAll(currentobject.curvealllinerois);
+					ellipselineroi.addAll(currentobject.ellipselinerois);
+					segmentrect.addAll(currentobject.segmentrect);
+			
+		
 
 			Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi, resultcurvelineroi, segmentrect,
 					z, t, celllabel, true);
@@ -180,13 +181,18 @@ public class LabelCurvature implements Runnable {
 			
 			
 			DisplayAuto.Display(parent);
-			if(increment == 0)
-				break;
-
-		}
 		
-		return new ValuePair<Integer, HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>>(
-				count, Bestdelta);
+			
+
+			
+			
+			AllCurveintersection.add(currentobject);
+
+			AllCurveSegments.addAll(resultpair.Seglist);
+			parent.AlllocalCurvature.add(parent.localCurvature);
+			
+			
+	
 	}
 
 	@Override
@@ -210,7 +216,6 @@ public class LabelCurvature implements Runnable {
 		// Get the candidate points for fitting
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
 		// A Hash map for the slider loop from reference point, 0 to incremental positions
-		HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>> Bestdelta = new HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>();
 		
 		// Get mean co-ordinate from the candidate points
 		RealLocalizable centerpoint = Listordereing.getMeanCord(truths);
@@ -219,168 +224,12 @@ public class LabelCurvature implements Runnable {
 		Pair<RealLocalizable, List<RealLocalizable>> Ordered = Listordereing.getOrderedList(truths);
 
 		// Start sliding
-		Pair<Integer, HashMap<Integer, Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>>> slider = SliderLoop(
+		 SliderLoop(
 				Ordered.getB(), centerpoint);
 
 		parent.Refcord = Ordered.getA();
-		Bestdelta = slider.getB();
-		int count = slider.getA();
-		
-		// Default result
-		Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> resultpair = Bestdelta.get(0);
-		
-		ArrayList<Curvatureobject> RefinedCurvature = new ArrayList<Curvatureobject>();
-		ArrayList<Curvatureobject> localCurvature = resultpair.getB();
-
-		double[] X = new double[localCurvature.size()];
-		double[] Y = new double[localCurvature.size()];
-		double[] Z = new double[localCurvature.size()];
-		double[] I = new double[localCurvature.size()];
-		double[] ISec = new double[localCurvature.size()];
-
-		ArrayList<Double> CurvePeri = new ArrayList<Double>();
-		CurvePeri.add(localCurvature.get(0).perimeter);
-		for (int index = 0; index < localCurvature.size(); ++index) {
-
-			ArrayList<Double> CurveXY = new ArrayList<Double>();
-			ArrayList<Double> CurveI = new ArrayList<Double>();
-			ArrayList<Double> CurveISec = new ArrayList<Double>();
-			
-			X[index] = localCurvature.get(index).cord[0];
-			Y[index] = localCurvature.get(index).cord[1];
-			Z[index] = localCurvature.get(index).radiusCurvature;
-			I[index] = localCurvature.get(index).Intensity;
-			ISec[index] = localCurvature.get(index).SecIntensity;
-			
-			CurveXY.add(Z[index]);
-			CurveI.add(I[index]);
-			CurveISec.add(ISec[index]);
-			for (int i = 1; i < count; ++i) {
-
-				Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> testpair = Bestdelta.get(i);
-
-				ArrayList<Curvatureobject> testlocalCurvature = testpair.getB();
-
-				double[] Xtest = new double[testlocalCurvature.size()];
-				double[] Ytest = new double[testlocalCurvature.size()];
-				double[] Ztest = new double[testlocalCurvature.size()];
-				double[] Itest = new double[testlocalCurvature.size()];
-				double[] ISectest = new double[testlocalCurvature.size()];
-				
-				CurvePeri.add(testlocalCurvature.get(0).perimeter);
-				for (int testindex = 0; testindex < testlocalCurvature.size(); ++testindex) {
-
-					Xtest[testindex] = testlocalCurvature.get(testindex).cord[0];
-					Ytest[testindex] = testlocalCurvature.get(testindex).cord[1];
-					Ztest[testindex] = testlocalCurvature.get(testindex).radiusCurvature;
-					Itest[index] = testlocalCurvature.get(testindex).Intensity;
-					ISectest[index] = testlocalCurvature.get(testindex).SecIntensity;
-					if (X[index] == Xtest[testindex] && Y[index] == Ytest[testindex]) {
-
-						CurveXY.add(Ztest[testindex]);
-						CurveI.add(Itest[index]);
-						CurveISec.add(ISectest[index]);
-						
-					}
-
-				}
-
-			}
-		
-		
-			double frequdeltaperi = localCurvature.get(0).perimeter ;
-			double frequdelta = Z[index];
-			double intensitydelta = I[index];
-			double intensitySecdelta = ISec[index];
-				
-				
-				
-				Iterator<Double> setiter = CurveXY.iterator();
-				while (setiter.hasNext()) {
-
-					Double s = setiter.next();
-
-				frequdelta+=s;
-
-				}
-
-				frequdelta/=CurveXY.size();
-				Iterator<Double> perisetiter = CurvePeri.iterator();
-				while (perisetiter.hasNext()) {
-
-					Double s = perisetiter.next();
-
-				
-					frequdeltaperi+=s;
-
-				}
-				
-				frequdeltaperi/=CurvePeri.size();
-				
-				
-
-				
-				
-				
-				Iterator<Double> Iiter = CurveI.iterator();
-				while (Iiter.hasNext()) {
-
-					Double s = Iiter.next();
-
-					intensitydelta+=s;
-
-				}
-
-				intensitydelta/=CurveI.size();
-				
-				
-
-				
-				Iterator<Double> ISeciter = CurveISec.iterator();
-				while (ISeciter.hasNext()) {
-
-					Double s = ISeciter.next();
-
-					intensitySecdelta+=s;
-
-				}
-
-				intensitySecdelta/=CurveISec.size();
-				
-				
-				
-			
-			Curvatureobject newobject = new Curvatureobject((float) frequdelta, frequdeltaperi, intensitydelta, intensitySecdelta, 
-					localCurvature.get(index).Label, localCurvature.get(index).cord, localCurvature.get(index).t,
-					localCurvature.get(index).z);
-		
-			RefinedCurvature.add(newobject);
-		}
-
-		Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> Refinedresultpair = new ValuePair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>(
-				resultpair.getA(), RefinedCurvature);
-
-		parent.localCurvature = Refinedresultpair.getB();
-		parent.functions.addAll(Refinedresultpair.getA());
-		// Make intersection object here
-
-		Intersectionobject currentobject = PointExtractor.CurvaturetoIntersection(parent.localCurvature,
-				parent.functions, centerpoint, parent.smoothing);
-
-		 resultlineroi.addAll(currentobject.linerois);
-		 resultcurvelineroi.addAll(currentobject.curvelinerois);
-		 resultallcurvelineroi.addAll(currentobject.curvealllinerois);
-		 segmentrect.addAll(currentobject.segmentrect);
-
-		 Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi, resultcurvelineroi, segmentrect,
-					z, t, celllabel, true);
-		 
-		parent.ZTRois.put(uniqueID, currentroiobject);
-		
-		DisplayAuto.Display(parent);
-		AllCurveintersection.add(currentobject);
-
-		parent.AlllocalCurvature.add(parent.localCurvature);
+	
+	
 
 	}
 

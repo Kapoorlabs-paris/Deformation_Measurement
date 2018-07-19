@@ -92,7 +92,6 @@ import listeners.DisplayListener;
 import listeners.DoSmoothingListener;
 import listeners.DrawListener;
 import listeners.ETrackFilenameListener;
-import listeners.ETrackIniSearchListener;
 import listeners.ETrackMaxSearchListener;
 import listeners.GaussRadiusListener;
 import listeners.HighProbListener;
@@ -308,15 +307,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public double outsidedistance = 0;
 	public int[] boundarypoint;
 	public int[] midpoint;
-	public float initialSearchradius = 10000;
-	public float maxSearchradius = 10000;
+	public float maxSearchradius = 100;
 	public float maxSearchradiusS = 10;
-	public int missedframes = 2000;
-	public int initialSearchradiusInit = 10;
+	public int missedframes = 200;
 	public CostFunction<Intersectionobject, Intersectionobject> UserchosenCostFunction;
 	public CostFunction<Segmentobject, Segmentobject> UserchosenSegmentCostFunction;
-	public float initialSearchradiusMin = 1;
-	public float initialSearchradiusMax = initialSearchradius;
 	public float alphaMin = 0;
 	public float alphaMax = 1;
 	public float betaMin = 0;
@@ -350,6 +345,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public MouseAdapter mouseadapter;
 	public ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>> superReducedSamples;
 	public ArrayList<Curvatureobject> localCurvature, interpolatedlocalCurvature;
+	public ArrayList<Segmentobject> localSegment;
 	public ArrayList<RegressionFunction> functions ;
 	public ArrayList<ArrayList<Curvatureobject>> AlllocalCurvature;
 	public int[] Clickedpoints;
@@ -465,11 +461,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		return lowprob;
 
 	}
-	public void setInitialsearchradius(final float value) {
-		initialSearchradius = value;
-		initialSearchradiusInit = computeScrollbarPositionFromValue(initialSearchradius, initialSearchradiusMin,
-				initialSearchradiusMax, scrollbarSize);
-	}
+
 
 	public void setInitialmaxsearchradius(final float value) {
 		maxSearchradius = value;
@@ -477,11 +469,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				scrollbarSize);
 	}
 
-	public double getInitialsearchradius(final float value) {
 
-		return initialSearchradius;
-
-	}
 	public void setInitialAlpha(final float value) {
 		alpha = value;
 		alphaInit = computeScrollbarPositionFromValue(alpha, alphaMin, alphaMax, scrollbarSize);
@@ -787,6 +775,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		redoing = false;
 		localCurvature = new ArrayList<Curvatureobject>();
+		localSegment = new ArrayList<Segmentobject>();
 		functions = new ArrayList<RegressionFunction>();
 		interpolatedlocalCurvature = new ArrayList<Curvatureobject>();
 		AlllocalCurvature = new ArrayList<ArrayList<Curvatureobject>>();
@@ -839,7 +828,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			thirdDimensionSize = (int) originalimg.dimension(2);
 			AutostartTime = thirdDimension;
 			AutoendTime = thirdDimensionSize;
-			maxframegap = thirdDimensionSize;
+			maxframegap =  thirdDimensionSize / 4;
 		}
 
 		if (ndims == 4) {
@@ -1539,7 +1528,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Label insideText = new Label("Cutoff distance  = " + insideCutoff,
 			Label.CENTER);
 	public Label degreeText = new Label("Choose degree of polynomial");
-	public Label incrementText = new Label("Ref point seperation (px)");
+	public Label incrementText = new Label("Adjust reference point (px)");
 	public Label secdegreeText = new Label("Choose degree of second polynomial");
 	public Label minInlierText = new Label(mininlierstring +  " = " + minNumInliers,
 			Label.CENTER);
@@ -1618,7 +1607,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
    
 	Label maxSearchText = new Label(maxSearchstring + " = " + maxSearchInit, Label.CENTER);
 	Label maxSearchTextS = new Label(maxSearchstring + " = " + maxSearchInit, Label.CENTER);
-	Label iniSearchText = new Label(initialSearchstring + " = " + initialSearchradiusInit, Label.CENTER);
 	Label alphaText = new Label(alphastring + " = " + alphaInit, Label.CENTER);
 	Label betaText = new Label(betastring + " = " + betaInit, Label.CENTER);
 	public Label smoothText = new Label("Ratio of functions = " + smoothing,
@@ -1738,15 +1726,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		inputLabelIter = new Label("Max. attempts to find ellipses");
 		final JScrollBar maxSearchS = new JScrollBar(Scrollbar.HORIZONTAL, maxSearchInit, 10, 0, 10 + scrollbarSize);
-		final JScrollBar initialSearchS = new JScrollBar(Scrollbar.HORIZONTAL, initialSearchradiusInit, 10, 0,
-				10 + scrollbarSize);
+	
 		final JScrollBar alphaS = new JScrollBar(Scrollbar.HORIZONTAL, alphaInit, 10, 0, 10 + scrollbarSize);
 		final JScrollBar betaS = new JScrollBar(Scrollbar.HORIZONTAL, betaInit, 10, 0, 10 + scrollbarSize);
 
 		maxSearchradius = utility.ScrollbarUtils.computeValueFromScrollbarPosition(maxSearchS.getValue(),
 				maxSearchradiusMin, maxSearchradiusMax, scrollbarSize);
-		initialSearchradius = utility.ScrollbarUtils.computeValueFromScrollbarPosition(initialSearchS.getValue(),
-				initialSearchradiusMin, initialSearchradiusMax, scrollbarSize);
+
 		alpha = utility.ScrollbarUtils.computeValueFromScrollbarPosition(alphaS.getValue(), alphaMin, alphaMax,
 				scrollbarSize);
 		beta = utility.ScrollbarUtils.computeValueFromScrollbarPosition(betaS.getValue(), betaMin, betaMax,
@@ -1949,105 +1935,104 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 		if (curvesupermode || curveautomode ) {
 			
-		if(polynomialfits) {
-			
-			Angleselect.add(degreeText, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.EAST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			if(polynomialfits) {
+				
+				Angleselect.add(degreeText, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.EAST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(degreeField, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0, GridBagConstraints.EAST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-			
-			Angleselect.add(secdegreeText, new GridBagConstraints(5, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				Angleselect.add(degreeField, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0, GridBagConstraints.EAST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
+				Angleselect.add(secdegreeText, new GridBagConstraints(5, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(secdegreeField, new GridBagConstraints(5, 1, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-			
-			Angleselect.add(smoothText, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				Angleselect.add(secdegreeField, new GridBagConstraints(5, 1, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
+				Angleselect.add(smoothText, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(smoothslider, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-			
-			
-		//	Angleselect.add(incrementText, new GridBagConstraints(5, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
-		//			GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				Angleselect.add(smoothslider, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
+				
+				Angleselect.add(incrementText, new GridBagConstraints(5, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-		//	Angleselect.add(incrementField, new GridBagConstraints(5, 3, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
-		//			GridBagConstraints.HORIZONTAL, insets, 0, 0));
-			
-			
-			SliderBoxGUI combocutoff = new SliderBoxGUI(insidestring, insideslider, cutoffField, insideText, scrollbarSize, insideCutoff, insideCutoffmax);
-			
-			Angleselect.add(combocutoff.BuildDisplay(), new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				Angleselect.add(incrementField, new GridBagConstraints(5, 3, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
+				
+				SliderBoxGUI combocutoff = new SliderBoxGUI(insidestring, insideslider, cutoffField, insideText, scrollbarSize, insideCutoff, insideCutoffmax);
+				
+				Angleselect.add(combocutoff.BuildDisplay(), new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider, minInlierField, minInlierText, scrollbarSize, minNumInliers, minNumInliersmax);
+				SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider, minInlierField, minInlierText, scrollbarSize, minNumInliers, minNumInliersmax);
+				
+				Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(5, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
+				
+				Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
+				Angleselect.setBorder(circletools);
+				Angleselect.setPreferredSize(new Dimension(SizeX , SizeY ));
+				panelFirst.add(Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			}
 			
-			Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(5, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-			
-			
-			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-			
-			Angleselect.setBorder(circletools);
-			Angleselect.setPreferredSize(new Dimension(SizeX , SizeY ));
-			panelFirst.add(Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-		}
-		
-		if(circlefits) {
-			
-			
-		//	Angleselect.add(incrementText, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
-		//			GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			if(circlefits) {
+				
+				
+				Angleselect.add(incrementText, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-		//	Angleselect.add(incrementField, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0,
-		//			GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				Angleselect.add(incrementField, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0,
+						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(maxsizeText, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0,
-					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				Angleselect.add(maxsizeText, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0,
+						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(maxSizeField, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0,
-					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				Angleselect.add(maxSizeField, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0,
+						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider,
-					minInlierField, minInlierText, scrollbarSize, minNumInliers,
-					minNumInliersmax);
+				SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider,
+						minInlierField, minInlierText, scrollbarSize, minNumInliers,
+						minNumInliersmax);
 
-			Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0,
-					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-			Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0,
-					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0,
+						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0,
+						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(displayCircle, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0,
-					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-			Angleselect.add(displaySegments, new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0,
-					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				Angleselect.add(displayCircle, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0,
+						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				Angleselect.add(displaySegments, new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0,
+						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(minsizeText, new GridBagConstraints(3, 2, 3, 1, 0.0, 0.0,
-					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				Angleselect.add(minsizeText, new GridBagConstraints(3, 2, 3, 1, 0.0, 0.0,
+						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			Angleselect.add(minSizeField, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0,
-					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				Angleselect.add(minSizeField, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0,
+						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
+				Angleselect.add(ClearDisplay, new GridBagConstraints(3, 4, 3, 1, 0.0, 0.0,
+						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
+				Angleselect.add(SelectRim, new GridBagConstraints(3, 5, 3, 1, 0.0, 0.0,
+						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
 			
-			Angleselect.add(ClearDisplay, new GridBagConstraints(3, 4, 3, 1, 0.0, 0.0,
-					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-			
-			Angleselect.add(SelectRim, new GridBagConstraints(3, 5, 3, 1, 0.0, 0.0,
-					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-			
-		
-			Angleselect.setPreferredSize(new Dimension(SizeX , SizeY ));
+				Angleselect.setPreferredSize(new Dimension(SizeX , SizeY ));
 
-			Angleselect.setBorder(circletools);
-			panelFirst.add(Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0,
-					GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-			
-			
-		}
-		
+				Angleselect.setBorder(circletools);
+				panelFirst.add(Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0,
+						GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
+				
+			}
 		
 		
 		}
@@ -2118,10 +2103,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		
 	  if(!curveautomode && !curvesupermode) {
-		KalmanPanel.add(iniSearchText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-		KalmanPanel.add(initialSearchS, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 
 
 		KalmanPanel.add(lostlabel, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
@@ -2311,8 +2292,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		ManualCompute.addActionListener(new ManualInterventionListener(this));
 		maxSearchS.addAdjustmentListener(new ETrackMaxSearchListener(this, maxSearchText, maxSearchstring,
 				maxSearchradiusMin, maxSearchradiusMax, scrollbarSize, maxSearchS));
-		initialSearchS.addAdjustmentListener(new ETrackIniSearchListener(this, iniSearchText, initialSearchstring,
-				initialSearchradiusMin, initialSearchradiusMax, scrollbarSize, initialSearchS));
+	
 		panelFirst.setVisible(true);
 		cl.show(panelCont, "1");
 		Cardframe.add(panelCont, "Center");

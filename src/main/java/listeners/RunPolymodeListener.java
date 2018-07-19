@@ -52,11 +52,11 @@ public class RunPolymodeListener implements ItemListener {
 					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 			
 			
-		//	parent.Angleselect.add(parent.incrementText, new GridBagConstraints(5, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
-		//			GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
+			parent.Angleselect.add(parent.incrementText, new GridBagConstraints(5, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 
-		//	parent.Angleselect.add(parent.incrementField, new GridBagConstraints(5, 3, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
-		//			GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
+			parent.Angleselect.add(parent.incrementField, new GridBagConstraints(5, 3, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 			
 			
 			SliderBoxGUI combocutoff = new SliderBoxGUI(parent.insidestring, parent.insideslider, parent.cutoffField, parent.insideText, parent.scrollbarSize, parent.insideCutoff, parent.insideCutoffmax);
@@ -72,7 +72,7 @@ public class RunPolymodeListener implements ItemListener {
 			
 			parent.Angleselect.add(parent.Curvaturebutton, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
-			
+
 			parent.Angleselect.setBorder(parent.circletools);
 			parent.Angleselect.setPreferredSize(new Dimension(parent.SizeX , parent.SizeY ));
 			parent.panelFirst.add(parent.Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,

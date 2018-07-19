@@ -114,7 +114,6 @@ public class KFSegmentsearch implements SegmentIntersectionTracker {
 
 		// Max cost to nucleate KFs.
 		final double maxInitialCost = initialsearchRadius * initialsearchRadius;
-
 		/*
 		 * Estimate Kalman filter variances.
 		 *
@@ -122,10 +121,10 @@ public class KFSegmentsearch implements SegmentIntersectionTracker {
 		 * position and velocity. The two are linked: if we need a large search radius,
 		 * then the fluoctuations over predicted states are large.
 		 */
-		final double positionProcessStd = maxsearchRadius / 2d;
-		final double velocityProcessStd = maxsearchRadius / 2d;
+		final double positionProcessStd = maxsearchRadius ;
+		final double velocityProcessStd = maxsearchRadius ;
 
-		double meanSpotRadius = 1d;
+		double meanSpotRadius = 10d;
 
 		final double positionMeasurementStd = meanSpotRadius / 1d;
 
@@ -244,11 +243,9 @@ public class KFSegmentsearch implements SegmentIntersectionTracker {
 						// Add edge to the graph.
 						graph.addVertex(source);
 						graph.addVertex(target);
-						if(source.hashCode()!=target.hashCode()) {
 						final DefaultWeightedEdge edge = graph.addEdge(source, target);
 						final double cost = assignmentCosts.get(source);
 						graph.setEdgeWeight(edge, cost);
-						}
 					}
 
 				}
@@ -289,13 +286,13 @@ public class KFSegmentsearch implements SegmentIntersectionTracker {
 	}
 
 	private static final double[] MeasureBlob(final Segmentobject target) {
-		final double[] location = new double[] { target.getDoublePosition(0), target.getDoublePosition(1) };
+		final double[] location = new double[] { target.centralpoint.getDoublePosition(0), target.centralpoint.getDoublePosition(1) };
 		return location;
 	}
 
 	private static final double[] estimateInitialState(final Segmentobject first,
 			final Segmentobject second) {
-		final double[] xp = new double[] { second.getDoublePosition(0), second.getDoublePosition(1),
+		final double[] xp = new double[] { second.centralpoint.getDoublePosition(0), second.centralpoint.getDoublePosition(1),
 				second.diffTo(first, 0), second.diffTo(first, 1) };
 		return xp;
 	}
@@ -312,8 +309,8 @@ public class KFSegmentsearch implements SegmentIntersectionTracker {
 
 		@Override
 		public double linkingCost(final ComparableRealPoint state, final Segmentobject Blob) {
-			final double dx = state.getDoublePosition(0) - Blob.getDoublePosition(0);
-			final double dy = state.getDoublePosition(1) - Blob.getDoublePosition(1);
+			final double dx = state.getDoublePosition(0) - Blob.centralpoint.getDoublePosition(0);
+			final double dy = state.getDoublePosition(1) - Blob.centralpoint.getDoublePosition(1);
 			return dx * dx + dy * dy + Double.MIN_NORMAL;
 			// So that it's never 0
 

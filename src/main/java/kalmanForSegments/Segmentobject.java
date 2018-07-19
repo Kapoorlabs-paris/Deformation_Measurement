@@ -14,7 +14,10 @@ public class Segmentobject extends AbstractEuclideanSpace implements RealLocaliz
 	
 	public final int cellLabel;
 	
-	public final int time;
+	
+	public final int z;
+	
+	public final int t;
 	
 	public final int segmentLabel;
 	
@@ -39,7 +42,9 @@ public class Segmentobject extends AbstractEuclideanSpace implements RealLocaliz
 	private final ConcurrentHashMap< String, Double > features = new ConcurrentHashMap< String, Double >();
 	
 	
-	public Segmentobject (final ArrayList<double[]> sublist, final RealLocalizable centralpoint, final double Curvature, final double IntensityA, final double IntensityB, final double Perimeter,  final int segmentLabel, final int cellLabel, final int time) {
+	public Segmentobject (final ArrayList<double[]> sublist, final RealLocalizable centralpoint, 
+			final double Curvature, final double IntensityA, final double IntensityB, final double Perimeter,  
+			final int segmentLabel, final int cellLabel, final int z, final int t) {
 		
 		
 		super(3);
@@ -54,7 +59,9 @@ public class Segmentobject extends AbstractEuclideanSpace implements RealLocaliz
 		
 		this.ID = IDcounter.incrementAndGet();
 		
-		this.time = time;
+		this.t = t;
+		
+		this.z = z;
 		
 		this.Curvature = Curvature;
 		
@@ -72,7 +79,8 @@ public class Segmentobject extends AbstractEuclideanSpace implements RealLocaliz
 		
 		putFeature(Celllabel , (double)cellLabel);
 		putFeature(Segmentlabel , (double)segmentLabel);
-		putFeature(Time , (double)time);
+		putFeature(Time , (double)t);
+		putFeature(Z , (double)z);
 		putFeature(XPOSITION , centralpoint.getDoublePosition(0));
 		putFeature(YPOSITION , centralpoint.getDoublePosition(1));
 		
@@ -99,6 +107,8 @@ public class Segmentobject extends AbstractEuclideanSpace implements RealLocaliz
 	
 	/** The name of the blob Y position feature. */
 	public static final String Time = "Time";
+	/** The name of the blob Y position feature. */
+	public static final String Z = "Z";
 
 	/** The name of the frame feature. */
 	public static final String Segmentlabel = "Segmentlabel";
@@ -151,7 +161,7 @@ public class Segmentobject extends AbstractEuclideanSpace implements RealLocaliz
 	public double diffTo(final Segmentobject target, int n) {
 
 		final double thisBloblocation = centralpoint.getDoublePosition(n);
-		final double targetBloblocation = target.getDoublePosition(n);
+		final double targetBloblocation = target.centralpoint.getDoublePosition(n);
 		return thisBloblocation - targetBloblocation;
 	}
 	/**

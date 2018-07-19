@@ -192,10 +192,10 @@ public class TimeDirectedSegmentNeighborIndex extends NeighborIndex< Segmentobje
 		{
 			final List< Segmentobject > nl = Graphs.neighborListOf( graph, v );
 			final List< Segmentobject > bnl = new ArrayList< Segmentobject >();
-			final int ts = v.getFeature( Segmentobject.Time ).intValue();
+			final int ts = v.getFeature( Segmentobject.Z ).intValue();
 			for ( final Segmentobject Segmentobject : nl )
 			{
-				final int tt = Segmentobject.getFeature( Segmentobject.Time ).intValue();
+				final int tt = Segmentobject.getFeature( Segmentobject.Z ).intValue();
 				if ( tt < ts )
 				{
 					bnl.add( Segmentobject );
@@ -214,10 +214,10 @@ public class TimeDirectedSegmentNeighborIndex extends NeighborIndex< Segmentobje
 		{
 			final List< Segmentobject > nl = Graphs.neighborListOf( graph, v );
 			final List< Segmentobject > bnl = new ArrayList< Segmentobject >();
-			final int ts = v.getFeature( Segmentobject.Time ).intValue();
+			final int ts = v.getFeature( Segmentobject.Z ).intValue();
 			for ( final Segmentobject Segmentobject : nl )
 			{
-				final int tt = Segmentobject.getFeature( Segmentobject.Time ).intValue();
+				final int tt = Segmentobject.getFeature( Segmentobject.Z ).intValue();
 				if ( tt > ts )
 				{
 					bnl.add( Segmentobject );

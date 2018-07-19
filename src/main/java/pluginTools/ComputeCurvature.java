@@ -262,6 +262,16 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 								}
 
 							});
+							
+							Collections.sort(sortedList, new Comparator<Intersectionobject>() {
+
+								@Override
+								public int compare(Intersectionobject o1, Intersectionobject o2) {
+
+									return o1.z - o2.z;
+								}
+
+							});
 
 							Iterator<Intersectionobject> iterator = sortedList.iterator();
 
@@ -333,13 +343,23 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 							public int compare(final Pair<String, Segmentobject> A,
 									final Pair<String, Segmentobject> B) {
 
-								return A.getB().time - B.getB().time;
+								return A.getB().z - B.getB().z;
 
 							}
 
 						};
 
-						
+						Comparator<Pair<String, Segmentobject>> FourthDimcomparison = new Comparator<Pair<String, Segmentobject>>() {
+
+							@Override
+							public int compare(final Pair<String, Segmentobject> A,
+									final Pair<String, Segmentobject> B) {
+
+								return A.getB().t - B.getB().t;
+
+							}
+
+						};
 
 						model.setName(id, "Track" + id + entryZ.getKey());
 
@@ -370,7 +390,16 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 								@Override
 								public int compare(Segmentobject o1, Segmentobject o2) {
 
-									return o1.time - o2.time;
+									return o1.t - o2.t;
+								}
+
+							});
+							Collections.sort(sortedList, new Comparator<Segmentobject>() {
+
+								@Override
+								public int compare(Segmentobject o1, Segmentobject o2) {
+
+									return o1.z - o2.z;
 								}
 
 							});
@@ -384,13 +413,13 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 								if (count == 0)
 									bestangle = currentangle;
 								if (parent.originalimg.numDimensions() > 3) {
-									if (currentangle.time == parent.fourthDimension) {
+									if (currentangle.t == parent.fourthDimension) {
 										bestangle = currentangle;
 										count++;
 										break;
 									}
 								} else if (parent.originalimg.numDimensions() <= 3) {
-									if (currentangle.time == parent.thirdDimension) {
+									if (currentangle.z == parent.thirdDimension) {
 										bestangle = currentangle;
 										count++;
 										break;

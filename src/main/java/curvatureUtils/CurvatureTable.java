@@ -87,26 +87,26 @@ public class CurvatureTable {
 		for (Pair<String, Segmentobject> currentangle : parent.SegmentTracklist) {
 			if (parent.originalimg.numDimensions() > 3) {
 
-				Pair<Integer, Double> timelist = new ValuePair<Integer, Double>(currentangle.getB().time,
+				Pair<Integer, Double> timelist = new ValuePair<Integer, Double>(currentangle.getB().t,
 						currentangle.getB().Curvature);
 				parent.resultSegCurvature
 						.add(new ValuePair<String, Pair<Integer, Double>>(currentangle.getA(), timelist));
-				parent.HashresultSegCurvature.put(currentangle.getB().time, currentangle.getB().Curvature);
+				parent.HashresultSegCurvature.put(currentangle.getB().t, currentangle.getB().Curvature);
 
 			
 
 				Pair<Integer, ArrayList<double[]>> linelist = new ValuePair<Integer, ArrayList<double[]>>(
-						currentangle.getB().time, currentangle.getB().sublist);
+						currentangle.getB().t, currentangle.getB().sublist);
 				parent.resultCurvature
 						.add(new ValuePair<String, Pair<Integer, ArrayList<double[]>>>(currentangle.getA(), linelist));
 
-				parent.HashresultCurvature.put(currentangle.getB().time, currentangle.getB().sublist);
+				parent.HashresultCurvature.put(currentangle.getB().t, currentangle.getB().sublist);
 
-				Pair<Integer, Double> IntensityAtimelist = new ValuePair<Integer, Double>(currentangle.getB().time,
+				Pair<Integer, Double> IntensityAtimelist = new ValuePair<Integer, Double>(currentangle.getB().t,
 						currentangle.getB().IntensityA);
-				Pair<Integer, Double> IntensityBtimelist = new ValuePair<Integer, Double>(currentangle.getB().time,
+				Pair<Integer, Double> IntensityBtimelist = new ValuePair<Integer, Double>(currentangle.getB().t,
 						currentangle.getB().IntensityB);
-				Pair<Integer, Double> Perimetertimelist = new ValuePair<Integer, Double>(currentangle.getB().time,
+				Pair<Integer, Double> Perimetertimelist = new ValuePair<Integer, Double>(currentangle.getB().t,
 						currentangle.getB().Perimeter);
 
 				parent.resultSegIntensityA
@@ -116,31 +116,31 @@ public class CurvatureTable {
 				parent.resultSegPerimeter
 						.add(new ValuePair<String, Pair<Integer, Double>>(currentangle.getA(), Perimetertimelist));
 
-				parent.HashresultSegIntensityA.put(currentangle.getB().time, currentangle.getB().IntensityA);
-				parent.HashresultSegIntensityB.put(currentangle.getB().time, currentangle.getB().IntensityB);
-				parent.HashresultSegPerimeter.put(currentangle.getB().time, currentangle.getB().Perimeter);
+				parent.HashresultSegIntensityA.put(currentangle.getB().t, currentangle.getB().IntensityA);
+				parent.HashresultSegIntensityB.put(currentangle.getB().t, currentangle.getB().IntensityB);
+				parent.HashresultSegPerimeter.put(currentangle.getB().t, currentangle.getB().Perimeter);
 			} else {
 
-				Pair<Integer, Double> timelist = new ValuePair<Integer, Double>(currentangle.getB().time,
+				Pair<Integer, Double> timelist = new ValuePair<Integer, Double>(currentangle.getB().z,
 						currentangle.getB().Curvature);
 				parent.resultSegCurvature
 						.add(new ValuePair<String, Pair<Integer, Double>>(currentangle.getA(), timelist));
-				parent.HashresultSegCurvature.put(currentangle.getB().time, currentangle.getB().Curvature);
+				parent.HashresultSegCurvature.put(currentangle.getB().z, currentangle.getB().Curvature);
 
 			
 
 				Pair<Integer, ArrayList<double[]>> linelist = new ValuePair<Integer, ArrayList<double[]>>(
-						currentangle.getB().time, currentangle.getB().sublist);
+						currentangle.getB().z, currentangle.getB().sublist);
 				parent.resultCurvature
 				.add(new ValuePair<String, Pair<Integer, ArrayList<double[]>>>(currentangle.getA(), linelist));
 
-		        parent.HashresultCurvature.put(currentangle.getB().time, currentangle.getB().sublist);
+		        parent.HashresultCurvature.put(currentangle.getB().z, currentangle.getB().sublist);
 
-				Pair<Integer, Double> IntensityAtimelist = new ValuePair<Integer, Double>(currentangle.getB().time,
+				Pair<Integer, Double> IntensityAtimelist = new ValuePair<Integer, Double>(currentangle.getB().z,
 						currentangle.getB().IntensityA);
-				Pair<Integer, Double> IntensityBtimelist = new ValuePair<Integer, Double>(currentangle.getB().time,
+				Pair<Integer, Double> IntensityBtimelist = new ValuePair<Integer, Double>(currentangle.getB().z,
 						currentangle.getB().IntensityB);
-				Pair<Integer, Double> Perimetertimelist = new ValuePair<Integer, Double>(currentangle.getB().time,
+				Pair<Integer, Double> Perimetertimelist = new ValuePair<Integer, Double>(currentangle.getB().z,
 						currentangle.getB().Perimeter);
 
 				parent.resultSegIntensityA
@@ -150,8 +150,8 @@ public class CurvatureTable {
 				parent.resultSegPerimeter
 						.add(new ValuePair<String, Pair<Integer, Double>>(currentangle.getA(), Perimetertimelist));
 
-				parent.HashresultSegIntensityA.put(currentangle.getB().time, currentangle.getB().IntensityA);
-				parent.HashresultSegIntensityB.put(currentangle.getB().time, currentangle.getB().IntensityB);
+				parent.HashresultSegIntensityA.put(currentangle.getB().z, currentangle.getB().IntensityA);
+				parent.HashresultSegIntensityB.put(currentangle.getB().z, currentangle.getB().IntensityB);
 
 			}
 
@@ -171,7 +171,7 @@ public class CurvatureTable {
 			parent.table.getModel().setValueAt(entry.getKey(), parent.row, 0);
 			parent.table.getModel().setValueAt(f.format(currentangle.centralpoint.getDoublePosition(0)), parent.row, 1);
 			parent.table.getModel().setValueAt(f.format(currentangle.centralpoint.getDoublePosition(1)), parent.row, 2);
-			parent.table.getModel().setValueAt(f.format(currentangle.time), parent.row, 3);
+			parent.table.getModel().setValueAt(f.format(currentangle.z), parent.row, 3);
 			parent.table.getModel().setValueAt(f.format(currentangle.Curvature), parent.row, 4);
 
 			parent.row++;

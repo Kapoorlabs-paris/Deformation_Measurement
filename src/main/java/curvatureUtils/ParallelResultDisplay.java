@@ -84,7 +84,7 @@ public class ParallelResultDisplay {
 
 			double lambda = (cursor.getFloatPosition(0) - probImg.min(0)) / (probImg.max(0) - probImg.min(0));
 			if (cursor.getDoublePosition(1) >= probImg.max(1) - probImg.min(1) - 5)
-				cursor.get().setReal(minCurvature + lambda * (maxCurvature - minCurvature));
+				cursor.get().setReal(0 + lambda * (2 * maxCurvature - 0));
 
 		}
 

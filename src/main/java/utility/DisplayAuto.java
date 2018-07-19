@@ -40,7 +40,7 @@ public class DisplayAuto {
 				Roiobject currentobject = entry.getValue();
 				if (currentobject.fourthDimension == parent.fourthDimension
 						&& currentobject.thirdDimension == parent.thirdDimension) {
-					if (currentobject.resultroi != null) {
+					if (currentobject.resultroi != null && parent.displayIntermediate) {
 						for (int i = 0; i < currentobject.resultroi.size(); ++i) {
 
 							EllipseRoi ellipse = currentobject.resultroi.get(i);
@@ -73,7 +73,7 @@ public class DisplayAuto {
 
 					}
 					
-					if (currentobject.resultcurvelineroi != null) {
+					if (currentobject.resultcurvelineroi != null ) {
 						for (int i = 0; i < currentobject.resultcurvelineroi.size(); ++i) {
 
 							OvalRoi ellipse = currentobject.resultcurvelineroi.get(i);
