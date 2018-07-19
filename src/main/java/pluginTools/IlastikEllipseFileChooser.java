@@ -8,8 +8,13 @@ import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Label;
+import java.awt.TextComponent;
+import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
 import java.io.File;
 
 import javax.swing.JButton;
@@ -61,6 +66,10 @@ public class IlastikEllipseFileChooser extends JPanel {
 	  public JPanel Panelfileoriginal = new JPanel();
 	  public JPanel Paneldone = new JPanel();
 	  public JPanel Panelrun = new JPanel();
+	  public JPanel Microscope = new JPanel();
+	  public Label inputLabelcalX, wavesize;
+	  public double calibration, Wavesize;
+	  public TextField inputFieldcalX, Fieldwavesize;
 	  public final Insets insets = new Insets(10, 0, 0, 0);
 	  public final GridBagLayout layout = new GridBagLayout();
 	  public final GridBagConstraints c = new GridBagConstraints();
@@ -96,21 +105,29 @@ public class IlastikEllipseFileChooser extends JPanel {
 				new EmptyBorder(c.insets));
 	  public Border runmodetrack = new CompoundBorder(new TitledBorder("Runmode"),
 				new EmptyBorder(c.insets));
-	  
+	  public 	Border microborder = new CompoundBorder(new TitledBorder("Microscope parameters"), new EmptyBorder(c.insets));
 	  public IlastikEllipseFileChooser() {
 		
 		
 		  
 		   panelFirst.setLayout(layout);
 		   Panelfile.setLayout(layout);
-		   
+		   Microscope.setLayout(layout);
 		   Panelsuperfile.setLayout(layout);
 		   Panelfileoriginal.setLayout(layout);
 		   Paneldone.setLayout(layout);
 		   Panelrun.setLayout(layout);
 	       CardLayout cl = new CardLayout();
+	       inputLabelcalX = new Label("Pixel calibration in X,Y (um)");
+	       inputFieldcalX = new TextField(5);
+		   inputFieldcalX.setText("1");
 			
-			panelCont.setLayout(cl);
+		   wavesize = new Label("Size of Wavefront (um)");
+		   Fieldwavesize = new TextField(5);
+		   Fieldwavesize.setText("1");
+		   
+		   
+		    panelCont.setLayout(cl);
 			panelCont.add(panelFirst, "1");
 			imageNames = WindowManager.getImageTitles();
 			blankimageNames = new String[imageNames.length + 1];
@@ -123,7 +140,8 @@ public class IlastikEllipseFileChooser extends JPanel {
 			ChooseoriginalImage = new JComboBox<String>(blankimageNames);
 			ChoosesecImage = new JComboBox<String>(blankimageNames);
 			ChoosesuperImage = new JComboBox<String>(blankimageNames);
-			
+			calibration = Float.parseFloat(inputFieldcalX.getText());
+			Wavesize = Float.parseFloat(Fieldwavesize.getText());
 			Panelrun.add(Gosuper, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		//	Panelrun.add(Gosimple, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
@@ -161,13 +179,27 @@ public class IlastikEllipseFileChooser extends JPanel {
 			panelFirst.add(Panelsuperfile, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
+			Microscope.add(inputLabelcalX, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
+			Microscope.add(inputFieldcalX, new GridBagConstraints(0, 1, 3, 1, 0.1, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.RELATIVE, insets, 0, 0));
+			
+			Microscope.add(wavesize, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			
+			Microscope.add(Fieldwavesize, new GridBagConstraints(3, 1, 3, 1, 0.1, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.RELATIVE, insets, 0, 0));
+			
+			Microscope.setBorder(microborder);
+			panelFirst.add(Microscope, new GridBagConstraints(0, 4, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			
 			
 			Paneldone.add(Done, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Paneldone.setBorder(LoadEtrack);
-			panelFirst.add(Paneldone, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			panelFirst.add(Paneldone, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			
@@ -175,6 +207,8 @@ public class IlastikEllipseFileChooser extends JPanel {
 			ChooseImage.addActionListener(new ChooseProbMap(this, ChooseImage));
 			ChooseoriginalImage.addActionListener(new ChooseOrigMap(this, ChooseoriginalImage));
 			ChoosesecImage.addActionListener(new ChoosesecOrigMap(this, ChoosesecImage));
+			inputFieldcalX.addTextListener(new CalXListener());
+			Fieldwavesize.addTextListener(new WaveListener());
 			Done.addActionListener(new DoneListener());
 			ChoosesuperImage.addActionListener(new ChoosesuperProbMap(this, ChoosesuperImage));
 			
@@ -193,7 +227,40 @@ public class IlastikEllipseFileChooser extends JPanel {
 			Cardframe.pack();
 			Cardframe.setVisible(true);
 		}
+	  public class CalXListener implements TextListener {
+
+			
 		
+			
+			@Override
+			public void textValueChanged(TextEvent e) {
+				final TextComponent tc = (TextComponent)e.getSource();
+			    String s = tc.getText();
+			   
+			    if (s.length() > 0)
+				calibration = Float.parseFloat(s);
+				
+			}
+			
+	  }
+	  
+	  public class WaveListener implements TextListener {
+
+			
+			
+			
+			@Override
+			public void textValueChanged(TextEvent e) {
+				final TextComponent tc = (TextComponent)e.getSource();
+			    String s = tc.getText();
+			   
+			    if (s.length() > 0)
+				Wavesize = Float.parseFloat(s);
+				
+			}
+			
+	  }
+	  
 	  public class DoneListener implements ActionListener{
 		  
 		  
