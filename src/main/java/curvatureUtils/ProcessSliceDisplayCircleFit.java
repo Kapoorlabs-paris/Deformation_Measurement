@@ -8,7 +8,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 
-public class ProcessSliceDisplay implements Runnable {
+public class ProcessSliceDisplayCircleFit implements Runnable {
 
 	
 	final RandomAccessibleInterval<FloatType> OutputSlice;
@@ -16,7 +16,7 @@ public class ProcessSliceDisplay implements Runnable {
     final double maxIntensity;
     final ArrayList<double[]> TimeCurveList;
 	
-	public ProcessSliceDisplay(final RandomAccessibleInterval<FloatType> OutputSlice,  ArrayList<double[]> TimeCurveList, double minIntensity, double maxIntensity  ) {
+	public ProcessSliceDisplayCircleFit(final RandomAccessibleInterval<FloatType> OutputSlice,  ArrayList<double[]> TimeCurveList, double minIntensity, double maxIntensity  ) {
 		
 		
 		this.OutputSlice = OutputSlice;

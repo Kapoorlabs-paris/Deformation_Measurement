@@ -71,10 +71,9 @@ public class TrackingFunctions {
 
 		}
 
-		KFSegmentsearch Tsearch = new KFSegmentsearch(coll, parent.UserchosenSegmentCostFunction,
-				parent.maxSearchradius  ,
-				parent.maxSearchradius , 
-				parent.maxframegap, parent.AccountedZ, parent.jpb);
+		KFSegmentsearch Tsearch = new KFSegmentsearch(coll, parent.UserchosenSegmentCostFunction,parent.originalimgbefore.dimension(0) * parent.originalimgbefore.dimension(1)  ,
+				parent.originalimgbefore.dimension(0) * parent.originalimgbefore.dimension(1) , 
+				parent.thirdDimensionSize,  parent.AccountedZ, parent.jpb);
 		Tsearch.process();
 		SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge> simplegraph = Tsearch.getResult();
 

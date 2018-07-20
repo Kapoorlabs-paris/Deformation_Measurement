@@ -8,11 +8,11 @@ import java.awt.event.ItemListener;
 import comboSliderTextbox.SliderBoxGUI;
 import pluginTools.InteractiveSimpleEllipseFit;
 
-public class RunCirclemodeListener implements ItemListener {
+public class RunCelltrackCirclemodeListener implements ItemListener {
 
 	InteractiveSimpleEllipseFit parent;
 
-	public RunCirclemodeListener(InteractiveSimpleEllipseFit parent) {
+	public RunCelltrackCirclemodeListener(InteractiveSimpleEllipseFit parent) {
 		this.parent = parent;
 	}
 
@@ -22,18 +22,18 @@ public class RunCirclemodeListener implements ItemListener {
 		if (arg0.getStateChange() == ItemEvent.DESELECTED) {
 
 			parent.circlefits = false;
-			parent.celltrackcirclefits = false;
+			parent.celltrackcirclefits = true;
 			parent.pixelcelltrackcirclefits = false;
 			
 			
-			parent.polynomialfits = true;
+			parent.polynomialfits = false;
 
 		}
 
 		else if (arg0.getStateChange() == ItemEvent.SELECTED) {
 
-			parent.circlefits = true;
-			parent.celltrackcirclefits = false;
+			parent.circlefits = false;
+			parent.celltrackcirclefits = true;
 			parent.pixelcelltrackcirclefits = false;
 			parent.polynomialfits = false;
 

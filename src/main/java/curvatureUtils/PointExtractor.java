@@ -136,7 +136,6 @@ public class PointExtractor {
 
 		Intersectionobject currentIntersection = new Intersectionobject(mean, linelist, resultlineroi, resultcurveline,
 				resultallcurveline, ellipsecurveline, resultrectangle, perimeter, celllabel, t, z);
-
 		return currentIntersection;
 
 	}

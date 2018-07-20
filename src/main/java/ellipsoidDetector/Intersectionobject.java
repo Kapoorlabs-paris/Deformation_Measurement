@@ -39,7 +39,7 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 	public static AtomicInteger IDcounter = new AtomicInteger( -1 );
 	
 	public Intersectionobject(final double[] Intersectionpoint, final double angle, final Pair<Ellipsoid, Ellipsoid> ellipsepair, 
-			final ArrayList<Line> linerois,  final int t, final int z) {
+			final ArrayList<Line> linerois,  final int z, final int t) {
 		super(3);
 		this.Intersectionpoint = Intersectionpoint;
 		this.angle = angle;
@@ -74,7 +74,7 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 	 * 
 	 */
 	public Intersectionobject(final double[] Intersectionpoint, ArrayList<double[]> linelist, final ArrayList<Line> linerois, final ArrayList<OvalRoi> curvelinerois,
-			final ArrayList<OvalRoi> curvealllinerois, final ArrayList<EllipseRoi> ellipselinerois,final ArrayList<Roi> segmentrect, final double perimeter,  final int celllabel, final int t, final int z) {
+			final ArrayList<OvalRoi> curvealllinerois, final ArrayList<EllipseRoi> ellipselinerois,final ArrayList<Roi> segmentrect, final double perimeter,  final int celllabel, final int z, final int t) {
 		super(3);
 		this.Intersectionpoint = Intersectionpoint;
 		this.angle = 0;

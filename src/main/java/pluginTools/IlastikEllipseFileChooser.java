@@ -124,7 +124,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 			
 		   wavesize = new Label("Size of Wavefront (um)");
 		   Fieldwavesize = new TextField(5);
-		   Fieldwavesize.setText("1");
+		   Fieldwavesize.setText("10");
 		   
 		   
 		    panelCont.setLayout(cl);

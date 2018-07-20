@@ -116,6 +116,7 @@ import listeners.RListener;
 import listeners.RedoListener;
 import listeners.RimSelectionListener;
 import listeners.RoiListener;
+import listeners.RunCelltrackCirclemodeListener;
 import listeners.RunCirclemodeListener;
 import listeners.RunPolymodeListener;
 import listeners.SaveAllListener;
@@ -206,6 +207,15 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	public boolean polynomialfits = false;
 	public boolean circlefits = true;
+	public boolean celltrackcirclefits = false;
+	public boolean pixelcelltrackcirclefits = false;
+	
+	
+	
+	
+	
+	
+	
 	public boolean redoing;
 	public boolean showWater = false;
 	public float lowprobmax = 1.0f;
@@ -1223,6 +1233,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 								fourthDimension, fourthDimensionSize);
 						
 					
+					
+					
 			}
 			
 			if(supermode || curvesupermode || automode || curveautomode  )
@@ -1617,7 +1629,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	CheckboxGroup curvaturemode = new CheckboxGroup();
 	
 	final Checkbox polymode = new Checkbox("Polynomial Fits", curvaturemode, polynomialfits);
-	final Checkbox circlemode = new Checkbox("Circle Fits", curvaturemode, circlefits);
+	
+	
+	
+	final Checkbox circlemode = new Checkbox("Track Segment Circle Fits", curvaturemode, circlefits);
+	final Checkbox celltrackcirclemode = new Checkbox("Track Cell Circle Fits", curvaturemode, celltrackcirclefits);
+	final Checkbox Pixelcelltrackcirclemode = new Checkbox("Track Cell Pixel Circle Fits", curvaturemode, pixelcelltrackcirclefits);
+	
+	
 	public boolean displayIntermediate = true;
 	public boolean displayIntermediateBox = true;
 	public Checkbox displayCircle = new Checkbox("Display Intermediate Circles", displayIntermediate);
@@ -1891,17 +1910,17 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			Probselect.add(endT, new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 	
-			/*
+			
 			if(curvesupermode) {
 				
-				Probselect.add(polymode, new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				Probselect.add(celltrackcirclemode, new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, GridBagConstraints.EAST,
 						GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 				Probselect.add(circlemode, new GridBagConstraints(2, 8, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 				
 				
 			}
-	*/
+	
 		//	Probselect.setPreferredSize(new Dimension(SizeX, SizeY));
 			Probselect.setBorder(probborder);
 
@@ -2266,6 +2285,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		
 		circlemode.addItemListener(new RunCirclemodeListener(this));
+		celltrackcirclemode.addItemListener(new RunCelltrackCirclemodeListener(this));
+	//	Pixelcelltrackcirclemode.addItemListener(new RunPixelCelltrackCirclemodeListener(this));
+		
 		polymode.addItemListener(new RunPolymodeListener(this));
 		
 		gaussfield.addTextListener(new GaussRadiusListener(this));

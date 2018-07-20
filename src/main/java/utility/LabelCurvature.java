@@ -108,12 +108,19 @@ public class LabelCurvature implements Runnable {
 	}
 
 	
+	
+
+	
 	private void SliderLoop(
 			List<RealLocalizable> Ordered, RealLocalizable centerpoint) {
 
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
 		// Get the sparse list of points
 		HashMap<Integer, RegressionCurveSegment> Bestdelta = new HashMap<Integer, RegressionCurveSegment>();
+		
+
+		
+		
 		int count = 0;
 		if (parent.minNumInliers > truths.size())
 			parent.minNumInliers = truths.size();
@@ -153,6 +160,7 @@ public class LabelCurvature implements Runnable {
 			count++;
 
 			parent.localCurvature = resultpair.Curvelist;
+			
 			parent.functions = resultpair.functionlist;
 			parent.localSegment = resultpair.Seglist;
 			// Make intersection object here
@@ -224,9 +232,13 @@ public class LabelCurvature implements Runnable {
 		Pair<RealLocalizable, List<RealLocalizable>> Ordered = Listordereing.getOrderedList(truths);
 
 		// Start sliding
+		
 		 SliderLoop(
 				Ordered.getB(), centerpoint);
 
+			
+		
+		
 		parent.Refcord = Ordered.getA();
 	
 	

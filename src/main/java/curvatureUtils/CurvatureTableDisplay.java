@@ -74,7 +74,7 @@ public class CurvatureTableDisplay {
 
 		}
 		ParallelResultDisplay display = new ParallelResultDisplay(parent, currentresultCurv);
-		display.ResultDisplay();
+		display.ResultDisplayCircleTrackFit();
 
 		parent.jFreeChartFrame.dispose();
 		parent.jFreeChartFrame.repaint();
@@ -200,7 +200,7 @@ public class CurvatureTableDisplay {
 
 		}
 		ParallelResultDisplay display = new ParallelResultDisplay(parent, AllcurrentresultCurv);
-		display.ResultDisplay();
+		display.ResultDisplayCircleFit();
 
 	}
 

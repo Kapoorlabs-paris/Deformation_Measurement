@@ -58,7 +58,6 @@ public class CurvatureFunction {
 
 		ArrayList<Curvatureobject> curveobject = new ArrayList<Curvatureobject>();
 		
-
 		ArrayList<double[]> totalinterpolatedCurvature = new ArrayList<double[]>();
 
 
@@ -80,7 +79,6 @@ public class CurvatureFunction {
 		
 		
 		for (Map.Entry<Integer, List<RealLocalizable>> entry : parent.Listmap.entrySet()) {
- 
 			List<RealLocalizable> sublist = entry.getValue();
 			Pair<RegressionFunction, ArrayList<double[]>> localfunction = FitonList(parent, centerpoint, sublist,
 					smoothing, maxError, minNumInliers, degree, secdegree, Label, z);
@@ -467,7 +465,7 @@ public class CurvatureFunction {
 		Pair<RegressionFunction, ArrayList<double[]>> finalfunctionandList;
 
 		// Circle fits
-		if (parent.circlefits) {
+		if (parent.circlefits || parent.celltrackcirclefits || parent.pixelcelltrackcirclefits) {
 			finalfunctionandList = RansacEllipseBlock(list, centerpoint, 2);
 
 		}
