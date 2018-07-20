@@ -63,7 +63,7 @@ public class ProcessSliceDisplayCircleTrackFit implements Runnable {
 					
 					double lambda = (cursor.getFloatPosition(0) - OutputSlice.min(0) ) / (OutputSlice.max(0) - OutputSlice.min(0));
 					if(cursor.getDoublePosition(1) >= OutputSlice.max(1) - OutputSlice.min(1) - 5)
-						cursor.get().setReal( minIntensity + lambda * (maxIntensity - minIntensity));
+						cursor.get().setReal( 0 + lambda * (2 * maxIntensity - 0));
 
 				
 
