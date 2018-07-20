@@ -4,6 +4,7 @@ package listeners;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 
 import javax.swing.JComboBox;
 
@@ -39,8 +40,9 @@ public class ChooseOrigMap implements ActionListener {
 	    	 	parent.impOrig = parent.impA;
 			
 			
+			parent.calibration = parent.impOrig.getCalibration().pixelWidth;
 			
-		
+			parent.inputFieldcalX.setText(String.valueOf(new DecimalFormat("#.###").format(parent.calibration)));
 	}
 	
 	

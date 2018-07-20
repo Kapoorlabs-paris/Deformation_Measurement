@@ -84,6 +84,7 @@ import listeners.BlackBorderListener;
 import listeners.ClearDisplayListener;
 import listeners.ClearforManual;
 import listeners.ColorListener;
+import listeners.CurrentCurvatureListener;
 import listeners.CurvatureListener;
 import listeners.DegreeListener;
 import listeners.DeltasepListener;
@@ -302,7 +303,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int ndims;
 	public boolean usedefaultrim = true;
 	public MouseListener ovalml;
-	
+	public final double calibration;
+	public final double wavesize;
 	public double insidedistance = 0;
 	public double outsidedistance = 0;
 	public int[] boundarypoint;
@@ -521,14 +523,15 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
-		
+		this.calibration = 0;
+		this.wavesize = 0;
 		this.automode = false;
 		this.supermode = false;
 		this.curveautomode = false;
 		this.curvesupermode = false;
 	}
 
-	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, File file) {
+	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, final double calibration, final double wavesize, File file) {
 		this.inputfile = file;
 		this.inputdirectory = file.getParent();
 		this.originalimg = originalimg;
@@ -540,12 +543,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(decimalplaces);
 		this.automode = false;
+		this.calibration = calibration;
+		this.wavesize = wavesize;
 		this.supermode = false;
 		this.curveautomode = false;
 		this.curvesupermode = false;
 	}
 
-	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg) {
+	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, double calibration, double wavesize) {
 		this.inputfile = null;
 		this.inputdirectory = null;
 		this.originalimg = originalimg;
@@ -556,13 +561,15 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(decimalplaces);
+		this.calibration = calibration;
+		this.wavesize = wavesize;
 		this.automode = false;
 		this.supermode = false;
 		this.curveautomode = false;
 		this.curvesupermode = false;
 	}
 
-	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, boolean automode) {
+	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, final double calibration, final double wavesize, boolean automode) {
 		this.inputfile = null;
 		this.inputdirectory = null;
 		this.originalimg = originalimg;
@@ -573,6 +580,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(decimalplaces);
+		this.calibration = calibration;
+		this.wavesize = wavesize;
 		this.automode = automode;
 		this.supermode = false;
 		this.curveautomode = false;
@@ -581,7 +590,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
-			RandomAccessibleInterval<FloatType> originalimgbefore, boolean automode, String inputdirectory) {
+			RandomAccessibleInterval<FloatType> originalimgbefore, final double calibration, final double wavesize, boolean automode, String inputdirectory) {
 		this.inputfile = null;
 		this.inputdirectory = inputdirectory;
 		this.originalimg = originalimg;
@@ -593,6 +602,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame.setVisible(false);
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(decimalplaces);
+		this.calibration = calibration;
+		this.wavesize = wavesize;
 		this.automode = automode;
 		this.supermode = false;
 		this.curveautomode = false;
@@ -602,7 +613,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
-			RandomAccessibleInterval<FloatType> originalimgbefore, RandomAccessibleInterval<IntType> originalimgsuper,
+			RandomAccessibleInterval<FloatType> originalimgbefore, RandomAccessibleInterval<IntType> originalimgsuper, final double calibration, final double wavesize,
 			boolean automode, boolean supermode, String inputdirectory) {
 		this.inputfile = null;
 		this.inputdirectory = inputdirectory;
@@ -618,6 +629,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		nf.setMaximumFractionDigits(decimalplaces);
 		this.automode = automode;
 		this.supermode = supermode;
+		this.calibration = calibration;
+		this.wavesize = wavesize;
 		this.curveautomode = false;
 		this.curvesupermode = false;
 
@@ -625,7 +638,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	}
 	
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
-			RandomAccessibleInterval<FloatType> originalimgbefore, 
+			RandomAccessibleInterval<FloatType> originalimgbefore, final double calibration, final double wavesize,
 			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode, String inputdirectory) {
 		this.inputfile = null;
 		this.inputdirectory = inputdirectory;
@@ -659,6 +672,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(decimalplaces);
+		this.calibration = calibration;
+		this.wavesize = wavesize;
 		this.automode = automode;
 		this.supermode = supermode;
 		this.curveautomode = curveautomode;
@@ -668,6 +683,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
 			RandomAccessibleInterval<FloatType> originalimgbefore, RandomAccessibleInterval<IntType> originalimgsuper,
+			final double calibration, final double wavesize,
 			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode, String inputdirectory) {
 		
 		this.inputfile = null;
@@ -681,7 +697,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
-		
+		this.calibration = calibration;
+		this.wavesize = wavesize;
 		
 		
 		this.IntensityAdataset =  new XYSeriesCollection();
@@ -711,6 +728,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, RandomAccessibleInterval<FloatType> originalSecimg,
 			RandomAccessibleInterval<FloatType> originalimgbefore, RandomAccessibleInterval<IntType> originalimgsuper,
+			final double calibration, final double wavesize,
 			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode, String inputdirectory) {
 		
 		this.inputfile = null;
@@ -725,7 +743,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
-		
+		this.calibration = calibration;
+		this.wavesize = wavesize;
 		this.IntensityAdataset =  new XYSeriesCollection();
 		this.IntensityBdataset =  new XYSeriesCollection();
 		this.Perimeterdataset =  new XYSeriesCollection();
@@ -1503,6 +1522,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JButton DisplayRoibutton = new JButton("Display roi selection");
 	public JButton Anglebutton = new JButton("Fit Ellipses and track angles");
 	public JButton Curvaturebutton = new JButton("Measure Local Curvature");
+	public JButton CurrentCurvaturebutton = new JButton("Measure Current Curvature");
 	public JButton Savebutton = new JButton("Save Track");
 	public JButton SaveAllbutton = new JButton("Save All Tracks");
 	public JButton Redobutton = new JButton("Compute/Recompute for current view");
@@ -1968,12 +1988,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				Angleselect.add(combocutoff.BuildDisplay(), new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider, minInlierField, minInlierText, scrollbarSize, minNumInliers, minNumInliersmax);
+				//SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider, minInlierField, minInlierText, scrollbarSize, minNumInliers, minNumInliersmax);
 				
-				Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(5, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				//Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(5, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				//		GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
+				Angleselect.add(CurrentCurvaturebutton, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				
-				
 				Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				
@@ -1998,12 +2019,15 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				Angleselect.add(maxSizeField, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0,
 						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider,
-						minInlierField, minInlierText, scrollbarSize, minNumInliers,
-						minNumInliersmax);
+			//	SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider,
+			//			minInlierField, minInlierText, scrollbarSize, minNumInliers,
+			//			minNumInliersmax);
 
-				Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0,
-						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			//	Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0,
+			//			GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
+				Angleselect.add(CurrentCurvaturebutton, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0,
 						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
@@ -2256,6 +2280,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		Smoothbutton.addActionListener(new DoSmoothingListener(this));
 		displayCircle.addItemListener(new DisplayListener(this));
 		displaySegments.addItemListener(new DisplayBoxListener(this));
+		CurrentCurvaturebutton.addActionListener(new CurrentCurvatureListener(this));
 		Curvaturebutton.addActionListener(new CurvatureListener(this));
 		Anglebutton.addActionListener(new AngleListener(this));
 		startT.addTextListener(new AutoStartListener(this));

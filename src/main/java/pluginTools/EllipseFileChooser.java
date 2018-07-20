@@ -139,7 +139,7 @@ public class EllipseFileChooser extends JPanel {
 	    
 		RandomAccessibleInterval<FloatType> image = ImageJFunctions.convertFloat(impA);
 		
-		new InteractiveSimpleEllipseFit(image, chooserA.getSelectedFile()).run(null);
+		new InteractiveSimpleEllipseFit(image,0, 0, chooserA.getSelectedFile()).run(null);
 		close(parent);
 
 		
@@ -153,7 +153,7 @@ public class EllipseFileChooser extends JPanel {
 	    
 		RandomAccessibleInterval<FloatType> image = ImageJFunctions.convertFloat(impA);
 		
-		new InteractiveSimpleEllipseFit(image).run(null);
+		new InteractiveSimpleEllipseFit(image, 0, 0).run(null);
 		close(parent);
 		if(impA!=null)
         impA.close();

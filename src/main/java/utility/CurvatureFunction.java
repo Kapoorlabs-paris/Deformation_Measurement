@@ -73,14 +73,14 @@ public class CurvatureFunction {
 
 		// Make sublist, fixed size approach
 
-		MakeSegments(parent, truths, minNumInliers, Label, z);
+		MakeSegments(parent, truths, Label, z);
 
 		// Now do the fitting
 		ArrayList<Segmentobject> Allcellsegment = new ArrayList<Segmentobject>();
 		
 		
 		for (Map.Entry<Integer, List<RealLocalizable>> entry : parent.Listmap.entrySet()) {
-
+ 
 			List<RealLocalizable> sublist = entry.getValue();
 			Pair<RegressionFunction, ArrayList<double[]>> localfunction = FitonList(parent, centerpoint, sublist,
 					smoothing, maxError, minNumInliers, degree, secdegree, Label, z);
@@ -302,14 +302,16 @@ public class CurvatureFunction {
 
 	}
 
-	public void MakeSegments(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int numSeg,
+	public void MakeSegments(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, 
 			int celllabel, int time) {
 
-		int size = truths.size();
 
-		int maxpoints = Math.round (size / numSeg);
-		if (maxpoints <= 1)
-			maxpoints = 3;
+		double usersize = Math.round(parent.wavesize/ parent.calibration);
+		
+		
+		
+		if (usersize <= 1)
+			usersize = 3;
 		int segmentLabel = 1;
 
 		Iterator<RealLocalizable> iterator = truths.iterator();
@@ -326,7 +328,7 @@ public class CurvatureFunction {
 
 			count++;
 
-			if (count >= maxpoints) {
+			if (count >= usersize) {
 
 				List<RealLocalizable> copyList = CopyList(sublist);
 
@@ -338,6 +340,33 @@ public class CurvatureFunction {
 			}
 
 		}
+		
+		Iterator<RealLocalizable> iteratormore = truths.iterator();
+		// If any points remain we take care of them by overlapping with the next region a bit
+		if(sublist.size()!=0 && count > usersize / 2) {
+			
+			while(iteratormore.hasNext()) {
+				
+				RealLocalizable current = iteratormore.next();
+				
+				sublist.add(current);
+				
+				count++;
+				
+				if(count >=usersize) {
+					
+					List<RealLocalizable> copyList = CopyList(sublist);
+
+					parent.Listmap.put(segmentLabel, copyList);
+					
+					break;
+					
+				}
+				
+			}
+			
+		}
+		
 
 	}
 
