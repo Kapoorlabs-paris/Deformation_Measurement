@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import ch.qos.logback.classic.gaffer.GafferConfigurator;
 import ij.IJ;
 import ij.ImagePlus;
+import kalmanForSegments.Segmentobject;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
@@ -31,15 +32,18 @@ public class ParallelResultDisplay {
 	 */
 	final InteractiveSimpleEllipseFit parent;
 	final ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>> currentresultCurv;
+	
 
 	// Create a constructor
-	public ParallelResultDisplay(InteractiveSimpleEllipseFit parent,
-			ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>> currentresultCurv) {
+
+
+	public ParallelResultDisplay(InteractiveSimpleEllipseFit parent, ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>> currentresultCurv) {
 
 		this.parent = parent;
 		this.currentresultCurv = currentresultCurv;
 	}
-
+	
+	
 	public void ResultDisplayCircleFit() {
 
 
@@ -92,9 +96,15 @@ public class ParallelResultDisplay {
 		imp.setTitle("Curvature Result");
 		IJ.run("Fire");
 
+	
 		
-
+		
 	}
+	
+	
+	
+	
+	
 	
 	public void ResultDisplayCircleTrackFit() {
 		// set up executor service

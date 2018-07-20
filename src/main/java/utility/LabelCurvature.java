@@ -241,7 +241,9 @@ public class LabelCurvature implements Runnable {
 		
 		parent.Refcord = Ordered.getA();
 	
+		parent.AllRefcords.put(uniqueID, parent.Refcord);
 	
+		
 
 	}
 

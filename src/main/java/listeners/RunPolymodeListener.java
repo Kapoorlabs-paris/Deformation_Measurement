@@ -64,13 +64,13 @@ public class RunPolymodeListener implements ItemListener {
 			parent.Angleselect.add(combocutoff.BuildDisplay(), new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 
-		//	SliderBoxGUI combominInlier = new SliderBoxGUI(parent.mininlierstring, parent.minInlierslider, parent.minInlierField, parent.minInlierText, parent.scrollbarSize, parent.minNumInliers, parent.minNumInliersmax);
+			SliderBoxGUI combominInlier = new SliderBoxGUI(parent.mininlierstring, parent.minInlierslider, parent.minInlierField, parent.minInlierText, parent.scrollbarSize, parent.minNumInliers, parent.minNumInliersmax);
 			
-		//	parent.Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(5, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-		//			GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
-			
-			parent.Angleselect.add(parent.CurrentCurvaturebutton, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+			parent.Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(5, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
+			
+		//	parent.Angleselect.add(parent.CurrentCurvaturebutton, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+		//			GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 			parent.Angleselect.add(parent.Curvaturebutton, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 

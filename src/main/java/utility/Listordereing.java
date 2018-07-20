@@ -306,10 +306,11 @@ public class Listordereing {
 			}
 
 		}
-		//System.out.println(minobject.getDoublePosition(0) + " " + minobject.getDoublePosition(1) + "Ref cord");
 
 		return minobject;
 	}
+	
+	
 
 	/**
 	 * 

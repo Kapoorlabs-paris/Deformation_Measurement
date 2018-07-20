@@ -409,6 +409,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public boolean curveautomode;
 	public boolean curvesupermode;
 	public RealLocalizable Refcord;
+	public HashMap<String, RealLocalizable> AllRefcords;
 	public double mindistance = 200;
 	public int alphaInit = 1;
 	public int maxperi = Integer.MIN_VALUE;
@@ -807,6 +808,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		localSegment = new ArrayList<Segmentobject>();
 		functions = new ArrayList<RegressionFunction>();
 		interpolatedlocalCurvature = new ArrayList<Curvatureobject>();
+		AllRefcords = new HashMap<String, RealLocalizable>();
 		AlllocalCurvature = new ArrayList<ArrayList<Curvatureobject>>();
 		superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>>();
 		pixellist = new HashSet<Integer>();
@@ -2007,13 +2009,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				Angleselect.add(combocutoff.BuildDisplay(), new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				//SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider, minInlierField, minInlierText, scrollbarSize, minNumInliers, minNumInliersmax);
+				SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider, minInlierField, minInlierText, scrollbarSize, minNumInliers, minNumInliersmax);
 				
-				//Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(5, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-				//		GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				
-				Angleselect.add(CurrentCurvaturebutton, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(5, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
+				//Angleselect.add(CurrentCurvaturebutton, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				//		GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				
@@ -2038,15 +2040,15 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				Angleselect.add(maxSizeField, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0,
 						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-			//	SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider,
-			//			minInlierField, minInlierText, scrollbarSize, minNumInliers,
-			//			minNumInliersmax);
+				SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider,
+						minInlierField, minInlierText, scrollbarSize, minNumInliers,
+						minNumInliersmax);
 
-			//	Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0,
-			//			GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0,
+						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				
-				Angleselect.add(CurrentCurvaturebutton, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			//	Angleselect.add(CurrentCurvaturebutton, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+			//			GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0,
 						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 

@@ -3,6 +3,9 @@ package curvatureUtils;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -12,11 +15,13 @@ import org.apache.commons.math3.analysis.interpolation.BicubicSplineInterpolator
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.jfree.data.contour.DefaultContourDataset;
 
+import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Line;
 import ij.process.LUT;
+import kalmanForSegments.Segmentobject;
 import net.imagej.display.ColorTables;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
@@ -31,6 +36,7 @@ import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.ChartMaker;
 import utility.Curvatureobject;
+import utility.Listordereing;
 
 public class CurvatureTableDisplay {
 
@@ -199,10 +205,16 @@ public class CurvatureTableDisplay {
 			}
 
 		}
+		
+		
 		ParallelResultDisplay display = new ParallelResultDisplay(parent, AllcurrentresultCurv);
 		display.ResultDisplayCircleFit();
 
 	}
+	
+	
+	
+	
 
 	public static Pair<Double, Double> RangePlot(ArrayList<Curvatureobject> currentresultCurvature, int index) {
 

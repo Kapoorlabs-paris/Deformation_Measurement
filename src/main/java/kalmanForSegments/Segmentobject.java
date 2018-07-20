@@ -23,6 +23,8 @@ public class Segmentobject extends AbstractEuclideanSpace implements RealLocaliz
 	
 	public final RealLocalizable centralpoint;
 	
+	public final RealLocalizable Cellcentralpoint;
+	
 	public final double Curvature;
 	
 	public final double IntensityA;
@@ -42,7 +44,7 @@ public class Segmentobject extends AbstractEuclideanSpace implements RealLocaliz
 	private final ConcurrentHashMap< String, Double > features = new ConcurrentHashMap< String, Double >();
 	
 	
-	public Segmentobject (final ArrayList<double[]> sublist, final RealLocalizable centralpoint, 
+	public Segmentobject (final ArrayList<double[]> sublist, final RealLocalizable Cellcentralpoint,  final RealLocalizable centralpoint, 
 			final double Curvature, final double IntensityA, final double IntensityB, final double Perimeter,  
 			final int segmentLabel, final int cellLabel, final int z, final int t) {
 		
@@ -56,6 +58,8 @@ public class Segmentobject extends AbstractEuclideanSpace implements RealLocaliz
 		this.sublist = sublist;
 		
 		this.centralpoint = centralpoint;
+		
+		this.Cellcentralpoint = Cellcentralpoint;
 		
 		this.ID = IDcounter.incrementAndGet();
 		

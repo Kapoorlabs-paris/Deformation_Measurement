@@ -210,7 +210,6 @@ public class Computeinwater {
 			String uniqueID = Integer.toString(z) + Integer.toString(t);
 			parent.ALLIntersections.put(uniqueID, AllCurveintersection);
 			
-			System.out.println(uniqueID + " " + parent.ALLIntersections.size() + " " + parent.AllCurveintersection.size());
 			parent.ALLSegments.put(uniqueID, AllCurveSegments);
 			Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi, resultcurvelineroi,Segmentrect, z, t, -1, true);
 			parent.ZTRois.put(uniqueID, currentroiobject);

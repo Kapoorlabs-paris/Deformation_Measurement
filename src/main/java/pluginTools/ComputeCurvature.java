@@ -32,6 +32,7 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 
 import costMatrix.PixelratiowDistCostFunction;
 import curvatureUtils.DisplaySelected;
+import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import hashMapSorter.SortTimeorZ;
 import ij.ImageStack;
@@ -44,7 +45,12 @@ import kalmanTracker.KFsearch;
 import kalmanTracker.NearestNeighbourSearch;
 import kalmanTracker.NearestNeighbourSearch2D;
 import kalmanTracker.TrackModel;
+import net.imglib2.RandomAccess;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.RealLocalizable;
+import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
@@ -86,6 +92,43 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	}
 
+	public void MakeKymo(Pair<Integer, HashMap<String, ArrayList<Segmentobject>>> sortedMappair, long[] size) {
+		
+		RandomAccessibleInterval<FloatType> CurvatureKymo = new ArrayImgFactory<FloatType>().create(size,  new FloatType());  
+		
+		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
+		
+		RandomAccess<FloatType> ranac = CurvatureKymo.randomAccess();
+		
+		while (itZ.hasNext()) {
+
+			
+			Map.Entry<String, Integer> entry = itZ.next();
+			String currentID = entry.getKey();
+		
+			int time = entry.getValue();
+			
+			
+			ArrayList<Segmentobject> currentlist = sortedMappair.getB().get(currentID);
+				
+			ranac.setPosition(time, 0);
+			
+			int count = 0;
+			
+			for (Segmentobject currentobject: currentlist) {
+				
+				ranac.setPosition(count, 1);
+				ranac.get().setReal(currentobject.Curvature);
+				count++;
+				System.out.println(currentobject.z + "time unit"  + " " + currentobject.centralpoint.getDoublePosition(0) + " " + currentobject.centralpoint.getDoublePosition(1) + "Check if arranging points correct");
+			}
+				
+			}
+			
+		ImageJFunctions.show(CurvatureKymo).setTitle("Curvature Kymo");
+			
+		}
+		
 	@Override
 	protected void done() {
 
@@ -141,6 +184,10 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			parent.parentgraphZ.put(Integer.toString(1), simplegraph);
 
+			
+			
+			
+			
 			 CurvedLineage();
 			}
 			
@@ -150,10 +197,15 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge> simpleSegmentgraph = track.TrackSegmentfunction();
 
 			parent.parentgraphSegZ.put(Integer.toString(1), simpleSegmentgraph);
-
-			
-
 			CurvedSegmentLineage();
+			Pair<Integer, HashMap<String, ArrayList<Segmentobject>>> sortedMappair = GetZTTrackList(parent);
+			int TimedimensionKymo = parent.AccountedZ.size() + 1;
+			int Xkymodimension = sortedMappair.getA();
+
+			long[] size = new long[] { TimedimensionKymo, Xkymodimension };
+
+			MakeKymo(sortedMappair, size);
+		
 			
 			}
 		}
@@ -400,7 +452,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 							}
 
 						};
-
+					
 						model.setName(id, "Track" + id + entryZ.getKey());
 
 						final HashSet<Segmentobject> Angleset = model.trackSegmentobjects(id);
@@ -414,7 +466,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 									Integer.toString(id) + entryZ.getKey(), currentangle));
 						}
 						Collections.sort(parent.SegmentTracklist, ThirdDimcomparison);
-					
 
 					}
 
@@ -482,5 +533,83 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		}
 
 	}
+public static Pair<Integer, HashMap<String, ArrayList<Segmentobject>>> GetZTTrackList(final InteractiveSimpleEllipseFit parent) {
+		
+		
+		
+		
+		int maxCurveDim = 0;
+		
+		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
+		HashMap<String, ArrayList<Segmentobject>> sortedMap =  new HashMap<String, ArrayList<Segmentobject>>();
+		while (itZ.hasNext()) {
+			ArrayList<Segmentobject> currentframeobject = new ArrayList<Segmentobject>();
+			Map.Entry<String, Integer> entry = itZ.next();
+			
+			int z = entry.getValue();
+			
+			for (Pair<String, Segmentobject> currentangle : parent.SegmentTracklist) {
+				
+				if(currentangle.getB().z == z){
+					
+					currentframeobject.add(currentangle.getB());
+					
+				}
+				
+				
+			}
+			
+			if(currentframeobject.size() > maxCurveDim ) {
+				
+				maxCurveDim = currentframeobject.size();
+				
+			}
+			
+			String UniqueID = entry.getKey();
+			
+			ArrayList<Segmentobject> segobject = 	OrderCords(parent, currentframeobject, UniqueID);
+			
+			sortedMap.put(UniqueID, segobject);
+			
+		}
+		
+		
 
+		return new ValuePair<Integer, HashMap<String, ArrayList<Segmentobject>>> (maxCurveDim, sortedMap);
+		
+	}
+	
+	
+	/**
+	 * 
+	 * A special sorting scheme for segments to be sorted based on closeness to the refence point
+	 * 
+	 * @param parent
+	 * @param segobject
+	 * @param t
+	 * @param z
+	 * @return
+	 */
+	public static  ArrayList<Segmentobject> OrderCords(final InteractiveSimpleEllipseFit parent,  final ArrayList<Segmentobject> segobject, String UniqueID) {
+		
+		
+		Comparator<Segmentobject> CordComparison = new Comparator<Segmentobject>() {
+
+			@Override
+			public int compare(final  Segmentobject A,
+					final Segmentobject B) {
+
+				RealLocalizable refcord = parent.AllRefcords.get(UniqueID+Integer.toString(parent.fourthDimension));
+				return (int)Math.round(Distance.DistanceSqrt(refcord, B.centralpoint)- Distance.DistanceSqrt(refcord, A.centralpoint) );
+
+			}
+
+		};
+		Collections.sort(segobject, CordComparison);
+	
+		
+		
+		return segobject;
+		
+	}
 }

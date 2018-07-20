@@ -72,7 +72,7 @@ public class CurvatureFunction {
 
 		// Make sublist, fixed size approach
 
-		MakeSegments(parent, truths, Label, z);
+		MakeSegments(parent, truths, minNumInliers, Label, z);
 
 		// Now do the fitting
 		ArrayList<Segmentobject> Allcellsegment = new ArrayList<Segmentobject>();
@@ -102,7 +102,7 @@ public class CurvatureFunction {
 				curvelist.add(new double[] {current.getDoublePosition(0) , current.getDoublePosition(1), Curvature, IntensityA, IntensityB});
 			}
 			
-			Segmentobject cellsegment = new Segmentobject(curvelist, Cord, Curvature, IntensityA, IntensityB, SegPeri, entry.getKey(), Label,
+			Segmentobject cellsegment = new Segmentobject(curvelist, centerpoint, Cord, Curvature, IntensityA, IntensityB, SegPeri, entry.getKey(), Label,
 					z, t);
 
 			
@@ -300,16 +300,16 @@ public class CurvatureFunction {
 
 	}
 
-	public void MakeSegments(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, 
+	public void MakeSegments(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int numSeg,
 			int celllabel, int time) {
 
 
-		double usersize = Math.round(parent.wavesize/ parent.calibration);
-		
-		
-		
-		if (usersize <= 1)
-			usersize = 3;
+		int size = truths.size();
+
+		int maxpoints = size / numSeg;
+		if (maxpoints <= 1)
+			maxpoints = 3;
+	
 		int segmentLabel = 1;
 
 		Iterator<RealLocalizable> iterator = truths.iterator();
@@ -326,7 +326,7 @@ public class CurvatureFunction {
 
 			count++;
 
-			if (count >= usersize) {
+			if (count >= maxpoints) {
 
 				List<RealLocalizable> copyList = CopyList(sublist);
 
@@ -339,31 +339,8 @@ public class CurvatureFunction {
 
 		}
 		
-		Iterator<RealLocalizable> iteratormore = truths.iterator();
 		// If any points remain we take care of them by overlapping with the next region a bit
-		if(sublist.size()!=0 && count > usersize / 2) {
-			
-			while(iteratormore.hasNext()) {
-				
-				RealLocalizable current = iteratormore.next();
-				
-				sublist.add(current);
-				
-				count++;
-				
-				if(count >=usersize) {
-					
-					List<RealLocalizable> copyList = CopyList(sublist);
-
-					parent.Listmap.put(segmentLabel, copyList);
-					
-					break;
-					
-				}
-				
-			}
-			
-		}
+	
 		
 
 	}

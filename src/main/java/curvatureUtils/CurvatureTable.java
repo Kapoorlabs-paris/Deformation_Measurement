@@ -120,7 +120,7 @@ public class CurvatureTable {
 				parent.HashresultSegIntensityB.put(currentangle.getB().t, currentangle.getB().IntensityB);
 				parent.HashresultSegPerimeter.put(currentangle.getB().t, currentangle.getB().Perimeter);
 			} else {
-
+				
 				Pair<Integer, Double> timelist = new ValuePair<Integer, Double>(currentangle.getB().z,
 						currentangle.getB().Curvature);
 				parent.resultSegCurvature
