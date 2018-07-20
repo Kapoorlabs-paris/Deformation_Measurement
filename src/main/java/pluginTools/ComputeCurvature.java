@@ -92,43 +92,43 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	}
 
-	public void MakeKymo(Pair<Integer, HashMap<String, ArrayList<Segmentobject>>> sortedMappair, long[] size) {
-		
-		RandomAccessibleInterval<FloatType> CurvatureKymo = new ArrayImgFactory<FloatType>().create(size,  new FloatType());  
-		
+	public void MakeKymo(HashMap<String, ArrayList<Segmentobject>> sortedMappair, long[] size) {
+
+		RandomAccessibleInterval<FloatType> CurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
+				new FloatType());
+
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
-		
+
 		RandomAccess<FloatType> ranac = CurvatureKymo.randomAccess();
-		
+
 		while (itZ.hasNext()) {
 
-			
 			Map.Entry<String, Integer> entry = itZ.next();
 			String currentID = entry.getKey();
-		
+
 			int time = entry.getValue();
-			
-			
-			ArrayList<Segmentobject> currentlist = sortedMappair.getB().get(currentID);
-				
+
+			ArrayList<Segmentobject> currentlist = sortedMappair.get(currentID);
+
 			ranac.setPosition(time, 0);
-			
+
 			int count = 0;
-			
-			for (Segmentobject currentobject: currentlist) {
-				
+
+			for (Segmentobject currentobject : currentlist) {
+
 				ranac.setPosition(count, 1);
 				ranac.get().setReal(currentobject.Curvature);
 				count++;
-				System.out.println(currentobject.z + "time unit"  + " " + currentobject.centralpoint.getDoublePosition(0) + " " + currentobject.centralpoint.getDoublePosition(1) + "Check if arranging points correct");
+				System.out.println(currentobject.z + "time unit" + " " + currentobject.centralpoint.getDoublePosition(0)
+						+ " " + currentobject.centralpoint.getDoublePosition(1) + "Check if arranging points correct");
 			}
-				
-			}
-			
-		ImageJFunctions.show(CurvatureKymo).setTitle("Curvature Kymo");
-			
+
 		}
-		
+
+		ImageJFunctions.show(CurvatureKymo).setTitle("Curvature Kymo");
+
+	}
+
 	@Override
 	protected void done() {
 
@@ -152,61 +152,64 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 				int z = itZ.next().getValue();
 
-				if(parent.celltrackcirclefits) {
-					
-				SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
+				if (parent.celltrackcirclefits) {
 
-				parent.parentgraphZ.put(Integer.toString(z), simplegraph);
-				
-				CurvedLineage();
-				
+					SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
+
+					parent.parentgraphZ.put(Integer.toString(z), simplegraph);
+
+					CurvedLineage();
+
 				}
-				if(parent.circlefits){
-				
-				SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge> simpleSegmentgraph = track.TrackSegmentfunction();
+				if (parent.circlefits) {
 
-				parent.parentgraphSegZ.put(Integer.toString(z), simpleSegmentgraph);
-				
-				CurvedSegmentLineage();
+					SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge> simpleSegmentgraph = track
+							.TrackSegmentfunction();
+
+					parent.parentgraphSegZ.put(Integer.toString(z), simpleSegmentgraph);
+
+					CurvedSegmentLineage();
 				}
 			}
 
-			
-
-			
 		}
 
 		else {
-			
-			if(parent.celltrackcirclefits) {
-				
-			SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
 
-			parent.parentgraphZ.put(Integer.toString(1), simplegraph);
+			if (parent.celltrackcirclefits) {
 
-			
-			
-			
-			
-			 CurvedLineage();
+				SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
+
+				parent.parentgraphZ.put(Integer.toString(1), simplegraph);
+
+				CurvedLineage();
 			}
-			
-			if(parent.circlefits){
+
+			if (parent.circlefits) {
+
+				SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge> simpleSegmentgraph = track
+						.TrackSegmentfunction();
+
+				parent.parentgraphSegZ.put(Integer.toString(1), simpleSegmentgraph);
+				CurvedSegmentLineage();
+				Pair<HashMap<Integer, Integer>, HashMap<String, ArrayList<Segmentobject>>> sortedMappair = GetZTTrackList(parent);
+				int TimedimensionKymo = parent.AccountedZ.size() + 1;
+				HashMap<Integer, Integer> idmap = sortedMappair.getA();
 				
-			
-			SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge> simpleSegmentgraph = track.TrackSegmentfunction();
 
-			parent.parentgraphSegZ.put(Integer.toString(1), simpleSegmentgraph);
-			CurvedSegmentLineage();
-			Pair<Integer, HashMap<String, ArrayList<Segmentobject>>> sortedMappair = GetZTTrackList(parent);
-			int TimedimensionKymo = parent.AccountedZ.size() + 1;
-			int Xkymodimension = sortedMappair.getA();
+				Iterator<Map.Entry<Integer, Integer>> it = idmap.entrySet().iterator();
+				while(it.hasNext()) {
+				
+					Map.Entry<Integer, Integer> mapentry = it.next();
+					int id = mapentry.getKey();
+					
+				int Xkymodimension = mapentry.getValue();
 
-			long[] size = new long[] { TimedimensionKymo, Xkymodimension };
+				long[] size = new long[] { TimedimensionKymo, Xkymodimension };
 
-			MakeKymo(sortedMappair, size);
-		
-			
+				MakeKymo(sortedMappair.getB(), size);
+
+				}
 			}
 		}
 
@@ -223,19 +226,18 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 	public void CurvedLineage() {
 
 		if (parent.ndims < 3) {
-			if(parent.circlefits) {
-				
-			DisplaySelected.mark(parent);
-			DisplaySelected.select(parent);
+			if (parent.circlefits) {
+
+				DisplaySelected.mark(parent);
+				DisplaySelected.select(parent);
 			}
-			
-			if(parent.celltrackcirclefits || parent.pixelcelltrackcirclefits) {
+
+			if (parent.celltrackcirclefits || parent.pixelcelltrackcirclefits) {
 				DisplaySelected.markAll(parent);
 				DisplaySelected.selectAll(parent);
-				
-				
+
 			}
-			
+
 			for (ArrayList<Curvatureobject> local : parent.AlllocalCurvature) {
 				Iterator<Curvatureobject> iterator = local.iterator();
 
@@ -343,7 +345,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 								}
 
 							});
-							
+
 							Collections.sort(sortedList, new Comparator<Intersectionobject>() {
 
 								@Override
@@ -393,18 +395,17 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 	}
 
 	public void CurvedSegmentLineage() {
-		if(parent.circlefits) {
+		if (parent.circlefits) {
 			DisplaySelected.mark(parent);
 			DisplaySelected.select(parent);
-			}
-			
-			if(parent.celltrackcirclefits || parent.pixelcelltrackcirclefits) {
-				
-				DisplaySelected.markAll(parent);
-				DisplaySelected.selectAll(parent);
-				
-				
-			}
+		}
+
+		if (parent.celltrackcirclefits || parent.pixelcelltrackcirclefits) {
+
+			DisplaySelected.markAll(parent);
+			DisplaySelected.selectAll(parent);
+
+		}
 		if (parent.ndims >= 3) {
 
 			for (Map.Entry<String, SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge>> entryZ : parent.parentgraphSegZ
@@ -452,7 +453,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 							}
 
 						};
-					
+
 						model.setName(id, "Track" + id + entryZ.getKey());
 
 						final HashSet<Segmentobject> Angleset = model.trackSegmentobjects(id);
@@ -471,7 +472,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 					for (int id = minid; id <= maxid; ++id) {
 						Segmentobject bestangle = null;
-						
+
 						if (model.trackSegmentobjects(id) != null) {
 							List<Segmentobject> sortedList = new ArrayList<Segmentobject>(
 									model.trackSegmentobjects(id));
@@ -533,56 +534,71 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		}
 
 	}
-public static Pair<Integer, HashMap<String, ArrayList<Segmentobject>>> GetZTTrackList(final InteractiveSimpleEllipseFit parent) {
-		
-		
-		
-		
+
+	public static Pair<HashMap<Integer, Integer>, HashMap<String, ArrayList<Segmentobject>>> GetZTTrackList(
+			final InteractiveSimpleEllipseFit parent) {
+
 		int maxCurveDim = 0;
-		
+
+		HashMap<Integer, Integer> maxidcurve = new HashMap<Integer, Integer>();
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
-		HashMap<String, ArrayList<Segmentobject>> sortedMap =  new HashMap<String, ArrayList<Segmentobject>>();
+		HashMap<String,ArrayList<Segmentobject>> sortedMap = new HashMap<String, ArrayList<Segmentobject>>();
 		while (itZ.hasNext()) {
 			ArrayList<Segmentobject> currentframeobject = new ArrayList<Segmentobject>();
 			Map.Entry<String, Integer> entry = itZ.next();
-			
+
 			int z = entry.getValue();
 			
+			
+			int minid = Integer.MAX_VALUE;
+			int maxid = Integer.MIN_VALUE;
+
+			
+
+		
 			for (Pair<String, Segmentobject> currentangle : parent.SegmentTracklist) {
-				
-				if(currentangle.getB().z == z){
-					
+
+				if (currentangle.getB().z == z) {
+
 					currentframeobject.add(currentangle.getB());
-					
+
 				}
 				
-				
-			}
-			
-			if(currentframeobject.size() > maxCurveDim ) {
-				
-				maxCurveDim = currentframeobject.size();
-				
-			}
-			
-			String UniqueID = entry.getKey();
-			
-			ArrayList<Segmentobject> segobject = 	OrderCords(parent, currentframeobject, UniqueID);
-			
-			sortedMap.put(UniqueID, segobject);
-			
-		}
-		
-		
+				for (final Segmentobject Allsegments : currentframeobject) {
 
-		return new ValuePair<Integer, HashMap<String, ArrayList<Segmentobject>>> (maxCurveDim, sortedMap);
-		
+					if (Allsegments.cellLabel > maxid)
+						maxid = Allsegments.cellLabel;
+
+					if (Allsegments.cellLabel < minid)
+						minid = Allsegments.cellLabel;
+
+				}
+
+				for(int id = minid; id<=maxid; ++id) {
+
+			if (currentframeobject.size() > maxCurveDim) {
+
+				maxCurveDim = currentframeobject.size();
+
+			}
+
+			String UniqueID = entry.getKey();
+
+			ArrayList<Segmentobject> segobject = OrderCords(parent, currentframeobject, UniqueID);
+			sortedMap.put(UniqueID, segobject);
+			maxidcurve.put(id, maxCurveDim);
+
+		}
+			}
+		}
+		return new ValuePair<HashMap<Integer, Integer>, HashMap<String,  ArrayList<Segmentobject>>>(maxidcurve, sortedMap);
+
 	}
-	
-	
+
 	/**
 	 * 
-	 * A special sorting scheme for segments to be sorted based on closeness to the refence point
+	 * A special sorting scheme for segments to be sorted based on closeness to the
+	 * refence point
 	 * 
 	 * @param parent
 	 * @param segobject
@@ -590,26 +606,24 @@ public static Pair<Integer, HashMap<String, ArrayList<Segmentobject>>> GetZTTrac
 	 * @param z
 	 * @return
 	 */
-	public static  ArrayList<Segmentobject> OrderCords(final InteractiveSimpleEllipseFit parent,  final ArrayList<Segmentobject> segobject, String UniqueID) {
-		
-		
+	public static ArrayList<Segmentobject> OrderCords(final InteractiveSimpleEllipseFit parent,
+			final ArrayList<Segmentobject> segobject, String UniqueID) {
+
 		Comparator<Segmentobject> CordComparison = new Comparator<Segmentobject>() {
 
 			@Override
-			public int compare(final  Segmentobject A,
-					final Segmentobject B) {
+			public int compare(final Segmentobject A, final Segmentobject B) {
 
-				RealLocalizable refcord = parent.AllRefcords.get(UniqueID+Integer.toString(parent.fourthDimension));
-				return (int)Math.round(Distance.DistanceSqrt(refcord, B.centralpoint)- Distance.DistanceSqrt(refcord, A.centralpoint) );
+				RealLocalizable refcord = parent.AllRefcords.get(UniqueID + Integer.toString(parent.fourthDimension));
+				return (int) Math.round(Distance.DistanceSqrt(refcord, B.centralpoint)
+						- Distance.DistanceSqrt(refcord, A.centralpoint));
 
 			}
 
 		};
 		Collections.sort(segobject, CordComparison);
-	
-		
-		
+
 		return segobject;
-		
+
 	}
 }
