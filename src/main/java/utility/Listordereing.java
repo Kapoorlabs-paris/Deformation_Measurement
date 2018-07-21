@@ -394,7 +394,7 @@ public class Listordereing {
 
 			Segmentobject currentpair = iter.next();
 
-			if (Math.abs(currentpair.centralpoint.getDoublePosition(0) - meanCord.getDoublePosition(0)) <= 10 && currentpair.centralpoint.getDoublePosition(0) < minVal)  {
+			if (currentpair.centralpoint.getDoublePosition(0) < minVal)  {
 
 				minobject = currentpair;
 				minVal = currentpair.centralpoint.getDoublePosition(0);

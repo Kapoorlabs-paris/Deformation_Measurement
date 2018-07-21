@@ -39,12 +39,12 @@ public class ChooseOrigMap implements ActionListener {
 	    	if(parent.impOrig==null)
 	    	 	parent.impOrig = parent.impA;
 			
-			
+			if(parent.impOrig!=null) {
 			parent.calibration = parent.impOrig.getCalibration().pixelWidth;
 			
 			parent.inputFieldcalX.setText(String.valueOf(new DecimalFormat("#.###").format(parent.calibration)));
 	}
 	
-	
+	}
 	
 }

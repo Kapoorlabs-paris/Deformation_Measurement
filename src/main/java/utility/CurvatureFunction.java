@@ -52,14 +52,12 @@ public class CurvatureFunction {
 	 * @param z
 	 * @return
 	 */
-	public RegressionCurveSegment getCurvature(
-			List<RealLocalizable> truths, RealLocalizable centerpoint, double maxError, int minNumInliers, int ndims,
-			int Label, int degree, int secdegree, int z, int t) {
+	public RegressionCurveSegment getCurvature(List<RealLocalizable> truths, RealLocalizable centerpoint,
+			double maxError, int minNumInliers, int ndims, int Label, int degree, int secdegree, int z, int t) {
 
 		ArrayList<Curvatureobject> curveobject = new ArrayList<Curvatureobject>();
-		
-		ArrayList<double[]> totalinterpolatedCurvature = new ArrayList<double[]>();
 
+		ArrayList<double[]> totalinterpolatedCurvature = new ArrayList<double[]>();
 
 		ArrayList<RegressionFunction> totalfunctions = new ArrayList<RegressionFunction>();
 
@@ -76,8 +74,7 @@ public class CurvatureFunction {
 
 		// Now do the fitting
 		ArrayList<Segmentobject> Allcellsegment = new ArrayList<Segmentobject>();
-		
-		
+
 		for (Map.Entry<Integer, List<RealLocalizable>> entry : parent.Listmap.entrySet()) {
 			List<RealLocalizable> sublist = entry.getValue();
 			Pair<RegressionFunction, ArrayList<double[]>> localfunction = FitonList(parent, centerpoint, sublist,
@@ -92,27 +89,24 @@ public class CurvatureFunction {
 			double IntensityA = localfunction.getB().get(0)[4];
 			double IntensityB = localfunction.getB().get(0)[5];
 			double SegPeri = localfunction.getB().get(0)[3];
-			
+
 			Iterator<RealLocalizable> iter = sublist.iterator();
 			ArrayList<double[]> curvelist = new ArrayList<double[]>();
-			while(iter.hasNext()) {
-				
-				RealLocalizable current = iter.next();
-				
-				curvelist.add(new double[] {current.getDoublePosition(0) , current.getDoublePosition(1), Curvature, IntensityA, IntensityB});
-			}
-			
-			Segmentobject cellsegment = new Segmentobject(curvelist, centerpoint, Cord, Curvature, IntensityA, IntensityB, SegPeri, entry.getKey(), Label,
-					z, t);
+			while (iter.hasNext()) {
 
-			
+				RealLocalizable current = iter.next();
+
+				curvelist.add(new double[] { current.getDoublePosition(0), current.getDoublePosition(1), Curvature,
+						IntensityA, IntensityB });
+			}
+
+			Segmentobject cellsegment = new Segmentobject(curvelist, centerpoint, Cord, Curvature, IntensityA,
+					IntensityB, SegPeri, entry.getKey(), Label, z, t);
+
 			Allcellsegment.add(cellsegment);
-			
-		
 
 		}
-		
-		
+
 		for (int indexx = 0; indexx < totalinterpolatedCurvature.size(); ++indexx) {
 
 			Curvatureobject currentobject = new Curvatureobject(
@@ -250,7 +244,6 @@ public class CurvatureFunction {
 
 			Cordlist.add(new double[] { sublist.get(i).getDoublePosition(0), sublist.get(i).getDoublePosition(1) });
 		}
-		
 
 		Pair<RegressionFunction, ArrayList<double[]>> resultcurvature = getLocalcurvature(Cordlist, centerpoint,
 				smoothing, maxError, minNumInliers, degree, secdegree, label, time);
@@ -303,45 +296,29 @@ public class CurvatureFunction {
 	public void MakeSegments(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int numSeg,
 			int celllabel, int time) {
 
-
 		int size = truths.size();
 
 		int maxpoints = size / numSeg;
-		if (maxpoints <= 1)
-			maxpoints = 3;
-	
-		int segmentLabel = 1;
 
-		Iterator<RealLocalizable> iterator = truths.iterator();
+		int segmentLabel = 1;
 
 		List<RealLocalizable> sublist = new ArrayList<RealLocalizable>();
 
-		int count = 0;
+		for (int i = 0; i <= size; i += maxpoints) {
 
-		while (iterator.hasNext()) {
+			int endindex = i + maxpoints;
 
-			RealLocalizable current = iterator.next();
-
-			sublist.add(current);
-
-			count++;
-
-			if (count >= maxpoints) {
-
-				List<RealLocalizable> copyList = CopyList(sublist);
-
-				parent.Listmap.put(segmentLabel, copyList);
-				
-				count = 0;
-				segmentLabel++;
-				sublist.clear();
-			}
-
+			if(size - i < 2 * maxpoints || endindex > truths.size() - 1)
+				endindex = truths.size() - 1;
+			
+			sublist = truths.subList(i, endindex);
+			parent.Listmap.put(segmentLabel, sublist);
+			segmentLabel++;
+			
+			if(size - i < 2 * maxpoints || endindex > truths.size() - 1)
+				break;
+			
 		}
-		
-		// If any points remain we take care of them by overlapping with the next region a bit
-	
-		
 
 	}
 
@@ -571,7 +548,7 @@ public class CurvatureFunction {
 				longnewpos[d] = (long) newpos[d];
 			net.imglib2.Point intpoint = new net.imglib2.Point(longnewpos);
 			Pair<Double, Double> Intensity = getIntensity(intpoint, centerpoint);
-			
+
 			// Average the intensity.
 			meanIntensity += Intensity.getA();
 			meanSecIntensity += Intensity.getB();
@@ -585,7 +562,6 @@ public class CurvatureFunction {
 		Curvaturepoints.add(
 				new double[] { pointB[0], pointB[1], Math.abs(Kappa), perimeter, meanIntensity, meanSecIntensity });
 
-		
 		RegressionFunction finalfunctionransac = new RegressionFunction(ellipsesegment.function, Curvaturepoints);
 
 		return new ValuePair<RegressionFunction, ArrayList<double[]>>(finalfunctionransac, AllCurvaturepoints);
@@ -793,8 +769,7 @@ public class CurvatureFunction {
 		ranacsec.setPosition(ranac);
 		double Intensity = ranac.get().getRealDouble();
 		double IntensitySec = ranacsec.get().getRealDouble();
-		
-		
+
 		double maxindistance;
 		double maxoutdistance;
 		if (parent.usedefaultrim) {
@@ -802,61 +777,58 @@ public class CurvatureFunction {
 			maxindistance = 1;
 			maxoutdistance = 1;
 			return new ValuePair<Double, Double>(Intensity, IntensitySec);
-			
+
 		}
 
 		else {
 			maxindistance = parent.insidedistance;
 			maxoutdistance = parent.outsidedistance;
 
-		
+			double fcteps = 1.0E-30;
+			long step = point.getLongPosition(0) - (long) center.getFloatPosition(0);
 
-		double fcteps = 1.0E-30;
-		long step = point.getLongPosition(0) - (long) center.getFloatPosition(0);
+			int signum;
+			if (step < 0)
+				signum = 1;
+			else
+				signum = -1;
 
-		int signum;
-		if (step < 0)
-			signum = 1;
-		else
-			signum = -1;
+			long movestep = 1;
+			long slope = (long) ((point.getLongPosition(1) - (long) center.getFloatPosition(1)) / (step + fcteps));
+			long intercept = point.getLongPosition(1) - slope * point.getLongPosition(0);
 
-		long movestep = 1;
-		long slope = (long) ((point.getLongPosition(1) - (long) center.getFloatPosition(1)) / (step + fcteps));
-		long intercept = point.getLongPosition(1) - slope * point.getLongPosition(0);
-		
+			int i = 0;
 
-		int i = 0;
+			do {
+				long x = ranac.getLongPosition(0) + i * movestep * signum;
+				long y = slope * ranac.getLongPosition(0) + intercept;
+				ranac.setPosition(new long[] { x, y });
+				ranacsec.setPosition(ranac);
+				i++;
+				Intensity += ranac.get().getRealDouble();
+				IntensitySec += ranacsec.get().getRealDouble();
 
-		do {
-			long x = ranac.getLongPosition(0) + i * movestep * signum;
-			long y = slope * ranac.getLongPosition(0) + intercept;
-			ranac.setPosition(new long[] { x, y });
-			ranacsec.setPosition(ranac);
-			i++;
-			Intensity += ranac.get().getRealDouble();
-			IntensitySec += ranacsec.get().getRealDouble();
+				if (Distance.DistanceSq(new double[] { point.getDoublePosition(0), point.getDoublePosition(1) },
+						new double[] { x, y }) <= maxindistance * maxindistance)
+					break;
+			} while (true);
 
-			if (Distance.DistanceSq(new double[] { point.getDoublePosition(0), point.getDoublePosition(1) },
-					new double[] { x, y }) <= maxindistance * maxindistance)
-				break;
-		} while (true);
+			i = 0;
 
-		i = 0;
+			do {
+				long x = ranac.getLongPosition(0) - i * movestep * signum;
+				long y = slope * ranac.getLongPosition(0) + intercept;
+				ranac.setPosition(new long[] { x, y });
+				ranacsec.setPosition(ranac);
+				i++;
+				Intensity += ranac.get().getRealDouble();
+				IntensitySec += ranacsec.get().getRealDouble();
+				if (Distance.DistanceSq(new double[] { point.getDoublePosition(0), point.getDoublePosition(1) },
+						new double[] { x, y }) <= maxoutdistance * maxoutdistance)
+					break;
+			} while (true);
 
-		do {
-			long x = ranac.getLongPosition(0) - i * movestep * signum;
-			long y = slope * ranac.getLongPosition(0) + intercept;
-			ranac.setPosition(new long[] { x, y });
-			ranacsec.setPosition(ranac);
-			i++;
-			Intensity += ranac.get().getRealDouble();
-			IntensitySec += ranacsec.get().getRealDouble();
-			if (Distance.DistanceSq(new double[] { point.getDoublePosition(0), point.getDoublePosition(1) },
-					new double[] { x, y }) <= maxoutdistance * maxoutdistance)
-				break;
-		} while (true);
-
-		return new ValuePair<Double, Double>(Intensity, IntensitySec);
+			return new ValuePair<Double, Double>(Intensity, IntensitySec);
 		}
 	}
 

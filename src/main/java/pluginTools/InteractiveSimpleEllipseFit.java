@@ -842,6 +842,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		setlowprob(lowprob);
 		sethighprob(highprob);
 		setInsidecut(insideCutoff);
+		
+		
+		minNumInliers = (int) Math.round(wavesize / calibration);
+		
 		setminInliers(minNumInliers);
 
 		if (ndims < 3) {
@@ -939,6 +943,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		panelFirst.validate();
 
 		Card();
+		
+		if(curvesupermode || curveautomode)
+			StartCurvatureComputingCurrent();
 		saveFile = new java.io.File(".");
 		
 	}
@@ -1676,7 +1683,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	
 	public void Card() {
 		
-		
+		 minInlierText = new Label(mininlierstring +  " = " + minNumInliers,
+					Label.CENTER);
 		lostlabel = new Label("Number of frames for loosing the track");
 		lostframe = new TextField(1);
 		lostframe.setText(Integer.toString(maxframegap));
@@ -1792,7 +1800,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		inputcellLabel = new Label("Enter CellLabel to save");
 		inputFieldminpercent = new TextField(5);
 		inputFieldminpercent.setText(Float.toString(minpercent));
-
+		
+		
 		inputLabelminpercent = new Label("Min. percent points to lie on ellipse");
 		Object[] colnames;
 		Object[][] rowvalues;
