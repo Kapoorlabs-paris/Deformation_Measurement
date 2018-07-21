@@ -57,6 +57,7 @@ import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import track.TrackingFunctions;
 import utility.CreateTable;
 import utility.Curvatureobject;
+import utility.Listordereing;
 import utility.Roiobject;
 import utility.ThreeDRoiobject;
 
@@ -574,21 +575,23 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 				}
 
-				for(int id = minid; id<=maxid; ++id) {
-
-			if (currentframeobject.size() > maxCurveDim) {
-
-				maxCurveDim = currentframeobject.size();
-
+			
 			}
+			
+			for(int id = minid; id<=maxid; ++id) {
 
-			String UniqueID = entry.getKey();
+				if (currentframeobject.size() > maxCurveDim) {
 
-			ArrayList<Segmentobject> segobject = OrderCords(parent, currentframeobject, UniqueID);
-			sortedMap.put(UniqueID, segobject);
-			maxidcurve.put(id, maxCurveDim);
+					maxCurveDim = currentframeobject.size();
 
-		}
+				}
+
+				String UniqueID = entry.getKey();
+
+				ArrayList<Segmentobject> segobject = OrderCords(parent, currentframeobject, UniqueID);
+				sortedMap.put(UniqueID, segobject);
+				maxidcurve.put(id, maxCurveDim);
+
 			}
 		}
 		return new ValuePair<HashMap<Integer, Integer>, HashMap<String,  ArrayList<Segmentobject>>>(maxidcurve, sortedMap);
@@ -609,21 +612,10 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 	public static ArrayList<Segmentobject> OrderCords(final InteractiveSimpleEllipseFit parent,
 			final ArrayList<Segmentobject> segobject, String UniqueID) {
 
-		Comparator<Segmentobject> CordComparison = new Comparator<Segmentobject>() {
+		ArrayList<Segmentobject> Sortedsegobject = Listordereing.getOrderedSegList(segobject);
+		
 
-			@Override
-			public int compare(final Segmentobject A, final Segmentobject B) {
-
-				RealLocalizable refcord = parent.AllRefcords.get(UniqueID + Integer.toString(parent.fourthDimension));
-				return (int) Math.round(Distance.DistanceSqrt(refcord, B.centralpoint)
-						- Distance.DistanceSqrt(refcord, A.centralpoint));
-
-			}
-
-		};
-		Collections.sort(segobject, CordComparison);
-
-		return segobject;
+		return Sortedsegobject;
 
 	}
 }

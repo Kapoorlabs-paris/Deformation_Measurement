@@ -7,6 +7,7 @@ import java.util.Random;
 
 import ellipsoidDetector.Distance;
 import ij.IJ;
+import kalmanForSegments.Segmentobject;
 import mpicbg.models.Point;
 import net.imglib2.KDTree;
 import net.imglib2.RealLocalizable;
@@ -25,6 +26,21 @@ public class Listordereing {
 
 		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
 		Iterator<RealLocalizable> iter = copytruths.iterator();
+
+		while (iter.hasNext()) {
+
+			orderedtruths.add(iter.next());
+
+		}
+
+		return orderedtruths;
+	}
+	
+
+	public static ArrayList<Segmentobject> getCopySegList(ArrayList<Segmentobject> copytruths) {
+
+		ArrayList<Segmentobject> orderedtruths = new ArrayList<Segmentobject>();
+		Iterator<Segmentobject> iter = copytruths.iterator();
 
 		while (iter.hasNext()) {
 
@@ -161,6 +177,53 @@ public class Listordereing {
 
 		return new ValuePair<RealLocalizable, List<RealLocalizable>>(refcord, orderedtruths);
 	}
+	
+	
+	
+	
+	/**
+	 * Return an ordered list of XY coordinates starting from the reference position
+	 * which is the lowest point below the center of the list of points
+	 * 
+	 * @param truths
+	 * @return
+	 */
+
+	public static  ArrayList<Segmentobject> getOrderedSegList(ArrayList<Segmentobject> truths) {
+
+		ArrayList<Segmentobject> copytruths = getCopySegList(truths);
+		ArrayList<Segmentobject> orderedtruths = new ArrayList<Segmentobject>(truths.size());
+		// Get the starting minX and minY co-ordinates
+		Segmentobject minCord = getMinSegCord(copytruths);
+
+		orderedtruths.add(minCord);
+		
+		IJ.log(minCord.centralpoint.getDoublePosition(0) + " " + minCord.centralpoint.getDoublePosition(1) + " Default ref point");
+		copytruths.remove(minCord);
+		do {
+
+			Segmentobject nextCord = getSegNextNearest(minCord, copytruths);
+			copytruths.remove(nextCord);
+			if (copytruths.size() != 0) {
+				copytruths.add(nextCord);
+
+				Segmentobject chosenCord = nextCord;
+
+				minCord = chosenCord;
+				orderedtruths.add(minCord);
+
+				copytruths.remove(chosenCord);
+			} else {
+
+				orderedtruths.add(nextCord);
+				break;
+
+			}
+		} while (copytruths.size() >= 0);
+
+		return orderedtruths;
+	}
+	
 
 	public static RealLocalizable GetCurrentRefpoint(List<RealLocalizable> truths, RealLocalizable Refpoint,
 			RealLocalizable SecRefpoint) {
@@ -298,7 +361,7 @@ public class Listordereing {
 
 			RealLocalizable currentpair = iter.next();
 
-			if (Math.abs(currentpair.getDoublePosition(0) - meanCord.getDoublePosition(0)) <= 5 && currentpair.getDoublePosition(0) < minVal) {
+			if (Math.abs(currentpair.getDoublePosition(0) - meanCord.getDoublePosition(0)) <= 10 && currentpair.getDoublePosition(0) < minVal) {
 
 				minobject = currentpair;
 				minVal = currentpair.getDoublePosition(0);
@@ -310,7 +373,37 @@ public class Listordereing {
 		return minobject;
 	}
 	
-	
+	/**
+	 * 
+	 * Get the starting XY co-ordinates to create an ordered list, start from minX
+	 * and minY
+	 * 
+	 * @param truths
+	 * @return
+	 */
+
+	public static Segmentobject getMinSegCord(ArrayList<Segmentobject> truths) {
+
+		RealLocalizable meanCord = truths.get(0).Cellcentralpoint;
+
+		double minVal = Double.MAX_VALUE;
+		Segmentobject minobject = null;
+		Iterator<Segmentobject> iter = truths.iterator();
+
+		while (iter.hasNext()) {
+
+			Segmentobject currentpair = iter.next();
+
+			if (Math.abs(currentpair.centralpoint.getDoublePosition(0) - meanCord.getDoublePosition(0)) <= 10 && currentpair.centralpoint.getDoublePosition(0) < minVal)  {
+
+				minobject = currentpair;
+				minVal = currentpair.centralpoint.getDoublePosition(0);
+			}
+
+		}
+
+		return minobject;
+	}
 
 	/**
 	 * 
@@ -345,6 +438,47 @@ public class Listordereing {
 			Search.search(minCord);
 
 			final FlagNode<RealLocalizable> targetNode = Search.getSampler().get();
+
+			nextobject = targetNode.getValue();
+		}
+
+		return nextobject;
+
+	}
+	
+	/**
+	 * 
+	 * 
+	 * Get the Next nearest point in the list
+	 * 
+	 * @param minCord
+	 * @param truths
+	 * @return
+	 */
+
+	public static Segmentobject getSegNextNearest(RealLocalizable minCord, List<Segmentobject> truths) {
+
+		Segmentobject nextobject = null;
+
+		final List<RealPoint> targetCoords = new ArrayList<RealPoint>(truths.size());
+		final List<FlagNode<Segmentobject>> targetNodes = new ArrayList<FlagNode<Segmentobject>>(truths.size());
+
+		for (Segmentobject localcord : truths) {
+
+			targetCoords.add(new RealPoint(localcord.centralpoint));
+			targetNodes.add(new FlagNode<Segmentobject>(localcord));
+		}
+
+		if (targetNodes.size() > 0 && targetCoords.size() > 0) {
+
+			final KDTree<FlagNode<Segmentobject>> Tree = new KDTree<FlagNode<Segmentobject>>(targetNodes,
+					targetCoords);
+
+			final NNFlagsearchKDtree<Segmentobject> Search = new NNFlagsearchKDtree<Segmentobject>(Tree);
+
+			Search.search(minCord);
+
+			final FlagNode<Segmentobject> targetNode = Search.getSampler().get();
 
 			nextobject = targetNode.getValue();
 		}
