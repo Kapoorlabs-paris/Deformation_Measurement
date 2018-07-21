@@ -121,6 +121,9 @@ public class CurvatureFunction {
 
 		// All nodes are returned
 
+	
+		
+		
 		RegressionCurveSegment returnSeg = new RegressionCurveSegment(totalfunctions, curveobject, Allcellsegment);
 		return returnSeg;
 

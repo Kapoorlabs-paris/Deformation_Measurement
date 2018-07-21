@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import ellipsoidDetector.Distance;
+import ellipsoidDetector.Intersectionobject;
 import ij.IJ;
 import kalmanForSegments.Segmentobject;
 import mpicbg.models.Point;
@@ -37,10 +38,24 @@ public class Listordereing {
 	}
 	
 
-	public static ArrayList<Segmentobject> getCopySegList(ArrayList<Segmentobject> copytruths) {
+	public static ArrayList<Pair<String, Segmentobject>>  getCopySegList(ArrayList<Pair<String, Segmentobject>>  copytruths) {
 
-		ArrayList<Segmentobject> orderedtruths = new ArrayList<Segmentobject>();
-		Iterator<Segmentobject> iter = copytruths.iterator();
+		ArrayList<Pair<String, Segmentobject>> orderedtruths = new ArrayList<Pair<String, Segmentobject>> ();
+		Iterator<Pair<String, Segmentobject>> iter = copytruths.iterator();
+
+		while (iter.hasNext()) {
+
+			orderedtruths.add(iter.next());
+
+		}
+
+		return orderedtruths;
+	}
+	
+	public static ArrayList<Pair<String, Intersectionobject>>  getCopyInterList(ArrayList<Pair<String, Intersectionobject>>  copytruths) {
+
+		ArrayList<Pair<String, Intersectionobject>> orderedtruths = new ArrayList<Pair<String, Intersectionobject>> ();
+		Iterator<Pair<String, Intersectionobject>> iter = copytruths.iterator();
 
 		while (iter.hasNext()) {
 
@@ -189,25 +204,24 @@ public class Listordereing {
 	 * @return
 	 */
 
-	public static  ArrayList<Segmentobject> getOrderedSegList(ArrayList<Segmentobject> truths) {
+	public static  ArrayList<Pair<String, Segmentobject>> getOrderedSegList(ArrayList<Pair<String, Segmentobject>>  truths) {
 
-		ArrayList<Segmentobject> copytruths = getCopySegList(truths);
-		ArrayList<Segmentobject> orderedtruths = new ArrayList<Segmentobject>(truths.size());
+		ArrayList<Pair<String, Segmentobject>> copytruths = getCopySegList(truths);
+		ArrayList<Pair<String, Segmentobject>> orderedtruths = new ArrayList<Pair<String, Segmentobject>>(truths.size());
 		// Get the starting minX and minY co-ordinates
-		Segmentobject minCord = getMinSegCord(copytruths);
+		Pair<String, Segmentobject> minCord = getMinSegCord(copytruths);
 
 		orderedtruths.add(minCord);
 		
-		IJ.log(minCord.centralpoint.getDoublePosition(0) + " " + minCord.centralpoint.getDoublePosition(1) + " Default ref point");
 		copytruths.remove(minCord);
 		do {
 
-			Segmentobject nextCord = getSegNextNearest(minCord, copytruths);
+			Pair<String, Segmentobject> nextCord = getSegNextNearest(minCord, copytruths);
 			copytruths.remove(nextCord);
 			if (copytruths.size() != 0) {
 				copytruths.add(nextCord);
 
-				Segmentobject chosenCord = nextCord;
+				Pair<String, Segmentobject> chosenCord = nextCord;
 
 				minCord = chosenCord;
 				orderedtruths.add(minCord);
@@ -225,6 +239,41 @@ public class Listordereing {
 	}
 	
 
+	public static  ArrayList<Pair<String, Intersectionobject>> getOrderedIntersectionList(ArrayList<Pair<String, Intersectionobject>>  truths) {
+
+		ArrayList<Pair<String, Intersectionobject>> copytruths = getCopyInterList(truths);
+		ArrayList<Pair<String, Intersectionobject>> orderedtruths = new ArrayList<Pair<String, Intersectionobject>>(truths.size());
+		// Get the starting minX and minY co-ordinates
+		Pair<String, Intersectionobject> minCord = getMinIntersectionCord(copytruths);
+
+		orderedtruths.add(minCord);
+		
+		copytruths.remove(minCord);
+		do {
+
+			Pair<String, Intersectionobject> nextCord = getInterNextNearest(minCord, copytruths);
+			copytruths.remove(nextCord);
+			if (copytruths.size() != 0) {
+				copytruths.add(nextCord);
+
+				Pair<String, Intersectionobject> chosenCord = nextCord;
+
+				minCord = chosenCord;
+				orderedtruths.add(minCord);
+
+				copytruths.remove(chosenCord);
+			} else {
+
+				orderedtruths.add(nextCord);
+				break;
+
+			}
+		} while (copytruths.size() >= 0);
+
+		return orderedtruths;
+	}
+	
+	
 	public static RealLocalizable GetCurrentRefpoint(List<RealLocalizable> truths, RealLocalizable Refpoint,
 			RealLocalizable SecRefpoint) {
 
@@ -382,22 +431,21 @@ public class Listordereing {
 	 * @return
 	 */
 
-	public static Segmentobject getMinSegCord(ArrayList<Segmentobject> truths) {
+	public static Pair<String, Segmentobject> getMinSegCord(ArrayList<Pair<String, Segmentobject>> truths) {
 
-		RealLocalizable meanCord = truths.get(0).Cellcentralpoint;
 
 		double minVal = Double.MAX_VALUE;
-		Segmentobject minobject = null;
-		Iterator<Segmentobject> iter = truths.iterator();
+		Pair<String, Segmentobject> minobject = null;
+		Iterator<Pair<String, Segmentobject>> iter = truths.iterator();
 
 		while (iter.hasNext()) {
 
-			Segmentobject currentpair = iter.next();
+			Pair<String, Segmentobject> currentpair = iter.next();
 
-			if (currentpair.centralpoint.getDoublePosition(0) < minVal)  {
+			if (currentpair.getB().centralpoint.getDoublePosition(0) < minVal)  {
 
 				minobject = currentpair;
-				minVal = currentpair.centralpoint.getDoublePosition(0);
+				minVal = currentpair.getB().centralpoint.getDoublePosition(0);
 			}
 
 		}
@@ -405,6 +453,34 @@ public class Listordereing {
 		return minobject;
 	}
 
+	public static Pair<String, Intersectionobject> getMinIntersectionCord(ArrayList<Pair<String, Intersectionobject>> truths) {
+
+
+		double minVal = Double.MAX_VALUE;
+		Pair<String, Intersectionobject> minobject = null;
+		Iterator<Pair<String, Intersectionobject>> iter = truths.iterator();
+
+		while (iter.hasNext()) {
+
+			Pair<String, Intersectionobject> currentpair = iter.next();
+
+			ArrayList<double[]> Linelist = currentpair.getB().linelist;
+			
+			for (int i = 0; i < Linelist.size(); ++i) {
+			if (currentpair.getB().linelist.get(i)[0] < minVal)  {
+
+				minobject = currentpair;
+				minVal = currentpair.getB().linelist.get(i)[0] ;
+			}
+
+			}
+		}
+
+		return minobject;
+	}
+
+	
+	
 	/**
 	 * 
 	 * 
@@ -456,29 +532,61 @@ public class Listordereing {
 	 * @return
 	 */
 
-	public static Segmentobject getSegNextNearest(RealLocalizable minCord, List<Segmentobject> truths) {
+	public static Pair<String, Segmentobject> getSegNextNearest(Pair<String, Segmentobject> minCord, List<Pair<String, Segmentobject>> truths) {
 
-		Segmentobject nextobject = null;
+		Pair<String, Segmentobject> nextobject = null;
 
 		final List<RealPoint> targetCoords = new ArrayList<RealPoint>(truths.size());
-		final List<FlagNode<Segmentobject>> targetNodes = new ArrayList<FlagNode<Segmentobject>>(truths.size());
+		final List<FlagNode<Pair<String, Segmentobject>>> targetNodes = new ArrayList<FlagNode<Pair<String, Segmentobject>>>(truths.size());
 
-		for (Segmentobject localcord : truths) {
+		for (Pair<String, Segmentobject> localcord : truths) {
 
-			targetCoords.add(new RealPoint(localcord.centralpoint));
-			targetNodes.add(new FlagNode<Segmentobject>(localcord));
+			targetCoords.add(new RealPoint(localcord.getB().centralpoint));
+			targetNodes.add(new FlagNode<Pair<String, Segmentobject>>(localcord));
 		}
 
 		if (targetNodes.size() > 0 && targetCoords.size() > 0) {
 
-			final KDTree<FlagNode<Segmentobject>> Tree = new KDTree<FlagNode<Segmentobject>>(targetNodes,
+			final KDTree<FlagNode<Pair<String, Segmentobject>>> Tree = new KDTree<FlagNode<Pair<String, Segmentobject>>>(targetNodes,
 					targetCoords);
 
-			final NNFlagsearchKDtree<Segmentobject> Search = new NNFlagsearchKDtree<Segmentobject>(Tree);
+			final NNFlagsearchKDtree<Pair<String, Segmentobject>> Search = new NNFlagsearchKDtree<Pair<String, Segmentobject>>(Tree);
 
-			Search.search(minCord);
+			Search.search(minCord.getB());
 
-			final FlagNode<Segmentobject> targetNode = Search.getSampler().get();
+			final FlagNode<Pair<String, Segmentobject>> targetNode = Search.getSampler().get();
+
+			nextobject = targetNode.getValue();
+		}
+
+		return nextobject;
+
+	}
+	
+	
+	public static Pair<String, Intersectionobject> getInterNextNearest(Pair<String, Intersectionobject> minCord, List<Pair<String, Intersectionobject>> truths) {
+
+		Pair<String, Intersectionobject> nextobject = null;
+
+		final List<RealPoint> targetCoords = new ArrayList<RealPoint>(truths.size());
+		final List<FlagNode<Pair<String, Intersectionobject>>> targetNodes = new ArrayList<FlagNode<Pair<String, Intersectionobject>>>(truths.size());
+
+		for (Pair<String, Intersectionobject> localcord : truths) {
+
+			targetCoords.add(new RealPoint(localcord.getB().Intersectionpoint));
+			targetNodes.add(new FlagNode<Pair<String, Intersectionobject>>(localcord));
+		}
+
+		if (targetNodes.size() > 0 && targetCoords.size() > 0) {
+
+			final KDTree<FlagNode<Pair<String, Intersectionobject>>> Tree = new KDTree<FlagNode<Pair<String, Intersectionobject>>>(targetNodes,
+					targetCoords);
+
+			final NNFlagsearchKDtree<Pair<String, Intersectionobject>> Search = new NNFlagsearchKDtree<Pair<String, Intersectionobject>>(Tree);
+
+			Search.search(minCord.getB());
+
+			final FlagNode<Pair<String, Intersectionobject>> targetNode = Search.getSampler().get();
 
 			nextobject = targetNode.getValue();
 		}
