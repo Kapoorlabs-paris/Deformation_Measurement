@@ -111,19 +111,21 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			int time = entry.getValue();
 
+			System.out.println(time + " making kymo");
 			ArrayList<Segmentobject> currentlist = sortedMappair.get(currentID);
 
 			ranac.setPosition(time, 0);
 
 			int count = 0;
 
+			if(currentlist!=null) 
 			for (Segmentobject currentobject : currentlist) {
 
 				ranac.setPosition(count, 1);
 				ranac.get().setReal(currentobject.Curvature);
 				count++;
-				System.out.println(currentobject.z + "time unit" + " " + currentobject.centralpoint.getDoublePosition(0)
-						+ " " + currentobject.centralpoint.getDoublePosition(1) + "Check if arranging points correct");
+			//	System.out.println(currentobject.z + "time unit" + " " + currentobject.centralpoint.getDoublePosition(0)
+			//			+ " " + currentobject.centralpoint.getDoublePosition(1) + "Check if arranging points correct");
 			}
 
 		}
@@ -250,6 +252,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 					MakeInterKymo(sortedMappair.getB(), size, id);
 
 				}
+				
 			}
 
 		}
@@ -264,7 +267,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 					parent);
 			int TimedimensionKymo = parent.AccountedZ.size() + 1;
 			HashMap<Integer, Integer> idmap = sortedMappair.getA();
-
+/*
 			Iterator<Map.Entry<Integer, Integer>> it = idmap.entrySet().iterator();
 			while (it.hasNext()) {
 
@@ -278,6 +281,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 				MakeKymo(sortedMappair.getB(), size, id);
 
 			}
+			*/
 		}
 
 		try {

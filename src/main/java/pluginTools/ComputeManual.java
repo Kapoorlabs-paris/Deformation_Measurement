@@ -227,25 +227,18 @@ public class ComputeManual extends SwingWorker<Void, Void> {
 		
 		parent.UserchosenCostFunction = new ETrackCostFunction(1, 0);
 		
-		IntersectionobjectCollection coll = new IntersectionobjectCollection();
-		
+		ArrayList<ArrayList<Intersectionobject>> colllist = new ArrayList<ArrayList<Intersectionobject>>();
 		for(Map.Entry<String, ArrayList<Intersectionobject>> entry : parent.ALLIntersections.entrySet()) {
 			
 			String ID = entry.getKey();
 			
 			ArrayList<Intersectionobject> bloblist = entry.getValue();
-			
-			for (Intersectionobject blobs: bloblist) {
-				
-				coll.add(blobs, ID);
-				
-				
-			}
+			colllist.add(bloblist);
 			
 			
 		}
 		
-		KFsearch Tsearch = new KFsearch(coll, parent.UserchosenCostFunction, parent.maxSearchradius, parent.maxSearchradius, parent.maxframegap, parent.AccountedZ, parent.jpb);
+		KFsearch Tsearch = new KFsearch(colllist, parent.UserchosenCostFunction, parent.maxSearchradius, parent.maxSearchradius, parent.maxframegap, parent.AccountedZ, parent.jpb);
 		Tsearch.process();
 		SimpleWeightedGraph< Intersectionobject, DefaultWeightedEdge > simplegraph = Tsearch.getResult();
 		

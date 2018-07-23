@@ -269,6 +269,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 			  
 			  
 			  try {
+					BasicConfigurator.configure();
 				DoneCurr(Cardframe);
 			} catch (ImgIOException e1) {
 
@@ -288,8 +289,8 @@ public class IlastikEllipseFileChooser extends JPanel {
 		
 			RandomAccessibleInterval<FloatType> image = new ImgOpener().openImgs(impA.getOriginalFileInfo().directory + impA.getOriginalFileInfo().fileName , new FloatType()).iterator().next();
 			RandomAccessibleInterval<FloatType> imagebefore = new ImgOpener().openImgs(impOrig.getOriginalFileInfo().directory + impOrig.getOriginalFileInfo().fileName, new FloatType()).iterator().next();
-			BasicConfigurator.configure();
-			System.setProperty("scijava.log.level", "none");
+		
+			System.setProperty("scijava.log.level", "None");
 			WindowManager.closeAllWindows();
 			
 			if(superpixel && !twochannel) {

@@ -1,6 +1,10 @@
 package track;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -30,23 +34,19 @@ public class TrackingFunctions {
 
 		parent.UserchosenCostFunction = new ETrackCostFunction(1, 0);
 
-		IntersectionobjectCollection coll = new IntersectionobjectCollection();
-
+		ArrayList<ArrayList<Intersectionobject>> colllist = new ArrayList<ArrayList<Intersectionobject>>();
+		parent.ALLIntersections = hashMapSorter.SortTimeorZ.sortByIntegerInter(parent.ALLIntersections);
 		for (Map.Entry<String, ArrayList<Intersectionobject>> entry : parent.ALLIntersections.entrySet()) {
 
-			String ID = entry.getKey();
 			ArrayList<Intersectionobject> bloblist = entry.getValue();
-
-			for (Intersectionobject blobs : bloblist) {
-
-				coll.add(blobs, ID);
-			}
+			colllist.add(bloblist);
+		
 
 		}
 
-		KFsearch Tsearch = new KFsearch(coll, parent.UserchosenCostFunction,parent.originalimgbefore.dimension(0) * parent.originalimgbefore.dimension(1)  ,
+		KFsearch Tsearch = new KFsearch(colllist, parent.UserchosenCostFunction, parent.originalimgbefore.dimension(0) * parent.originalimgbefore.dimension(1)  ,
 				parent.originalimgbefore.dimension(0) * parent.originalimgbefore.dimension(1) , 
-				parent.thirdDimensionSize,  parent.AccountedZ, parent.jpb);
+				parent.thirdDimensionSize, parent.AccountedZ, parent.jpb);
 		Tsearch.process();
 		SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = Tsearch.getResult();
 
@@ -58,22 +58,28 @@ public class TrackingFunctions {
 
 		parent.UserchosenSegmentCostFunction = new ETrackSegmentCostFunction(1, 0);
 
-		SegmentobjectCollection coll = new SegmentobjectCollection();
-
+		ArrayList<ArrayList<Segmentobject>> colllist = new ArrayList<ArrayList<Segmentobject>>();
+		parent.ALLSegments = hashMapSorter.SortTimeorZ.sortByInteger(parent.ALLSegments);
+		
+		
+		
 		for (Map.Entry<String, ArrayList<Segmentobject>> entry : parent.ALLSegments.entrySet()) {
 
-			String ID = entry.getKey();
 			ArrayList<Segmentobject> bloblist = entry.getValue();
-			for (Segmentobject blobs : bloblist) {
-
-				coll.add(blobs, ID);
-			}
+			
+			colllist.add(bloblist);
+		
 
 		}
+		
+		
+	
+		
+		
 
-		KFSegmentsearch Tsearch = new KFSegmentsearch(coll, parent.UserchosenSegmentCostFunction,parent.originalimgbefore.dimension(0) * parent.originalimgbefore.dimension(1)  ,
+		KFSegmentsearch Tsearch = new KFSegmentsearch(colllist, parent.UserchosenSegmentCostFunction,parent.originalimgbefore.dimension(0) * parent.originalimgbefore.dimension(1)  ,
 				parent.originalimgbefore.dimension(0) * parent.originalimgbefore.dimension(1) , 
-				parent.thirdDimensionSize,  parent.AccountedZ, parent.jpb);
+				parent.thirdDimensionSize, parent.AccountedZ, parent.jpb);
 		Tsearch.process();
 		SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge> simplegraph = Tsearch.getResult();
 

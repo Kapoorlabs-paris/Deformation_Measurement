@@ -16,6 +16,7 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 
 import costMatrix.CostFunction;
 import costMatrix.JaqamanLinkingCostMatrixCreator;
+import ij.IJ;
 import linkers.CVMKalmanFilter;
 import linkers.JaqamanLinker;
 import linkers.Logger;
@@ -29,7 +30,7 @@ public class KFSegmentsearch implements SegmentIntersectionTracker {
 
 	private static final String BASE_ERROR_MSG = "[KalmanTracker] ";
 
-	private final SegmentobjectCollection Allblobs;
+	private final ArrayList<ArrayList<Segmentobject>> Allblobs;
 	public final JProgressBar jpb;
 	private final double maxsearchRadius;
 	private final double initialsearchRadius;
@@ -43,7 +44,7 @@ public class KFSegmentsearch implements SegmentIntersectionTracker {
 	ArrayList<ArrayList<Segmentobject>> Allblobscopy;
 	private SegmentobjectCollection predictionsCollection;
 
-	public KFSegmentsearch(final SegmentobjectCollection Allblobs,
+	public KFSegmentsearch(final ArrayList<ArrayList<Segmentobject>> Allblobs,
 			final CostFunction<Segmentobject, Segmentobject> UserchosenCostFunction,
 			final double maxsearchRadius, final double initialsearchRadius, final int maxframeGap,
 			HashMap<String, Integer> Accountedframes, final JProgressBar jpb) {
@@ -82,33 +83,18 @@ public class KFSegmentsearch implements SegmentIntersectionTracker {
 		graph = new SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 		predictionsCollection = new SegmentobjectCollection();
 
-		// Find first and second non-empty frames.
-		final NavigableSet<String> keySet = Allblobs.keySet();
-		final Iterator<String> frameIterator = keySet.iterator();
-
-		Collection<Segmentobject> Firstorphan = new ArrayList<>();
-		if (!frameIterator.hasNext()) {
-			return true;
-		}
-		String uniqueID = frameIterator.next();
-		while (Firstorphan.isEmpty()) {
-			Firstorphan = generateSpotList(Allblobs, uniqueID);
-
-		}
-
-		Collection<Segmentobject> Secondorphan = new ArrayList<>();
-		String uniqueIDnext = uniqueID;
-		while (Secondorphan.isEmpty()) {
-			if (!frameIterator.hasNext()) {
-				return true;
-			}
-			uniqueIDnext = frameIterator.next();
-			Secondorphan = generateSpotList(Allblobs, uniqueIDnext);
-
-		}
 		
-		final Iterator<String> frameIteratorcopy = keySet.iterator();
-		frameIteratorcopy.next();
+		
+	
+	
+		
+		Collection<Segmentobject> Firstorphan = Allblobs.get(0);
+		
+		String uniqueID = Integer.toString(Allblobs.get(0).get(0).z) + Integer.toString(Allblobs.get(0).get(0).t); 
+
+		Collection<Segmentobject> Secondorphan = Allblobs.get(1);
+		String uniqueIDnext  = Integer.toString(Allblobs.get(1).get(0).z) + Integer.toString(Allblobs.get(1).get(0).t); 
+		
 		// Max KF search cost.
 		final double maxCost = maxsearchRadius * maxsearchRadius;
 
@@ -121,10 +107,10 @@ public class KFSegmentsearch implements SegmentIntersectionTracker {
 		 * position and velocity. The two are linked: if we need a large search radius,
 		 * then the fluoctuations over predicted states are large.
 		 */
-		final double positionProcessStd = maxsearchRadius ;
-		final double velocityProcessStd = maxsearchRadius ;
+		final double positionProcessStd = maxsearchRadius / 2d ;
+		final double velocityProcessStd = maxsearchRadius / 2d ;
 
-		double meanSpotRadius = 10d;
+		double meanSpotRadius = 1d;
 
 		final double positionMeasurementStd = meanSpotRadius / 1d;
 
@@ -132,11 +118,11 @@ public class KFSegmentsearch implements SegmentIntersectionTracker {
 				Secondorphan.size());
 		// Loop from the second frame to the last frame and build
 		// KalmanFilterMap
+	
+		for (int i = 1; i < Allblobs.size();++i) {
 
-		while (frameIteratorcopy.hasNext()) {
-
-			uniqueIDnext = frameIteratorcopy.next();
-			List<Segmentobject> measurements = generateSpotList(Allblobs, uniqueIDnext);
+			uniqueIDnext =  Integer.toString(Allblobs.get(i).get(0).z) + Integer.toString(Allblobs.get(i).get(0).t);
+			List<Segmentobject> measurements = Allblobs.get(i);
 			// Make the preditiction map
 			final Map<ComparableRealPoint, CVMKalmanFilter> predictionMap = new HashMap<ComparableRealPoint, CVMKalmanFilter>(
 					kalmanFiltersMap.size());
@@ -162,7 +148,7 @@ public class KFSegmentsearch implements SegmentIntersectionTracker {
 
 				final JaqamanLinkingCostMatrixCreator<ComparableRealPoint, Segmentobject> crm = new JaqamanLinkingCostMatrixCreator<ComparableRealPoint, Segmentobject>(
 						predictions, measurements, DistanceBasedcost, maxCost, ALTERNATIVE_COST_FACTOR, PERCENTILE);
-
+IJ.log("Linking objects :" + "ZT"+ uniqueIDnext);
 				final JaqamanLinker<ComparableRealPoint, Segmentobject> linker = new JaqamanLinker<ComparableRealPoint, Segmentobject>(
 						crm);
 				if (!linker.checkInput() || !linker.process()) {
@@ -275,15 +261,6 @@ public class KFSegmentsearch implements SegmentIntersectionTracker {
 		return errorMessage;
 	}
 
-	private static final List<Segmentobject> generateSpotList(final SegmentobjectCollection spots,
-			final String frame) {
-		final List<Segmentobject> list = new ArrayList<>(spots.getNThreeDRoiobjects(frame, true));
-		for (final Iterator<Segmentobject> iterator = spots.iterator(frame, true); iterator.hasNext();) {
-			list.add(iterator.next());
-		}
-		
-		return list;
-	}
 
 	private static final double[] MeasureBlob(final Segmentobject target) {
 		final double[] location = new double[] { target.centralpoint.getDoublePosition(0), target.centralpoint.getDoublePosition(1) };

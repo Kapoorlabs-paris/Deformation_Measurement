@@ -17,6 +17,7 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 import costMatrix.CostFunction;
 import costMatrix.JaqamanLinkingCostMatrixCreator;
 import ellipsoidDetector.Intersectionobject;
+import kalmanForSegments.Segmentobject;
 import linkers.CVMKalmanFilter;
 import linkers.JaqamanLinker;
 import linkers.Logger;
@@ -30,7 +31,7 @@ public class KFsearch implements IntersectionTracker {
 
 	private static final String BASE_ERROR_MSG = "[KalmanTracker] ";
 
-	private final IntersectionobjectCollection Allblobs;
+	private final ArrayList<ArrayList<Intersectionobject>> Allblobs;
 	public final JProgressBar jpb;
 	private final double maxsearchRadius;
 	private final double initialsearchRadius;
@@ -42,9 +43,8 @@ public class KFsearch implements IntersectionTracker {
 	protected Logger logger = Logger.DEFAULT_LOGGER;
 	protected String errorMessage;
 	ArrayList<ArrayList<Intersectionobject>> Allblobscopy;
-	private IntersectionobjectCollection predictionsCollection;
 
-	public KFsearch(final IntersectionobjectCollection Allblobs,
+	public KFsearch(final ArrayList<ArrayList<Intersectionobject>> Allblobs,
 			final CostFunction<Intersectionobject, Intersectionobject> UserchosenCostFunction,
 			final double maxsearchRadius, final double initialsearchRadius, final int maxframeGap,
 			HashMap<String, Integer> Accountedframes, final JProgressBar jpb) {
@@ -82,34 +82,13 @@ public class KFsearch implements IntersectionTracker {
 		 */
 
 		graph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
-		predictionsCollection = new IntersectionobjectCollection();
 
-		// Find first and second non-empty frames.
-		final NavigableSet<String> keySet = Allblobs.keySet();
-		final Iterator<String> frameIterator = keySet.iterator();
+	    Collection<Intersectionobject> Firstorphan = Allblobs.get(0);
+		
+		String uniqueID = Integer.toString(Allblobs.get(0).get(0).z) + Integer.toString(Allblobs.get(0).get(0).t); 
 
-		Collection<Intersectionobject> Firstorphan = new ArrayList<>();
-		if (!frameIterator.hasNext()) {
-			return true;
-		}
-		String uniqueID = frameIterator.next();
-		while (Firstorphan.isEmpty()) {
-			Firstorphan = generateSpotList(Allblobs, uniqueID);
-
-		}
-
-		Collection<Intersectionobject> Secondorphan = new ArrayList<>();
-		String uniqueIDnext = uniqueID;
-		while (Secondorphan.isEmpty()) {
-			if (!frameIterator.hasNext()) {
-				return true;
-			}
-			uniqueIDnext = frameIterator.next();
-			Secondorphan = generateSpotList(Allblobs, uniqueIDnext);
-
-		}
-		final Iterator<String> frameIteratorcopy = keySet.iterator();
-		frameIteratorcopy.next();
+		Collection<Intersectionobject> Secondorphan = Allblobs.get(1);
+		String uniqueIDnext  = Integer.toString(Allblobs.get(1).get(0).z) + Integer.toString(Allblobs.get(1).get(0).t); 
 		// Max KF search cost.
 		final double maxCost = maxsearchRadius * maxsearchRadius;
 
@@ -134,12 +113,10 @@ public class KFsearch implements IntersectionTracker {
 				Secondorphan.size());
 		// Loop from the second frame to the last frame and build
 		// KalmanFilterMap
+		for (int i = 1; i < Allblobs.size();++i) {
 
-		while (frameIteratorcopy.hasNext()) {
-
-			uniqueIDnext = frameIteratorcopy.next();
-
-			List<Intersectionobject> measurements = generateSpotList(Allblobs, uniqueIDnext);
+			uniqueIDnext =  Integer.toString(Allblobs.get(i).get(0).z) + Integer.toString(Allblobs.get(i).get(0).t);
+			List<Intersectionobject> measurements = Allblobs.get(i);
 			// Make the preditiction map
 			final Map<ComparableRealPoint, CVMKalmanFilter> predictionMap = new HashMap<ComparableRealPoint, CVMKalmanFilter>(
 					kalmanFiltersMap.size());
