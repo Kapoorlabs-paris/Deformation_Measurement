@@ -549,17 +549,21 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 						model.setName(id, "Track" + id + entryZ.getKey());
 
 					
-                       parent.HashSegmentTrackList = SortTimeorZ.sortByCordSeg(parent.HashSegmentTrackList);
+                       HashMap<String, ArrayList<Segmentobject> > HashSegmentTrackList = SortTimeorZ.sortByCordSeg(parent.HashSegmentTrackList);
 						
-						Iterator<Segmentobject> Angleiter = parent.HashSegmentTrackList.get(id + entryZ.getKey()).iterator();
+						Iterator<Segmentobject> Angleiter = HashSegmentTrackList.get(id + entryZ.getKey()).iterator();
 						
 
 						while (Angleiter.hasNext()) {
 
+						
 							Segmentobject currentangle = Angleiter.next();
+							
+							System.out.println(currentangle.z + "z here");
 							parent.SegmentTracklist.add(new ValuePair<String, Segmentobject>(
 									Integer.toString(id) + entryZ.getKey(), currentangle));
 						}
+						System.out.println(parent.SegmentTracklist.size() + " Size ");
 						Collections.sort(parent.SegmentTracklist, ThirdDimcomparison);
 						
 					}
@@ -672,6 +676,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 					maxCurveDim = currentframeobject.size();
 
+					System.out.println(maxCurveDim + " y dim ");
 				}
 
 				String UniqueID = entry.getKey();

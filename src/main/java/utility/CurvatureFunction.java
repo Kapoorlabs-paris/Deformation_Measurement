@@ -301,7 +301,7 @@ public class CurvatureFunction {
 
 		int size = truths.size();
 
-		int maxpoints = size / numSeg;
+		int maxpoints = numSeg;
 
 		int segmentLabel = 1;
 
@@ -555,15 +555,19 @@ public class CurvatureFunction {
 			// Average the intensity.
 			meanIntensity += Intensity.getA();
 			meanSecIntensity += Intensity.getB();
+			
+			if(Kappa < 0 )
+				Kappa = 0;
+			
 			AllCurvaturepoints.add(
-					new double[] { newpos[0], newpos[1], Math.abs(Kappa), perimeter, meanIntensity, meanSecIntensity });
+					new double[] { newpos[0], newpos[1], (Kappa), perimeter, meanIntensity, meanSecIntensity });
 		}
 
 		meanIntensity /= size;
 		meanSecIntensity /= size;
 
 		Curvaturepoints.add(
-				new double[] { pointB[0], pointB[1], Math.abs(Kappa), perimeter, meanIntensity, meanSecIntensity });
+				new double[] { pointB[0], pointB[1], (Kappa), perimeter, meanIntensity, meanSecIntensity });
 
 		RegressionFunction finalfunctionransac = new RegressionFunction(ellipsesegment.function, Curvaturepoints);
 

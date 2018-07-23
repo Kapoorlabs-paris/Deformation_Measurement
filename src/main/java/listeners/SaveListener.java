@@ -34,7 +34,7 @@ public class SaveListener implements ActionListener {
 		
 		
 	
-			
+			if(parent.circlefits)
 				NewSave();
 				
 				IJ.log("All trackes saved in: " + parent.saveFile.getAbsolutePath());
@@ -59,7 +59,7 @@ public class SaveListener implements ActionListener {
 				FileWriter fw = new FileWriter(fichier);
 				BufferedWriter bw = new BufferedWriter(fw);
 				bw.write("\tTrackID" + "\t" + "\t" + ID + "\n");
-				bw.write("\tX-coordinates\tY-coordinates\tCurvature\t Perimeter\t \t Intensity \t \t IntensitySec\n");
+				bw.write("\tX-coordinates\tY-coordinates\tTime\tCurvature\t Perimeter\t \t Intensity \t \t IntensitySec\n");
 				for (Pair<String, Segmentobject> currentangle : parent.SegmentTracklist) {
 					
 					String currentID = currentangle.getA();
@@ -68,7 +68,9 @@ public class SaveListener implements ActionListener {
 						
 						
 						bw.write("\t"+ parent.nf.format(currentangle.getB().centralpoint.getDoublePosition(0)) +  "\t" + "\t" + parent.nf.format(currentangle.getB().centralpoint.getDoublePosition(1))
-								+ "\t" + "\t" +parent.nf.format(currentangle.getB().Curvature) + "\t"  + "\t"+  "\t" + "\t" + parent.nf.format(currentangle.getB().Perimeter) + "\t" + "\t"  
+								+ "\t" + "\t" +
+								"\t" + "\t" + currentangle.getB().z + 
+								parent.nf.format(currentangle.getB().Curvature) + "\t"  + "\t"+  "\t" + "\t" + parent.nf.format(currentangle.getB().Perimeter) + "\t" + "\t"  
 								+ parent.nf.format(currentangle.getB().IntensityA) +
 								
 								"\t" + "\t"  + parent.nf.format(currentangle.getB().IntensityB) + 

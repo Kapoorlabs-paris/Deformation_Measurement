@@ -150,13 +150,12 @@ public class SortTimeorZ {
 			ArrayList<Pair<String , Segmentobject>> orderedfirstframelist =	Listordereing.getOrderedSegList(firstframelist);
 			int count = 0;
 			for(Pair<String , Segmentobject> current: orderedfirstframelist ) {
-				
+				System.out.println(count + " Am counting twice?");
 				orderedid[count] = current.getA();
 				count++;
 			}
 			
 			HashMap<String, ArrayList<Segmentobject>> sortedHashMap = new LinkedHashMap<String, ArrayList<Segmentobject>>();
-			
 		for	(int fillcount = 0; fillcount < orderedid.length; ++fillcount) {
 		
 				String id = orderedid[fillcount];
