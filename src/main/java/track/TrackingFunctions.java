@@ -11,6 +11,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import ellipsoidDetector.Intersectionobject;
+import ij.IJ;
 import kalmanForSegments.ETrackSegmentCostFunction;
 import kalmanForSegments.KFSegmentsearch;
 import kalmanForSegments.Segmentobject;
@@ -69,7 +70,6 @@ public class TrackingFunctions {
 			
 			colllist.add(bloblist);
 		
-
 		}
 		
 		
@@ -77,9 +77,9 @@ public class TrackingFunctions {
 		
 		
 
-		KFSegmentsearch Tsearch = new KFSegmentsearch(colllist, parent.UserchosenSegmentCostFunction,parent.originalimgbefore.dimension(0) * parent.originalimgbefore.dimension(1)  ,
-				parent.originalimgbefore.dimension(0) * parent.originalimgbefore.dimension(1) , 
-				parent.thirdDimensionSize, parent.AccountedZ, parent.jpb);
+		KFSegmentsearch Tsearch = new KFSegmentsearch(colllist, parent.UserchosenSegmentCostFunction, 2 * parent.wavesize / parent.calibration  ,
+				2 * parent.wavesize / parent.calibration , 
+				parent.thirdDimensionSize / 4, parent.AccountedZ, parent.jpb);
 		Tsearch.process();
 		SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge> simplegraph = Tsearch.getResult();
 

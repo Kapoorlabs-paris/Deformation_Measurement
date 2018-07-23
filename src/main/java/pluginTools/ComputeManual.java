@@ -230,8 +230,6 @@ public class ComputeManual extends SwingWorker<Void, Void> {
 		ArrayList<ArrayList<Intersectionobject>> colllist = new ArrayList<ArrayList<Intersectionobject>>();
 		for(Map.Entry<String, ArrayList<Intersectionobject>> entry : parent.ALLIntersections.entrySet()) {
 			
-			String ID = entry.getKey();
-			
 			ArrayList<Intersectionobject> bloblist = entry.getValue();
 			colllist.add(bloblist);
 			

@@ -52,7 +52,9 @@ public class CurvatureListener implements ActionListener {
 		parent.AlllocalCurvature.clear();
 		parent.overlay.clear();
 		parent.Tracklist.clear();
+		if(parent.imp!=null && parent.mvl!=null)
 		parent.imp.getCanvas().removeMouseListener(parent.mvl);
+		if(parent.imp!=null && parent.ml!=null)
 		parent.imp.getCanvas().removeMouseMotionListener(parent.ml);
 		
 		

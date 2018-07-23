@@ -90,7 +90,6 @@ public class KFSegmentsearch implements SegmentIntersectionTracker {
 		
 		Collection<Segmentobject> Firstorphan = Allblobs.get(0);
 		
-		String uniqueID = Integer.toString(Allblobs.get(0).get(0).z) + Integer.toString(Allblobs.get(0).get(0).t); 
 
 		Collection<Segmentobject> Secondorphan = Allblobs.get(1);
 		String uniqueIDnext  = Integer.toString(Allblobs.get(1).get(0).z) + Integer.toString(Allblobs.get(1).get(0).t); 
@@ -121,6 +120,7 @@ public class KFSegmentsearch implements SegmentIntersectionTracker {
 	
 		for (int i = 1; i < Allblobs.size();++i) {
 
+			if(Allblobs.get(i).size() > 0) {
 			uniqueIDnext =  Integer.toString(Allblobs.get(i).get(0).z) + Integer.toString(Allblobs.get(i).get(0).t);
 			List<Segmentobject> measurements = Allblobs.get(i);
 			// Make the preditiction map
@@ -250,6 +250,7 @@ IJ.log("Linking objects :" + "ZT"+ uniqueIDnext);
 				}
 			}
 
+		}
 		}
 		;
 		return true;

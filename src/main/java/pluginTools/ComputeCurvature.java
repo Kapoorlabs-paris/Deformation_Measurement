@@ -267,7 +267,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 					parent);
 			int TimedimensionKymo = parent.AccountedZ.size() + 1;
 			HashMap<Integer, Integer> idmap = sortedMappair.getA();
-/*
+
 			Iterator<Map.Entry<Integer, Integer>> it = idmap.entrySet().iterator();
 			while (it.hasNext()) {
 
@@ -281,7 +281,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 				MakeKymo(sortedMappair.getB(), size, id);
 
 			}
-			*/
+			
 		}
 
 		try {
@@ -477,8 +477,15 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			DisplaySelected.selectAll(parent);
 
 		}
+		
+		
+		
 		if (parent.ndims >= 3) {
 
+			
+			
+			
+			
 			for (Map.Entry<String, SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge>> entryZ : parent.parentgraphSegZ
 					.entrySet()) {
 
@@ -499,6 +506,20 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 				if (minid != Integer.MAX_VALUE) {
 
+					for (final Integer id : model.trackIDs(true)) {
+						
+						final HashSet<Segmentobject> Angleset = model.trackSegmentobjects(id);
+
+						final ArrayList<Segmentobject> Anglelist = new ArrayList<Segmentobject>(Angleset);
+						for(Segmentobject current: Angleset) {
+							
+							Anglelist.add(current);
+							
+							
+						}
+						parent.HashSegmentTrackList.put(id + entryZ.getKey(), Anglelist);
+					}
+					
 					for (final Integer id : model.trackIDs(true)) {
 
 						Comparator<Pair<String, Segmentobject>> ThirdDimcomparison = new Comparator<Pair<String, Segmentobject>>() {
@@ -527,9 +548,11 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 						model.setName(id, "Track" + id + entryZ.getKey());
 
-						final HashSet<Segmentobject> Angleset = model.trackSegmentobjects(id);
-
-						Iterator<Segmentobject> Angleiter = Angleset.iterator();
+					
+                       parent.HashSegmentTrackList = SortTimeorZ.sortByCordSeg(parent.HashSegmentTrackList);
+						
+						Iterator<Segmentobject> Angleiter = parent.HashSegmentTrackList.get(id + entryZ.getKey()).iterator();
+						
 
 						while (Angleiter.hasNext()) {
 
@@ -538,9 +561,9 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 									Integer.toString(id) + entryZ.getKey(), currentangle));
 						}
 						Collections.sort(parent.SegmentTracklist, ThirdDimcomparison);
-						parent.SegmentTracklist = Listordereing.getOrderedSegList(parent.SegmentTracklist);
+						
 					}
-
+					
 					for (int id = minid; id <= maxid; ++id) {
 						Segmentobject bestangle = null;
 
@@ -599,7 +622,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 					}
 				}
 			}
-
 			curvatureUtils.CurvatureTable.CreateSegTableTrackView(parent);
 
 		}

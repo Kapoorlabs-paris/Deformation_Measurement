@@ -115,6 +115,7 @@ public class KFsearch implements IntersectionTracker {
 		// KalmanFilterMap
 		for (int i = 1; i < Allblobs.size();++i) {
 
+			if(Allblobs.get(i).size() > 0) {
 			uniqueIDnext =  Integer.toString(Allblobs.get(i).get(0).z) + Integer.toString(Allblobs.get(i).get(0).t);
 			List<Intersectionobject> measurements = Allblobs.get(i);
 			// Make the preditiction map
@@ -246,6 +247,7 @@ public class KFsearch implements IntersectionTracker {
 				}
 			}
 
+		}
 		}
 		;
 		return true;

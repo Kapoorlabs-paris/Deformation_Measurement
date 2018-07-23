@@ -206,6 +206,7 @@ public class Listordereing {
 
 	public static  ArrayList<Pair<String, Segmentobject>> getOrderedSegList(ArrayList<Pair<String, Segmentobject>>  truths) {
 
+		IJ.log("Ordering Segments");
 		ArrayList<Pair<String, Segmentobject>> copytruths = getCopySegList(truths);
 		ArrayList<Pair<String, Segmentobject>> orderedtruths = new ArrayList<Pair<String, Segmentobject>>(truths.size());
 		// Get the starting minX and minY co-ordinates
@@ -225,7 +226,6 @@ public class Listordereing {
 
 				minCord = chosenCord;
 				orderedtruths.add(minCord);
-
 				copytruths.remove(chosenCord);
 			} else {
 
@@ -272,6 +272,9 @@ public class Listordereing {
 
 		return orderedtruths;
 	}
+	
+	
+	
 	
 	
 	public static RealLocalizable GetCurrentRefpoint(List<RealLocalizable> truths, RealLocalizable Refpoint,
@@ -441,8 +444,7 @@ public class Listordereing {
 		while (iter.hasNext()) {
 
 			Pair<String, Segmentobject> currentpair = iter.next();
-
-			if (currentpair.getB().centralpoint.getDoublePosition(0) < minVal)  {
+			if (currentpair.getB().centralpoint.getDoublePosition(0) <= minVal)  {
 
 				minobject = currentpair;
 				minVal = currentpair.getB().centralpoint.getDoublePosition(0);
@@ -461,7 +463,7 @@ public class Listordereing {
 		Iterator<Pair<String, Intersectionobject>> iter = truths.iterator();
 
 		while (iter.hasNext()) {
-
+System.out.println("in");
 			Pair<String, Intersectionobject> currentpair = iter.next();
 
 			ArrayList<double[]> Linelist = currentpair.getB().linelist;

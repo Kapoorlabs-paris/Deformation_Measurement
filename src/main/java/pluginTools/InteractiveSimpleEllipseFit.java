@@ -319,7 +319,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public double outsidedistance = 0;
 	public int[] boundarypoint;
 	public int[] midpoint;
-	public float maxSearchradius = 100;
+	public float maxSearchradius = 10;
 	public float maxSearchradiusS = 10;
 	public int missedframes = 200;
 	public CostFunction<Intersectionobject, Intersectionobject> UserchosenCostFunction;
@@ -364,7 +364,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int starttime;
 	public int endtime;
 	public ArrayList<Pair<String, Intersectionobject>> Tracklist;
+	
+	public HashMap<String, ArrayList<Intersectionobject>> HashTrackList;
 	public ArrayList<Pair<String, Segmentobject>> SegmentTracklist;
+	
+	public HashMap<String, ArrayList<Segmentobject>> HashSegmentTrackList;
 	public ArrayList<Pair<String, double[]>> resultAngle;
 	public ArrayList<Pair<String, Pair< Integer,ArrayList<double[]>>>> resultCurvature;
 	public ArrayList<Pair<String, Pair< Integer,List<RealLocalizable>>>> SubresultCurvature;
@@ -828,6 +832,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		HashresultSegIntensityA = new HashMap<Integer, Double>();
 		HashresultSegIntensityB = new HashMap<Integer, Double>();
 		HashresultSegPerimeter = new HashMap<Integer, Double>();
+		
+		HashSegmentTrackList = new HashMap<String, ArrayList<Segmentobject>>();
+		HashTrackList = new HashMap<String, ArrayList<Intersectionobject>>();
+		
 		Finalresult = new HashMap<String, Intersectionobject>();
 		SegmentFinalresult = new HashMap<String, Segmentobject>();
 		Finalcurvatureresult = new HashMap<Integer, Curvatureobject>();
