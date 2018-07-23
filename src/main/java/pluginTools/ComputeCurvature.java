@@ -510,41 +510,22 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 						
 						final HashSet<Segmentobject> Angleset = model.trackSegmentobjects(id);
 
-						final ArrayList<Segmentobject> Anglelist = new ArrayList<Segmentobject>(Angleset);
+						final ArrayList<Segmentobject> Anglelist = new ArrayList<Segmentobject>();
+						
+						
 						for(Segmentobject current: Angleset) {
+						
 							
 							Anglelist.add(current);
 							
-							
 						}
+						System.out.println(id + entryZ.getKey() + " modelid" + Anglelist.size());
 						parent.HashSegmentTrackList.put(id + entryZ.getKey(), Anglelist);
 					}
 					
 					for (final Integer id : model.trackIDs(true)) {
 
-						Comparator<Pair<String, Segmentobject>> ThirdDimcomparison = new Comparator<Pair<String, Segmentobject>>() {
-
-							@Override
-							public int compare(final Pair<String, Segmentobject> A,
-									final Pair<String, Segmentobject> B) {
-
-								return A.getB().z - B.getB().z;
-
-							}
-
-						};
-
-						Comparator<Pair<String, Segmentobject>> FourthDimcomparison = new Comparator<Pair<String, Segmentobject>>() {
-
-							@Override
-							public int compare(final Pair<String, Segmentobject> A,
-									final Pair<String, Segmentobject> B) {
-
-								return A.getB().t - B.getB().t;
-
-							}
-
-						};
+					
 
 						model.setName(id, "Track" + id + entryZ.getKey());
 
@@ -559,14 +540,37 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 						
 							Segmentobject currentangle = Angleiter.next();
 							
-							System.out.println(currentangle.z + "z here");
 							parent.SegmentTracklist.add(new ValuePair<String, Segmentobject>(
 									Integer.toString(id) + entryZ.getKey(), currentangle));
+							System.out.println(id + " " + currentangle.z);
 						}
-						System.out.println(parent.SegmentTracklist.size() + " Size ");
-						Collections.sort(parent.SegmentTracklist, ThirdDimcomparison);
 						
 					}
+					Comparator<Pair<String, Segmentobject>> ThirdDimcomparison = new Comparator<Pair<String, Segmentobject>>() {
+
+						@Override
+						public int compare(final Pair<String, Segmentobject> A,
+								final Pair<String, Segmentobject> B) {
+
+							return A.getB().z - B.getB().z;
+
+						}
+
+					};
+
+					Comparator<Pair<String, Segmentobject>> FourthDimcomparison = new Comparator<Pair<String, Segmentobject>>() {
+
+						@Override
+						public int compare(final Pair<String, Segmentobject> A,
+								final Pair<String, Segmentobject> B) {
+
+							return A.getB().t - B.getB().t;
+
+						}
+
+					};
+					
+					Collections.sort(parent.SegmentTracklist, ThirdDimcomparison);
 					
 					for (int id = minid; id <= maxid; ++id) {
 						Segmentobject bestangle = null;
@@ -657,7 +661,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 					currentframeobject.add(currentangle.getB());
 
 				}
-
+			}
+                 System.out.println(currentframeobject.size() + " size now" + " " + z);
 				for (final Segmentobject Allsegments : currentframeobject) {
 
 					if (Allsegments.cellLabel > maxid)
@@ -668,7 +673,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 				}
 
-			}
+			
 
 			for (int id = minid; id <= maxid; ++id) {
 
