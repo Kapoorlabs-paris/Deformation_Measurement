@@ -154,72 +154,7 @@ public class CurvatureFunction {
 
 	}
 
-	public Boolean CorrectSegmentRegression(RegressionFunction Result) {
-
-		return false;
-		/*
-		 * if (Result.ellipse != null) return false; if (Result.mixedfunction!=null) {
-		 * double inliersize = Result.inliers.size(); double totalsize =
-		 * Result.candidates.size(); if (totalsize > 0 && inliersize > 0) { double ratio
-		 * = inliersize / totalsize; double threshold = 0.5; Boolean needCorrection =
-		 * false;
-		 * 
-		 * if (ratio <= threshold) { // We need to correct
-		 * 
-		 * needCorrection = true;
-		 * 
-		 * }
-		 * 
-		 * 
-		 * return needCorrection; }
-		 * 
-		 * else return false;
-		 * 
-		 * }
-		 * 
-		 * else return false;
-		 */
-
-	}
-
-	public Pair<Boolean, Double> FitonLeftsubTree(InteractiveSimpleEllipseFit parent, RealLocalizable centerpoint,
-			Node<RealLocalizable> leaf, ArrayList<double[]> interpolatedCurvature,
-			ArrayList<RegressionFunction> functions, double smoothing, double maxError, int minNumInliers, int degree,
-			int secdegree, int label, int time) {
-
-		List<RealLocalizable> Leftsubtruths = leaf.leftTree;
-
-		// Fit function on left tree
-
-		ArrayList<double[]> LeftCordlist = new ArrayList<double[]>();
-		for (int i = 0; i < Leftsubtruths.size(); ++i) {
-
-			LeftCordlist.add(new double[] { Leftsubtruths.get(i).getDoublePosition(0),
-					Leftsubtruths.get(i).getDoublePosition(1) });
-
-		}
-		Pair<RegressionFunction, ArrayList<double[]>> Leftresultcurvature = getLocalcurvature(LeftCordlist, centerpoint,
-				smoothing, maxError, minNumInliers, degree, secdegree, label, time);
-
-		// Draw the function
-		double perimeter = 0;
-		if (Leftresultcurvature != null) {
-			functions.add(Leftresultcurvature.getA());
-
-			interpolatedCurvature.addAll(Leftresultcurvature.getB());
-
-			perimeter = Leftresultcurvature.getA().Curvaturepoints.get(0)[3];
-
-			boolean leftcorrected = CorrectSegmentRegression(Leftresultcurvature.getA());
-
-			Pair<Boolean, Double> leftpair = new ValuePair<Boolean, Double>(leftcorrected, perimeter);
-
-			return leftpair;
-
-		} else
-			return null;
-
-	}
+	
 
 	/**
 	 * 
@@ -257,44 +192,7 @@ public class CurvatureFunction {
 
 	}
 
-	public Pair<Boolean, Double> FitonRightsubTree(InteractiveSimpleEllipseFit parent, RealLocalizable centerpoint,
-			Node<RealLocalizable> leaf, ArrayList<double[]> interpolatedCurvature,
-			ArrayList<RegressionFunction> functions, double smoothing, double maxError, int minNumInliers, int degree,
-			int secdegree, int label, int time) {
-
-		List<RealLocalizable> Rightsubtruths = leaf.rightTree;
-
-		// Fit function on left tree
-
-		ArrayList<double[]> RightCordlist = new ArrayList<double[]>();
-		for (int i = 0; i < Rightsubtruths.size(); ++i) {
-
-			RightCordlist.add(new double[] { Rightsubtruths.get(i).getDoublePosition(0),
-					Rightsubtruths.get(i).getDoublePosition(1) });
-
-		}
-		Pair<RegressionFunction, ArrayList<double[]>> Rightresultcurvature = getLocalcurvature(RightCordlist,
-				centerpoint, smoothing, maxError, minNumInliers, degree, secdegree, label, time);
-
-		// Draw the function
-		double perimeter = 0;
-		if (Rightresultcurvature != null) {
-
-			functions.add(Rightresultcurvature.getA());
-
-			interpolatedCurvature.addAll(Rightresultcurvature.getB());
-
-			perimeter = Rightresultcurvature.getA().Curvaturepoints.get(0)[3];
-
-			boolean rightcorrected = CorrectSegmentRegression(Rightresultcurvature.getA());
-			Pair<Boolean, Double> rightpair = new ValuePair<Boolean, Double>(rightcorrected, perimeter);
-			return rightpair;
-		}
-
-		else
-			return null;
-
-	}
+	
 
 	public void MakeSegments(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int numSeg,
 			int celllabel, int time) {

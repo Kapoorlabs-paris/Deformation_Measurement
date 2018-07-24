@@ -441,7 +441,6 @@ public class Listordereing {
 				minobject = currentpair;
 				minVal = currentpair.getB().centralpoint.getDoublePosition(0);
 			}
-			System.out.println(currentpair.getB().centralpoint.getDoublePosition(0));
 		}
 
 		return minobject;

@@ -364,8 +364,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int starttime;
 	public int endtime;
 	public ArrayList<Pair<String, Intersectionobject>> Tracklist;
+	public ArrayList<Pair<String, Intersectionobject>> denseTracklist;
 	
 	public HashMap<String, ArrayList<Intersectionobject>> HashTrackList;
+	public HashMap<String, ArrayList<Intersectionobject>> HashdenseTrackList;
+	
 	public ArrayList<Pair<String, Segmentobject>> SegmentTracklist;
 	
 	public HashMap<String, ArrayList<Segmentobject>> HashSegmentTrackList;
@@ -384,8 +387,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public KeyListener kl;
 	public SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> parentgraph;
 	public HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> parentgraphZ;
+	public HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> parentdensegraphZ;
 	public HashMap<String, SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge>> parentgraphSegZ;
 	public HashMap<String, ArrayList<Intersectionobject>> ALLIntersections;
+	public HashMap<String, ArrayList<Intersectionobject>> ALLdenseIntersections;
 	public HashMap<String, ArrayList<Segmentobject>> ALLSegments;
 	public HashMap<Integer, ArrayList<double[]>> HashresultCurvature;
 	public HashMap<Integer, List<RealLocalizable>> SubHashresultCurvature;
@@ -825,6 +830,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		IntersectionZTRois = new HashMap<String, Roiobject>();
 		Clickedpoints = new int[2];
 		ALLIntersections = new HashMap<String, ArrayList<Intersectionobject>>();
+		ALLdenseIntersections = new HashMap<String, ArrayList<Intersectionobject>>();
 		ALLSegments = new HashMap<String, ArrayList<Segmentobject>>();
 		HashresultCurvature = new HashMap<Integer, ArrayList<double[]>>();
 		SubHashresultCurvature = new HashMap<Integer, List<RealLocalizable>>();
@@ -835,11 +841,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		HashSegmentTrackList = new HashMap<String, ArrayList<Segmentobject>>();
 		HashTrackList = new HashMap<String, ArrayList<Intersectionobject>>();
-		
+		HashdenseTrackList = new HashMap<String, ArrayList<Intersectionobject>>();
 		Finalresult = new HashMap<String, Intersectionobject>();
 		SegmentFinalresult = new HashMap<String, Segmentobject>();
 		Finalcurvatureresult = new HashMap<Integer, Curvatureobject>();
 		Tracklist = new ArrayList<Pair<String, Intersectionobject>>();
+		denseTracklist = new ArrayList<Pair<String, Intersectionobject>>();
 		SegmentTracklist = new ArrayList<Pair<String, Segmentobject>>();
 		resultDraw = new HashMap<String, Pair<ArrayList<double[]>, ArrayList<Line>>>();
 		resultDrawLine = new HashMap<String, ArrayList<Line>>();

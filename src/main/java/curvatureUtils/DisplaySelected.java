@@ -103,7 +103,7 @@ public class DisplaySelected {
 				loc.put(0, new double[] { x, y });
 
 				double distmin = Double.MAX_VALUE;
-				if (parent.tablesize > 0) {
+				if (parent.tablesize > 0 && parent.table.getRowCount() > 0) {
 					NumberFormat f = NumberFormat.getInstance();
 					for (int row = 0; row < parent.tablesize; ++row) {
 						String CordX = (String) parent.table.getValueAt(row, 1);

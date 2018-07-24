@@ -23,6 +23,21 @@ import utility.Curvatureobject;
 public class SaveListener implements ActionListener {
 
 	final InteractiveSimpleEllipseFit parent;
+	
+	
+	/**
+	 * 
+	 * Fields
+	 * 
+	 */
+	
+	int XcordLabel = 0;
+	int YcordLabel = 1;
+	int CurvatureLabel = 2;
+	int IntensityALabel = 3;
+	int IntensityBLabel = 4;
+	int perimeterLabel = 5;
+	
 
 	public SaveListener(final InteractiveSimpleEllipseFit parent) {
 
@@ -36,6 +51,13 @@ public class SaveListener implements ActionListener {
 	
 			if(parent.circlefits)
 				NewSave();
+			if(parent.celltrackcirclefits) {
+			    OldSave();
+			    DenseSave();   
+			}
+			if (!parent.curveautomode && !parent.curvesupermode)
+				OldSave();
+				
 				
 				IJ.log("All trackes saved in: " + parent.saveFile.getAbsolutePath());
 			
@@ -50,7 +72,44 @@ public class SaveListener implements ActionListener {
 	
 		
 		String ID = parent.selectedID;
-		
+		if (!parent.curveautomode && !parent.curvesupermode) {
+			try {
+				File fichier = new File(
+						parent.saveFile + "//" + parent.addToName + "TrackID" +ID + ".txt");
+
+				FileWriter fw = new FileWriter(fichier);
+				BufferedWriter bw = new BufferedWriter(fw);
+				
+				bw.write(
+						"\tTime (px)\t AngleT \n");
+			for (int index = 0; index< parent.resultAngle.size(); ++index) {
+				
+				
+				if (ID.equals(parent.resultAngle.get(index).getA() )) {
+					
+					// Save result sin file
+				
+					int time = (int) parent.resultAngle.get(index).getB()[0];
+					double angle = parent.resultAngle.get(index).getB()[1];
+					bw.write("\t" + time + "\t" + "\t"
+							+ angle + 
+							
+							"\n");
+					
+
+					
+				}
+				
+			}
+				
+			bw.close();
+			fw.close();
+			}
+			catch (IOException te) {
+			}
+			}
+				
+				else {
 		
 			try {
 				File fichier = new File(
@@ -88,6 +147,53 @@ public class SaveListener implements ActionListener {
 		}
 		catch (IOException te) {
 		}
+				}
+		
+	}
+	
+	public void DenseSave() {
+		
+		String ID = parent.selectedID;
+		
+		try {
+			File fichier = new File(
+					parent.saveFile + "//" + parent.addToName + "CellID" +ID + ".txt");
+
+			FileWriter fw = new FileWriter(fichier);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write("\tTrackID" + "\t" + "\t" + ID+ "\n");
+			bw.write("\tX-coordinates\tY-coordinates\tTime\t\tCurvature\t \tPerimeter\t \t Intensity \t \t IntensitySec\n");
+			for (Pair<String, Intersectionobject> currentangle : parent.Tracklist) {
+				
+				String currentID = currentangle.getA();
+				if(currentID.equals(ID)) {
+					ArrayList<double[]> linelist = currentangle.getB().linelist;
+					for (int index =0; index < linelist.size(); ++index) {
+					
+					bw.write("\t"+ parent.nf.format(linelist.get(index)[XcordLabel]) +  "\t" + "\t" + parent.nf.format(linelist.get(index)[YcordLabel])
+							+ "\t" + "\t" +
+							 currentangle.getB().z
+                              + "\t" + "\t" +
+							parent.nf.format(linelist.get(index)[CurvatureLabel]) + "\t"  + "\t"+  "\t" + "\t" + parent.nf.format(linelist.get(index)[perimeterLabel]) + "\t" + "\t"  
+							+ parent.nf.format(linelist.get(index)[IntensityALabel]) +
+							
+							"\t" + "\t"  + parent.nf.format(linelist.get(index)[IntensityBLabel]) + 
+							"\n");
+					
+					
+				}
+				}
+			
+		}
+		
+		
+    bw.close();
+	fw.close();
+	}
+	catch (IOException te) {
+	}
+		
+		
 		
 		
 	}
@@ -96,95 +202,94 @@ public class SaveListener implements ActionListener {
 		
 		
 		String ID = parent.selectedID;
-		for (int z = parent.AutostartTime; z <= parent.AutoendTime; ++z) {
-			try {
-				File fichier = new File(
-						parent.saveFile + "//" + parent.addToName + "CellID" +ID + "Tposition" + z + ".txt");
-
-				FileWriter fw = new FileWriter(fichier);
-				BufferedWriter bw = new BufferedWriter(fw);
-			
-			ArrayList<Pair<String, double[]>> currentresultPeri = new ArrayList<Pair<String, double[]>>();
-			for (Pair<String, double[]> currentperi : parent.resultAngle) {
-
-				if (ID.equals(currentperi.getA())) {
-
-					currentresultPeri.add(currentperi);
-
-				}
-
-			}
-			for (int index = 0; index < currentresultPeri.size(); ++index) {
-				int time = (int)currentresultPeri.get(index).getB()[0];
-				if(time == z) {
-				bw.write("\tTrackID" + "\t" + "\t" + ID);
-				bw.write("\tTimepoint" + "\t" + "\t" + z);
-				bw.write("\tPerimeter" + "\t" + "\t" + currentresultPeri.get(index).getB()[1] + 
-							
-							"\n");	
-				break;
-				}
-			}
-			bw.write("\tX-coordinates\tY-coordinates\tCurvature\t \t Intensity \t \t IntensitySec\n");
-			ArrayList<Pair<String, Pair< Integer,ArrayList<double[]>>>> currentresultCurv = new ArrayList<Pair<String, Pair< Integer,ArrayList<double[]>>>>();
-			for(Pair<String, Pair< Integer,ArrayList<double[]>>> currentCurvature : parent.resultCurvature) {
-				
-				
-				if (ID.equals(currentCurvature.getA())) {
-					
-					currentresultCurv.add(currentCurvature);
-					
-					
-				}
-				
-			}
-			
-			for (int index = 0; index < currentresultCurv.size(); ++index) {
-
-				Pair<String, Pair<Integer, ArrayList<double[]>>> currentpair = currentresultCurv.get(index);
-
-				int time = currentpair.getB().getA();
-
-				double[] X = new double[currentpair.getB().getB().size()];
-				double[] Y = new double[currentpair.getB().getB().size()];
-				double[] I = new double[currentpair.getB().getB().size()];
-				
-				
-				double[] Intensity = new double[currentpair.getB().getB().size()];
-				double[] IntensitySec = new double[currentpair.getB().getB().size()];
-				if(time == z ) {
-					
-				
-					for (int i = 0; i < currentpair.getB().getB().size(); ++i) {
-
-						X[i] = currentpair.getB().getB().get(i)[0];
-						Y[i] = currentpair.getB().getB().get(i)[1];
-						I[i] = currentpair.getB().getB().get(i)[2];
-						Intensity[i] = currentpair.getB().getB().get(i)[3];
-						IntensitySec[i] = currentpair.getB().getB().get(i)[4];
-					bw.write("\t"+ X[i] +  "\t" + "\t" + Y[i] + "\t" + "\t" + I[i] + "\t"  + "\t"+  "\t" + "\t" + Intensity[i] + "\t" + "\t"  + IntensitySec[i] +
-							"\n");
-					
-				}
-			
-				}
-				
-			}
-			
 		
-			bw.close();
+		if (!parent.curveautomode && !parent.curvesupermode) {
+		try {
+			File fichier = new File(
+					parent.saveFile + "//" + parent.addToName + "TrackID" +ID + ".txt");
+
+			FileWriter fw = new FileWriter(fichier);
+			BufferedWriter bw = new BufferedWriter(fw);
+			
+			bw.write(
+					"\tTime (px)\t AngleT \n");
+		for (int index = 0; index< parent.resultAngle.size(); ++index) {
+			
+			
+			if (ID.equals(parent.resultAngle.get(index).getA() )) {
+				
+				// Save result sin file
+			
+				int time = (int) parent.resultAngle.get(index).getB()[0];
+				double angle = parent.resultAngle.get(index).getB()[1];
+				bw.write("\t" + time + "\t" + "\t"
+						+ angle + 
+						
+						"\n");
+				
+
+				
+			}
+			
+		}
+			
+		bw.close();
+		fw.close();
+		}
+		catch (IOException te) {
+		}
+		}
+			
+			else {
+				
+				try {
+					File fichier = new File(
+							parent.saveFile + "//" + parent.addToName + "CellID" +ID + ".txt");
+
+					FileWriter fw = new FileWriter(fichier);
+					BufferedWriter bw = new BufferedWriter(fw);
+					bw.write("\tTrackID" + "\t" + "\t" + ID+ "\n");
+					bw.write("\tX-coordinates\tY-coordinates\tTime\tCurvature\t Perimeter\t \t Intensity \t \t IntensitySec\n");
+					for (Pair<String, Intersectionobject> currentangle : parent.Tracklist) {
+						
+						String currentID = currentangle.getA();
+						if(currentID.equals(ID)) {
+							ArrayList<double[]> linelist = currentangle.getB().linelist;
+							for (int index =0; index < linelist.size(); ++index) {
+							
+							bw.write("\t"+ parent.nf.format(linelist.get(index)[XcordLabel]) +  "\t" + "\t" + parent.nf.format(linelist.get(index)[YcordLabel])
+									+ "\t" + "\t" +
+									 currentangle.getB().z
+	                                  + "\t" + "\t" +
+									parent.nf.format(linelist.get(index)[CurvatureLabel]) + "\t"  + "\t" + parent.nf.format(linelist.get(index)[perimeterLabel]) + "\t" + "\t"  
+									+ parent.nf.format(linelist.get(index)[IntensityALabel]) +
+									
+									"\t" + "\t"  + parent.nf.format(linelist.get(index)[IntensityBLabel]) + 
+									"\n");
+							
+							
+						}
+						}
+					
+				}
+				
+				
+		    bw.close();
 			fw.close();
 			}
 			catch (IOException te) {
 			}
-				}
-			
+				
+				
+				
+				
 			
 		}
 		
+		
 	
 	
-
+	}
 		
 	}
 	

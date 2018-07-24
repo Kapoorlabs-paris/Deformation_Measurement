@@ -175,6 +175,7 @@ public class Computeinwater {
 		Iterator<Integer> setiter = parent.pixellist.iterator();
 		parent.superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>>();
 		ArrayList<Intersectionobject> AllCurveintersection = new ArrayList<Intersectionobject>();
+		ArrayList<Intersectionobject> AlldenseCurveintersection = new ArrayList<Intersectionobject>();
 		ArrayList<Segmentobject> AllCurveSegments = new ArrayList<Segmentobject>(); 
 		
 		
@@ -195,7 +196,8 @@ public class Computeinwater {
 			
 			List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
 		if(current.Size < parent.maxsize && current.Size > parent.minsize) {
-			tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, resultcurvelineroi,resultallcurvelineroi,ellipselineroi, Segmentrect,  AllCurveintersection, AllCurveSegments, t, z,
+			tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, resultcurvelineroi,resultallcurvelineroi,ellipselineroi, Segmentrect,  AllCurveintersection, AlldenseCurveintersection, 
+					AllCurveSegments, t, z,
 					parent.jpb, percent, label)));
 			
 		}
@@ -209,7 +211,7 @@ public class Computeinwater {
 
 			String uniqueID = Integer.toString(z) + Integer.toString(t);
 			parent.ALLIntersections.put(uniqueID, AllCurveintersection);
-			
+			parent.ALLdenseIntersections.put(uniqueID, AlldenseCurveintersection);
 			parent.ALLSegments.put(uniqueID, AllCurveSegments);
 			Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi, resultcurvelineroi,Segmentrect, z, t, -1, true);
 			parent.ZTRois.put(uniqueID, currentroiobject);

@@ -54,6 +54,30 @@ public class TrackingFunctions {
 		return simplegraph;
 
 	}
+	
+	public SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> Trackdensefunction() {
+
+		parent.UserchosenCostFunction = new ETrackCostFunction(1, 0);
+
+		ArrayList<ArrayList<Intersectionobject>> colllist = new ArrayList<ArrayList<Intersectionobject>>();
+		parent.ALLdenseIntersections = hashMapSorter.SortTimeorZ.sortByIntegerInter(parent.ALLdenseIntersections);
+		for (Map.Entry<String, ArrayList<Intersectionobject>> entry : parent.ALLdenseIntersections.entrySet()) {
+
+			ArrayList<Intersectionobject> bloblist = entry.getValue();
+			colllist.add(bloblist);
+		
+
+		}
+
+		KFsearch Tsearch = new KFsearch(colllist, parent.UserchosenCostFunction,  parent.maxSearchradius ,
+				 parent.maxSearchradius, 
+				parent.thirdDimensionSize / 4, parent.AccountedZ, parent.jpb);
+		Tsearch.process();
+		SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = Tsearch.getResult();
+
+		return simplegraph;
+
+	}
 
 	public SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge> TrackSegmentfunction() {
 

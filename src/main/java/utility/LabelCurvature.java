@@ -57,13 +57,14 @@ public class LabelCurvature implements Runnable {
 	final ArrayList<Roi> segmentrect;
 	final JProgressBar jpb;
 	ArrayList<Intersectionobject> AllCurveintersection;
+	ArrayList<Intersectionobject> AlldenseCurveintersection;
 	ArrayList<Segmentobject> AllCurveSegments;
 
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
 			final RandomAccessibleInterval<FloatType> ActualRoiimg, List<RealLocalizable> truths,
 			ArrayList<Line> resultlineroi, ArrayList<OvalRoi> resultcurvelineroi,
 			ArrayList<OvalRoi> resultallcurvelineroi,ArrayList<EllipseRoi> ellipselineroi, ArrayList<Roi> segmentrect,
-			ArrayList<Intersectionobject> AllCurveintersection,ArrayList<Segmentobject> AllCurveSegments, final int t,
+			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Intersectionobject> AlldenseCurveintersection, ArrayList<Segmentobject> AllCurveSegments, final int t,
 			final int z, final int celllabel) {
 
 		this.parent = parent;
@@ -72,6 +73,7 @@ public class LabelCurvature implements Runnable {
 		this.t = t;
 		this.z = z;
 		this.AllCurveintersection = AllCurveintersection;
+		this.AlldenseCurveintersection = AlldenseCurveintersection;
 		this.AllCurveSegments = AllCurveSegments;
 		this.jpb = null;
 		this.percent = 0;
@@ -87,7 +89,7 @@ public class LabelCurvature implements Runnable {
 			final RandomAccessibleInterval<FloatType> ActualRoiimg, List<RealLocalizable> truths,
 			ArrayList<Line> resultlineroi, ArrayList<OvalRoi> resultcurvelineroi,
 			ArrayList<OvalRoi> resultallcurvelineroi,ArrayList<EllipseRoi> ellipselineroi,ArrayList<Roi> segmentrect,
-			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Segmentobject> AllCurveSegments, final int t,
+			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Intersectionobject> AlldenseCurveintersection, ArrayList<Segmentobject> AllCurveSegments, final int t,
 			final int z, final JProgressBar jpb, final int percent, final int celllabel) {
 
 		this.parent = parent;
@@ -102,13 +104,18 @@ public class LabelCurvature implements Runnable {
 		this.jpb = jpb;
 		this.percent = percent;
 		this.AllCurveintersection = AllCurveintersection;
+		this.AlldenseCurveintersection = AlldenseCurveintersection;
 		this.AllCurveSegments = AllCurveSegments;
 		this.celllabel = celllabel;
 		this.segmentrect = segmentrect;
 	}
 
 	
-	
+	private void OverSliderLoop(List<RealLocalizable> Ordered, RealLocalizable centerpoint) {
+		
+		
+		
+	}
 
 	
 	private void SliderLoop(
@@ -170,16 +177,18 @@ public class LabelCurvature implements Runnable {
 					parent.functions, centerpoint, parent.smoothing);
 
 			
-		       Intersectionobject currentobject = currentobjectpair.getA();
+		       Intersectionobject densecurrentobject = currentobjectpair.getA();
+		       Intersectionobject sparsecurrentobject = currentobjectpair.getB();
+		       
+		       // For sparse list display
+			if (parent.maxperimeter >=sparsecurrentobject.perimeter)
+				parent.maxperimeter = (int)Math.round(sparsecurrentobject.perimeter);
 			
-			if (parent.maxperimeter >=currentobject.perimeter)
-				parent.maxperimeter = (int)Math.round(currentobject.perimeter);
-			
-			 resultlineroi.addAll(currentobject.linerois);
-			 resultcurvelineroi.addAll(currentobject.curvelinerois);
-			 resultallcurvelineroi.addAll(currentobject.curvealllinerois);
-					ellipselineroi.addAll(currentobject.ellipselinerois);
-					segmentrect.addAll(currentobject.segmentrect);
+			 resultlineroi.addAll(sparsecurrentobject.linerois);
+			 resultcurvelineroi.addAll(sparsecurrentobject.curvelinerois);
+			 resultallcurvelineroi.addAll(sparsecurrentobject.curvealllinerois);
+					ellipselineroi.addAll(sparsecurrentobject.ellipselinerois);
+					segmentrect.addAll(sparsecurrentobject.segmentrect);
 			
 		
 
@@ -193,12 +202,13 @@ public class LabelCurvature implements Runnable {
 			
 
 			
-			
-			AllCurveintersection.add(currentobject);
+			AlldenseCurveintersection.add(densecurrentobject);
+			AllCurveintersection.add(sparsecurrentobject);
 
 			AllCurveSegments.addAll(resultpair.Seglist);
 			parent.AlllocalCurvature.add(parent.localCurvature);
 			
+			// For dense list display
 			
 	
 	}
