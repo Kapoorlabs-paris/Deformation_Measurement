@@ -205,7 +205,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 				int z = itZ.next().getValue();
 
-				if (parent.celltrackcirclefits) {
+				if (parent.celltrackcirclefits || parent.pixelcelltrackcirclefits) {
 
 					SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
 
@@ -229,7 +229,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		else {
 
-			if (parent.celltrackcirclefits) {
+			if (parent.celltrackcirclefits || parent.pixelcelltrackcirclefits) {
 
 				SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
 
@@ -337,7 +337,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 				DisplaySelected.select(parent);
 			}
 
-			if (parent.celltrackcirclefits || parent.pixelcelltrackcirclefits) {
+			if (parent.celltrackcirclefits || parent.pixelcelltrackcirclefits ) {
 				DisplaySelected.markAll(parent);
 				DisplaySelected.selectAll(parent);
 

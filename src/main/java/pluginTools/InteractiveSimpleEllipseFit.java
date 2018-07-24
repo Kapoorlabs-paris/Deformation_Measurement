@@ -119,6 +119,7 @@ import listeners.RoiListener;
 import listeners.RunCelltrackCirclemodeListener;
 import listeners.RunCirclemodeListener;
 import listeners.RunPolymodeListener;
+import listeners.RunpixelCelltrackCirclemodeListener;
 import listeners.SaveAllListener;
 import listeners.SaveListener;
 import listeners.SaverDirectory;
@@ -171,6 +172,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public ArrayList<Node<RealLocalizable>> Allnodes = new ArrayList<Node<RealLocalizable>>();
 	public HashMap<String, Node<RealLocalizable>> Nodemap = new HashMap<String, Node<RealLocalizable>>();
 	public HashMap<Integer, List<RealLocalizable>> Listmap = new HashMap<Integer, List<RealLocalizable>>();
+	public HashMap<Integer, Integer> CellLabelsizemap = new HashMap<Integer, Integer>();
 	public Overlay overlay;
 	public int numSeg = 1;
 	public Overlay emptyoverlay;
@@ -985,6 +987,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		
 	}
+
 	public void updatePreview(final ValueChange change) {
 		if (!automode && !supermode && !curveautomode && !curvesupermode) {
 			roimanager = RoiManager.getInstance();
@@ -994,7 +997,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			}
 		}
 
-	
 		uniqueID = Integer.toString(thirdDimension) + Integer.toString(fourthDimension);
 		ZID = Integer.toString(thirdDimension);
 		TID = Integer.toString(fourthDimension);
@@ -1006,9 +1008,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			overlay = new Overlay();
 			imp.setOverlay(overlay);
 		}
-	
-		
-		
+
 		if (change == ValueChange.INSIDE || change == ValueChange.OUTSIDE) {
 
 			if (automode) {
@@ -1022,45 +1022,39 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 
 		if (change == ValueChange.SEG) {
-			
-			if(!supermode && !curvesupermode) {
-			RandomAccessibleInterval<FloatType> tempview = null;
 
-				 if(automode || curveautomode) 
-					 tempview = utility.Binarization.CreateBinary(CurrentViewSmooth, lowprob, highprob);
-			
-			
-			
-			
-			if (localimp == null || !localimp.isVisible() && automode) {
-				localimp = ImageJFunctions.show(tempview);
+			if (!supermode && !curvesupermode) {
+				RandomAccessibleInterval<FloatType> tempview = null;
+
+				if (automode || curveautomode)
+					tempview = utility.Binarization.CreateBinary(CurrentViewSmooth, lowprob, highprob);
+
+				if (localimp == null || !localimp.isVisible() && automode) {
+					localimp = ImageJFunctions.show(tempview);
+
+				}
+
+				else {
+
+					final float[] pixels = (float[]) localimp.getProcessor().getPixels();
+					final Cursor<FloatType> c = Views.iterable(tempview).cursor();
+
+					for (int i = 0; i < pixels.length; ++i)
+						pixels[i] = c.next().get();
+
+					localimp.updateAndDraw();
+
+				}
+
+				if (automode || curveautomode)
+					localimp.setTitle(
+							"Seg Image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 
 			}
-
-			else {
-
-				final float[] pixels = (float[]) localimp.getProcessor().getPixels();
-				final Cursor<FloatType> c = Views.iterable(tempview).cursor();
-
-				for (int i = 0; i < pixels.length; ++i)
-					pixels[i] = c.next().get();
-
-				localimp.updateAndDraw();
-
-			}
-
-			
-			if(automode || curveautomode)
-				localimp.setTitle(
-						"Seg Image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
-
 		}
-		}
-		
 
 		if (change == ValueChange.RESULT) {
-			
-			
+
 			prestack = new ImageStack((int) originalimg.dimension(0), (int) originalimg.dimension(1),
 					java.awt.image.ColorModel.getRGBdefault());
 
@@ -1152,7 +1146,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					for (Line currentline : resultDraw.get(ID).getB()) {
 						cp.setColor(colorLineA);
 						cp.setLineWidth(4);
-						Line nearest = kalmanTracker.NearestRoi.getNearestLineRois(currentobject, new double[] {IntersectionX, IntersectionY}, this);
+						Line nearest = kalmanTracker.NearestRoi.getNearestLineRois(currentobject,
+								new double[] { IntersectionX, IntersectionY }, this);
 						if (nearest == currentline) {
 							cp.draw(currentline);
 							nearestline = currentline;
@@ -1164,7 +1159,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					for (Line currentline : resultDraw.get(ID).getB()) {
 						cp.setColor(colorLineA);
 						cp.setLineWidth(4);
-						Line nearest = kalmanTracker.NearestRoi.getNearestLineRois(currentobject, new double[] {IntersectionX, IntersectionY}, this);
+						Line nearest = kalmanTracker.NearestRoi.getNearestLineRois(currentobject,
+								new double[] { IntersectionX, IntersectionY }, this);
 						if (nearest == currentline) {
 							cp.draw(currentline);
 						}
@@ -1212,68 +1208,61 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 
 		if (change == ValueChange.THIRDDIMmouse || change == ValueChange.FOURTHDIMmouse) {
-			if(Tracklist.size() > 0 && (automode ||supermode)) {
-				
+			if (Tracklist.size() > 0 && (automode || supermode)) {
+
 				ComputeAngles current = new ComputeAngles(this, null);
-			
+
 				current.Lineage();
-				
+
 			}
-			if(Tracklist.size() > 0 && (curveautomode || curvesupermode)) {
-				
+			if (Tracklist.size() > 0 && (curveautomode || curvesupermode)) {
+
 				ComputeCurvature current = new ComputeCurvature(this, null);
-			
+
 				current.CurvedLineage();
-				
-				
+
 			}
-       if(SegmentTracklist.size() > 0 && (curveautomode || curvesupermode)) {
-				
+			if (SegmentTracklist.size() > 0 && (curveautomode || curvesupermode)) {
+
 				ComputeCurvature current = new ComputeCurvature(this, null);
-			
+
 				current.CurvedSegmentLineage();
-				
-				
+
 			}
-			
+
 			if (automode || supermode || curveautomode || curvesupermode) {
-				
-					updatePreview(ValueChange.SEG);
-				
-				if(originalimgsmooth!= null)
-					CurrentViewSmooth =  utility.Slicer.getCurrentView(originalimgsmooth, thirdDimension,
+
+				updatePreview(ValueChange.SEG);
+
+				if (originalimgsmooth != null)
+					CurrentViewSmooth = utility.Slicer.getCurrentView(originalimgsmooth, thirdDimension,
 							thirdDimensionSize, fourthDimension, fourthDimensionSize);
-				if (originalimgbefore != null) 
+				if (originalimgbefore != null)
 					CurrentViewOrig = utility.Slicer.getCurrentView(originalimgbefore, thirdDimension,
 							thirdDimensionSize, fourthDimension, fourthDimensionSize);
 
-					if (originalimg!= null) 
-						CurrentView = utility.Slicer.getCurrentView(originalimg, thirdDimension,
-								thirdDimensionSize, fourthDimension, fourthDimensionSize);
-					
-					if(originalSecimg != null) 
-						
-						CurrentViewSecOrig = utility.Slicer.getCurrentView(originalSecimg, thirdDimension, thirdDimensionSize,
-								fourthDimension, fourthDimensionSize);
-						
-					
-					
-					
+				if (originalimg != null)
+					CurrentView = utility.Slicer.getCurrentView(originalimg, thirdDimension, thirdDimensionSize,
+							fourthDimension, fourthDimensionSize);
+
+				if (originalSecimg != null)
+
+					CurrentViewSecOrig = utility.Slicer.getCurrentView(originalSecimg, thirdDimension,
+							thirdDimensionSize, fourthDimension, fourthDimensionSize);
+
 			}
-			
-			if(supermode || curvesupermode || automode || curveautomode  )
+
+			if (supermode || curvesupermode || automode || curveautomode)
 				repaintView(imp, CurrentViewOrig);
 			else
 				repaintView(imp, CurrentView);
-			
-			
-			if(!automode && !supermode && !curveautomode && !curvesupermode){
+
+			if (!automode && !supermode && !curveautomode && !curvesupermode) {
 				if (ZTRois.get(uniqueID) == null)
 					DisplayDefault();
 				else
 					Display();
-			}
-			else if (automode || supermode || curveautomode || curvesupermode)
+			} else if (automode || supermode || curveautomode || curvesupermode)
 				DisplayAuto.Display(this);
 			imp.setTitle("Active image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 
@@ -1941,9 +1930,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				
 				Probselect.add(celltrackcirclemode, new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, GridBagConstraints.EAST,
 						GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+				
 				Probselect.add(circlemode, new GridBagConstraints(2, 8, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-				
+
+				Probselect.add(Pixelcelltrackcirclemode, new GridBagConstraints(0, 10, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+						GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 				
 			}
 	
@@ -2312,7 +2304,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		circlemode.addItemListener(new RunCirclemodeListener(this));
 		celltrackcirclemode.addItemListener(new RunCelltrackCirclemodeListener(this));
-	//	Pixelcelltrackcirclemode.addItemListener(new RunPixelCelltrackCirclemodeListener(this));
+		Pixelcelltrackcirclemode.addItemListener(new RunpixelCelltrackCirclemodeListener(this));
 		
 		polymode.addItemListener(new RunPolymodeListener(this));
 		

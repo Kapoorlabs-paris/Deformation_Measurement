@@ -51,7 +51,7 @@ public class SaveListener implements ActionListener {
 	
 			if(parent.circlefits)
 				NewSave();
-			if(parent.celltrackcirclefits) {
+			if(parent.celltrackcirclefits || parent.pixelcelltrackcirclefits) {
 			    OldSave();
 			    DenseSave();   
 			}
