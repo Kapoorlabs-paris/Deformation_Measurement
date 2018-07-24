@@ -36,11 +36,11 @@ public class Listordereing {
 
 		return orderedtruths;
 	}
-	
 
-	public static ArrayList<Pair<String, Segmentobject>>  getCopySegList(ArrayList<Pair<String, Segmentobject>>  copytruths) {
+	public static ArrayList<Pair<String, Segmentobject>> getCopySegList(
+			ArrayList<Pair<String, Segmentobject>> copytruths) {
 
-		ArrayList<Pair<String, Segmentobject>> orderedtruths = new ArrayList<Pair<String, Segmentobject>> ();
+		ArrayList<Pair<String, Segmentobject>> orderedtruths = new ArrayList<Pair<String, Segmentobject>>();
 		Iterator<Pair<String, Segmentobject>> iter = copytruths.iterator();
 
 		while (iter.hasNext()) {
@@ -51,10 +51,11 @@ public class Listordereing {
 
 		return orderedtruths;
 	}
-	
-	public static ArrayList<Pair<String, Intersectionobject>>  getCopyInterList(ArrayList<Pair<String, Intersectionobject>>  copytruths) {
 
-		ArrayList<Pair<String, Intersectionobject>> orderedtruths = new ArrayList<Pair<String, Intersectionobject>> ();
+	public static ArrayList<Pair<String, Intersectionobject>> getCopyInterList(
+			ArrayList<Pair<String, Intersectionobject>> copytruths) {
+
+		ArrayList<Pair<String, Intersectionobject>> orderedtruths = new ArrayList<Pair<String, Intersectionobject>>();
 		Iterator<Pair<String, Intersectionobject>> iter = copytruths.iterator();
 
 		while (iter.hasNext()) {
@@ -70,11 +71,12 @@ public class Listordereing {
 
 		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
 
-		if(index > truths.size())
+		if (index > truths.size())
 			index = truths.size();
-		
-		IJ.log(truths.get(index).getDoublePosition(0) + " " + truths.get(index).getDoublePosition(1) + " New ref point");
-		
+
+		IJ.log(truths.get(index).getDoublePosition(0) + " " + truths.get(index).getDoublePosition(1)
+				+ " New ref point");
+
 		for (int i = index; i < truths.size(); ++i) {
 
 			orderedtruths.add(truths.get(i));
@@ -162,11 +164,12 @@ public class Listordereing {
 		// Get the starting minX and minY co-ordinates
 		RealLocalizable minCord;
 
+		RealLocalizable meanCord = getMeanCord(copytruths);
 		minCord = getMinCord(copytruths);
 		RealLocalizable refcord = minCord;
 
 		orderedtruths.add(minCord);
-		
+
 		IJ.log(minCord.getDoublePosition(0) + " " + minCord.getDoublePosition(1) + " Default ref point");
 		copytruths.remove(minCord);
 		do {
@@ -174,9 +177,26 @@ public class Listordereing {
 			RealLocalizable nextCord = getNextNearest(minCord, copytruths);
 			copytruths.remove(nextCord);
 			if (copytruths.size() != 0) {
+				RealLocalizable secondnextCord = getNextNearest(minCord, copytruths);
 				copytruths.add(nextCord);
 
-				RealLocalizable chosenCord = nextCord;
+				double nextangle = Distance.AngleVectors(minCord, nextCord, meanCord);
+				double secondnextangle = Distance.AngleVectors(minCord, secondnextCord, meanCord);
+				RealLocalizable chosenCord = null;
+
+				if (nextangle >= 0 && secondnextangle >= 0 && nextangle <= secondnextangle)
+					chosenCord = nextCord;
+				if (nextangle >= 0 && secondnextangle >= 0 && nextangle > secondnextangle)
+					chosenCord = secondnextCord;
+
+				if (nextangle < 0 && secondnextangle > 0)
+					chosenCord = nextCord;
+				if (nextangle > 0 && secondnextangle < 0)
+					chosenCord = secondnextCord;
+
+				else if (nextangle < 0 || secondnextangle < 0)
+
+					chosenCord = (nextangle >= secondnextangle) ? nextCord : secondnextCord;
 
 				minCord = chosenCord;
 				orderedtruths.add(minCord);
@@ -192,10 +212,7 @@ public class Listordereing {
 
 		return new ValuePair<RealLocalizable, List<RealLocalizable>>(refcord, orderedtruths);
 	}
-	
-	
-	
-	
+
 	/**
 	 * Return an ordered list of XY coordinates starting from the reference position
 	 * which is the lowest point below the center of the list of points
@@ -204,79 +221,57 @@ public class Listordereing {
 	 * @return
 	 */
 
-	public static  ArrayList<Pair<String, Segmentobject>> getOrderedSegList(ArrayList<Pair<String, Segmentobject>>  truths) {
+	public static ArrayList<Pair<String, Segmentobject>> getOrderedSegList(
+			ArrayList<Pair<String, Segmentobject>> truths) {
 
 		IJ.log("Ordering Segments");
 		ArrayList<Pair<String, Segmentobject>> copytruths = getCopySegList(truths);
-		ArrayList<Pair<String, Segmentobject>> orderedtruths = new ArrayList<Pair<String, Segmentobject>>(truths.size());
+		ArrayList<Pair<String, Segmentobject>> orderedtruths = new ArrayList<Pair<String, Segmentobject>>(
+				truths.size());
 		// Get the starting minX and minY co-ordinates
 		Pair<String, Segmentobject> minCord = getMinSegCord(copytruths);
 
 		orderedtruths.add(minCord);
-		
+
 		copytruths.remove(minCord);
 		do {
-
 			Pair<String, Segmentobject> nextCord = getSegNextNearest(minCord, copytruths);
-			copytruths.remove(nextCord);
-			if (copytruths.size() != 0) {
-				copytruths.add(nextCord);
+				copytruths.remove(nextCord);
 
-				Pair<String, Segmentobject> chosenCord = nextCord;
+				if (copytruths.size() != 0) {
+					Pair<String, Segmentobject> secondnextCord = getSegNextNearest(minCord, copytruths);
+					copytruths.add(nextCord);
+					double nextangle = Distance.AngleVectors(minCord, nextCord);
+					double secondnextangle = Distance.AngleVectors(minCord, secondnextCord);
+					Pair<String, Segmentobject> chosenCord = null;
+					if (nextangle >= 0 && secondnextangle >= 0 && nextangle <= secondnextangle)
+						chosenCord = nextCord;
+					if (nextangle >= 0 && secondnextangle >= 0 && nextangle > secondnextangle)
+						chosenCord = secondnextCord;
 
-				minCord = chosenCord;
-				orderedtruths.add(minCord);
-				copytruths.remove(chosenCord);
-			} else {
+					if (nextangle < 0 && secondnextangle > 0)
+						chosenCord = nextCord;
+					if (nextangle > 0 && secondnextangle < 0)
+						chosenCord = secondnextCord;
 
-				orderedtruths.add(nextCord);
-				break;
+					else if (nextangle < 0 || secondnextangle < 0)
 
-			}
+						chosenCord = (nextangle >= secondnextangle) ? nextCord : secondnextCord;
+
+					minCord = chosenCord;
+					orderedtruths.add(minCord);
+					copytruths.remove(chosenCord);
+				} else {
+
+					orderedtruths.add(nextCord);
+					break;
+
+				}
 		} while (copytruths.size() >= 0);
 
 		return orderedtruths;
 	}
-	
 
-	public static  ArrayList<Pair<String, Intersectionobject>> getOrderedIntersectionList(ArrayList<Pair<String, Intersectionobject>>  truths) {
-
-		ArrayList<Pair<String, Intersectionobject>> copytruths = getCopyInterList(truths);
-		ArrayList<Pair<String, Intersectionobject>> orderedtruths = new ArrayList<Pair<String, Intersectionobject>>(truths.size());
-		// Get the starting minX and minY co-ordinates
-		Pair<String, Intersectionobject> minCord = getMinIntersectionCord(copytruths);
-
-		orderedtruths.add(minCord);
-		
-		copytruths.remove(minCord);
-		do {
-
-			Pair<String, Intersectionobject> nextCord = getInterNextNearest(minCord, copytruths);
-			copytruths.remove(nextCord);
-			if (copytruths.size() != 0) {
-				copytruths.add(nextCord);
-
-				Pair<String, Intersectionobject> chosenCord = nextCord;
-
-				minCord = chosenCord;
-				orderedtruths.add(minCord);
-
-				copytruths.remove(chosenCord);
-			} else {
-
-				orderedtruths.add(nextCord);
-				break;
-
-			}
-		} while (copytruths.size() >= 0);
-
-		return orderedtruths;
-	}
-	
-	
-	
-	
-	
 	public static RealLocalizable GetCurrentRefpoint(List<RealLocalizable> truths, RealLocalizable Refpoint,
 			RealLocalizable SecRefpoint) {
 
@@ -403,8 +398,6 @@ public class Listordereing {
 
 	public static RealLocalizable getMinCord(List<RealLocalizable> truths) {
 
-		RealLocalizable meanCord = getMeanCord(truths);
-
 		double minVal = Double.MAX_VALUE;
 		RealLocalizable minobject = null;
 		Iterator<RealLocalizable> iter = truths.iterator();
@@ -413,7 +406,7 @@ public class Listordereing {
 
 			RealLocalizable currentpair = iter.next();
 
-			if (Math.abs(currentpair.getDoublePosition(0) - meanCord.getDoublePosition(0)) <= 10 && currentpair.getDoublePosition(0) < minVal) {
+			if (currentpair.getDoublePosition(0) <= minVal) {
 
 				minobject = currentpair;
 				minVal = currentpair.getDoublePosition(0);
@@ -424,7 +417,7 @@ public class Listordereing {
 
 		return minobject;
 	}
-	
+
 	/**
 	 * 
 	 * Get the starting XY co-ordinates to create an ordered list, start from minX
@@ -436,7 +429,6 @@ public class Listordereing {
 
 	public static Pair<String, Segmentobject> getMinSegCord(ArrayList<Pair<String, Segmentobject>> truths) {
 
-
 		double minVal = Double.MAX_VALUE;
 		Pair<String, Segmentobject> minobject = null;
 		Iterator<Pair<String, Segmentobject>> iter = truths.iterator();
@@ -444,36 +436,35 @@ public class Listordereing {
 		while (iter.hasNext()) {
 
 			Pair<String, Segmentobject> currentpair = iter.next();
-			if (currentpair.getB().centralpoint.getDoublePosition(0) <= minVal)  {
+			if (currentpair.getB().centralpoint.getDoublePosition(0) <= minVal) {
 
 				minobject = currentpair;
 				minVal = currentpair.getB().centralpoint.getDoublePosition(0);
 			}
-
+			System.out.println(currentpair.getB().centralpoint.getDoublePosition(0));
 		}
 
 		return minobject;
 	}
 
-	public static Pair<String, Intersectionobject> getMinIntersectionCord(ArrayList<Pair<String, Intersectionobject>> truths) {
-
+	public static Pair<String, Intersectionobject> getMinIntersectionCord(
+			ArrayList<Pair<String, Intersectionobject>> truths) {
 
 		double minVal = Double.MAX_VALUE;
 		Pair<String, Intersectionobject> minobject = null;
 		Iterator<Pair<String, Intersectionobject>> iter = truths.iterator();
 
 		while (iter.hasNext()) {
-System.out.println("in");
 			Pair<String, Intersectionobject> currentpair = iter.next();
 
 			ArrayList<double[]> Linelist = currentpair.getB().linelist;
-			
-			for (int i = 0; i < Linelist.size(); ++i) {
-			if (currentpair.getB().linelist.get(i)[0] < minVal)  {
 
-				minobject = currentpair;
-				minVal = currentpair.getB().linelist.get(i)[0] ;
-			}
+			for (int i = 0; i < Linelist.size(); ++i) {
+				if (currentpair.getB().linelist.get(i)[0] < minVal) {
+
+					minobject = currentpair;
+					minVal = currentpair.getB().linelist.get(i)[0];
+				}
 
 			}
 		}
@@ -481,8 +472,6 @@ System.out.println("in");
 		return minobject;
 	}
 
-	
-	
 	/**
 	 * 
 	 * 
@@ -523,7 +512,7 @@ System.out.println("in");
 		return nextobject;
 
 	}
-	
+
 	/**
 	 * 
 	 * 
@@ -534,12 +523,14 @@ System.out.println("in");
 	 * @return
 	 */
 
-	public static Pair<String, Segmentobject> getSegNextNearest(Pair<String, Segmentobject> minCord, List<Pair<String, Segmentobject>> truths) {
+	public static Pair<String, Segmentobject> getSegNextNearest(Pair<String, Segmentobject> minCord,
+			List<Pair<String, Segmentobject>> truths) {
 
 		Pair<String, Segmentobject> nextobject = null;
 
 		final List<RealPoint> targetCoords = new ArrayList<RealPoint>(truths.size());
-		final List<FlagNode<Pair<String, Segmentobject>>> targetNodes = new ArrayList<FlagNode<Pair<String, Segmentobject>>>(truths.size());
+		final List<FlagNode<Pair<String, Segmentobject>>> targetNodes = new ArrayList<FlagNode<Pair<String, Segmentobject>>>(
+				truths.size());
 
 		for (Pair<String, Segmentobject> localcord : truths) {
 
@@ -549,10 +540,11 @@ System.out.println("in");
 
 		if (targetNodes.size() > 0 && targetCoords.size() > 0) {
 
-			final KDTree<FlagNode<Pair<String, Segmentobject>>> Tree = new KDTree<FlagNode<Pair<String, Segmentobject>>>(targetNodes,
-					targetCoords);
+			final KDTree<FlagNode<Pair<String, Segmentobject>>> Tree = new KDTree<FlagNode<Pair<String, Segmentobject>>>(
+					targetNodes, targetCoords);
 
-			final NNFlagsearchKDtree<Pair<String, Segmentobject>> Search = new NNFlagsearchKDtree<Pair<String, Segmentobject>>(Tree);
+			final NNFlagsearchKDtree<Pair<String, Segmentobject>> Search = new NNFlagsearchKDtree<Pair<String, Segmentobject>>(
+					Tree);
 
 			Search.search(minCord.getB());
 
@@ -564,14 +556,15 @@ System.out.println("in");
 		return nextobject;
 
 	}
-	
-	
-	public static Pair<String, Intersectionobject> getInterNextNearest(Pair<String, Intersectionobject> minCord, List<Pair<String, Intersectionobject>> truths) {
+
+	public static Pair<String, Intersectionobject> getInterNextNearest(Pair<String, Intersectionobject> minCord,
+			List<Pair<String, Intersectionobject>> truths) {
 
 		Pair<String, Intersectionobject> nextobject = null;
 
 		final List<RealPoint> targetCoords = new ArrayList<RealPoint>(truths.size());
-		final List<FlagNode<Pair<String, Intersectionobject>>> targetNodes = new ArrayList<FlagNode<Pair<String, Intersectionobject>>>(truths.size());
+		final List<FlagNode<Pair<String, Intersectionobject>>> targetNodes = new ArrayList<FlagNode<Pair<String, Intersectionobject>>>(
+				truths.size());
 
 		for (Pair<String, Intersectionobject> localcord : truths) {
 
@@ -581,10 +574,11 @@ System.out.println("in");
 
 		if (targetNodes.size() > 0 && targetCoords.size() > 0) {
 
-			final KDTree<FlagNode<Pair<String, Intersectionobject>>> Tree = new KDTree<FlagNode<Pair<String, Intersectionobject>>>(targetNodes,
-					targetCoords);
+			final KDTree<FlagNode<Pair<String, Intersectionobject>>> Tree = new KDTree<FlagNode<Pair<String, Intersectionobject>>>(
+					targetNodes, targetCoords);
 
-			final NNFlagsearchKDtree<Pair<String, Intersectionobject>> Search = new NNFlagsearchKDtree<Pair<String, Intersectionobject>>(Tree);
+			final NNFlagsearchKDtree<Pair<String, Intersectionobject>> Search = new NNFlagsearchKDtree<Pair<String, Intersectionobject>>(
+					Tree);
 
 			Search.search(minCord.getB());
 

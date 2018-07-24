@@ -1,6 +1,8 @@
 package ellipsoidDetector;
 
+import kalmanForSegments.Segmentobject;
 import net.imglib2.RealLocalizable;
+import net.imglib2.util.Pair;
 
 public class Distance {
 
@@ -84,4 +86,31 @@ public class Distance {
 		
 		return angledeg;
 	}
+	
+     public static double AngleVectors(final Pair<String, Segmentobject> pointA, final Pair<String, Segmentobject> pointB) {
+		
+		double[] pointAA = new double[pointA.getB().centralpoint.numDimensions()];
+		double[] pointBB = new double[pointB.getB().centralpoint.numDimensions()];
+		double[] pointmid = new double[pointA.getB().Cellcentralpoint.numDimensions()];
+		pointA.getB().centralpoint.localize(pointAA);
+		pointB.getB().centralpoint.localize(pointBB);
+		pointA.getB().Cellcentralpoint.localize(pointmid);
+		
+		final double[] vA = new double[] { pointAA[0] - pointmid[0], pointAA[1] - pointmid[1]  };
+		
+		final double[] vB = new double[] { pointBB[0] - pointmid[0], pointBB[1] - pointmid[1]  };
+        double argument = ( vA[0] * vB[0] +  vA[1] * vB[1] )  / Math.sqrt(( vA[0] * vA[0] +  vA[1] * vA[1])  * ( vB[0] * vB[0] +  vB[1] * vB[1] ) );
+		
+		double angle = Math.acos(argument);
+		double angledeg = Math.toDegrees(angle)%360;
+		
+		
+		return angledeg;
+	}
+     
+ 
+   
+     
+     
+     
 }

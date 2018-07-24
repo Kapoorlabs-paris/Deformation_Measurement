@@ -166,11 +166,11 @@ public class LabelCurvature implements Runnable {
 			// Make intersection object here
 
 			
-			Intersectionobject currentobject = PointExtractor.CurvaturetoIntersection(parent.localCurvature,
+			Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor.CurvaturetoIntersection(parent.localCurvature,
 					parent.functions, centerpoint, parent.smoothing);
 
 			
-		
+		       Intersectionobject currentobject = currentobjectpair.getA();
 			
 			if (parent.maxperimeter >=currentobject.perimeter)
 				parent.maxperimeter = (int)Math.round(currentobject.perimeter);

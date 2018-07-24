@@ -45,8 +45,8 @@ public class TrackingFunctions {
 
 		}
 
-		KFsearch Tsearch = new KFsearch(colllist, parent.UserchosenCostFunction,  parent.minNumInliers ,
-				 parent.minNumInliers, 
+		KFsearch Tsearch = new KFsearch(colllist, parent.UserchosenCostFunction,  parent.maxSearchradius ,
+				 parent.maxSearchradius, 
 				parent.thirdDimensionSize / 4, parent.AccountedZ, parent.jpb);
 		Tsearch.process();
 		SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = Tsearch.getResult();
@@ -77,8 +77,8 @@ public class TrackingFunctions {
 		
 		
 
-		KFSegmentsearch Tsearch = new KFSegmentsearch(colllist, parent.UserchosenSegmentCostFunction, parent.minNumInliers ,
-				 parent.minNumInliers, 
+		KFSegmentsearch Tsearch = new KFSegmentsearch(colllist, parent.UserchosenSegmentCostFunction, parent.maxSearchradius ,
+				 parent.maxSearchradius, 
 				parent.thirdDimensionSize / 4, parent.AccountedZ, parent.jpb);
 		Tsearch.process();
 		SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge> simplegraph = Tsearch.getResult();

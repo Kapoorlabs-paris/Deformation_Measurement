@@ -32,10 +32,11 @@ public class PointExtractor {
 	 * @param functions
 	 * @return
 	 */
-	public static Intersectionobject CurvaturetoIntersection(final ArrayList<Curvatureobject> localCurvature,
+	public static Pair<Intersectionobject, Intersectionobject> CurvaturetoIntersection(final ArrayList<Curvatureobject> localCurvature,
 			final ArrayList<RegressionFunction> functions, final RealLocalizable centerpoint, double smoothing) {
 
 		ArrayList<Line> resultlineroi = new ArrayList<Line>();
+		ArrayList<double[]> Sparselinelist = new ArrayList<double[]>();
 		ArrayList<double[]> linelist = new ArrayList<double[]>();
 		double[] X = new double[localCurvature.size()];
 		double[] Y = new double[localCurvature.size()];
@@ -57,6 +58,7 @@ public class PointExtractor {
 		for (int i = 0; i < functions.size(); ++i) {
 
 			RegressionFunction regression = functions.get(i);
+			
 			for (int index = 0; index < regression.Curvaturepoints.size() - 1; ++index) {
 
 				
@@ -116,6 +118,20 @@ public class PointExtractor {
 				resultallcurveline.addAll(DisplayAuto.DisplayPointInliers(regression.Curvaturepoints));
 
 			}
+			
+			for (int index = 0; index < regression.Curvaturepoints.size() ; ++index) {
+				
+				
+				X[index] = regression.Curvaturepoints.get(index)[0];
+				Y[index] = regression.Curvaturepoints.get(index)[1];
+				Z[index] = regression.Curvaturepoints.get(index)[2];
+				I[index] = regression.Curvaturepoints.get(index)[4];
+				Isec[index] = regression.Curvaturepoints.get(index)[5];
+				
+				// Make the line list for making intersection object
+				Sparselinelist.add(new double[] { X[index], Y[index], Z[index], I[index], Isec[index], perimeter });
+				
+			}
 
 		}
 
@@ -136,7 +152,12 @@ public class PointExtractor {
 
 		Intersectionobject currentIntersection = new Intersectionobject(mean, linelist, resultlineroi, resultcurveline,
 				resultallcurveline, ellipsecurveline, resultrectangle, perimeter, celllabel, t, z);
-		return currentIntersection;
+		
+		Intersectionobject SparsecurrentIntersection = new Intersectionobject(mean, Sparselinelist, resultlineroi, resultcurveline,
+				resultallcurveline, ellipsecurveline, resultrectangle, perimeter, celllabel, t, z);
+		
+		
+		return new ValuePair<Intersectionobject, Intersectionobject> (currentIntersection , SparsecurrentIntersection);
 
 	}
 

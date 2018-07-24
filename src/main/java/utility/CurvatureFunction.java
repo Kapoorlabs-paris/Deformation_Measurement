@@ -556,8 +556,7 @@ public class CurvatureFunction {
 			meanIntensity += Intensity.getA();
 			meanSecIntensity += Intensity.getB();
 			
-			if(Kappa < 0 )
-				Kappa = 0;
+			
 			
 			AllCurvaturepoints.add(
 					new double[] { newpos[0], newpos[1], (Kappa), perimeter, meanIntensity, meanSecIntensity });

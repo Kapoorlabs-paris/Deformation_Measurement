@@ -319,7 +319,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public double outsidedistance = 0;
 	public int[] boundarypoint;
 	public int[] midpoint;
-	public float maxSearchradius = 10;
+	public float maxSearchradius = 100;
 	public float maxSearchradiusS = 10;
 	public int missedframes = 200;
 	public CostFunction<Intersectionobject, Intersectionobject> UserchosenCostFunction;

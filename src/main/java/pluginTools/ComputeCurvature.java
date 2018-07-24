@@ -111,7 +111,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			int time = entry.getValue();
 
-			System.out.println(time + " making kymo");
 			ArrayList<Segmentobject> currentlist = sortedMappair.get(currentID);
 
 			ranac.setPosition(time, 0);
@@ -158,7 +157,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			for (Intersectionobject currentobject : currentlist) {
 				int count = 0;
 				ArrayList<double[]> linelist = currentobject.linelist;
-				System.out.println(linelist.size() + " Should be number of points");
 				for (int i = 0; i < linelist.size(); ++i) {
 
 					ranac.setPosition(count, 1);
@@ -248,7 +246,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 					int Xkymodimension = mapentry.getValue();
 
 					long[] size = new long[] { TimedimensionKymo, Xkymodimension };
-					System.out.println(Xkymodimension + " X dimension");
 					MakeInterKymo(sortedMappair.getB(), size, id);
 
 				}
@@ -397,7 +394,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 						Collections.sort(parent.Tracklist, ThirdDimcomparison);
 						if (parent.fourthDimensionSize > 1)
 							Collections.sort(parent.Tracklist, FourthDimcomparison);
-						parent.Tracklist = Listordereing.getOrderedIntersectionList(parent.Tracklist);
 					}
 
 					for (int id = minid; id <= maxid; ++id) {
@@ -519,7 +515,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 							Anglelist.add(current);
 							
 						}
-						System.out.println(id + entryZ.getKey() + " modelid" + Anglelist.size());
 						parent.HashSegmentTrackList.put(id + entryZ.getKey(), Anglelist);
 					}
 					
@@ -542,7 +537,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 							
 							parent.SegmentTracklist.add(new ValuePair<String, Segmentobject>(
 									Integer.toString(id) + entryZ.getKey(), currentangle));
-							System.out.println(id + " " + currentangle.z);
 						}
 						
 					}
@@ -662,7 +656,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 				}
 			}
-                 System.out.println(currentframeobject.size() + " size now" + " " + z);
 				for (final Segmentobject Allsegments : currentframeobject) {
 
 					if (Allsegments.cellLabel > maxid)
@@ -681,7 +674,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 					maxCurveDim = currentframeobject.size();
 
-					System.out.println(maxCurveDim + " y dim ");
 				}
 
 				String UniqueID = entry.getKey();
