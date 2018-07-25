@@ -479,7 +479,6 @@ public class CurvatureFunction {
 
 		meanIntensity /= size;
 		meanSecIntensity /= size;
-System.out.println(meanIntensity + " this is mean" );
 		Curvaturepoints.add(
 				new double[] { pointB[0], pointB[1], (Kappa), perimeter, meanIntensity, meanSecIntensity });
 

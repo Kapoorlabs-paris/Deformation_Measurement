@@ -100,11 +100,19 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		RandomAccessibleInterval<FloatType> CurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
+		RandomAccessibleInterval<FloatType> IntensityAKymo = new ArrayImgFactory<FloatType>().create(size,
+				new FloatType());
+		RandomAccessibleInterval<FloatType> IntensityBKymo = new ArrayImgFactory<FloatType>().create(size,
+				new FloatType());
 
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 
 		RandomAccess<FloatType> ranac = CurvatureKymo.randomAccess();
-
+		
+		RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
+		
+		RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
+		
 		while (itZ.hasNext()) {
 
 			Map.Entry<String, Integer> entry = itZ.next();
@@ -115,7 +123,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			ArrayList<Segmentobject> currentlist = sortedMappair.get(currentID);
 
 			ranac.setPosition(time, 0);
-
+			ranacimageA.setPosition(time, 0);
+			ranacimageB.setPosition(time, 0);
 			int count = 0;
 
 			if (currentlist != null)
@@ -123,6 +132,14 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 					ranac.setPosition(count, 1);
 					ranac.get().setReal(currentobject.Curvature);
+					
+					
+					ranacimageA.setPosition(count, 1);
+					ranacimageA.get().setReal(currentobject.IntensityA);
+					
+					ranacimageB.setPosition(count, 1);
+					ranacimageB.get().setReal(currentobject.IntensityB);
+					
 					count++;
 					// System.out.println(currentobject.z + "time unit" + " " +
 					// currentobject.centralpoint.getDoublePosition(0)
@@ -133,7 +150,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		}
 
 		ImageJFunctions.show(CurvatureKymo).setTitle("Curvature Kymo for Cell Label: " + CellLabel);
-
+		ImageJFunctions.show(IntensityAKymo).setTitle("Intensity ChA Kymo for Cell Label: " + CellLabel);
+		ImageJFunctions.show(IntensityBKymo).setTitle("Intensity ChB for Cell Label: " + CellLabel);
 	}
 
 	public void MakeInterKymo(HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size,
@@ -141,7 +159,13 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		RandomAccessibleInterval<FloatType> CurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
-
+		RandomAccessibleInterval<FloatType> IntensityAKymo = new ArrayImgFactory<FloatType>().create(size,
+				new FloatType());
+		RandomAccessibleInterval<FloatType> IntensityBKymo = new ArrayImgFactory<FloatType>().create(size,
+				new FloatType());
+	    RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
+		
+		RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 
 		RandomAccess<FloatType> ranac = CurvatureKymo.randomAccess();
@@ -156,7 +180,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			ArrayList<Intersectionobject> currentlist = sortedMappair.get(currentID);
 
 			ranac.setPosition(time, 0);
-
+			ranacimageA.setPosition(time, 0);
+			ranacimageB.setPosition(time, 0);
 			for (Intersectionobject currentobject : currentlist) {
 				int count = 0;
 				ArrayList<double[]> linelist = currentobject.linelist;
@@ -165,6 +190,13 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 					ranac.setPosition(count, 1);
 					ranac.get().set((float) currentobject.linelist.get(i)[2]);
 
+					
+					
+					ranacimageA.setPosition(count, 1);
+					ranacimageA.get().setReal(currentobject.linelist.get(i)[3]);
+					
+					ranacimageB.setPosition(count, 1);
+					ranacimageB.get().setReal(currentobject.linelist.get(i)[4]);
 					// IJ.log(currentobject.z + "time unit" + " " +
 					 //currentobject.linelist.get(i)[0]
 					 //+ " " + currentobject.linelist.get(i)[1] + "Check if arranging points correct");
@@ -176,7 +208,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		}
 
 		ImageJFunctions.show(CurvatureKymo).setTitle("Curvature Kymo for Cell Label: " + CellLabel);
-
+		ImageJFunctions.show(IntensityAKymo).setTitle("Intensity ChA Kymo for Cell Label: " + CellLabel);
+		ImageJFunctions.show(IntensityBKymo).setTitle("Intensity ChB for Cell Label: " + CellLabel);
 	}
 
 	@Override
