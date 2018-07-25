@@ -52,11 +52,11 @@ public class RunCirclemodeListener implements ItemListener {
 			parent.Angleselect.add(parent.interiorfield, new GridBagConstraints(0, 3, 2, 1, 0.0, 0.0,
 					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 			
-			parent.Angleselect.add(parent.outdistText, new GridBagConstraints(3, 2, 2, 1, 0.0, 0.0,
-					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
+		//	parent.Angleselect.add(parent.outdistText, new GridBagConstraints(3, 2, 2, 1, 0.0, 0.0,
+		//			GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 
-			parent.Angleselect.add(parent.exteriorfield, new GridBagConstraints(3, 3, 2, 1, 0.0, 0.0,
-					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
+		//	parent.Angleselect.add(parent.exteriorfield, new GridBagConstraints(3, 3, 2, 1, 0.0, 0.0,
+		//			GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 
 			SliderBoxGUI combominInlier = new SliderBoxGUI(parent.mininlierstring, parent.minInlierslider,
 					parent.minInlierField, parent.minInlierText, parent.scrollbarSize, parent.minNumInliers,

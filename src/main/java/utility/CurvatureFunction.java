@@ -8,15 +8,20 @@ import curvatureUtils.Node;
 import ellipsoidDetector.Distance;
 import kalmanForSegments.Segmentobject;
 import mpicbg.models.Point;
+import net.imglib2.Cursor;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
+import net.imglib2.algorithm.neighborhood.RectangleShape;
 import net.imglib2.algorithm.ransac.RansacModels.FitLocalEllipsoid;
 import net.imglib2.algorithm.ransac.RansacModels.RansacFunctionEllipsoid;
+import net.imglib2.algorithm.region.hypersphere.HyperSphere;
+import net.imglib2.algorithm.region.hypersphere.HyperSphereCursor;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import net.imglib2.view.Views;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.RegressionCurveSegment;
 import ransac.PointFunctionMatch.PointFunctionMatch;
@@ -396,7 +401,7 @@ public class CurvatureFunction {
 
 			long[] posf = new long[] { (long) points.get(index).getW()[0], (long) points.get(index).getW()[1] };
 			net.imglib2.Point point = new net.imglib2.Point(posf);
-			Pair<Double, Double> Intensity = getIntensity(point, center);
+			Pair<Double, Double> Intensity = getIntensity(point);
 
 			Curvaturepoints.add(new double[] { points.get(index).getW()[0], points.get(index).getW()[1],
 					Math.abs(Kappa), perimeter, Kappa, Intensity.getA(), Intensity.getB() });
@@ -460,7 +465,7 @@ public class CurvatureFunction {
 			for (int d = 0; d < newpos.length; ++d)
 				longnewpos[d] = (long) newpos[d];
 			net.imglib2.Point intpoint = new net.imglib2.Point(longnewpos);
-			Pair<Double, Double> Intensity = getIntensity(intpoint, centerpoint);
+			Pair<Double, Double> Intensity = getIntensity(intpoint);
 
 			// Average the intensity.
 			meanIntensity += Intensity.getA();
@@ -469,12 +474,12 @@ public class CurvatureFunction {
 			
 			
 			AllCurvaturepoints.add(
-					new double[] { newpos[0], newpos[1], (Kappa), perimeter, meanIntensity, meanSecIntensity });
+					new double[] { newpos[0], newpos[1], (Kappa), perimeter, Intensity.getA(), Intensity.getB() });
 		}
 
 		meanIntensity /= size;
 		meanSecIntensity /= size;
-
+System.out.println(meanIntensity + " this is mean" );
 		Curvaturepoints.add(
 				new double[] { pointB[0], pointB[1], (Kappa), perimeter, meanIntensity, meanSecIntensity });
 
@@ -538,7 +543,7 @@ public class CurvatureFunction {
 
 				long[] posf = new long[] { (long) p.getP1().getW()[0], (long) p.getP1().getW()[1] };
 				net.imglib2.Point point = new net.imglib2.Point(posf);
-				Pair<Double, Double> Intensity = getIntensity(point, center);
+				Pair<Double, Double> Intensity = getIntensity(point);
 				Curvaturepoints.add(new double[] { p.getP1().getW()[0], p.getP1().getW()[1], Math.abs(Kappa), perimeter,
 						Kappa, Intensity.getA(), Intensity.getB() });
 
@@ -671,10 +676,12 @@ public class CurvatureFunction {
 	 * @return
 	 */
 
-	public Pair<Double, Double> getIntensity(Localizable point, RealLocalizable center) {
+	public Pair<Double, Double> getIntensity(Localizable point) {
 
 		RandomAccess<FloatType> ranac = parent.CurrentViewOrig.randomAccess();
 
+		double Intensity = 0;
+		double IntensitySec = 0;
 		RandomAccess<FloatType> ranacsec;
 		if (parent.CurrentViewSecOrig != null)
 			ranacsec = parent.CurrentViewSecOrig.randomAccess();
@@ -683,60 +690,24 @@ public class CurvatureFunction {
 
 		ranac.setPosition(point);
 		ranacsec.setPosition(ranac);
-		double Intensity = ranac.get().getRealDouble();
-		double IntensitySec = ranacsec.get().getRealDouble();
-
-		double maxindistance;
-		double maxoutdistance;
+		
+		
+		
+		 HyperSphere< FloatType > hyperSphere = new HyperSphere<FloatType>( parent.CurrentViewOrig, ranac, (int)parent.insidedistance );
+		HyperSphereCursor<FloatType> localcursor = hyperSphere.localizingCursor();
+		int Area = 1;
+		while(localcursor.hasNext()) {
+			
+			localcursor.fwd();
+			
+			ranacsec.setPosition(localcursor);
+			Intensity += localcursor.get().getRealDouble();
+			IntensitySec += ranacsec.get().getRealDouble();
+			Area++;
+		}
 	
-			maxindistance = parent.insidedistance;
-			maxoutdistance = parent.outsidedistance;
-
-			double fcteps = 1.0E-30;
-			long step = point.getLongPosition(0) - (long) center.getFloatPosition(0);
-
-			int signum;
-			if (step < 0)
-				signum = 1;
-			else
-				signum = -1;
-
-			long movestep = 1;
-			long slope = (long) ((point.getLongPosition(1) - (long) center.getFloatPosition(1)) / (step + fcteps));
-			long intercept = point.getLongPosition(1) - slope * point.getLongPosition(0);
-
-			int i = 0;
-
-			do {
-				long x = ranac.getLongPosition(0) + i * movestep * signum;
-				long y = slope * ranac.getLongPosition(0) + intercept;
-				ranac.setPosition(new long[] { x, y });
-				ranacsec.setPosition(ranac);
-				i++;
-				Intensity += ranac.get().getRealDouble();
-				IntensitySec += ranacsec.get().getRealDouble();
-
-				if (Distance.DistanceSq(new double[] { point.getDoublePosition(0), point.getDoublePosition(1) },
-						new double[] { x, y }) <= maxindistance * maxindistance)
-					break;
-			} while (true);
-
-			i = 0;
-
-			do {
-				long x = ranac.getLongPosition(0) - i * movestep * signum;
-				long y = slope * ranac.getLongPosition(0) + intercept;
-				ranac.setPosition(new long[] { x, y });
-				ranacsec.setPosition(ranac);
-				i++;
-				Intensity += ranac.get().getRealDouble();
-				IntensitySec += ranacsec.get().getRealDouble();
-				if (Distance.DistanceSq(new double[] { point.getDoublePosition(0), point.getDoublePosition(1) },
-						new double[] { x, y }) <= maxoutdistance * maxoutdistance)
-					break;
-			} while (true);
-
-			return new ValuePair<Double, Double>(Intensity, IntensitySec);
+		
+			return new ValuePair<Double, Double>(Intensity/ Area, IntensitySec/Area);
 		}
 	
 

@@ -1579,7 +1579,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Label degreeText = new Label("Choose degree of polynomial");
 	public Label incrementText = new Label("Adjust reference point (px)");
 			
-	public Label indistText = new Label("Intensity Interior region (px)");
+	public Label indistText = new Label("Intensity region (px)");
 	public Label outdistText = new Label("Intensity Exterior region (px)");
 			
 	public Label secdegreeText = new Label("Choose degree of second polynomial");
@@ -2071,11 +2071,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				Angleselect.add(interiorfield, new GridBagConstraints(0, 3, 2, 1, 0.0, 0.0,
 						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				
-				Angleselect.add(outdistText, new GridBagConstraints(3, 2, 2, 1, 0.0, 0.0,
-						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			//	Angleselect.add(outdistText, new GridBagConstraints(3, 2, 2, 1, 0.0, 0.0,
+			//			GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				Angleselect.add(exteriorfield, new GridBagConstraints(3, 3, 2, 1, 0.0, 0.0,
-						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			//	Angleselect.add(exteriorfield, new GridBagConstraints(3, 3, 2, 1, 0.0, 0.0,
+			//			GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 				SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider,
 						minInlierField, minInlierText, scrollbarSize, minNumInliers,
