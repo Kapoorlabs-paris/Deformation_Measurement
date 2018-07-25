@@ -462,6 +462,7 @@ public class LabelCurvature implements Runnable {
 		// Get mean co-ordinate from the candidate points
 		RealLocalizable centerpoint = Listordereing.getMeanCord(truths);
 
+		parent.globalMaxcord = Listordereing.getMaxYCord(truths);
 		// Get the sparse list of points
 		Pair<RealLocalizable, List<RealLocalizable>> Ordered = Listordereing.getOrderedList(truths);
 

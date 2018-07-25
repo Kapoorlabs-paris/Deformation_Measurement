@@ -94,12 +94,14 @@ import listeners.DoSmoothingListener;
 import listeners.DrawListener;
 import listeners.ETrackFilenameListener;
 import listeners.ETrackMaxSearchListener;
+import listeners.ExteriorDistListener;
 import listeners.GaussRadiusListener;
 import listeners.HighProbListener;
 import listeners.IlastikListener;
 import listeners.IncrementListener;
 import listeners.InsideCutoffListener;
 import listeners.InsideLocListener;
+import listeners.InteriorDistListener;
 import listeners.LostFrameListener;
 import listeners.LowProbListener;
 import listeners.ManualInterventionListener;
@@ -114,6 +116,7 @@ import listeners.MinsizeListener;
 import listeners.OutsideCutoffListener;
 import listeners.RListener;
 import listeners.RedoListener;
+import listeners.RimLineSelectionListener;
 import listeners.RimSelectionListener;
 import listeners.RoiListener;
 import listeners.RunCelltrackCirclemodeListener;
@@ -212,7 +215,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public boolean celltrackcirclefits = false;
 	public boolean pixelcelltrackcirclefits = false;
 	
-	
+	public RealLocalizable globalMaxcord;
 	
 	
 	
@@ -317,7 +320,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public MouseListener ovalml;
 	public final double calibration;
 	public final double wavesize;
-	public double insidedistance = 0;
+	public double insidedistance = 1;
 	public double outsidedistance = 0;
 	public int[] boundarypoint;
 	public int[] midpoint;
@@ -1528,8 +1531,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JCheckBox IlastikAuto = new JCheckBox("Show Watershed Image", showWater);
 
 	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField, gaussfield, numsegField, cutoffField, minInlierField, degreeField, secdegreeField, incrementField;
+
 	public TextField inputFieldZ, startT, endT, maxSizeField, minSizeField;
-	public TextField inputFieldmaxtry;
+	public TextField inputFieldmaxtry, interiorfield, exteriorfield;
 	public TextField inputFieldminpercent;
 	public TextField inputFieldmaxellipse;
 
@@ -1574,6 +1578,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			Label.CENTER);
 	public Label degreeText = new Label("Choose degree of polynomial");
 	public Label incrementText = new Label("Adjust reference point (px)");
+			
+	public Label indistText = new Label("Intensity Interior region (px)");
+	public Label outdistText = new Label("Intensity Exterior region (px)");
+			
 	public Label secdegreeText = new Label("Choose degree of second polynomial");
 	public Label minInlierText = new Label(mininlierstring +  " = " + minNumInliers,
 			Label.CENTER);
@@ -1773,6 +1781,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		incrementField = new TextField(5);
 		incrementField.setText(Integer.toString(increment));
+		
+		
+		interiorfield = new TextField(1);
+		interiorfield.setText(Double.toString(insidedistance));
+		
+		exteriorfield = new TextField(1);
+		exteriorfield.setText(Double.toString(outsidedistance));
 		
 		secdegreeField = new TextField(5);
 		secdegreeField.setText(Integer.toString(secdegree));
@@ -2050,10 +2065,16 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				Angleselect.add(incrementField, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0,
 						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				Angleselect.add(maxsizeText, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0,
+				Angleselect.add(indistText, new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0,
 						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				Angleselect.add(maxSizeField, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0,
+				Angleselect.add(interiorfield, new GridBagConstraints(0, 3, 2, 1, 0.0, 0.0,
+						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
+				Angleselect.add(outdistText, new GridBagConstraints(3, 2, 2, 1, 0.0, 0.0,
+						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+				Angleselect.add(exteriorfield, new GridBagConstraints(3, 3, 2, 1, 0.0, 0.0,
 						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 				SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider,
@@ -2065,28 +2086,16 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				
 			//	Angleselect.add(CurrentCurvaturebutton, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 			//			GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0,
+				Angleselect.add(Curvaturebutton, new GridBagConstraints(3, 4, 2, 1, 0.0, 0.0,
 						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				Angleselect.add(displayCircle, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0,
+				Angleselect.add(displayCircle, new GridBagConstraints(3, 0, 2, 1, 0.0, 0.0,
 						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				Angleselect.add(displaySegments, new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0,
+				Angleselect.add(displaySegments, new GridBagConstraints(3, 1, 2, 1, 0.0, 0.0,
 						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				Angleselect.add(minsizeText, new GridBagConstraints(3, 2, 3, 1, 0.0, 0.0,
-						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
 
-				Angleselect.add(minSizeField, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0,
-						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				
-				Angleselect.add(ClearDisplay, new GridBagConstraints(3, 4, 3, 1, 0.0, 0.0,
-						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				
-				Angleselect.add(SelectRim, new GridBagConstraints(3, 5, 3, 1, 0.0, 0.0,
-						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				
-			
-				Angleselect.setPreferredSize(new Dimension(SizeX , SizeY ));
 
 				Angleselect.setBorder(circletools);
 				panelFirst.add(Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0,
@@ -2311,9 +2320,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		gaussfield.addTextListener(new GaussRadiusListener(this));
 		bordercorrection.addTextListener(new BlackBorderListener(this));
 		lostframe.addTextListener(new LostFrameListener(this));
+		interiorfield.addTextListener(new InteriorDistListener(this));
+		exteriorfield.addTextListener(new ExteriorDistListener(this));
+		
 		
 		ClearDisplay.addActionListener(new ClearDisplayListener(this));
-		SelectRim.addActionListener(new RimSelectionListener(this));
+		SelectRim.addActionListener(new RimLineSelectionListener(this));
 		degreeField.addTextListener(new DegreeListener(this, false));
 		incrementField.addTextListener(new IncrementListener(this, false));
 		secdegreeField.addTextListener(new SecDegreeListener(this, false));

@@ -266,7 +266,6 @@ public class EllipseTrack {
 		Computeinwater compute = new Computeinwater(parent, CurrentView, expanededtotalimg, t, z, (int) percent);
 		compute.ParallelRansac();
 
-		System.out.println("Invoke Parallel Ransac");
 	}
 
 	public void ManualIntervention() {

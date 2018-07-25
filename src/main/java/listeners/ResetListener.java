@@ -32,7 +32,6 @@ public class ResetListener implements ActionListener {
 		      parent.offsetField.setText(Integer.toString(parent.offset));
 		      parent.offsetYField.setText(Integer.toString(parent.offsetY));
 		      
-		      System.out.println(parent.offset + " " + parent.offsetY);
 		      SetRectangle rect = new SetRectangle(parent, grandparent);
 		      rect.setRect();
 

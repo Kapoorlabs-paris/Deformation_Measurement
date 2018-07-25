@@ -344,6 +344,28 @@ public class Listordereing {
 
 		return meanCord;
 	}
+	
+	public static RealLocalizable getMaxYCord(List<RealLocalizable> truths) {
+
+		double maxVal = Double.MIN_VALUE;
+		RealLocalizable minobject = null;
+		Iterator<RealLocalizable> iter = truths.iterator();
+
+		while (iter.hasNext()) {
+
+			RealLocalizable currentpair = iter.next();
+
+			if (currentpair.getDoublePosition(1) >= maxVal) {
+
+				minobject = currentpair;
+				maxVal = currentpair.getDoublePosition(1);
+
+			}
+
+		}
+
+		return minobject;
+	}
 
 	/**
 	 * 

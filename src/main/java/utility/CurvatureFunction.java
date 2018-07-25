@@ -688,15 +688,7 @@ public class CurvatureFunction {
 
 		double maxindistance;
 		double maxoutdistance;
-		if (parent.usedefaultrim) {
-
-			maxindistance = 1;
-			maxoutdistance = 1;
-			return new ValuePair<Double, Double>(Intensity, IntensitySec);
-
-		}
-
-		else {
+	
 			maxindistance = parent.insidedistance;
 			maxoutdistance = parent.outsidedistance;
 
@@ -746,6 +738,6 @@ public class CurvatureFunction {
 
 			return new ValuePair<Double, Double>(Intensity, IntensitySec);
 		}
-	}
+	
 
 }

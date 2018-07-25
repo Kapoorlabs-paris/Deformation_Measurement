@@ -35,6 +35,7 @@ import curvatureUtils.DisplaySelected;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import hashMapSorter.SortTimeorZ;
+import ij.IJ;
 import ij.ImageStack;
 import ij.gui.Line;
 import kalmanForSegments.Segmentobject;
@@ -164,10 +165,9 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 					ranac.setPosition(count, 1);
 					ranac.get().set((float) currentobject.linelist.get(i)[2]);
 
-					// System.out.println(currentobject.z + "time unit" + " " +
-					// currentobject.linelist.get(i)[0]
-					// + " " + currentobject.linelist.get(i)[1] + "Check if arranging points
-					// correct");
+					// IJ.log(currentobject.z + "time unit" + " " +
+					 //currentobject.linelist.get(i)[0]
+					 //+ " " + currentobject.linelist.get(i)[1] + "Check if arranging points correct");
 					count++;
 				}
 
