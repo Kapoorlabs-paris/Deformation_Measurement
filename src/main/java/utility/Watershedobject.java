@@ -141,13 +141,15 @@ public class Watershedobject {
 		// It prevents numerical instabilities when adding up millions of pixels
 		final RealSum realSum = new RealSum();
 		long count = 0;
-
+        double meanIntensity = 0;
 		for (final T type : input) {
 			realSum.add(type.getRealDouble());
 			++count;
 		}
+		if(count > 0)
+			meanIntensity = realSum.getSum() / count;
 
-		return realSum.getSum();
+		return meanIntensity;
 	}
 
 	public static RandomAccessibleInterval<FloatType> extractImage(final RandomAccessibleInterval<FloatType> outimg,
