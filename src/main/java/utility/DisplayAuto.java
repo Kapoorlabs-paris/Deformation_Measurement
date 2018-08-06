@@ -125,7 +125,7 @@ public class DisplayAuto {
 				DisplaySelected.select(parent);
 				}
 				
-				if(parent.celltrackcirclefits) {
+				if(parent.celltrackcirclefits || parent.pixelcelltrackcirclefits) {
 					
 					DisplaySelected.markAll(parent);
 					DisplaySelected.selectAll(parent);

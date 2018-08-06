@@ -112,28 +112,25 @@ public class LabelCurvature implements Runnable {
 
 	
 	private void OverSliderLoop(List<RealLocalizable> Ordered, RealLocalizable centerpoint) {
-		
+
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
 		// Get the sparse list of points
 		HashMap<Integer, RegressionCurveSegment> Bestdelta = new HashMap<Integer, RegressionCurveSegment>();
-		
 
-		
-		
 		int count = 0;
 		if (parent.minNumInliers > truths.size())
 			parent.minNumInliers = truths.size();
 
-		
 		int i = parent.increment;
-	
+		RegressionCurveSegment resultpair = CommonLoop(Ordered, centerpoint);
 		int maxstride = parent.CellLabelsizemap.get(celllabel);
 
-			// Get the sparse list of points, skips 5 pixel points
+		// Get the sparse list of points, skips parent.resolution pixel points
 
-		
-		for(int index = 0; index < maxstride; index+=5) {
-		
+		final int ndims = ActualRoiimg.numDimensions();
+
+		for (int index = 0; index < maxstride; index += parent.resolution) {
+
 			List<RealLocalizable> allorderedtruths = Listordereing.getList(Ordered, i + index);
 
 			if (parent.fourthDimensionSize > 1)
@@ -141,7 +138,7 @@ public class LabelCurvature implements Runnable {
 						parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
 			parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension,
 					parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
-			final int ndims = ActualRoiimg.numDimensions();
+
 			// Make a tree of a certain depth
 
 			int treedepth = parent.depth - 1;
@@ -150,10 +147,9 @@ public class LabelCurvature implements Runnable {
 				treedepth = 0;
 
 			CurvatureFunction computecurve = new CurvatureFunction(parent);
-			
-			RegressionCurveSegment resultpair = computecurve.getCurvature(
-					allorderedtruths,centerpoint, parent.insideCutoff, parent.minNumInliers, ndims, celllabel,
-					Math.abs(Math.max(parent.degree, parent.secdegree)),
+
+			resultpair = computecurve.getCurvature(allorderedtruths, centerpoint, parent.insideCutoff,
+					parent.minNumInliers, ndims, celllabel, Math.abs(Math.max(parent.degree, parent.secdegree)),
 					Math.abs(Math.min(parent.degree, parent.secdegree)), z, t);
 
 			// Here counter the segments where the number of inliers was too low
@@ -162,30 +158,27 @@ public class LabelCurvature implements Runnable {
 			count++;
 
 			parent.localCurvature = resultpair.Curvelist;
-			
+
 			parent.functions = resultpair.functionlist;
 			parent.localSegment = resultpair.Seglist;
 			// Make intersection object here
 
+			Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor
+					.CurvaturetoIntersection(parent.localCurvature, parent.functions, centerpoint, parent.smoothing);
+			Intersectionobject sparsecurrentobject = currentobjectpair.getB();
 
-			Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor.CurvaturetoIntersection(parent.localCurvature,
-					parent.functions, centerpoint, parent.smoothing);
-		       Intersectionobject sparsecurrentobject = currentobjectpair.getB();
-			
-		       resultlineroi.addAll(sparsecurrentobject.linerois);
-				 resultcurvelineroi.addAll(sparsecurrentobject.curvelinerois);
-				 resultallcurvelineroi.addAll(sparsecurrentobject.curvealllinerois);
-						ellipselineroi.addAll(sparsecurrentobject.ellipselinerois);
-						segmentrect.addAll(sparsecurrentobject.segmentrect);
+			resultlineroi.addAll(sparsecurrentobject.linerois);
+			resultcurvelineroi.addAll(sparsecurrentobject.curvelinerois);
+			resultallcurvelineroi.addAll(sparsecurrentobject.curvealllinerois);
+			ellipselineroi.addAll(sparsecurrentobject.ellipselinerois);
+			segmentrect.addAll(sparsecurrentobject.segmentrect);
 
-		
-			
 		}
-		
-		RegressionCurveSegment resultpair = Bestdelta.get(0);
+
+		resultpair = Bestdelta.get(0);
 		ArrayList<Curvatureobject> RefinedCurvature = new ArrayList<Curvatureobject>();
 		ArrayList<Curvatureobject> localCurvature = resultpair.Curvelist;
-		
+
 		double[] X = new double[localCurvature.size()];
 		double[] Y = new double[localCurvature.size()];
 		double[] Z = new double[localCurvature.size()];
@@ -194,19 +187,19 @@ public class LabelCurvature implements Runnable {
 
 		ArrayList<Double> CurvePeri = new ArrayList<Double>();
 		CurvePeri.add(localCurvature.get(0).perimeter);
-		
+
 		for (int index = 0; index < localCurvature.size(); ++index) {
 
 			ArrayList<Double> CurveXY = new ArrayList<Double>();
 			ArrayList<Double> CurveI = new ArrayList<Double>();
 			ArrayList<Double> CurveISec = new ArrayList<Double>();
-			
+
 			X[index] = localCurvature.get(index).cord[0];
 			Y[index] = localCurvature.get(index).cord[1];
 			Z[index] = localCurvature.get(index).radiusCurvature;
 			I[index] = localCurvature.get(index).Intensity;
 			ISec[index] = localCurvature.get(index).SecIntensity;
-			
+
 			CurveXY.add(Z[index]);
 			CurveI.add(I[index]);
 			CurveISec.add(ISec[index]);
@@ -221,7 +214,7 @@ public class LabelCurvature implements Runnable {
 				double[] Ztest = new double[testlocalCurvature.size()];
 				double[] Itest = new double[testlocalCurvature.size()];
 				double[] ISectest = new double[testlocalCurvature.size()];
-				
+
 				CurvePeri.add(testlocalCurvature.get(0).perimeter);
 				for (int testindex = 0; testindex < testlocalCurvature.size(); ++testindex) {
 
@@ -235,78 +228,64 @@ public class LabelCurvature implements Runnable {
 						CurveXY.add(Ztest[testindex]);
 						CurveI.add(Itest[index]);
 						CurveISec.add(ISectest[index]);
-						
+
 					}
 
 				}
 
 			}
-			double frequdeltaperi = localCurvature.get(0).perimeter ;
+			double frequdeltaperi = localCurvature.get(0).perimeter;
 			double frequdelta = Z[index];
 			double intensitydelta = I[index];
 			double intensitySecdelta = ISec[index];
-				
-				
-				
-				Iterator<Double> setiter = CurveXY.iterator();
-				while (setiter.hasNext()) {
 
-					Double s = setiter.next();
+			Iterator<Double> setiter = CurveXY.iterator();
+			while (setiter.hasNext()) {
 
-				frequdelta+=s;
+				Double s = setiter.next();
 
-				}
+				frequdelta += s;
 
-				frequdelta/=CurveXY.size();
-				Iterator<Double> perisetiter = CurvePeri.iterator();
-				while (perisetiter.hasNext()) {
+			}
 
-					Double s = perisetiter.next();
+			frequdelta /= CurveXY.size();
+			Iterator<Double> perisetiter = CurvePeri.iterator();
+			while (perisetiter.hasNext()) {
 
-				
-					frequdeltaperi+=s;
+				Double s = perisetiter.next();
 
-				}
-				
-				frequdeltaperi/=CurvePeri.size();
-				
-				
+				frequdeltaperi += s;
 
-				
-				
-				
-				Iterator<Double> Iiter = CurveI.iterator();
-				while (Iiter.hasNext()) {
+			}
 
-					Double s = Iiter.next();
+			frequdeltaperi /= CurvePeri.size();
 
-					intensitydelta+=s;
+			Iterator<Double> Iiter = CurveI.iterator();
+			while (Iiter.hasNext()) {
 
-				}
+				Double s = Iiter.next();
 
-				intensitydelta/=CurveI.size();
-				
-				
+				intensitydelta += s;
 
-				
-				Iterator<Double> ISeciter = CurveISec.iterator();
-				while (ISeciter.hasNext()) {
+			}
 
-					Double s = ISeciter.next();
+			intensitydelta /= CurveI.size();
 
-					intensitySecdelta+=s;
+			Iterator<Double> ISeciter = CurveISec.iterator();
+			while (ISeciter.hasNext()) {
 
-				}
+				Double s = ISeciter.next();
 
-				intensitySecdelta/=CurveISec.size();
-				
-				
-				
-			
-			Curvatureobject newobject = new Curvatureobject((float) frequdelta, frequdeltaperi, intensitydelta, intensitySecdelta, 
-					localCurvature.get(index).Label, localCurvature.get(index).cord, localCurvature.get(index).t,
-					localCurvature.get(index).z);
-		
+				intensitySecdelta += s;
+
+			}
+
+			intensitySecdelta /= CurveISec.size();
+
+			Curvatureobject newobject = new Curvatureobject((float) frequdelta, frequdeltaperi, intensitydelta,
+					intensitySecdelta, localCurvature.get(index).Label, localCurvature.get(index).cord,
+					localCurvature.get(index).t, localCurvature.get(index).z);
+
 			RefinedCurvature.add(newobject);
 		}
 
@@ -316,22 +295,20 @@ public class LabelCurvature implements Runnable {
 		parent.functions.addAll(Refinedresultpair.getA());
 		// Make intersection object here
 
-	
-		Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor.CurvaturetoIntersection(parent.localCurvature,
-				parent.functions, centerpoint, parent.smoothing);
-		  Intersectionobject densecurrentobject = currentobjectpair.getA();
-	       Intersectionobject sparsecurrentobject = currentobjectpair.getB();
-		
-	       resultlineroi.addAll(sparsecurrentobject.linerois);
-			 resultcurvelineroi.addAll(sparsecurrentobject.curvelinerois);
-			 resultallcurvelineroi.addAll(sparsecurrentobject.curvealllinerois);
-					ellipselineroi.addAll(sparsecurrentobject.ellipselinerois);
-					segmentrect.addAll(sparsecurrentobject.segmentrect);
-			
+		Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor
+				.CurvaturetoIntersection(parent.localCurvature, parent.functions, centerpoint, parent.smoothing);
+		Intersectionobject densecurrentobject = currentobjectpair.getA();
+		Intersectionobject sparsecurrentobject = currentobjectpair.getB();
 
-		 Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi, resultcurvelineroi, segmentrect,
-					z, t, celllabel, true);
-		 
+		resultlineroi.addAll(sparsecurrentobject.linerois);
+		resultcurvelineroi.addAll(sparsecurrentobject.curvelinerois);
+		resultallcurvelineroi.addAll(sparsecurrentobject.curvealllinerois);
+		ellipselineroi.addAll(sparsecurrentobject.ellipselinerois);
+		segmentrect.addAll(sparsecurrentobject.segmentrect);
+
+		Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi,
+				resultcurvelineroi, segmentrect, z, t, celllabel, true);
+
 		parent.ZTRois.put(uniqueID, currentroiobject);
 		DisplayAuto.Display(parent);
 		AlldenseCurveintersection.add(densecurrentobject);
@@ -339,14 +316,12 @@ public class LabelCurvature implements Runnable {
 
 		AllCurveSegments.addAll(resultpair.Seglist);
 		parent.AlllocalCurvature.add(parent.localCurvature);
-		
+
 	}
 
+	private RegressionCurveSegment CommonLoop(List<RealLocalizable> Ordered, RealLocalizable centerpoint) {
+		
 	
-	private void SliderLoop(
-			List<RealLocalizable> Ordered, RealLocalizable centerpoint) {
-
-		String uniqueID = Integer.toString(z) + Integer.toString(t);
 		// Get the sparse list of points
 		HashMap<Integer, RegressionCurveSegment> Bestdelta = new HashMap<Integer, RegressionCurveSegment>();
 		
@@ -395,9 +370,18 @@ public class LabelCurvature implements Runnable {
 			
 			parent.functions = resultpair.functionlist;
 			parent.localSegment = resultpair.Seglist;
+			
+			return resultpair;
+		
+	}
+	private void SliderLoop(
+			List<RealLocalizable> Ordered, RealLocalizable centerpoint) {
+
+		
 			// Make intersection object here
 
-			
+		 String uniqueID = Integer.toString(z) + Integer.toString(t);
+		 RegressionCurveSegment resultpair = CommonLoop(Ordered, centerpoint);
 			Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor.CurvaturetoIntersection(parent.localCurvature,
 					parent.functions, centerpoint, parent.smoothing);
 
@@ -468,8 +452,11 @@ public class LabelCurvature implements Runnable {
 
 		// Start sliding
 		
-			if(parent.pixelcelltrackcirclefits)
+			if(parent.pixelcelltrackcirclefits) {
+				
 		  OverSliderLoop(Ordered.getB(), centerpoint);
+		  
+			}
 
 			else
 			 SliderLoop(
