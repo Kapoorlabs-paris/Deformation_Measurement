@@ -362,19 +362,19 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 	}
 
 	public void CurvedLineage() {
+		if (parent.circlefits) {
 
+			DisplaySelected.mark(parent);
+			DisplaySelected.select(parent);
+		}
+
+		if (parent.celltrackcirclefits || parent.pixelcelltrackcirclefits ) {
+			DisplaySelected.markAll(parent);
+			DisplaySelected.selectAll(parent);
+
+		}
 		if (parent.ndims < 3) {
-			if (parent.circlefits) {
-
-				DisplaySelected.mark(parent);
-				DisplaySelected.select(parent);
-			}
-
-			if (parent.celltrackcirclefits || parent.pixelcelltrackcirclefits ) {
-				DisplaySelected.markAll(parent);
-				DisplaySelected.selectAll(parent);
-
-			}
+			
 
 			for (ArrayList<Curvatureobject> local : parent.AlllocalCurvature) {
 				Iterator<Curvatureobject> iterator = local.iterator();
@@ -518,14 +518,13 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 								}
 
 							}
-							parent.Finalresult.put(Integer.toString(id) + entryZ.getKey(), bestangle);
 
 						}
 
 					}
 				}
 			}
-			curvatureUtils.CurvatureTable.CreateTableTrackView(parent);
+
 
 		}
 
@@ -599,6 +598,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 					}
 
 					for (int id = minid; id <= maxid; ++id) {
+						Intersectionobject bestangle = null;
 						if (model.trackIntersectionobjects(id) != null) {
 
 							List<Intersectionobject> sortedList = new ArrayList<Intersectionobject>(
@@ -624,10 +624,39 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 							});
 
+							
+							Iterator<Intersectionobject> iterator = sortedList.iterator();
+
+							int count = 0;
+							while (iterator.hasNext()) {
+
+								Intersectionobject currentangle = iterator.next();
+								if (count == 0)
+									bestangle = currentangle;
+								if (parent.originalimg.numDimensions() > 3) {
+									if (currentangle.t == parent.fourthDimension) {
+										bestangle = currentangle;
+										count++;
+										break;
+									}
+								} else if (parent.originalimg.numDimensions() <= 3) {
+									if (currentangle.z == parent.thirdDimension) {
+										bestangle = currentangle;
+										count++;
+										break;
+
+									}
+
+								}
+
+							}
+							
+							parent.Finalresult.put(Integer.toString(id) + entryZ.getKey(), bestangle);
 						}
 
 					}
 				}
+				curvatureUtils.CurvatureTable.CreateTableTrackView(parent);
 			}
 
 		}

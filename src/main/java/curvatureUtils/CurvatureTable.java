@@ -26,7 +26,7 @@ public class CurvatureTable {
 
 		parent.resultAngle = new ArrayList<Pair<String, double[]>>();
 		parent.resultCurvature = new ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>>();
-		for (Pair<String, Intersectionobject> currentangle : parent.Tracklist) {
+		for (Pair<String, Intersectionobject> currentangle : parent.denseTracklist) {
 			if (parent.originalimg.numDimensions() > 3) {
 				parent.resultAngle.add(new ValuePair<String, double[]>(currentangle.getA(),
 						new double[] { currentangle.getB().t, currentangle.getB().perimeter }));

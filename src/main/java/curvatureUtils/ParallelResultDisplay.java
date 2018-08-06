@@ -144,7 +144,6 @@ public class ParallelResultDisplay {
 		
 		
 		
-		
 		// Iterate over the time points computation was performed
 		while (itZ.hasNext()) {
 

@@ -195,7 +195,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float maxDist = 3;
 	public float outsideCutoff = insideCutoff;
 
-	public int minNumInliers = 100;
+	public int minNumInliers = 10;
 	public int depth = 4;
 	public int maxsize = 100;
 	public int minsize = 100;
@@ -864,7 +864,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		setInsidecut(insideCutoff);
 		
 		
-		minNumInliers = (int) Math.round(wavesize / calibration);
+		//minNumInliers = (int) Math.round(wavesize / calibration);
 		
 		setminInliers(minNumInliers);
 
@@ -1567,7 +1567,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public String insidestring = "Cutoff distance";
 	public String outsidestring = "Cutoff distance";
 	public String smoothsliderstring = "Ratio of functions ";
-	public String mininlierstring = "Points/segment (px)";
+	public String mininlierstring = "Number of Segments";
 	
 	public Label timeText = new Label("Current T = " + 1, Label.CENTER);
 	public Label zText = new Label("Current Z = " + 1, Label.CENTER);

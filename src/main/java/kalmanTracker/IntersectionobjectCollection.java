@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 import ellipsoidDetector.Intersectionobject;
 import net.imglib2.algorithm.MultiThreaded;
 import utility.FeatureFilter;
-import utility.ThreeDRoiobject;
 
 
 public class IntersectionobjectCollection implements MultiThreaded

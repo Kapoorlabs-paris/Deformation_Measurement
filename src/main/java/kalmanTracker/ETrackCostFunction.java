@@ -2,7 +2,6 @@ package kalmanTracker;
 
 import costMatrix.CostFunction;
 import ellipsoidDetector.Intersectionobject;
-import utility.ThreeDRoiobject;
 
 public class ETrackCostFunction  implements CostFunction< Intersectionobject, Intersectionobject >
 {

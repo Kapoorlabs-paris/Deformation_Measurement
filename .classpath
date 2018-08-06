@@ -12,7 +12,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
@@ -22,18 +22,18 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="/imglib2-algorithm"/>
-	<classpathentry kind="src" path="/Preprocessing"/>
-	<classpathentry kind="src" path="/scifio"/>
-	<classpathentry kind="lib" path="/Applications/Fiji.app/jars/macosx/ffmpeg-2.6.1-0.11-macosx-x86_64.jar"/>
-	<classpathentry kind="lib" path="/Applications/Fiji.app/jars/macosx/gluegen-rt-2.3.2-natives-macosx-universal.jar"/>
-	<classpathentry kind="lib" path="/Applications/Fiji.app/jars/macosx/joal-2.3.2-natives-macosx-universal.jar"/>
-	<classpathentry kind="lib" path="/Applications/Fiji.app/jars/macosx/jocl-2.3.2-natives-macosx-universal.jar"/>
-	<classpathentry kind="lib" path="/Applications/Fiji.app/jars/macosx/jogl-all-2.3.2-natives-macosx-universal.jar"/>
-	<classpathentry kind="lib" path="/Users/aimachine/Downloads/java3d-1_5_1-macosx/jzy3d/jzy3d-api-0.9.1.jar"/>
-	<classpathentry kind="lib" path="/Users/aimachine/Downloads/java3d-1_5_1-macosx/jzy3d/jzy3d-jdt-core-0.9.1.jar"/>
-	<classpathentry kind="lib" path="/Users/aimachine/Downloads/java3d-1_5_1-macosx/jzy3d/jzy3d-swt-0.9.1.jar"/>
-	<classpathentry kind="src" path="/PolynomialRansac"/>
-	<classpathentry kind="src" path="/MasterPanels"/>
+	<classpathentry exported="true" kind="src" path="/imglib2-algorithm"/>
+	<classpathentry exported="true" kind="src" path="/Preprocessing"/>
+	<classpathentry exported="true" kind="src" path="/scifio"/>
+	<classpathentry exported="true" kind="lib" path="/Applications/Fiji.app/jars/macosx/ffmpeg-2.6.1-0.11-macosx-x86_64.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Applications/Fiji.app/jars/macosx/gluegen-rt-2.3.2-natives-macosx-universal.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Applications/Fiji.app/jars/macosx/joal-2.3.2-natives-macosx-universal.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Applications/Fiji.app/jars/macosx/jocl-2.3.2-natives-macosx-universal.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Applications/Fiji.app/jars/macosx/jogl-all-2.3.2-natives-macosx-universal.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Users/aimachine/Downloads/java3d-1_5_1-macosx/jzy3d/jzy3d-api-0.9.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Users/aimachine/Downloads/java3d-1_5_1-macosx/jzy3d/jzy3d-jdt-core-0.9.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Users/aimachine/Downloads/java3d-1_5_1-macosx/jzy3d/jzy3d-swt-0.9.1.jar"/>
+	<classpathentry exported="true" kind="src" path="/PolynomialRansac"/>
+	<classpathentry exported="true" kind="src" path="/MasterPanels"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

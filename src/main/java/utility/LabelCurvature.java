@@ -129,10 +129,10 @@ public class LabelCurvature implements Runnable {
 	
 		int maxstride = parent.CellLabelsizemap.get(celllabel);
 
-			// Get the sparse list of points
+			// Get the sparse list of points, skips 5 pixel points
 
 		
-		for(int index = 0; index < maxstride; ++index) {
+		for(int index = 0; index < maxstride; index+=5) {
 		
 			List<RealLocalizable> allorderedtruths = Listordereing.getList(Ordered, i + index);
 

@@ -205,12 +205,10 @@ public class CurvatureFunction {
 		int size = truths.size();
 
 		
-		
-		int maxpoints = numSeg;
-
-		
-		int biggestsize = maxpoints;
-		
+		int maxpoints = size / numSeg;
+		if (maxpoints <= 1)
+			maxpoints = 3;
+       int biggestsize = maxpoints;		
 		
 		int segmentLabel = 1;
 
@@ -439,6 +437,7 @@ public class CurvatureFunction {
 		long[] longnewpos = new long[ndims];
 
 		perimeter = Distance.DistanceSqrt(pointlist.get(0), pointlist.get(pointlist.size() - 1));
+		perimeter = perimeter * parent.calibration;
 		int size = pointlist.size();
 		final double[] pointA = new double[ndims];
 		final double[] pointB = new double[ndims];
@@ -461,7 +460,7 @@ public class CurvatureFunction {
 
 			point.localize(newpos);
 
-			Kappa = 1.0 / radii;
+			Kappa = 1.0 / (radii * parent.calibration);
 			for (int d = 0; d < newpos.length; ++d)
 				longnewpos[d] = (long) newpos[d];
 			net.imglib2.Point intpoint = new net.imglib2.Point(longnewpos);
