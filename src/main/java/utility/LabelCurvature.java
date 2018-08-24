@@ -129,9 +129,9 @@ public class LabelCurvature implements Runnable {
 
 		final int ndims = ActualRoiimg.numDimensions();
 
-		for (int index = 0; index < maxstride; index += parent.resolution) {
+		for (int index = 0; index < maxstride; ++index) {
 
-			List<RealLocalizable> allorderedtruths = Listordereing.getList(Ordered, i + index);
+			List<RealLocalizable> allorderedtruths = Listordereing.getList(Ordered,  i + index);
 
 			if (parent.fourthDimensionSize > 1)
 				parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension,
@@ -450,6 +450,7 @@ public class LabelCurvature implements Runnable {
 		// Get the sparse list of points
 		Pair<RealLocalizable, List<RealLocalizable>> Ordered = Listordereing.getOrderedList(truths);
 
+		System.out.println(Ordered.getA() + " " + Ordered.getB().size());
 		// Start sliding
 		
 			if(parent.pixelcelltrackcirclefits) {

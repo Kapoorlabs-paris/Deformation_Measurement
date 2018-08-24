@@ -92,61 +92,26 @@ public class Listordereing {
 
 	}
 
-	public static List<RealLocalizable> getSparseOrderedList(List<RealLocalizable> truths, double deltasep) {
+	public static List<RealLocalizable> getNexinLine(List<RealLocalizable> truths, RealLocalizable Refpoint,
+			RealLocalizable meanCord) {
+
 		List<RealLocalizable> copytruths = getCopyList(truths);
-		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>();
-		// Get the starting minX and minY co-ordinates
-		RealLocalizable minCord = getMinCord(copytruths);
 
-		RealLocalizable meanCord = getMeanCord(copytruths);
-		orderedtruths.add(minCord);
-		copytruths.remove(minCord);
-		do {
+		List<RealLocalizable> sublisttruths = new ArrayList<RealLocalizable>();
 
-			RealLocalizable nextCord = getNextNearest(minCord, copytruths);
-			if (Distance.DistanceSqrt(minCord, nextCord) > deltasep) {
-				minCord = nextCord;
-				orderedtruths.add(minCord);
-			}
-			copytruths.remove(nextCord);
+		Iterator<RealLocalizable> listiter = copytruths.iterator();
 
-		} while (copytruths.size() > 0);
-		copytruths = getCopyList(orderedtruths);
-		do {
+		while (listiter.hasNext()) {
 
-			RealLocalizable nextCord = getNextNearest(minCord, copytruths);
-			copytruths.remove(nextCord);
-			if (copytruths.size() != 0) {
-				RealLocalizable secondnextCord = getNextNearest(minCord, copytruths);
-				copytruths.add(nextCord);
+			RealLocalizable listpoint = listiter.next();
 
-				double nextangle = Distance.AngleVectors(minCord, nextCord, meanCord);
-				double secondnextangle = Distance.AngleVectors(minCord, secondnextCord, meanCord);
-				RealLocalizable chosenCord = null;
+			double angledeg = Distance.AngleVectors(Refpoint, listpoint, meanCord);
+			if (angledeg > 0 && angledeg < 30)
+				sublisttruths.add(listpoint);
 
-				if (nextangle >= 0 && secondnextangle >= 0 && nextangle <= secondnextangle)
-					chosenCord = nextCord;
-				if (nextangle >= 0 && secondnextangle >= 0 && nextangle > secondnextangle)
-					chosenCord = secondnextCord;
+		}
+		return sublisttruths;
 
-				if (nextangle < 0 && secondnextangle > 0)
-					chosenCord = nextCord;
-				if (nextangle > 0 && secondnextangle < 0)
-					chosenCord = secondnextCord;
-
-				else if (nextangle < 0 || secondnextangle < 0)
-
-					chosenCord = (nextangle >= secondnextangle) ? nextCord : secondnextCord;
-
-				minCord = chosenCord;
-				orderedtruths.add(minCord);
-
-				copytruths.remove(chosenCord);
-			} else
-				break;
-		} while (copytruths.size() > 1);
-
-		return orderedtruths;
 	}
 
 	/**
@@ -174,39 +139,27 @@ public class Listordereing {
 		copytruths.remove(minCord);
 		do {
 
-			RealLocalizable nextCord = getNextNearest(minCord, copytruths);
-			copytruths.remove(nextCord);
-			if (copytruths.size() != 0) {
-				RealLocalizable secondnextCord = getNextNearest(minCord, copytruths);
-				copytruths.add(nextCord);
+			List<RealLocalizable> subcopytruths = getNexinLine(copytruths, minCord, meanCord);
+			if (subcopytruths != null) {
+				RealLocalizable nextCord = getNextNearest(minCord, subcopytruths);
+				copytruths.remove(nextCord);
+				if (copytruths.size() != 0) {
+					copytruths.add(nextCord);
 
-				double nextangle = Distance.AngleVectors(minCord, nextCord, meanCord);
-				double secondnextangle = Distance.AngleVectors(minCord, secondnextCord, meanCord);
-				RealLocalizable chosenCord = null;
+					RealLocalizable chosenCord = null;
 
-				if (nextangle >= 0 && secondnextangle >= 0 && nextangle <= secondnextangle)
 					chosenCord = nextCord;
-				if (nextangle >= 0 && secondnextangle >= 0 && nextangle > secondnextangle)
-					chosenCord = secondnextCord;
 
-				if (nextangle < 0 && secondnextangle > 0)
-					chosenCord = nextCord;
-				if (nextangle > 0 && secondnextangle < 0)
-					chosenCord = secondnextCord;
+					minCord = chosenCord;
+					orderedtruths.add(minCord);
 
-				else if (nextangle < 0 || secondnextangle < 0)
+					copytruths.remove(chosenCord);
+				} else {
 
-					chosenCord = (nextangle >= secondnextangle) ? nextCord : secondnextCord;
+					orderedtruths.add(nextCord);
+					break;
 
-				minCord = chosenCord;
-				orderedtruths.add(minCord);
-
-				copytruths.remove(chosenCord);
-			} else {
-
-				orderedtruths.add(nextCord);
-				break;
-
+				}
 			}
 		} while (copytruths.size() >= 0);
 
@@ -236,37 +189,37 @@ public class Listordereing {
 		copytruths.remove(minCord);
 		do {
 			Pair<String, Segmentobject> nextCord = getSegNextNearest(minCord, copytruths);
-				copytruths.remove(nextCord);
+			copytruths.remove(nextCord);
 
-				if (copytruths.size() != 0) {
-					Pair<String, Segmentobject> secondnextCord = getSegNextNearest(minCord, copytruths);
-					copytruths.add(nextCord);
-					double nextangle = Distance.AngleVectors(minCord, nextCord);
-					double secondnextangle = Distance.AngleVectors(minCord, secondnextCord);
-					Pair<String, Segmentobject> chosenCord = null;
-					if (nextangle >= 0 && secondnextangle >= 0 && nextangle <= secondnextangle)
-						chosenCord = nextCord;
-					if (nextangle >= 0 && secondnextangle >= 0 && nextangle > secondnextangle)
-						chosenCord = secondnextCord;
+			if (copytruths.size() != 0) {
+				Pair<String, Segmentobject> secondnextCord = getSegNextNearest(minCord, copytruths);
+				copytruths.add(nextCord);
+				double nextangle = Distance.AngleVectors(minCord, nextCord);
+				double secondnextangle = Distance.AngleVectors(minCord, secondnextCord);
+				Pair<String, Segmentobject> chosenCord = null;
+				if (nextangle >= 0 && secondnextangle >= 0 && nextangle <= secondnextangle)
+					chosenCord = nextCord;
+				if (nextangle >= 0 && secondnextangle >= 0 && nextangle > secondnextangle)
+					chosenCord = secondnextCord;
 
-					if (nextangle < 0 && secondnextangle > 0)
-						chosenCord = nextCord;
-					if (nextangle > 0 && secondnextangle < 0)
-						chosenCord = secondnextCord;
+				if (nextangle < 0 && secondnextangle > 0)
+					chosenCord = nextCord;
+				if (nextangle > 0 && secondnextangle < 0)
+					chosenCord = secondnextCord;
 
-					else if (nextangle < 0 || secondnextangle < 0)
+				else if (nextangle < 0 || secondnextangle < 0)
 
-						chosenCord = (nextangle >= secondnextangle) ? nextCord : secondnextCord;
+					chosenCord = (nextangle >= secondnextangle) ? nextCord : secondnextCord;
 
-					minCord = chosenCord;
-					orderedtruths.add(minCord);
-					copytruths.remove(chosenCord);
-				} else {
+				minCord = chosenCord;
+				orderedtruths.add(minCord);
+				copytruths.remove(chosenCord);
+			} else {
 
-					orderedtruths.add(nextCord);
-					break;
+				orderedtruths.add(nextCord);
+				break;
 
-				}
+			}
 		} while (copytruths.size() >= 0);
 
 		return orderedtruths;
@@ -344,7 +297,7 @@ public class Listordereing {
 
 		return meanCord;
 	}
-	
+
 	public static RealLocalizable getMaxYCord(List<RealLocalizable> truths) {
 
 		double maxVal = Double.MIN_VALUE;

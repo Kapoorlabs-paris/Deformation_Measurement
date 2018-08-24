@@ -56,6 +56,20 @@ public class Distance {
 		return Math.sqrt(distance);
 	}
 	
+	
+	public static double SlopeVectors(final RealLocalizable pointA, final RealLocalizable midpoint) {
+		
+		
+		double[] pointAA = new double[pointA.numDimensions()];
+		double[] pointmid = new double[midpoint.numDimensions()];
+		pointA.localize(pointAA);
+		midpoint.localize(pointmid);
+		final double[] vA = new double[] { pointAA[0] - pointmid[0], pointAA[1] - pointmid[1]  };
+		final double slope = Math.atan(vA[1] / vA[0]);
+		
+		return slope;
+	}
+	
 	/**
 	 * Returns the angle between the vectors
 	 * 

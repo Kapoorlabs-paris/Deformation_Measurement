@@ -51,13 +51,7 @@ public class RunPolymodeListener implements ItemListener {
 			parent.Angleselect.add(parent.smoothslider, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 			
-			
-			parent.Angleselect.add(parent.incrementText, new GridBagConstraints(5, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
-
-			parent.Angleselect.add(parent.incrementField, new GridBagConstraints(5, 3, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
-			
+		
 			
 			SliderBoxGUI combocutoff = new SliderBoxGUI(parent.insidestring, parent.insideslider, parent.cutoffField, parent.insideText, parent.scrollbarSize, parent.insideCutoff, parent.insideCutoffmax);
 			
