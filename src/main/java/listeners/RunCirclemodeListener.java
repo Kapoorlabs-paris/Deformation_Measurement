@@ -39,7 +39,7 @@ public class RunCirclemodeListener implements ItemListener {
 
 			parent.Angleselect.removeAll();
 
-		
+		 parent.resolution = 1;
 
 			parent.Angleselect.add(parent.indistText, new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0,
 					GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));

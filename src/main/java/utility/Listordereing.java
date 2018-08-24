@@ -122,10 +122,11 @@ public class Listordereing {
 	 * @return
 	 */
 
-	public static Pair<RealLocalizable, List<RealLocalizable>> getOrderedList(List<RealLocalizable> truths) {
+	public static Pair<RealLocalizable, List<RealLocalizable>> getOrderedList(List<RealLocalizable> truths, int resolution) {
 
 		List<RealLocalizable> copytruths = getCopyList(truths);
 		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>(truths.size());
+		List<RealLocalizable> skiporderedtruths = new ArrayList<RealLocalizable>();
 		// Get the starting minX and minY co-ordinates
 		RealLocalizable minCord;
 
@@ -163,7 +164,17 @@ public class Listordereing {
 			}
 		} while (copytruths.size() >= 0);
 
-		return new ValuePair<RealLocalizable, List<RealLocalizable>>(refcord, orderedtruths);
+		for (int i = 0; i < orderedtruths.size(); i+=resolution) {
+			if(i + resolution > orderedtruths.size() - 1)
+				break;
+			else
+				skiporderedtruths.add(orderedtruths.get(i));
+			
+			
+		}
+		
+		
+		return new ValuePair<RealLocalizable, List<RealLocalizable>>(refcord, skiporderedtruths);
 	}
 
 	/**

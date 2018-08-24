@@ -38,6 +38,7 @@ public class RunpixelCelltrackCirclemodeListener implements ItemListener {
 			parent.polynomialfits = false;
 
 			parent.Angleselect.removeAll();
+			parent.resolution = Integer.parseInt(parent.resolutionField.getText());
 
 		
 

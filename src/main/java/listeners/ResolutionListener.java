@@ -52,7 +52,6 @@ public class ResolutionListener implements TextListener {
 
 					parent.StartCurvatureComputingCurrent();
 					
-					System.out.println(parent.resolution);
 
 				}
 

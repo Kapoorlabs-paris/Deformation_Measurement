@@ -81,6 +81,11 @@ public class CurvatureFunction {
 		ArrayList<Segmentobject> Allcellsegment = new ArrayList<Segmentobject>();
 		for (Map.Entry<Integer, List<RealLocalizable>> entry : parent.Listmap.entrySet()) {
 			List<RealLocalizable> sublist = entry.getValue();
+			/***
+			 * 
+			 * Main method that fitst on segments a function to get the curvature
+			 * 
+			 */
 			Pair<RegressionFunction, ArrayList<double[]>> localfunction = FitonList(parent, centerpoint, sublist,
 					smoothing, maxError, minNumInliers, degree, secdegree, Label, z);
 
@@ -472,7 +477,7 @@ public class CurvatureFunction {
 			
 			
 			AllCurvaturepoints.add(
-					new double[] { newpos[0], newpos[1], (Kappa), perimeter, Intensity.getA(), Intensity.getB() });
+					new double[] { newpos[0], newpos[1], Math.max(0,Kappa), perimeter, Intensity.getA(), Intensity.getB() });
 		}
 
 		meanIntensity /= size;
@@ -541,7 +546,7 @@ public class CurvatureFunction {
 				long[] posf = new long[] { (long) p.getP1().getW()[0], (long) p.getP1().getW()[1] };
 				net.imglib2.Point point = new net.imglib2.Point(posf);
 				Pair<Double, Double> Intensity = getIntensity(point);
-				Curvaturepoints.add(new double[] { p.getP1().getW()[0], p.getP1().getW()[1], Math.abs(Kappa), perimeter,
+				Curvaturepoints.add(new double[] { p.getP1().getW()[0], p.getP1().getW()[1], Math.max(0,Kappa), perimeter,
 						Kappa, Intensity.getA(), Intensity.getB() });
 
 			}

@@ -448,9 +448,8 @@ public class LabelCurvature implements Runnable {
 
 		parent.globalMaxcord = Listordereing.getMaxYCord(truths);
 		// Get the sparse list of points
-		Pair<RealLocalizable, List<RealLocalizable>> Ordered = Listordereing.getOrderedList(truths);
+		Pair<RealLocalizable, List<RealLocalizable>> Ordered = Listordereing.getOrderedList(truths, parent.resolution);
 
-		System.out.println(Ordered.getA() + " " + Ordered.getB().size());
 		// Start sliding
 		
 			if(parent.pixelcelltrackcirclefits) {
