@@ -41,6 +41,9 @@ public class ParallelResultDisplay {
 
 		this.parent = parent;
 		this.currentresultCurv = currentresultCurv;
+		
+		IJ.log("Making curvature image, please wait");
+		
 	}
 	
 	
@@ -107,6 +110,10 @@ public class ParallelResultDisplay {
 	
 	
 	public void ResultDisplayCircleTrackFit() {
+		
+		
+		
+		
 		// set up executor service
 		int nThreads = Runtime.getRuntime().availableProcessors();
 		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
@@ -171,14 +178,40 @@ public class ParallelResultDisplay {
 			tasks.add(Executors
 					.callable(new ProcessSliceDisplayCircleTrackFit(CurrentViewprobImg,  TimeCurveList, minCurvature, maxCurvature)));
 
+		
+			
+		
 		}
 
 		}
 		try {
 			taskExecutor.invokeAll(tasks);
+			
+			RandomAccessibleInterval<FloatType> GlobalScale = new ArrayImgFactory<FloatType>().create(new long[] {100,100}, new FloatType());
+			
+			
+			final Cursor<FloatType> cursor = Views.iterable(GlobalScale).localizingCursor();
 
+			while (cursor.hasNext()) {
+
+				cursor.fwd();
+
+			
+
+					
+					double lambda = (cursor.getFloatPosition(0) - GlobalScale.min(0) ) / (GlobalScale.max(0) - GlobalScale.min(0));
+					
+						cursor.get().setReal( minCurvature + lambda * ( maxCurvature - minCurvature));
+
+				
+
+			}
 			ImagePlus imp = ImageJFunctions.show(probImg);
+			
 			imp.setTitle("Curvature Result");
+			IJ.run("Fire");
+			ImagePlus scale = ImageJFunctions.show(GlobalScale);
+			scale.setTitle("Global Color Bar");
 			IJ.run("Fire");
 			
 			

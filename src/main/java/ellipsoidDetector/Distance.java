@@ -101,6 +101,23 @@ public class Distance {
 		return angledeg;
 	}
 	
+	public static double AngleVectorsDouble(final double[] pointA, final double[] pointB, final double[] midpoint) {
+		
+		
+		
+		
+		final double[] vA = new double[] { pointA[0] - midpoint[0], pointA[1] - midpoint[1]  };
+		
+		final double[] vB = new double[] { pointB[0] - midpoint[0], pointB[1] - midpoint[1]  };
+        double argument = ( vA[0] * vB[0] +  vA[1] * vB[1] )  / Math.sqrt(( vA[0] * vA[0] +  vA[1] * vA[1])  * ( vB[0] * vB[0] +  vB[1] * vB[1] ) );
+		
+		double angle = Math.acos(argument);
+		double angledeg = Math.toDegrees(angle)%360;
+		
+		
+		return angledeg;
+	}
+	
      public static double AngleVectors(final Pair<String, Segmentobject> pointA, final Pair<String, Segmentobject> pointB) {
 		
 		double[] pointAA = new double[pointA.getB().centralpoint.numDimensions()];

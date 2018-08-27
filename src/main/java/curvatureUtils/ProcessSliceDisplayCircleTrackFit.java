@@ -52,22 +52,7 @@ public class ProcessSliceDisplayCircleTrackFit implements Runnable {
 		
 			
 		}
-		final Cursor<FloatType> cursor = Views.iterable(OutputSlice).localizingCursor();
-
-		while (cursor.hasNext()) {
-
-			cursor.fwd();
-
 		
-
-				
-				double lambda = (cursor.getFloatPosition(0) - OutputSlice.min(0) ) / (OutputSlice.max(0) - OutputSlice.min(0));
-				if(cursor.getDoublePosition(1) >= OutputSlice.max(1) - OutputSlice.min(1) - 5)
-					cursor.get().setReal( 0 + lambda * (2 * maxIntensity - 0));
-
-			
-
-		}
 	}
 	
 	

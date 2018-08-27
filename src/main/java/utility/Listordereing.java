@@ -74,8 +74,6 @@ public class Listordereing {
 		if (index > truths.size())
 			index = truths.size();
 
-		
-
 		for (int i = index; i < truths.size(); ++i) {
 
 			orderedtruths.add(truths.get(i));
@@ -113,6 +111,28 @@ public class Listordereing {
 
 	}
 
+	public static List<Pair<String, Segmentobject>> getNexinSegLine(ArrayList<Pair<String, Segmentobject>> truths,
+			RealLocalizable Refpoint, RealLocalizable meanCord) {
+
+		ArrayList<Pair<String, Segmentobject>> copytruths = getCopySegList(truths);
+
+		ArrayList<Pair<String, Segmentobject>> sublisttruths = new ArrayList<Pair<String, Segmentobject>>();
+
+		Iterator<Pair<String, Segmentobject>> listiter = copytruths.iterator();
+
+		while (listiter.hasNext()) {
+
+			Pair<String, Segmentobject> listpoint = listiter.next();
+
+			double angledeg = Distance.AngleVectors(Refpoint, listpoint.getB().Cellcentralpoint, meanCord);
+			if (angledeg > 0 && angledeg < 90)
+				sublisttruths.add(listpoint);
+
+		}
+		return sublisttruths;
+
+	}
+
 	/**
 	 * Return an ordered list of XY coordinates starting from the reference position
 	 * which is the lowest point below the center of the list of points
@@ -121,7 +141,8 @@ public class Listordereing {
 	 * @return
 	 */
 
-	public static Pair<RealLocalizable, List<RealLocalizable>> getOrderedList(List<RealLocalizable> truths, int resolution) {
+	public static Pair<RealLocalizable, List<RealLocalizable>> getOrderedList(List<RealLocalizable> truths,
+			int resolution) {
 
 		List<RealLocalizable> copytruths = getCopyList(truths);
 		List<RealLocalizable> orderedtruths = new ArrayList<RealLocalizable>(truths.size());
@@ -162,16 +183,14 @@ public class Listordereing {
 			}
 		} while (copytruths.size() >= 0);
 
-		for (int i = 0; i < orderedtruths.size(); i+=resolution) {
-			if(i + resolution > orderedtruths.size() - 1)
+		for (int i = 0; i < orderedtruths.size(); i += resolution) {
+			if (i + resolution > orderedtruths.size() - 1)
 				break;
 			else
 				skiporderedtruths.add(orderedtruths.get(i));
-			
-			
+
 		}
-		
-		
+
 		return new ValuePair<RealLocalizable, List<RealLocalizable>>(refcord, skiporderedtruths);
 	}
 
@@ -193,39 +212,30 @@ public class Listordereing {
 		Pair<String, Segmentobject> minCord = getMinSegCord(copytruths);
 		orderedtruths.add(minCord);
 
+		RealLocalizable meanCord = getMeanSeg(copytruths);
 		copytruths.remove(minCord);
 		do {
-			Pair<String, Segmentobject> nextCord = getSegNextNearest(minCord, copytruths);
-			copytruths.remove(nextCord);
 
-			if (copytruths.size() != 0) {
-				Pair<String, Segmentobject> secondnextCord = getSegNextNearest(minCord, copytruths);
-				copytruths.add(nextCord);
-				double nextangle = Distance.AngleVectors(minCord, nextCord);
-				double secondnextangle = Distance.AngleVectors(minCord, secondnextCord);
-				Pair<String, Segmentobject> chosenCord = null;
-				if (nextangle >= 0 && secondnextangle >= 0 && nextangle <= secondnextangle)
+			List<Pair<String, Segmentobject>> subcopytruths = getNexinSegLine(copytruths,
+					minCord.getB().Cellcentralpoint, meanCord);
+			if (subcopytruths != null) {
+				Pair<String, Segmentobject> nextCord = getSegNextNearest(minCord, subcopytruths);
+				copytruths.remove(nextCord);
+
+				if (copytruths.size() != 0) {
+					copytruths.add(nextCord);
+					Pair<String, Segmentobject> chosenCord = null;
 					chosenCord = nextCord;
-				if (nextangle >= 0 && secondnextangle >= 0 && nextangle > secondnextangle)
-					chosenCord = secondnextCord;
 
-				if (nextangle < 0 && secondnextangle > 0)
-					chosenCord = nextCord;
-				if (nextangle > 0 && secondnextangle < 0)
-					chosenCord = secondnextCord;
+					minCord = chosenCord;
+					orderedtruths.add(minCord);
+					copytruths.remove(chosenCord);
+				} else {
 
-				else if (nextangle < 0 || secondnextangle < 0)
+					orderedtruths.add(nextCord);
+					break;
 
-					chosenCord = (nextangle >= secondnextangle) ? nextCord : secondnextCord;
-
-				minCord = chosenCord;
-				orderedtruths.add(minCord);
-				copytruths.remove(chosenCord);
-			} else {
-
-				orderedtruths.add(nextCord);
-				break;
-
+				}
 			}
 		} while (copytruths.size() >= 0);
 
@@ -353,6 +363,27 @@ public class Listordereing {
 		return new double[] { Xmean / truths.size(), Ymean / truths.size() };
 	}
 
+	public static RealLocalizable getMeanSeg(ArrayList<Pair<String, Segmentobject>> truths) {
+
+		Iterator<Pair<String, Segmentobject>> iter = truths.iterator();
+
+		double Xmean = 0, Ymean = 0;
+		int size = 0;
+		while (iter.hasNext()) {
+
+			Pair<String, Segmentobject> currentpair = iter.next();
+
+			RealLocalizable currentpoint = currentpair.getB().Cellcentralpoint;
+
+			Xmean += currentpoint.getDoublePosition(0);
+			Ymean += currentpoint.getDoublePosition(1);
+			size++;
+		}
+
+		RealPoint meanCord = new RealPoint(new double[] { Xmean / size, Ymean / size });
+		return meanCord;
+	}
+
 	/**
 	 * 
 	 * Get the starting XY co-ordinates to create an ordered list, start from minX
@@ -381,6 +412,7 @@ public class Listordereing {
 	public static RealLocalizable getMinCord(List<RealLocalizable> truths) {
 
 		double minVal = Double.MAX_VALUE;
+		double minValY = Double.MAX_VALUE;
 		RealLocalizable minobject = null;
 		Iterator<RealLocalizable> iter = truths.iterator();
 
@@ -388,12 +420,14 @@ public class Listordereing {
 
 			RealLocalizable currentpair = iter.next();
 
-			if (currentpair.getDoublePosition(0) <= minVal) {
+			if (currentpair.getDoublePosition(0) <= minVal && currentpair.getDoublePosition(1) <= minValY) {
 
 				minobject = currentpair;
 				minVal = currentpair.getDoublePosition(0);
+				minValY = currentpair.getDoublePosition(1);
 
 			}
+			
 
 		}
 
@@ -412,17 +446,20 @@ public class Listordereing {
 	public static Pair<String, Segmentobject> getMinSegCord(ArrayList<Pair<String, Segmentobject>> truths) {
 
 		double minVal = Double.MAX_VALUE;
+		double minValY = Double.MAX_VALUE;
 		Pair<String, Segmentobject> minobject = null;
 		Iterator<Pair<String, Segmentobject>> iter = truths.iterator();
 
 		while (iter.hasNext()) {
 
 			Pair<String, Segmentobject> currentpair = iter.next();
-			if (currentpair.getB().centralpoint.getDoublePosition(0) <= minVal) {
+			if (currentpair.getB().centralpoint.getDoublePosition(0) <= minVal && currentpair.getB().centralpoint.getDoublePosition(1) <= minValY) {
 
 				minobject = currentpair;
 				minVal = currentpair.getB().centralpoint.getDoublePosition(0);
+				minValY = currentpair.getB().centralpoint.getDoublePosition(1);
 			}
+			
 		}
 
 		return minobject;
@@ -432,6 +469,7 @@ public class Listordereing {
 			ArrayList<Pair<String, Intersectionobject>> truths) {
 
 		double minVal = Double.MAX_VALUE;
+		double minValY = Double.MAX_VALUE;
 		Pair<String, Intersectionobject> minobject = null;
 		Iterator<Pair<String, Intersectionobject>> iter = truths.iterator();
 
@@ -441,12 +479,13 @@ public class Listordereing {
 			ArrayList<double[]> Linelist = currentpair.getB().linelist;
 
 			for (int i = 0; i < Linelist.size(); ++i) {
-				if (currentpair.getB().linelist.get(i)[0] < minVal) {
+				if (currentpair.getB().linelist.get(i)[0] < minVal && currentpair.getB().linelist.get(i)[1] < minValY) {
 
 					minobject = currentpair;
 					minVal = currentpair.getB().linelist.get(i)[0];
+					minValY = currentpair.getB().linelist.get(i)[1];
 				}
-
+				
 			}
 		}
 

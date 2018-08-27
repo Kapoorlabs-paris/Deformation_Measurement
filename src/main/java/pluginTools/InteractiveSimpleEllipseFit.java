@@ -335,7 +335,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float betaMin = 0;
 	public float betaMax = 1;
 	public int increment = 0;
-	public int resolution = 5;
+	public int resolution = 2;
 	public int maxSearchradiusInit = (int) maxSearchradius;
 	public float maxSearchradiusMin = 1;
 	public float maxSearchradiusMax = maxSearchradius;

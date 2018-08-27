@@ -49,9 +49,11 @@ import kalmanTracker.KFsearch;
 import kalmanTracker.NearestNeighbourSearch;
 import kalmanTracker.NearestNeighbourSearch2D;
 import kalmanTracker.TrackModel;
+import net.imglib2.KDTree;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
+import net.imglib2.RealPoint;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.Scale2D;
@@ -62,7 +64,9 @@ import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import track.TrackingFunctions;
 import utility.CreateTable;
 import utility.Curvatureobject;
+import utility.FlagNode;
 import utility.Listordereing;
+import utility.NNFlagsearchKDtree;
 import utility.Roiobject;
 import utility.ThreeDRoiobject;
 
@@ -99,7 +103,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		return null;
 
 	}
-	int timeCal = 5;
+
 	
 	public void MakeKymo(HashMap<String, ArrayList<Segmentobject>> sortedMappair, long[] size, int CellLabel) {
 
@@ -160,7 +164,161 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		ImageJFunctions.show(IntensityAKymo).setTitle("Intensity ChA Kymo for Cell Label: " + CellLabel);
 		ImageJFunctions.show(IntensityBKymo).setTitle("Intensity ChB for Cell Label: " + CellLabel);
 	}
+	public static List<double[]> getCopyList(List<double[]> copytruths) {
 
+		List<double[]> orderedtruths = new ArrayList<double[]>();
+		Iterator<double[]> iter = copytruths.iterator();
+
+		while (iter.hasNext()) {
+
+			orderedtruths.add(iter.next());
+
+		}
+
+		return orderedtruths;
+	}
+	
+	public List<double[]> getNextinLine(List<double[]> currentlinelist, double[] Refpoint, double[] meanCord) {
+		
+		List<double[]> copytruths = getCopyList(currentlinelist);
+		
+		List<double[]> sublisttruths = new ArrayList<double[]>();
+		
+		Iterator<double[]> listiter = copytruths.iterator();
+		
+		while (listiter.hasNext()) {
+
+			double[] alltuples = listiter.next();
+
+			
+			double angledeg = Distance.AngleVectorsDouble(alltuples, Refpoint, meanCord);
+			if (angledeg > 0 && angledeg < 90)
+				
+				sublisttruths.add(alltuples);
+
+		}
+		return sublisttruths;
+		
+	}
+	public static double[] getMinCord(List<double[]> truths) {
+
+		double minVal = Double.MAX_VALUE;
+		double minValY = Double.MAX_VALUE;
+		double[] minobject = null;
+		Iterator<double[]> iter = truths.iterator();
+
+		while (iter.hasNext()) {
+
+			double[] currentpair = iter.next();
+
+			if (currentpair[0] <= minVal && currentpair[1] <= minValY) {
+
+				minobject = currentpair;
+				minVal = currentpair[0];
+				minValY = currentpair[1];
+			}
+			
+		}
+
+		return minobject;
+	}
+	public static double[] getMeanCordDouble(List<double[]> truths) {
+
+		Iterator<double[]> iter = truths.iterator();
+		double Xmean = 0, Ymean = 0;
+		while (iter.hasNext()) {
+
+			double[] currentpair = iter.next();
+
+			double[] currentpoint = currentpair;
+
+			Xmean += currentpoint[0];
+			Ymean += currentpoint[1];
+
+		}
+
+		return new double[] { Xmean / truths.size(), Ymean / truths.size() };
+	}
+	
+	public static double[] getNextNearest(double[] minCord, List<double[]> truths) {
+
+		double[] nextobject = null;
+
+		final List<RealPoint> targetCoords = new ArrayList<RealPoint>(truths.size());
+		final List<FlagNode<double[]>> targetNodes = new ArrayList<FlagNode<double[]>>(truths.size());
+
+		for (double[] localcord : truths) {
+
+			
+			double[] twotuple = new double[] {localcord[0], localcord[1]};
+			targetCoords.add(new RealPoint(twotuple));
+			targetNodes.add(new FlagNode<double[]>(localcord));
+		}
+
+		if (targetNodes.size() > 0 && targetCoords.size() > 0) {
+
+			final KDTree<FlagNode<double[]>> Tree = new KDTree<FlagNode<double[]>>(targetNodes,
+					targetCoords);
+
+			final NNFlagsearchKDtree<double[]> Search = new NNFlagsearchKDtree<double[]>(Tree);
+
+			Search.search(new RealPoint(minCord[0], minCord[1]));
+
+			final FlagNode<double[]> targetNode = Search.getSampler().get();
+
+			nextobject = targetNode.getValue();
+		}
+
+		return nextobject;
+
+	}
+
+	
+	public List<double[]> sortIntersectionListCord(ArrayList<double[]> currentlinelist) {
+		
+		List<double[]> copytruths = getCopyList(currentlinelist);
+		double[] minCord = getMinCord(copytruths);
+		double[] meanCord = getMeanCordDouble(copytruths);
+		double[] Refcord = minCord;
+		List<double[]> orderedtruths = new ArrayList<double[]>(currentlinelist.size());
+		orderedtruths.add(minCord);
+
+		copytruths.remove(minCord);
+		do {
+		//order list of double[] by first two tuples only
+		List<double[]> subtruths = getNextinLine(copytruths, minCord, meanCord);
+		
+		if(subtruths !=null) {
+			
+			double[] nextCord = getNextNearest(minCord, subtruths);
+			
+			copytruths.remove(nextCord);
+			if (copytruths.size() != 0) {
+				copytruths.add(nextCord);
+
+				double[] chosenCord  = nextCord;
+
+				minCord = chosenCord;
+				orderedtruths.add(minCord);
+
+				copytruths.remove(chosenCord);
+			} else {
+
+				orderedtruths.add(nextCord);
+				break;
+
+			}
+		}
+	} while (copytruths.size() >= 0);
+			
+			
+		
+		return  orderedtruths;
+		
+		}
+		
+	
+	
 	public void MakeInterKymo(HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size,
 			int CellLabel) {
 
@@ -187,24 +345,30 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			
 			ArrayList<Intersectionobject> currentlist = sortedMappair.get(currentID);
 
+			
+			
+			
 			ranac.setPosition(time, 0);
 			ranacimageA.setPosition(time, 0);
 			ranacimageB.setPosition(time, 0);
 			for (Intersectionobject currentobject : currentlist) {
 				int count = 0;
 				ArrayList<double[]> linelist = currentobject.linelist;
-				for (int i = 0; i < linelist.size(); ++i) {
+				
+				List<double[]> sortedlinelist = linelist;//sortIntersectionListCord(linelist);
+				
+				for (int i = 0; i < sortedlinelist.size(); ++i) {
 
 					ranac.setPosition(count, 1);
-					ranac.get().set((float) currentobject.linelist.get(i)[2]);
+					ranac.get().set((float) sortedlinelist.get(i)[2]);
 
-					
+					System.out.println(sortedlinelist.get(i)[0] +  " " + sortedlinelist.get(i)[1]);
 					
 					ranacimageA.setPosition(count, 1);
-					ranacimageA.get().setReal(currentobject.linelist.get(i)[3]);
+					ranacimageA.get().setReal(sortedlinelist.get(i)[3]);
 					
 					ranacimageB.setPosition(count, 1);
-					ranacimageB.get().setReal(currentobject.linelist.get(i)[4]);
+					ranacimageB.get().setReal(sortedlinelist.get(i)[4]);
 					// IJ.log(currentobject.z + "time unit" + " " +
 					 //currentobject.linelist.get(i)[0]
 					 //+ " " + currentobject.linelist.get(i)[1] + "Check if arranging points correct");
@@ -291,9 +455,12 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 				Pair<HashMap<Integer, Integer>, HashMap<String, ArrayList<Intersectionobject>>> densesortedMappair = GetZTdenseTrackList(
 						parent);
 				int TimedimensionKymo = parent.AccountedZ.size() + 1;
+				
+				/*
 				HashMap<Integer, Integer> idmap = sortedMappair.getA();
 
 				Iterator<Map.Entry<Integer, Integer>> it = idmap.entrySet().iterator();
+			
 				while (it.hasNext()) {
 
 					Map.Entry<Integer, Integer> mapentry = it.next();
@@ -305,7 +472,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 					MakeInterKymo(sortedMappair.getB(), size, id);
 
 				}
-				
+				*/
 				
 				// For dense plot
 				HashMap<Integer, Integer> denseidmap = densesortedMappair.getA();
