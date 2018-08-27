@@ -45,32 +45,29 @@ public class ProcessSliceDisplayCircleTrackFit implements Runnable {
 			Curvature[index] = TimeCurveList.get(index)[2];
 			Intensity[index] = TimeCurveList.get(index)[3];
 			IntensitySec[index] = TimeCurveList.get(index)[4];
+			AddGaussian.addGaussian(Views.iterable(OutputSlice), Curvature[index], new double[] {X[index], Y[index]}, new double[] {1,1});
 			
-			final Cursor<FloatType> cursor = Views.iterable(OutputSlice).localizingCursor();
-
-			while (cursor.hasNext()) {
-
-				cursor.fwd();
-
 			
 
-					if ((Math.abs(cursor.getFloatPosition(0) - X[index])) == 0
-							&& (Math.abs(cursor.getFloatPosition(1) - Y[index])) == 0) {
-
-						cursor.get().setReal(Curvature[index]);
-
-					}
-					
-					double lambda = (cursor.getFloatPosition(0) - OutputSlice.min(0) ) / (OutputSlice.max(0) - OutputSlice.min(0));
-					if(cursor.getDoublePosition(1) >= OutputSlice.max(1) - OutputSlice.min(1) - 5)
-						cursor.get().setReal( 0 + lambda * (2 * maxIntensity - 0));
-
-				
-
-			}
+		
 			
 		}
+		final Cursor<FloatType> cursor = Views.iterable(OutputSlice).localizingCursor();
+
+		while (cursor.hasNext()) {
+
+			cursor.fwd();
+
 		
+
+				
+				double lambda = (cursor.getFloatPosition(0) - OutputSlice.min(0) ) / (OutputSlice.max(0) - OutputSlice.min(0));
+				if(cursor.getDoublePosition(1) >= OutputSlice.max(1) - OutputSlice.min(1) - 5)
+					cursor.get().setReal( 0 + lambda * (2 * maxIntensity - 0));
+
+			
+
+		}
 	}
 	
 	

@@ -74,8 +74,7 @@ public class Listordereing {
 		if (index > truths.size())
 			index = truths.size();
 
-		IJ.log(truths.get(index).getDoublePosition(0) + " " + truths.get(index).getDoublePosition(1)
-				+ " New ref point");
+		
 
 		for (int i = index; i < truths.size(); ++i) {
 
@@ -106,7 +105,7 @@ public class Listordereing {
 			RealLocalizable listpoint = listiter.next();
 
 			double angledeg = Distance.AngleVectors(Refpoint, listpoint, meanCord);
-			if (angledeg > 0 && angledeg < 30)
+			if (angledeg > 0 && angledeg < 90)
 				sublisttruths.add(listpoint);
 
 		}
@@ -136,7 +135,6 @@ public class Listordereing {
 
 		orderedtruths.add(minCord);
 
-		IJ.log(minCord.getDoublePosition(0) + " " + minCord.getDoublePosition(1) + " Default ref point");
 		copytruths.remove(minCord);
 		do {
 
@@ -188,13 +186,11 @@ public class Listordereing {
 	public static ArrayList<Pair<String, Segmentobject>> getOrderedSegList(
 			ArrayList<Pair<String, Segmentobject>> truths) {
 
-		IJ.log("Ordering Segments");
 		ArrayList<Pair<String, Segmentobject>> copytruths = getCopySegList(truths);
 		ArrayList<Pair<String, Segmentobject>> orderedtruths = new ArrayList<Pair<String, Segmentobject>>(
 				truths.size());
 		// Get the starting minX and minY co-ordinates
 		Pair<String, Segmentobject> minCord = getMinSegCord(copytruths);
-
 		orderedtruths.add(minCord);
 
 		copytruths.remove(minCord);

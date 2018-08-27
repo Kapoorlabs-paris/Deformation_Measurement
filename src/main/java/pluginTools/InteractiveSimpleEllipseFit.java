@@ -320,7 +320,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public boolean usedefaultrim = true;
 	public MouseListener ovalml;
 	public final double calibration;
-	public final double wavesize;
+	public final double timecal;
 	public double insidedistance = 1;
 	public double outsidedistance = 0;
 	public int[] boundarypoint;
@@ -551,14 +551,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
 		this.calibration = 0;
-		this.wavesize = 0;
+		this.timecal = 0;
 		this.automode = false;
 		this.supermode = false;
 		this.curveautomode = false;
 		this.curvesupermode = false;
 	}
 
-	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, final double calibration, final double wavesize, File file) {
+	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, final double calibration, final double timecal, File file) {
 		this.inputfile = file;
 		this.inputdirectory = file.getParent();
 		this.originalimg = originalimg;
@@ -571,13 +571,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		nf.setMaximumFractionDigits(decimalplaces);
 		this.automode = false;
 		this.calibration = calibration;
-		this.wavesize = wavesize;
+		this.timecal = timecal;
 		this.supermode = false;
 		this.curveautomode = false;
 		this.curvesupermode = false;
 	}
 
-	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, double calibration, double wavesize) {
+	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, double calibration, double timecal) {
 		this.inputfile = null;
 		this.inputdirectory = null;
 		this.originalimg = originalimg;
@@ -589,14 +589,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(decimalplaces);
 		this.calibration = calibration;
-		this.wavesize = wavesize;
+		this.timecal = timecal;
 		this.automode = false;
 		this.supermode = false;
 		this.curveautomode = false;
 		this.curvesupermode = false;
 	}
 
-	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, final double calibration, final double wavesize, boolean automode) {
+	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, final double calibration, final double timecal, boolean automode) {
 		this.inputfile = null;
 		this.inputdirectory = null;
 		this.originalimg = originalimg;
@@ -608,7 +608,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(decimalplaces);
 		this.calibration = calibration;
-		this.wavesize = wavesize;
+		this.timecal = timecal;
 		this.automode = automode;
 		this.supermode = false;
 		this.curveautomode = false;
@@ -617,7 +617,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
-			RandomAccessibleInterval<FloatType> originalimgbefore, final double calibration, final double wavesize, boolean automode, String inputdirectory) {
+			RandomAccessibleInterval<FloatType> originalimgbefore, final double calibration, final double timecal, boolean automode, String inputdirectory) {
 		this.inputfile = null;
 		this.inputdirectory = inputdirectory;
 		this.originalimg = originalimg;
@@ -630,7 +630,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(decimalplaces);
 		this.calibration = calibration;
-		this.wavesize = wavesize;
+		this.timecal = timecal;
 		this.automode = automode;
 		this.supermode = false;
 		this.curveautomode = false;
@@ -640,7 +640,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
-			RandomAccessibleInterval<FloatType> originalimgbefore, RandomAccessibleInterval<IntType> originalimgsuper, final double calibration, final double wavesize,
+			RandomAccessibleInterval<FloatType> originalimgbefore, RandomAccessibleInterval<IntType> originalimgsuper, final double calibration, final double timecal,
 			boolean automode, boolean supermode, String inputdirectory) {
 		this.inputfile = null;
 		this.inputdirectory = inputdirectory;
@@ -657,7 +657,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.automode = automode;
 		this.supermode = supermode;
 		this.calibration = calibration;
-		this.wavesize = wavesize;
+		this.timecal = timecal;
 		this.curveautomode = false;
 		this.curvesupermode = false;
 
@@ -665,7 +665,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	}
 	
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
-			RandomAccessibleInterval<FloatType> originalimgbefore, final double calibration, final double wavesize,
+			RandomAccessibleInterval<FloatType> originalimgbefore, final double calibration, final double timecal,
 			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode, String inputdirectory) {
 		this.inputfile = null;
 		this.inputdirectory = inputdirectory;
@@ -700,7 +700,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(decimalplaces);
 		this.calibration = calibration;
-		this.wavesize = wavesize;
+		this.timecal = timecal;
 		this.automode = automode;
 		this.supermode = supermode;
 		this.curveautomode = curveautomode;
@@ -710,7 +710,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
 			RandomAccessibleInterval<FloatType> originalimgbefore, RandomAccessibleInterval<IntType> originalimgsuper,
-			final double calibration, final double wavesize,
+			final double calibration, final double timecal,
 			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode, String inputdirectory) {
 		
 		this.inputfile = null;
@@ -725,7 +725,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
 		this.calibration = calibration;
-		this.wavesize = wavesize;
+		this.timecal = timecal;
 		
 		
 		this.IntensityAdataset =  new XYSeriesCollection();
@@ -755,7 +755,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, RandomAccessibleInterval<FloatType> originalSecimg,
 			RandomAccessibleInterval<FloatType> originalimgbefore, RandomAccessibleInterval<IntType> originalimgsuper,
-			final double calibration, final double wavesize,
+			final double calibration, final double timecal,
 			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode, String inputdirectory) {
 		
 		this.inputfile = null;
@@ -771,7 +771,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
 		this.calibration = calibration;
-		this.wavesize = wavesize;
+		this.timecal = timecal;
 		this.IntensityAdataset =  new XYSeriesCollection();
 		this.IntensityBdataset =  new XYSeriesCollection();
 		this.Perimeterdataset =  new XYSeriesCollection();
@@ -866,7 +866,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		setInsidecut(insideCutoff);
 		
 		
-		//minNumInliers = (int) Math.round(wavesize / calibration);
+		//minNumInliers = (int) Math.round(timecal / calibration);
 		
 		setminInliers(minNumInliers);
 

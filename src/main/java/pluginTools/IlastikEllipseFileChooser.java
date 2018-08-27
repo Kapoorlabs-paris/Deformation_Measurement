@@ -122,9 +122,9 @@ public class IlastikEllipseFileChooser extends JPanel {
 	       inputFieldcalX = new TextField(5);
 		   inputFieldcalX.setText("1");
 			
-		   wavesize = new Label("Size of Wave region (um)");
+		   wavesize = new Label("Pixel calibration in T (s)");
 		   Fieldwavesize = new TextField(5);
-		   Fieldwavesize.setText("10");
+		   Fieldwavesize.setText("1");
 		   
 		   
 		    panelCont.setLayout(cl);

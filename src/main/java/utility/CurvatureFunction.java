@@ -210,10 +210,9 @@ public class CurvatureFunction {
 
 		
 		int maxpoints = size / numSeg;
-		if (maxpoints <= 1)
+		if (maxpoints <= 2)
 			maxpoints = 3;
        int biggestsize = maxpoints;		
-		
 		int segmentLabel = 1;
 
 		List<RealLocalizable> sublist = new ArrayList<RealLocalizable>();
@@ -222,8 +221,9 @@ public class CurvatureFunction {
 
 			int endindex = i + maxpoints;
 
-			if(size - i < 2 * maxpoints || endindex > truths.size() - 1)
-				endindex = truths.size() - 1;
+			if(endindex > size)
+				break;
+			
 			
 			sublist = truths.subList(i, endindex);
 			parent.Listmap.put(segmentLabel, sublist);
@@ -235,8 +235,7 @@ public class CurvatureFunction {
 			parent.CellLabelsizemap.put(celllabel, biggestsize);
 			segmentLabel++;
 			
-			if(size - i < 2 * maxpoints || endindex > truths.size() - 1)
-				break;
+			
 			
 		}
 

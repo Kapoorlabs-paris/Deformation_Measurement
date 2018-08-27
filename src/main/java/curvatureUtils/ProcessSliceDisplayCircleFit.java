@@ -46,26 +46,9 @@ public class ProcessSliceDisplayCircleFit implements Runnable {
 			Intensity[index] = TimeCurveList.get(index)[3];
 			IntensitySec[index] = TimeCurveList.get(index)[4];
 			
-			final Cursor<FloatType> cursor = Views.iterable(OutputSlice).localizingCursor();
-
-			while (cursor.hasNext()) {
-
-				cursor.fwd();
-
+			AddGaussian.addGaussian(Views.iterable(OutputSlice), Curvature[index], new double[] {X[index], Y[index]}, new double[] {1,1});
 			
 
-					if ((Math.abs(cursor.getFloatPosition(0) - X[index])) == 0
-							&& (Math.abs(cursor.getFloatPosition(1) - Y[index])) == 0) {
-
-						cursor.get().setReal(Curvature[index]);
-
-					}
-					
-				
-
-				
-
-			}
 			
 		}
 		

@@ -41,7 +41,8 @@ public class ChooseOrigMap implements ActionListener {
 			
 			if(parent.impOrig!=null) {
 			parent.calibration = parent.impOrig.getCalibration().pixelWidth;
-			
+			parent.Wavesize = parent.impOrig.getCalibration().frameInterval;
+			parent.Fieldwavesize.setText(String.valueOf(new DecimalFormat("#.###").format(parent.Wavesize))); 
 			parent.inputFieldcalX.setText(String.valueOf(new DecimalFormat("#.###").format(parent.calibration)));
 	}
 	

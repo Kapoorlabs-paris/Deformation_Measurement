@@ -30,12 +30,15 @@ import javax.swing.SwingWorker;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
+import com.google.common.math.Quantiles.Scale;
+
 import costMatrix.PixelratiowDistCostFunction;
 import curvatureUtils.DisplaySelected;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import hashMapSorter.SortTimeorZ;
 import ij.IJ;
+import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Line;
 import kalmanForSegments.Segmentobject;
@@ -51,6 +54,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.realtransform.Scale2D;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -95,7 +99,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		return null;
 
 	}
-
+	int timeCal = 5;
+	
 	public void MakeKymo(HashMap<String, ArrayList<Segmentobject>> sortedMappair, long[] size, int CellLabel) {
 
 		RandomAccessibleInterval<FloatType> CurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
@@ -119,7 +124,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			String currentID = entry.getKey();
 
 			int time = entry.getValue();
-
+			
 			ArrayList<Segmentobject> currentlist = sortedMappair.get(currentID);
 
 			ranac.setPosition(time, 0);
@@ -149,6 +154,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		}
 
+		
+		
 		ImageJFunctions.show(CurvatureKymo).setTitle("Curvature Kymo for Cell Label: " + CellLabel);
 		ImageJFunctions.show(IntensityAKymo).setTitle("Intensity ChA Kymo for Cell Label: " + CellLabel);
 		ImageJFunctions.show(IntensityBKymo).setTitle("Intensity ChB for Cell Label: " + CellLabel);
@@ -177,6 +184,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			int time = entry.getValue();
 
+			
 			ArrayList<Intersectionobject> currentlist = sortedMappair.get(currentID);
 
 			ranac.setPosition(time, 0);
