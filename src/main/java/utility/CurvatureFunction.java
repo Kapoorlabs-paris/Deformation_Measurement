@@ -208,6 +208,9 @@ public class CurvatureFunction {
 	public void MakeSegments(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int numSeg,
 			int celllabel, int time) {
 
+		if(truths.size() < 3)
+			return;
+		else {
 		int size = truths.size();
 
 		
@@ -237,7 +240,7 @@ public class CurvatureFunction {
 			parent.CellLabelsizemap.put(celllabel, biggestsize);
 			segmentLabel++;
 			
-			
+		}
 			
 		}
 

@@ -1,6 +1,7 @@
 package curvatureUtils;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.text.NumberFormat;
@@ -216,6 +217,9 @@ public class CurvatureTable {
 
 		parent.PanelSelectFile.removeAll();
 
+		
+		parent.table.setFillsViewportHeight(true);
+
 		parent.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 		parent.scrollPane = new JScrollPane(parent.table);
@@ -223,6 +227,7 @@ public class CurvatureTable {
 		parent.scrollPane.getViewport().add(parent.table);
 		parent.scrollPane.setAutoscrolls(true);
 		parent.PanelSelectFile.add(parent.scrollPane, BorderLayout.CENTER);
+
 
 		parent.PanelSelectFile.setBorder(parent.selectcell);
 

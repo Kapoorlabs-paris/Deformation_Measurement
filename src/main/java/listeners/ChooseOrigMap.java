@@ -36,8 +36,8 @@ public class ChooseOrigMap implements ActionListener {
 		
 	    	parent.impOrig = WindowManager.getImage(imagename);
 	    	
-	    	if(parent.impOrig==null)
-	    	 	parent.impOrig = parent.impA;
+	  //  	if(parent.impOrig==null)
+	    //	 	parent.impOrig = parent.impA;
 			
 			if(parent.impOrig!=null) {
 			parent.calibration = parent.impOrig.getCalibration().pixelWidth;

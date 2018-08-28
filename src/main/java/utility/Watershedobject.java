@@ -4,6 +4,7 @@ import net.imglib2.Cursor;
 import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.algorithm.stats.Normalize;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
@@ -79,16 +80,42 @@ public class Watershedobject {
 
 	}
 
+	public static RandomAccessibleInterval<IntType> OnlyCurrentLabel(RandomAccessibleInterval<IntType> Intimg, int currentLabel){
+		
+		RandomAccessibleInterval<IntType> returnimg = new ArrayImgFactory<IntType>().create(Intimg, new IntType());
+		
+		RandomAccess<IntType> intranac = returnimg.randomAccess();
+		
+		Cursor<IntType> intcursor = Views.iterable(Intimg).localizingCursor();
+		
+		while(intcursor.hasNext()) {
+			
+			intcursor.fwd();
+			intranac.setPosition(intcursor);
+			int i = intcursor.get().get();
+			if (i == currentLabel) {
+				
+				intranac.get().set(i);
+				
+				
+			}
+			
+			
+		}
+		
+		return returnimg;
+	}
+	
+	
 	public static Watershedobject CurrentLabelBinaryImage(RandomAccessibleInterval<IntType> Intimg, int currentLabel) {
 		int n = Intimg.numDimensions();
 		long[] position = new long[n];
-
 		Cursor<IntType> intCursor = Views.iterable(Intimg).cursor();
-
+        
 		RandomAccessibleInterval<FloatType> outimg = new ArrayImgFactory<FloatType>().create(Intimg, new FloatType());
 		RandomAccess<FloatType> imageRA = outimg.randomAccess();
 		RandomAccessibleInterval<FloatType> currentimg = GenericFilters.GradientmagnitudeImage(Intimg);
-
+	
 		RandomAccess<FloatType> inputRA = currentimg.randomAccess();
 
 		// Go through the whole image and add every pixel, that belongs to
@@ -102,6 +129,7 @@ public class Watershedobject {
 			imageRA.setPosition(inputRA);
 			int i = intCursor.get().get();
 			if (i == currentLabel) {
+				
 				intCursor.localize(position);
 				for (int d = 0; d < n; ++d) {
 					if (position[d] < minVal[d]) {
@@ -113,17 +141,19 @@ public class Watershedobject {
 
 				}
 
-				imageRA.get().set(inputRA.get());
+				if(inputRA.get().get() > 0)
+				imageRA.get().set(1);
+				else
+					imageRA.get().set(0);	
 			} else
 				imageRA.get().setZero();
 
 		}
 		FinalInterval intervalsmall = new FinalInterval(minVal, maxVal);
 
-		RandomAccessibleInterval<FloatType> outimgsmall = extractImage(outimg, intervalsmall);
-		double meanIntensity = computeAverage(Views.iterable(outimgsmall));
+		double meanIntensity = computeAverage(Views.iterable(outimg));
 		double size = (intervalsmall.max(0) - intervalsmall.min(0)) * (intervalsmall.max(1) - intervalsmall.min(1));
-		Watershedobject currentobject = new Watershedobject(outimgsmall, meanIntensity, size);
+		Watershedobject currentobject = new Watershedobject(outimg, meanIntensity, size);
 
 		return currentobject;
 

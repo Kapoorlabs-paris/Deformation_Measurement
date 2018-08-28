@@ -706,14 +706,13 @@ public class EllipseTrack {
 		Cursor<IntType> intCursor = Views.iterable(intimg).cursor();
 		// Neglect the background class label
 		int currentLabel = max.get();
-		int currentlabelmax = max.get();
 		parent.pixellist.clear();
 		
 		
 		while (intCursor.hasNext()) {
 			intCursor.fwd();
 			int i = intCursor.get().get();
-			if (i != currentLabel && i!=currentlabelmax) {
+			if (i != currentLabel ) {
 
 				parent.pixellist.add(i);
 

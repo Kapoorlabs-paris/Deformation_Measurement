@@ -31,8 +31,7 @@ public class InteractiveIlastikEllipseFit {
 		ImagePlus impD = new Opener().openImage("/Users/aimachine/Documents/JLMCurvature/RegisteredImages/TrainingandBatch/C2Raw.tif");
 		impD.show();
 		
-		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/JLMCurvature/RegisteredImages/TrainingandBatch/Boundary.tif");
-		impC.show();
+	
 		
 		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/JLMCurvature/RegisteredImages/TrainingandBatch/MultiCut.tif");
 		impA.show();

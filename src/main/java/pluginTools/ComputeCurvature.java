@@ -36,11 +36,13 @@ import costMatrix.PixelratiowDistCostFunction;
 import curvatureUtils.DisplaySelected;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
+import ellipsoidDetector.KymoSaveobject;
 import hashMapSorter.SortTimeorZ;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Line;
+import ij.measure.Calibration;
 import kalmanForSegments.Segmentobject;
 import kalmanForSegments.TrackSegmentModel;
 import kalmanTracker.ETrackCostFunction;
@@ -134,11 +136,13 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			ranac.setPosition(time, 0);
 			ranacimageA.setPosition(time, 0);
 			ranacimageB.setPosition(time, 0);
-			int count = 0;
-
+			
 			if (currentlist != null)
 				for (Segmentobject currentobject : currentlist) {
+					int count = 0;
 
+					if(currentobject.cellLabel == CellLabel) {
+					
 					ranac.setPosition(count, 1);
 					ranac.get().setReal(currentobject.Curvature);
 					
@@ -150,19 +154,31 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 					ranacimageB.get().setReal(currentobject.IntensityB);
 					
 					count++;
-					// System.out.println(currentobject.z + "time unit" + " " +
-					// currentobject.centralpoint.getDoublePosition(0)
-					// + " " + currentobject.centralpoint.getDoublePosition(1) + "Check if arranging
-					// points correct");
+					
 				}
-
+				}
 		}
 
 		
+		double[] calibration = new double[] {parent.timecal, parent.calibration};
+		Calibration cal = new Calibration();
+		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, "s um");
+		ImagePlus Curveimp = ImageJFunctions.show(CurvatureKymo);
+		Curveimp.setTitle("Curvature Kymo for Cell Label: " + CellLabel);
+		Curveimp.setCalibration(cal);
 		
-		ImageJFunctions.show(CurvatureKymo).setTitle("Curvature Kymo for Cell Label: " + CellLabel);
-		ImageJFunctions.show(IntensityAKymo).setTitle("Intensity ChA Kymo for Cell Label: " + CellLabel);
-		ImageJFunctions.show(IntensityBKymo).setTitle("Intensity ChB for Cell Label: " + CellLabel);
+		ImagePlus IntensityAimp = ImageJFunctions.show(IntensityAKymo);
+		IntensityAimp.setTitle("Intensity ChA Kymo for Cell Label: " + CellLabel);
+		IntensityAimp.setCalibration(cal);
+		
+		
+		ImagePlus IntensityBimp =  ImageJFunctions.show(IntensityBKymo);
+		IntensityBimp.setTitle("Intensity ChB for Cell Label: " + CellLabel);
+		IntensityBimp.setCalibration(cal);
+		
+		Curveimp.updateAndRepaintWindow();
+		IntensityAimp.updateAndRepaintWindow();
+		IntensityBimp.updateAndRepaintWindow();
 	}
 	public static List<double[]> getCopyList(List<double[]> copytruths) {
 
@@ -208,7 +224,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 	public static double[] getMinCord(List<double[]> truths) {
 
 		double minVal = Double.MAX_VALUE;
-		double minValY = Double.MAX_VALUE;
+		
 		double[] minobject = null;
 		Iterator<double[]> iter = truths.iterator();
 
@@ -216,11 +232,11 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			double[] currentpair = iter.next();
 
-			if (currentpair[0] <= minVal && currentpair[1] <= minValY) {
+			if (currentpair[0] <= minVal ) {
 
 				minobject = currentpair;
 				minVal = currentpair[0];
-				minValY = currentpair[1];
+				
 			}
 			
 		}
@@ -367,42 +383,68 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			
 			
-			
 			ranac.setPosition(time, 0);
 			ranacimageA.setPosition(time, 0);
 			ranacimageB.setPosition(time, 0);
+			if(currentlist!=null) {
 			for (Intersectionobject currentobject : currentlist) {
+				
+				
 				int count = 0;
+				if(currentobject.celllabel == CellLabel) {
+				
+				
 				ArrayList<double[]> linelist = currentobject.linelist;
 				
-				List<double[]> sortedlinelist =  sortIntersectionListCord(linelist);
+				// Sorting every time ID so we get the same rolling out of co-ordinates
+				List<double[]> sortedlinelist = sortIntersectionListCord(linelist); 
 				
 				for (int i = 0; i < sortedlinelist.size(); ++i) {
 
 					ranac.setPosition(count, 1);
 					ranac.get().set((float) sortedlinelist.get(i)[2]);
 
-					System.out.println(sortedlinelist.get(i)[0] +  " " + sortedlinelist.get(i)[1]);
 					
 					ranacimageA.setPosition(count, 1);
 					ranacimageA.get().setReal(sortedlinelist.get(i)[3]);
 					
 					ranacimageB.setPosition(count, 1);
 					ranacimageB.get().setReal(sortedlinelist.get(i)[4]);
-					// IJ.log(currentobject.z + "time unit" + " " +
-					 //currentobject.linelist.get(i)[0]
-					 //+ " " + currentobject.linelist.get(i)[1] + "Check if arranging points correct");
+					
 					count++;
 				}
 
 			}
+			}
 
 		}
 
-		ImageJFunctions.show(CurvatureKymo).setTitle("Curvature Kymo for Cell Label: " + CellLabel);
-		ImageJFunctions.show(IntensityAKymo).setTitle("Intensity ChA Kymo for Cell Label: " + CellLabel);
-		ImageJFunctions.show(IntensityBKymo).setTitle("Intensity ChB for Cell Label: " + CellLabel);
+		}
+		double[] calibration = new double[] {parent.timecal, parent.calibration};
+		Calibration cal = new Calibration();
+		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, "s um");
+		ImagePlus Curveimp = ImageJFunctions.show(CurvatureKymo);
+		Curveimp.setTitle("Curvature Kymo for Cell Label: " + CellLabel);
+		Curveimp.setCalibration(cal);
+		
+		
+		ImagePlus IntensityAimp = ImageJFunctions.show(IntensityAKymo);
+		IntensityAimp.setTitle("Intensity ChA Kymo for Cell Label: " + CellLabel);
+		IntensityAimp.setCalibration(cal);
+		
+		
+		ImagePlus IntensityBimp =  ImageJFunctions.show(IntensityBKymo);
+		IntensityBimp.setTitle("Intensity ChB for Cell Label: " + CellLabel);
+		IntensityBimp.setCalibration(cal);
+		
+		Curveimp.updateAndRepaintWindow();
+		IntensityAimp.updateAndRepaintWindow();
+		IntensityBimp.updateAndRepaintWindow();
+		
+	//	KymoSaveobject Kymos = new KymoSaveobject(CurvatureKymo, IntensityAKymo, IntensityBKymo);
+	//	parent.KymoFileobject.put(CellLabel, Kymos);
 	}
+	
 
 	@Override
 	protected void done() {
@@ -505,7 +547,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 					int Xkymodimension = mapentry.getValue();
 
-					long[] size = new long[] { TimedimensionKymo, Xkymodimension };
+					long[] size = new long[] { TimedimensionKymo, Xkymodimension + 10 };
 					MakeInterKymo(densesortedMappair.getB(), size, id);
 
 				}
@@ -1150,6 +1192,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			int minid = Integer.MAX_VALUE;
 			int maxid = Integer.MIN_VALUE;
 
+			
 			for (Pair<String, Intersectionobject> currentangle : parent.denseTracklist) {
 
 				if (currentangle.getB().z == z) {
@@ -1167,9 +1210,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 						minid = Allsegments.celllabel;
 
 				}
-
 			}
-
 			for (int id = minid; id <= maxid; ++id) {
 
 				for (int i = 0; i < currentframeobject.size(); ++i) {
@@ -1180,14 +1221,18 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 						maxCurveDim = size;
 
 				}
+				
+				if(minid!= Integer.MAX_VALUE && maxid!=Integer.MIN_VALUE) {
 
 				String UniqueID = entry.getKey();
 
 				sortedMap.put(UniqueID, currentframeobject);
 				maxidcurve.put(id, maxCurveDim);
+				}
 
-			}
+}
 		}
+		
 		return new ValuePair<HashMap<Integer, Integer>, HashMap<String, ArrayList<Intersectionobject>>>(maxidcurve,
 				sortedMap);
 

@@ -430,7 +430,7 @@ public class Listordereing {
 	public static RealLocalizable getMinCord(List<RealLocalizable> truths) {
 
 		double minVal = Double.MAX_VALUE;
-		double minValY = Double.MAX_VALUE;
+		
 		RealLocalizable minobject = null;
 		Iterator<RealLocalizable> iter = truths.iterator();
 
@@ -438,11 +438,11 @@ public class Listordereing {
 
 			RealLocalizable currentpair = iter.next();
 
-			if (currentpair.getDoublePosition(0) <= minVal && currentpair.getDoublePosition(1) <= minValY) {
+			if (currentpair.getDoublePosition(0) <= minVal ) {
 
 				minobject = currentpair;
 				minVal = currentpair.getDoublePosition(0);
-				minValY = currentpair.getDoublePosition(1);
+				
 
 			}
 			
@@ -464,18 +464,18 @@ public class Listordereing {
 	public static Pair<String, Segmentobject> getMinSegCord(ArrayList<Pair<String, Segmentobject>> truths) {
 
 		double minVal = Double.MAX_VALUE;
-		double minValY = Double.MAX_VALUE;
+		
 		Pair<String, Segmentobject> minobject = null;
 		Iterator<Pair<String, Segmentobject>> iter = truths.iterator();
 
 		while (iter.hasNext()) {
 
 			Pair<String, Segmentobject> currentpair = iter.next();
-			if (currentpair.getB().centralpoint.getDoublePosition(0) <= minVal && currentpair.getB().centralpoint.getDoublePosition(1) <= minValY) {
+			if (currentpair.getB().centralpoint.getDoublePosition(0) <= minVal) {
 
 				minobject = currentpair;
 				minVal = currentpair.getB().centralpoint.getDoublePosition(0);
-				minValY = currentpair.getB().centralpoint.getDoublePosition(1);
+				
 			}
 			
 		}
@@ -487,7 +487,7 @@ public class Listordereing {
 			ArrayList<Pair<String, Intersectionobject>> truths) {
 
 		double minVal = Double.MAX_VALUE;
-		double minValY = Double.MAX_VALUE;
+		
 		Pair<String, Intersectionobject> minobject = null;
 		Iterator<Pair<String, Intersectionobject>> iter = truths.iterator();
 
@@ -497,11 +497,10 @@ public class Listordereing {
 			ArrayList<double[]> Linelist = currentpair.getB().linelist;
 
 			for (int i = 0; i < Linelist.size(); ++i) {
-				if (currentpair.getB().linelist.get(i)[0] < minVal && currentpair.getB().linelist.get(i)[1] < minValY) {
+				if (currentpair.getB().linelist.get(i)[0] < minVal) {
 
 					minobject = currentpair;
 					minVal = currentpair.getB().linelist.get(i)[0];
-					minValY = currentpair.getB().linelist.get(i)[1];
 				}
 				
 			}

@@ -20,12 +20,13 @@ public class DisplayBoxListener  implements ItemListener {
 		if (arg0.getStateChange() == ItemEvent.DESELECTED) {
 	        
 			parent.displayIntermediateBox = false;
+			parent.displayIntermediate = false;
 		}
 		
         else if (arg0.getStateChange() == ItemEvent.SELECTED) {
 		
 		parent.displayIntermediateBox = true;
-		
+		parent.displayIntermediate = true;
 		
 	}
 

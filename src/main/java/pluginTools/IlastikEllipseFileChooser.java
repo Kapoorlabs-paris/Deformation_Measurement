@@ -56,9 +56,9 @@ public class IlastikEllipseFileChooser extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	  public JFrame Cardframe = new JFrame("Ilastik based Ellipsoid detector");
+	  public JFrame Cardframe = new JFrame("SuperPixel based Ellipsoid detector");
 	  public JPanel panelCont = new JPanel();
-	  public ImagePlus impA, impOrig, impsuper, impSec;
+	  public ImagePlus impOrig, impsuper, impSec;
 	  public File impAfile, impOrigfile, impsuperfile, impsecfile;
 	  public JPanel panelFirst = new JPanel();
 	  public JPanel Panelfile = new JPanel();
@@ -167,16 +167,16 @@ public class IlastikEllipseFileChooser extends JPanel {
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			
-			Panelfile.add(ChooseImage, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-			Panelfile.setBorder(choosefile);
-			panelFirst.add(Panelfile, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		//	Panelfile.add(ChooseImage, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		//			GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		//	Panelfile.setBorder(choosefile);
+			panelFirst.add(Panelfile, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			Panelsuperfile.add(ChoosesuperImage, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Panelsuperfile.setBorder(choosesuperfile);
-			panelFirst.add(Panelsuperfile, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			panelFirst.add(Panelsuperfile, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			Microscope.add(inputLabelcalX, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
@@ -192,7 +192,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 					GridBagConstraints.RELATIVE, insets, 0, 0));
 			
 			Microscope.setBorder(microborder);
-			panelFirst.add(Microscope, new GridBagConstraints(0, 4, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+			panelFirst.add(Microscope, new GridBagConstraints(0, 3, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			
 			
@@ -287,7 +287,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 	  public void DoneCurr(Frame parent) throws ImgIOException{
 			
 		
-			RandomAccessibleInterval<FloatType> image = new ImgOpener().openImgs(impA.getOriginalFileInfo().directory + impA.getOriginalFileInfo().fileName , new FloatType()).iterator().next();
+			//RandomAccessibleInterval<FloatType> image = new ImgOpener().openImgs(impA.getOriginalFileInfo().directory + impA.getOriginalFileInfo().fileName , new FloatType()).iterator().next();
 			RandomAccessibleInterval<FloatType> imagebefore = new ImgOpener().openImgs(impOrig.getOriginalFileInfo().directory + impOrig.getOriginalFileInfo().fileName, new FloatType()).iterator().next();
 		
 			System.setProperty("scijava.log.level", "None");
@@ -296,22 +296,22 @@ public class IlastikEllipseFileChooser extends JPanel {
 			if(superpixel && !twochannel) {
 			
 				RandomAccessibleInterval<IntType> imagesuper = new ImgOpener().openImgs(impsuper.getOriginalFileInfo().directory + impsuper.getOriginalFileInfo().fileName, new IntType()).iterator().next();
-				new InteractiveSimpleEllipseFit(image, imagebefore, imagesuper, calibration, Wavesize, simple, superpixel, impsuper.getOriginalFileInfo().directory).run(null);
+				new InteractiveSimpleEllipseFit(imagebefore, imagebefore, imagesuper, calibration, Wavesize, simple, superpixel, impsuper.getOriginalFileInfo().directory).run(null);
 			
 			}
 			if (simple && !twochannel)
-			new InteractiveSimpleEllipseFit(image, imagebefore, calibration, Wavesize, simple,  impA.getOriginalFileInfo().directory).run(null);
+			new InteractiveSimpleEllipseFit(imagebefore, imagebefore, calibration, Wavesize, simple,  impOrig.getOriginalFileInfo().directory).run(null);
 			
 			if (curvesimple && !twochannel) {
 				// Activate curvature measurment simple
-				new InteractiveSimpleEllipseFit(image, imagebefore, calibration, Wavesize,simple, superpixel, curvesimple, curvesuper, impA.getOriginalFileInfo().directory).run(null);
+				new InteractiveSimpleEllipseFit(imagebefore, imagebefore, calibration, Wavesize,simple, superpixel, curvesimple, curvesuper, impOrig.getOriginalFileInfo().directory).run(null);
 				
 			}
 			if(curvesuper && !twochannel) {
 				// Activate curvature measurment super
 			
 				RandomAccessibleInterval<IntType> imagesuper = new ImgOpener().openImgs(impsuper.getOriginalFileInfo().directory + impsuper.getOriginalFileInfo().fileName, new IntType()).iterator().next();
-				new InteractiveSimpleEllipseFit(image, imagebefore, imagesuper,calibration, Wavesize, simple, superpixel, curvesimple, curvesuper, impA.getOriginalFileInfo().directory).run(null);
+				new InteractiveSimpleEllipseFit(imagebefore, imagebefore, imagesuper,calibration, Wavesize, simple, superpixel, curvesimple, curvesuper, impOrig.getOriginalFileInfo().directory).run(null);
 			}
 			
 			
@@ -320,7 +320,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 			
 				RandomAccessibleInterval<IntType> imagesuper = new ImgOpener().openImgs(impsuper.getOriginalFileInfo().directory + impsuper.getOriginalFileInfo().fileName, new IntType()).iterator().next();
 				RandomAccessibleInterval<FloatType> secimage = new ImgOpener().openImgs(impSec.getOriginalFileInfo().directory + impSec.getOriginalFileInfo().fileName, new FloatType()).iterator().next();
-				new InteractiveSimpleEllipseFit(image, secimage, imagebefore, imagesuper,calibration, Wavesize, simple, superpixel, curvesimple, curvesuper, impA.getOriginalFileInfo().directory).run(null);
+				new InteractiveSimpleEllipseFit(imagebefore, secimage, imagebefore, imagesuper,calibration, Wavesize, simple, superpixel, curvesimple, curvesuper, impOrig.getOriginalFileInfo().directory).run(null);
 			}
 			
 			close(parent);

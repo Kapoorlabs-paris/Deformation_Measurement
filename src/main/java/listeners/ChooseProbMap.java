@@ -31,7 +31,7 @@ public class ChooseProbMap implements ActionListener {
 		
 	
 		
-	    	parent.impA = WindowManager.getImage(imagename);
+	   // 	parent.impA = WindowManager.getImage(imagename);
 		
 			
 			

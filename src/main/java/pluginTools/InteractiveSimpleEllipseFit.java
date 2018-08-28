@@ -61,6 +61,7 @@ import curvatureUtils.Node;
 import edu.mines.jtk.mosaic.PointsView.Mark;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
+import ellipsoidDetector.KymoSaveobject;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -199,7 +200,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int minNumInliers = 10;
 	public int depth = 4;
 	public int maxsize = 100;
-	public int minsize = 100;
+	public int minsize = 10;
 	public int span = 2;
 	public int minperimeter = 100;
 	public int numseg = 10;
@@ -406,7 +407,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public HashMap<Integer, Double> HashresultSegIntensityA;
 	public HashMap<Integer, Double> HashresultSegIntensityB;
 	public HashMap<Integer, Double> HashresultSegPerimeter;
-	
+	public HashMap<Integer, KymoSaveobject> KymoFileobject;
 	public Set<Integer> pixellist;
 	ColorProcessor cp = null;
 	public HashMap<String, Intersectionobject> Finalresult;
@@ -803,8 +804,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		displaymin = 0;
 		displaymax = 1;
 		
-		maxsize = (int)  (originalimg.dimension(0) * originalimg.dimension(1));
-		minsize = (int)  ( 0.5 * originalimg.dimension(0) * originalimg.dimension(1));
+		
         if((automode) || (curveautomode)) {
         	
         	
@@ -820,6 +820,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
         }
 		
 		redoing = false;
+		KymoFileobject = new HashMap<Integer, KymoSaveobject>();
 		localCurvature = new ArrayList<Curvatureobject>();
 		localSegment = new ArrayList<Segmentobject>();
 		functions = new ArrayList<RegressionFunction>();
@@ -1519,7 +1520,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	
 	
 
-	public JFrame Cardframe = new JFrame("Ellipsoid detector");
+	public JFrame Cardframe = new JFrame("Intersection angle or curvature measurment");
 	public JPanel panelCont = new JPanel();
 	public JPanel panelFirst = new JPanel();
 	public JPanel panelSecond = new JPanel();
@@ -1545,7 +1546,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Label inputLabelIter, inputtrackLabel, inputcellLabel;
 	public JPanel Original = new JPanel();
 	public int SizeX = 500;
-	public int SizeY = 300;
+	public int SizeY = 500;
 
 	public int smallSizeX = 200;
 	public int smallSizeY = 200;
@@ -1660,9 +1661,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final Checkbox Pixelcelltrackcirclemode = new Checkbox("Track Cell Pixel Circle Fits", curvaturemode, pixelcelltrackcirclefits);
 	
 	
-	public boolean displayIntermediate = false;
-	public boolean displayIntermediateBox = false;
-	public Checkbox displayCircle = new Checkbox("Display Intermediate Circles", displayIntermediate);
+	public boolean displayIntermediate = true;
+	public boolean displayIntermediateBox = true;
+	public Checkbox displayCircle = new Checkbox("Display Intermediate Circles", displayIntermediateBox);
 	public Checkbox displaySegments = new Checkbox("Display Segments", displayIntermediateBox);
 	public JButton ClearDisplay = new JButton("Clear Display");
 	public JButton SelectRim = new JButton("Rim selection for Intensity");
@@ -1919,19 +1920,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 		if (( supermode) || ( curvesupermode)) {
 
-			/*
-			Probselect.add(lowprobText, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-			Probselect.add(lowprobslider, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-			Probselect.add(highporbText, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-			Probselect.add(highprobslider, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-*/
+	
 			Probselect.add(autoTstart, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Probselect.add(startT, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
@@ -1943,21 +1932,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			Probselect.add(endT, new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 	
-			
-			if(curvesupermode) {
-				
-				Probselect.add(celltrackcirclemode, new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, GridBagConstraints.EAST,
-						GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-				
-				Probselect.add(circlemode, new GridBagConstraints(2, 8, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
-						GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-
-				Probselect.add(Pixelcelltrackcirclemode, new GridBagConstraints(0, 10, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
-						GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-				
-			}
-	
-		//	Probselect.setPreferredSize(new Dimension(SizeX, SizeY));
+		
 			Probselect.setBorder(probborder);
 
 			panelFirst.add(Probselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
@@ -2000,7 +1975,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			
 			Probselect.add(IlastikAuto, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-		//	Probselect.setPreferredSize(new Dimension(SizeX, SizeY));
 			Probselect.setBorder(probborder);
 
 			panelFirst.add(Probselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
@@ -2048,13 +2022,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(5, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				
-				//Angleselect.add(CurrentCurvaturebutton, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-				//		GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			
 				Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				
 				Angleselect.setBorder(circletools);
-				Angleselect.setPreferredSize(new Dimension(SizeX , SizeY ));
 				panelFirst.add(Angleselect, new GridBagConstraints(5, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			}
@@ -2063,23 +2035,18 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				
 		
 
-				Angleselect.add(indistText, new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0,
+				Angleselect.add(indistText, new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0,
 						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				Angleselect.add(interiorfield, new GridBagConstraints(0, 3, 2, 1, 0.0, 0.0,
+				Angleselect.add(interiorfield, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0,
 						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				
-			//	Angleselect.add(outdistText, new GridBagConstraints(3, 2, 2, 1, 0.0, 0.0,
-			//			GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-			//	Angleselect.add(exteriorfield, new GridBagConstraints(3, 3, 2, 1, 0.0, 0.0,
-			//			GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			
 				
 				
-				Angleselect.add(resolutionText, new GridBagConstraints(3, 2, 1, 1, 0.0, 0.0,
+				Angleselect.add(resolutionText, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,
 						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				Angleselect.add(resolutionField, new GridBagConstraints(3, 3, 2, 1, 0.0, 0.0,
+				Angleselect.add(resolutionField, new GridBagConstraints(0, 3, 2, 1, 0.0, 0.0,
 						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				
 				
@@ -2087,17 +2054,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 						minInlierField, minInlierText, scrollbarSize, minNumInliers,
 						minNumInliersmax);
 
-				Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0,
+				Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0,
 						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				
-			//	Angleselect.add(CurrentCurvaturebutton, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-			//			GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				Angleselect.add(Curvaturebutton, new GridBagConstraints(3, 4, 2, 1, 0.0, 0.0,
+			
+			
+				Angleselect.add(displaySegments, new GridBagConstraints(3, 0, 2, 1, 0.0, 0.0,
 						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-				Angleselect.add(displayCircle, new GridBagConstraints(3, 0, 2, 1, 0.0, 0.0,
-						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				Angleselect.add(displaySegments, new GridBagConstraints(3, 1, 2, 1, 0.0, 0.0,
+				Angleselect.add(Curvaturebutton, new GridBagConstraints(3, 3, 2, 1, 0.0, 0.0,
 						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 				

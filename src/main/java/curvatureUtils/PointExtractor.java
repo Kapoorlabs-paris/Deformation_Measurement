@@ -50,6 +50,7 @@ public class PointExtractor {
 		t = localCurvature.get(0).t;
 		z = localCurvature.get(0).z;
 		perimeter = localCurvature.get(0).perimeter;
+		
 		ArrayList<OvalRoi> resultcurveline = new ArrayList<OvalRoi>();
 		ArrayList<EllipseRoi> ellipsecurveline = new ArrayList<EllipseRoi>();
 		ArrayList<OvalRoi> resultallcurveline = new ArrayList<OvalRoi>();
@@ -94,6 +95,7 @@ public class PointExtractor {
 				Line line = new Line(xs, ys, xe, ye);
 				resultlineroi.add(line);
 			}
+			
 			if (regression.ellipse != null) {
 
 				EllipseRoi ellipse = DisplayasROI.create2DCircle(regression.ellipse.getCenter(),

@@ -160,10 +160,6 @@ public class Computeinwater {
 
 	public void ParallelRansacCurve() {
 
-		int nThreads = Runtime.getRuntime().availableProcessors();
-		// set up executor service
-		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
-		List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
 
 		ArrayList<Line> resultlineroi = new ArrayList<Line>();
 		ArrayList<OvalRoi> resultcurvelineroi = new ArrayList<OvalRoi>();
@@ -195,29 +191,18 @@ public class Computeinwater {
 
 			
 			List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
-		if(current.Size < parent.maxsize && current.Size > parent.minsize) {
-			
-			tasks.add(Executors.callable(new LabelCurvature(parent, current.source, truths, resultlineroi, resultcurvelineroi,resultallcurvelineroi,ellipselineroi, Segmentrect,  AllCurveintersection, AlldenseCurveintersection, 
+			LabelCurvature runserial = new LabelCurvature(parent, current.source, truths, resultlineroi, resultcurvelineroi,resultallcurvelineroi,ellipselineroi, Segmentrect,  AllCurveintersection, AlldenseCurveintersection, 
 					AllCurveSegments, t, z,
-					parent.jpb, percent, label)));
-			
-		}
-		}
-
-		try {
-			taskExecutor.invokeAll(tasks);
-
-			// Here we take the list of intersection object from current view and make a
-			// list of cells we want to track
-
+					parent.jpb, percent, label);
+			runserial.run();
+	
 			String uniqueID = Integer.toString(z) + Integer.toString(t);
 			parent.ALLIntersections.put(uniqueID, AllCurveintersection);
 			parent.ALLdenseIntersections.put(uniqueID, AlldenseCurveintersection);
 			parent.ALLSegments.put(uniqueID, AllCurveSegments);
 			Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi, resultcurvelineroi,Segmentrect, z, t, -1, true);
 			parent.ZTRois.put(uniqueID, currentroiobject);
-			DisplayAuto.Display(parent);
-		} catch (InterruptedException e1) {
+	
 
 		}
 
