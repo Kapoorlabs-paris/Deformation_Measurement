@@ -450,6 +450,7 @@ public class LabelCurvature implements Runnable {
 		// Get the sparse list of points
 		Pair<RealLocalizable, List<RealLocalizable>> Ordered = Listordereing.getOrderedList(truths, parent.resolution);
 
+		System.out.println(Ordered.getB().size());
 		// Start sliding
 		
 			if(parent.pixelcelltrackcirclefits) {

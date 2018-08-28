@@ -92,10 +92,13 @@ public class Distance {
 		final double[] vA = new double[] { pointAA[0] - pointmid[0], pointAA[1] - pointmid[1]  };
 		
 		final double[] vB = new double[] { pointBB[0] - pointmid[0], pointBB[1] - pointmid[1]  };
-        double argument = ( vA[0] * vB[0] +  vA[1] * vB[1] )  / Math.sqrt(( vA[0] * vA[0] +  vA[1] * vA[1])  * ( vB[0] * vB[0] +  vB[1] * vB[1] ) );
 		
-		double angle = Math.acos(argument);
-		double angledeg = Math.toDegrees(angle)%360;
+		double slopeA = vA[1] / (vA[0] + 1.0e-10);
+		double slopeB = vB[1] / (vB[0] + 1.0e-10);
+		
+        double argument = (slopeA - slopeB ) / (1 + slopeA * slopeB);
+		
+		double angledeg = Math.atan(argument);
 		
 		
 		return angledeg;
@@ -109,13 +112,13 @@ public class Distance {
 		final double[] vA = new double[] { pointA[0] - midpoint[0], pointA[1] - midpoint[1]  };
 		
 		final double[] vB = new double[] { pointB[0] - midpoint[0], pointB[1] - midpoint[1]  };
-        double argument = ( vA[0] * vB[0] +  vA[1] * vB[1] )  / Math.sqrt(( vA[0] * vA[0] +  vA[1] * vA[1])  * ( vB[0] * vB[0] +  vB[1] * vB[1] ) );
 		
-		double angle = Math.acos(argument);
-		double angledeg = Math.toDegrees(angle)%360;
+		double slopeA = vA[1] / (vA[0] + 1.0e-10);
+		double slopeB = vB[1] / (vB[0] + 1.0e-10);
+	    double argument = (slopeA - slopeB ) / (1 + slopeA * slopeB);
 		
-		
-		return angledeg;
+			double angledeg = Math.atan(argument);
+			return angledeg;
 	}
 	
      public static double AngleVectors(final Pair<String, Segmentobject> pointA, final Pair<String, Segmentobject> pointB) {
@@ -130,13 +133,12 @@ public class Distance {
 		final double[] vA = new double[] { pointAA[0] - pointmid[0], pointAA[1] - pointmid[1]  };
 		
 		final double[] vB = new double[] { pointBB[0] - pointmid[0], pointBB[1] - pointmid[1]  };
-        double argument = ( vA[0] * vB[0] +  vA[1] * vB[1] )  / Math.sqrt(( vA[0] * vA[0] +  vA[1] * vA[1])  * ( vB[0] * vB[0] +  vB[1] * vB[1] ) );
+		double slopeA = vA[1] / (vA[0] + 1.0e-10);
+		double slopeB = vB[1] / (vB[0] + 1.0e-10);
+	    double argument = (slopeA - slopeB ) / (1 + slopeA * slopeB);
 		
-		double angle = Math.acos(argument);
-		double angledeg = Math.toDegrees(angle)%360;
-		
-		
-		return angledeg;
+			double angledeg = Math.atan(argument);
+			return angledeg;
 	}
      
  

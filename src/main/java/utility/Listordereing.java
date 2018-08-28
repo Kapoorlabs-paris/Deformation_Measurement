@@ -90,7 +90,7 @@ public class Listordereing {
 	}
 
 	public static List<RealLocalizable> getNexinLine(List<RealLocalizable> truths, RealLocalizable Refpoint,
-			RealLocalizable meanCord) {
+			RealLocalizable meanCord, int count) {
 
 		List<RealLocalizable> copytruths = getCopyList(truths);
 
@@ -103,16 +103,21 @@ public class Listordereing {
 			RealLocalizable listpoint = listiter.next();
 
 			double angledeg = Distance.AngleVectors(Refpoint, listpoint, meanCord);
-			if (angledeg > 0 && angledeg < 90)
-				sublisttruths.add(listpoint);
-
+			
+				
+				if (angledeg > 0 )
+					sublisttruths.add(listpoint);
+				
+			
+				
+			
 		}
 		return sublisttruths;
 
 	}
 
 	public static List<Pair<String, Segmentobject>> getNexinSegLine(ArrayList<Pair<String, Segmentobject>> truths,
-			RealLocalizable Refpoint, RealLocalizable meanCord) {
+			RealLocalizable Refpoint, RealLocalizable meanCord, int count) {
 
 		ArrayList<Pair<String, Segmentobject>> copytruths = getCopySegList(truths);
 
@@ -125,8 +130,11 @@ public class Listordereing {
 			Pair<String, Segmentobject> listpoint = listiter.next();
 
 			double angledeg = Distance.AngleVectors(Refpoint, listpoint.getB().Cellcentralpoint, meanCord);
-			if (angledeg > 0 && angledeg < 90)
-				sublisttruths.add(listpoint);
+			
+				if (angledeg > 0 )
+					sublisttruths.add(listpoint);
+				
+			
 
 		}
 		return sublisttruths;
@@ -157,10 +165,13 @@ public class Listordereing {
 		orderedtruths.add(minCord);
 
 		copytruths.remove(minCord);
+		int count = 0;
 		do {
 
-			List<RealLocalizable> subcopytruths = getNexinLine(copytruths, minCord, meanCord);
-			if (subcopytruths != null) {
+			List<RealLocalizable> subcopytruths = getNexinLine(copytruths, minCord, meanCord, count);
+			
+			if (subcopytruths != null && subcopytruths.size() > 0) {
+				count++;
 				RealLocalizable nextCord = getNextNearest(minCord, subcopytruths);
 				copytruths.remove(nextCord);
 				if (copytruths.size() != 0) {
@@ -181,8 +192,10 @@ public class Listordereing {
 
 				}
 			}
+			else break;
 		} while (copytruths.size() >= 0);
 
+		
 		for (int i = 0; i < orderedtruths.size(); i += resolution) {
 			if (i + resolution > orderedtruths.size() - 1)
 				break;
@@ -214,11 +227,15 @@ public class Listordereing {
 
 		RealLocalizable meanCord = getMeanSeg(copytruths);
 		copytruths.remove(minCord);
+		
+		int count = 0;
 		do {
 
 			List<Pair<String, Segmentobject>> subcopytruths = getNexinSegLine(copytruths,
-					minCord.getB().Cellcentralpoint, meanCord);
-			if (subcopytruths != null) {
+					minCord.getB().Cellcentralpoint, meanCord, count);
+			if (subcopytruths != null && subcopytruths.size() > 0) {
+				
+				count++;
 				Pair<String, Segmentobject> nextCord = getSegNextNearest(minCord, subcopytruths);
 				copytruths.remove(nextCord);
 
@@ -237,6 +254,7 @@ public class Listordereing {
 
 				}
 			}
+			else break;
 		} while (copytruths.size() >= 0);
 
 		return orderedtruths;

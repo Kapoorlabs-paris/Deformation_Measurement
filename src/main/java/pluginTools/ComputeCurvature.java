@@ -178,7 +178,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		return orderedtruths;
 	}
 	
-	public List<double[]> getNextinLine(List<double[]> currentlinelist, double[] Refpoint, double[] meanCord) {
+	public List<double[]> getNextinLine(List<double[]> currentlinelist, double[] Refpoint, double[] meanCord, int count) {
 		
 		List<double[]> copytruths = getCopyList(currentlinelist);
 		
@@ -192,9 +192,14 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			
 			double angledeg = Distance.AngleVectorsDouble(alltuples, Refpoint, meanCord);
-			if (angledeg > 0 && angledeg < 90)
+			
+			
 				
-				sublisttruths.add(alltuples);
+				if (angledeg > 0 )
+					
+					sublisttruths.add(alltuples);
+				
+			
 
 		}
 		return sublisttruths;
@@ -244,6 +249,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		double[] nextobject = null;
 
+		double[] bigobject = null;
 		final List<RealPoint> targetCoords = new ArrayList<RealPoint>(truths.size());
 		final List<FlagNode<double[]>> targetNodes = new ArrayList<FlagNode<double[]>>(truths.size());
 
@@ -252,7 +258,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			
 			double[] twotuple = new double[] {localcord[0], localcord[1]};
 			targetCoords.add(new RealPoint(twotuple));
-			targetNodes.add(new FlagNode<double[]>(localcord));
+			targetNodes.add(new FlagNode<double[]>(twotuple));
 		}
 
 		if (targetNodes.size() > 0 && targetCoords.size() > 0) {
@@ -268,8 +274,18 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			nextobject = targetNode.getValue();
 		}
+		
+		for(double[] truth : truths) {
+			
+			if(nextobject[0] == truth[0] && nextobject[1] == truth[1]) {
+				
+				bigobject = truth;
+				break;
+			}
+			
+		}
 
-		return nextobject;
+		return bigobject;
 
 	}
 
@@ -283,13 +299,15 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		List<double[]> orderedtruths = new ArrayList<double[]>(currentlinelist.size());
 		orderedtruths.add(minCord);
 
+		int count = 0;
 		copytruths.remove(minCord);
 		do {
 		//order list of double[] by first two tuples only
-		List<double[]> subtruths = getNextinLine(copytruths, minCord, meanCord);
+		List<double[]> subtruths = getNextinLine(copytruths, minCord, meanCord, count);
 		
-		if(subtruths !=null) {
+		if(subtruths !=null && subtruths.size() > 0) {
 			
+			count++;
 			double[] nextCord = getNextNearest(minCord, subtruths);
 			
 			copytruths.remove(nextCord);
@@ -308,7 +326,9 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 				break;
 
 			}
+			
 		}
+		else break;
 	} while (copytruths.size() >= 0);
 			
 			
@@ -355,7 +375,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 				int count = 0;
 				ArrayList<double[]> linelist = currentobject.linelist;
 				
-				List<double[]> sortedlinelist = linelist;//sortIntersectionListCord(linelist);
+				List<double[]> sortedlinelist =  sortIntersectionListCord(linelist);
 				
 				for (int i = 0; i < sortedlinelist.size(); ++i) {
 
