@@ -41,7 +41,7 @@ import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.RegressionCurveSegment;
 import ransacPoly.RegressionFunction;
 
-public class LabelCurvature  {
+public class LabelCurvature implements Runnable  {
 
 	final InteractiveSimpleEllipseFit parent;
 	final RandomAccessibleInterval<FloatType> ActualRoiimg;

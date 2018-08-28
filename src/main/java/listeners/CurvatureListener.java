@@ -72,6 +72,14 @@ public class CurvatureListener implements ActionListener {
 		parent.ALLSegments.clear();
 		parent.SegmentFinalresult.clear();
 		parent.overlay.clear();
+		parent.AccountedZ.clear();
+		parent.AutostartTime = Integer.parseInt(parent.startT.getText());
+		if (parent.AutostartTime <= 0)
+			parent.AutostartTime = 1;
+		parent.AutoendTime = Integer.parseInt(parent.endT.getText());
+		for(int z = parent.AutostartTime; z <= parent.AutoendTime; ++z)
+			parent.AccountedZ.put(Integer.toString(z), z);
+		
 	}
 
 }

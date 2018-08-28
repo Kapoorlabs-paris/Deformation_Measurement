@@ -160,6 +160,10 @@ public class Computeinwater {
 
 	public void ParallelRansacCurve() {
 
+		int nThreads = Runtime.getRuntime().availableProcessors();
+		// set up executor service
+		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
+		List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
 
 		ArrayList<Line> resultlineroi = new ArrayList<Line>();
 		ArrayList<OvalRoi> resultcurvelineroi = new ArrayList<OvalRoi>();
@@ -181,7 +185,6 @@ public class Computeinwater {
 			percent++;
 
 			int label = setiter.next();
-			
 			// Creating a binary image in the integer image region from the boundary
 			// probability map
 			Watershedobject current =
@@ -191,20 +194,31 @@ public class Computeinwater {
 
 			
 			List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
-			LabelCurvature runserial = new LabelCurvature(parent, current.source, truths, resultlineroi, resultcurvelineroi,resultallcurvelineroi,ellipselineroi, Segmentrect,  AllCurveintersection, AlldenseCurveintersection, 
+			
+				tasks.add(Executors.callable( new LabelCurvature(parent, current.source, truths, resultlineroi, resultcurvelineroi,resultallcurvelineroi,ellipselineroi, Segmentrect,  AllCurveintersection, AlldenseCurveintersection, 
 					AllCurveSegments, t, z,
-					parent.jpb, percent, label);
-			runserial.run();
-	
-			String uniqueID = Integer.toString(z) + Integer.toString(t);
-			parent.ALLIntersections.put(uniqueID, AllCurveintersection);
-			parent.ALLdenseIntersections.put(uniqueID, AlldenseCurveintersection);
-			parent.ALLSegments.put(uniqueID, AllCurveSegments);
-			Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi, resultcurvelineroi,Segmentrect, z, t, -1, true);
-			parent.ZTRois.put(uniqueID, currentroiobject);
-	
-
+					parent.jpb, percent, label)));
+				
 		}
+				try {
+					
+					
+					taskExecutor.invokeAll(tasks);
+					
+					String uniqueID = Integer.toString(z) + Integer.toString(t);
+					parent.ALLIntersections.put(uniqueID, AllCurveintersection);
+					parent.ALLdenseIntersections.put(uniqueID, AlldenseCurveintersection);
+					parent.ALLSegments.put(uniqueID, AllCurveSegments);
+					Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi, resultcurvelineroi,Segmentrect, z, t, -1, true);
+					parent.ZTRois.put(uniqueID, currentroiobject);
+
+				} catch (InterruptedException e1) {
+
+					System.out.println(e1 + " Task not executed");
+					
+				}
+			
+		
 
 	}
 
