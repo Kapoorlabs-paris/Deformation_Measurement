@@ -685,7 +685,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 						model.setName(id, "Track" + id + entryZ.getKey());
 
 						final HashSet<Intersectionobject> Angleset = model.trackIntersectionobjects(id);
-
+						if(Angleset.size() > parent.AccountedZ.size() / 2) {
 						Iterator<Intersectionobject> Angleiter = Angleset.iterator();
 
 						while (Angleiter.hasNext()) {
@@ -698,10 +698,10 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 						if (parent.fourthDimensionSize > 1)
 							Collections.sort(parent.Tracklist, FourthDimcomparison);
 					}
-
+					}
 					for (int id = minid; id <= maxid; ++id) {
 						Intersectionobject bestangle = null;
-						if (model.trackIntersectionobjects(id) != null) {
+						if (model.trackIntersectionobjects(id) != null && model.trackIntersectionobjects(id).size() > parent.AccountedZ.size() / 2) {
 
 							List<Intersectionobject> sortedList = new ArrayList<Intersectionobject>(
 									model.trackIntersectionobjects(id));
@@ -817,6 +817,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 						final HashSet<Intersectionobject> Angleset = model.trackIntersectionobjects(id);
 
+						if(Angleset.size() > parent.AccountedZ.size() / 2) {
 						Iterator<Intersectionobject> Angleiter = Angleset.iterator();
 
 						while (Angleiter.hasNext()) {
@@ -829,10 +830,11 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 						if (parent.fourthDimensionSize > 1)
 							Collections.sort(parent.denseTracklist, FourthDimcomparison);
 					}
+					}
 
 					for (int id = minid; id <= maxid; ++id) {
 						Intersectionobject bestangle = null;
-						if (model.trackIntersectionobjects(id) != null) {
+						if (model.trackIntersectionobjects(id) != null&& model.trackIntersectionobjects(id).size() > parent.AccountedZ.size() / 2) {
 
 							List<Intersectionobject> sortedList = new ArrayList<Intersectionobject>(
 									model.trackIntersectionobjects(id));
@@ -942,6 +944,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 							Anglelist.add(current);
 
 						}
+						
+						if(Anglelist.size() > parent.AccountedZ.size() / 2)
 						parent.HashSegmentTrackList.put(id + entryZ.getKey(), Anglelist);
 					}
 
@@ -990,7 +994,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 					for (int id = minid; id <= maxid; ++id) {
 						Segmentobject bestangle = null;
 
-						if (model.trackSegmentobjects(id) != null) {
+						if (model.trackSegmentobjects(id) != null && model.trackSegmentobjects(id).size() > parent.AccountedZ.size() / 2) {
 							List<Segmentobject> sortedList = new ArrayList<Segmentobject>(
 									model.trackSegmentobjects(id));
 
