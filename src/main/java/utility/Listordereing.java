@@ -162,7 +162,6 @@ public class Listordereing {
 		minCord = getMinCord(copytruths);
 		RealLocalizable refcord = minCord;
 
-		System.out.println(meanCord.getDoublePosition(0) + " " + meanCord.getDoublePosition(1) +  "mean");
 	
 		orderedtruths.add(minCord);
 

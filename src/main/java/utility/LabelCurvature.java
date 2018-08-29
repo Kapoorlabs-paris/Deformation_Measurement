@@ -43,7 +43,7 @@ import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.RegressionCurveSegment;
 import ransacPoly.RegressionFunction;
 
-public class LabelCurvature implements Runnable  {
+public class LabelCurvature implements Runnable {
 
 	final InteractiveSimpleEllipseFit parent;
 	final RandomAccessibleInterval<FloatType> ActualRoiimg;
@@ -65,9 +65,9 @@ public class LabelCurvature implements Runnable  {
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
 			final RandomAccessibleInterval<FloatType> ActualRoiimg, List<RealLocalizable> truths,
 			ArrayList<Line> resultlineroi, ArrayList<OvalRoi> resultcurvelineroi,
-			ArrayList<OvalRoi> resultallcurvelineroi,ArrayList<EllipseRoi> ellipselineroi, ArrayList<Roi> segmentrect,
-			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Intersectionobject> AlldenseCurveintersection, ArrayList<Segmentobject> AllCurveSegments, final int t,
-			final int z, final int celllabel) {
+			ArrayList<OvalRoi> resultallcurvelineroi, ArrayList<EllipseRoi> ellipselineroi, ArrayList<Roi> segmentrect,
+			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Intersectionobject> AlldenseCurveintersection,
+			ArrayList<Segmentobject> AllCurveSegments, final int t, final int z, final int celllabel) {
 
 		this.parent = parent;
 		this.ActualRoiimg = ActualRoiimg;
@@ -90,9 +90,10 @@ public class LabelCurvature implements Runnable  {
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
 			final RandomAccessibleInterval<FloatType> ActualRoiimg, List<RealLocalizable> truths,
 			ArrayList<Line> resultlineroi, ArrayList<OvalRoi> resultcurvelineroi,
-			ArrayList<OvalRoi> resultallcurvelineroi,ArrayList<EllipseRoi> ellipselineroi,ArrayList<Roi> segmentrect,
-			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Intersectionobject> AlldenseCurveintersection, ArrayList<Segmentobject> AllCurveSegments, final int t,
-			final int z, final JProgressBar jpb, final int percent, final int celllabel) {
+			ArrayList<OvalRoi> resultallcurvelineroi, ArrayList<EllipseRoi> ellipselineroi, ArrayList<Roi> segmentrect,
+			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Intersectionobject> AlldenseCurveintersection,
+			ArrayList<Segmentobject> AllCurveSegments, final int t, final int z, final JProgressBar jpb,
+			final int percent, final int celllabel) {
 
 		this.parent = parent;
 		this.ActualRoiimg = ActualRoiimg;
@@ -112,13 +113,11 @@ public class LabelCurvature implements Runnable  {
 		this.segmentrect = segmentrect;
 	}
 
-	
 	private void OverSliderLoop(List<RealLocalizable> Ordered, RealLocalizable centerpoint) {
 
 		// Get the sparse list of points
 		HashMap<Integer, RegressionCurveSegment> Bestdelta = new HashMap<Integer, RegressionCurveSegment>();
 
-		
 		int count = 0;
 		if (parent.minNumInliers > truths.size())
 			parent.minNumInliers = truths.size();
@@ -132,7 +131,7 @@ public class LabelCurvature implements Runnable  {
 		final int ndims = ActualRoiimg.numDimensions();
 
 		for (int index = 0; index < maxstride; ++index) {
-			List<RealLocalizable> allorderedtruths = Listordereing.getList(Ordered,  i + index);
+			List<RealLocalizable> allorderedtruths = Listordereing.getList(Ordered, i + index);
 
 			if (parent.fourthDimensionSize > 1)
 				parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension,
@@ -163,10 +162,6 @@ public class LabelCurvature implements Runnable  {
 			parent.functions = resultpair.functionlist;
 			parent.localSegment = resultpair.Seglist;
 			// Make intersection object here
-
-
-			
-		
 
 		}
 
@@ -290,14 +285,11 @@ public class LabelCurvature implements Runnable  {
 		parent.functions.addAll(Refinedresultpair.getA());
 		// Make intersection object here
 
-		Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor
-				.CurvaturetoIntersection(parent, parent.localCurvature, parent.functions, centerpoint, parent.smoothing);
+		Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor.CurvaturetoIntersection(parent,
+				parent.localCurvature, parent.functions, centerpoint, parent.smoothing);
 		Intersectionobject densecurrentobject = currentobjectpair.getA();
 		Intersectionobject sparsecurrentobject = currentobjectpair.getB();
-		
-	
-		
-		
+
 		AlldenseCurveintersection.add(densecurrentobject);
 		AllCurveintersection.add(sparsecurrentobject);
 
@@ -307,99 +299,77 @@ public class LabelCurvature implements Runnable  {
 	}
 
 	private RegressionCurveSegment CommonLoop(List<RealLocalizable> Ordered, RealLocalizable centerpoint) {
-		
-	
+
 		// Get the sparse list of points
 		HashMap<Integer, RegressionCurveSegment> Bestdelta = new HashMap<Integer, RegressionCurveSegment>();
-		
 
-		
-		
 		int count = 0;
 		if (parent.minNumInliers > truths.size())
 			parent.minNumInliers = truths.size();
 
-		
 		int i = parent.increment;
-	
-		
 
-			// Get the sparse list of points
+		// Get the sparse list of points
 
-			List<RealLocalizable> allorderedtruths = Listordereing.getList(Ordered, i);
+		List<RealLocalizable> allorderedtruths = Listordereing.getList(Ordered, i);
 
-			if (parent.fourthDimensionSize > 1)
-				parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension,
-						parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
-			parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension,
-					parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
-			final int ndims = ActualRoiimg.numDimensions();
-			// Make a tree of a certain depth
+		if (parent.fourthDimensionSize > 1)
+			parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension,
+					parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
+		parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension,
+				parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
+		final int ndims = ActualRoiimg.numDimensions();
+		// Make a tree of a certain depth
 
-			int treedepth = parent.depth - 1;
+		int treedepth = parent.depth - 1;
 
-			if (treedepth <= 0)
-				treedepth = 0;
+		if (treedepth <= 0)
+			treedepth = 0;
 
-			CurvatureFunction computecurve = new CurvatureFunction(parent);
-			
-			RegressionCurveSegment resultpair = computecurve.getCurvature(
-					allorderedtruths,centerpoint, parent.insideCutoff, parent.minNumInliers, ndims, celllabel,
-					Math.abs(Math.max(parent.degree, parent.secdegree)),
-					Math.abs(Math.min(parent.degree, parent.secdegree)), z, t);
+		CurvatureFunction computecurve = new CurvatureFunction(parent);
 
-			// Here counter the segments where the number of inliers was too low
+		RegressionCurveSegment resultpair = computecurve.getCurvature(allorderedtruths, centerpoint,
+				parent.insideCutoff, parent.minNumInliers, ndims, celllabel,
+				Math.abs(Math.max(parent.degree, parent.secdegree)),
+				Math.abs(Math.min(parent.degree, parent.secdegree)), z, t);
 
-			Bestdelta.put(count, resultpair);
-			count++;
-		
-			parent.localCurvature = resultpair.Curvelist;
-			
-			parent.functions = resultpair.functionlist;
-			parent.localSegment = resultpair.Seglist;
-			
-		
-		
-			
-			
-			return resultpair;
-		
-	}
-	private void SliderLoop(
-			List<RealLocalizable> Ordered, RealLocalizable centerpoint) {
+		// Here counter the segments where the number of inliers was too low
 
-		
-			// Make intersection object here
+		Bestdelta.put(count, resultpair);
+		count++;
 
-		 RegressionCurveSegment resultpair = CommonLoop(Ordered, centerpoint);
-			Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor.CurvaturetoIntersection(parent, parent.localCurvature,
-					parent.functions, centerpoint, parent.smoothing);
+		parent.localCurvature = resultpair.Curvelist;
 
-			
-		       Intersectionobject densecurrentobject = currentobjectpair.getA();
-		       Intersectionobject sparsecurrentobject = currentobjectpair.getB();
-		       
-		       // For sparse list display
-			if (parent.maxperimeter >=sparsecurrentobject.perimeter)
-				parent.maxperimeter = (int)Math.round(sparsecurrentobject.perimeter);
-			
-		
-		
-		
-			
-			
-			
-			AlldenseCurveintersection.add(densecurrentobject);
-			AllCurveintersection.add(sparsecurrentobject);
+		parent.functions = resultpair.functionlist;
+		parent.localSegment = resultpair.Seglist;
 
-			AllCurveSegments.addAll(resultpair.Seglist);
-			parent.AlllocalCurvature.add(parent.localCurvature);
-			
-			
-	
+		return resultpair;
+
 	}
 
-	
+	private void SliderLoop(List<RealLocalizable> Ordered, RealLocalizable centerpoint) {
+
+		// Make intersection object here
+
+		RegressionCurveSegment resultpair = CommonLoop(Ordered, centerpoint);
+		Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor.CurvaturetoIntersection(parent,
+				parent.localCurvature, parent.functions, centerpoint, parent.smoothing);
+
+		Intersectionobject densecurrentobject = currentobjectpair.getA();
+		Intersectionobject sparsecurrentobject = currentobjectpair.getB();
+
+		// For sparse list display
+		if (parent.maxperimeter >= sparsecurrentobject.perimeter)
+			parent.maxperimeter = (int) Math.round(sparsecurrentobject.perimeter);
+
+		AlldenseCurveintersection.add(densecurrentobject);
+		AllCurveintersection.add(sparsecurrentobject);
+
+		AllCurveSegments.addAll(resultpair.Seglist);
+		parent.AlllocalCurvature.add(parent.localCurvature);
+
+	}
+
 	public void run() {
 		String uniqueID = Integer.toString(z) + Integer.toString(t);
 		parent.Allnodes.clear();
@@ -414,57 +384,53 @@ public class LabelCurvature implements Runnable  {
 					"Computing Curvature T/Z = " + z + "/" + parent.thirdDimensionSize);
 		else {
 
-			utility.ProgressBar.SetProgressBar(jpb, 100 * (percent ) / (parent.pixellist.size()), "Computing Curvature ");
+			utility.ProgressBar.SetProgressBar(jpb, 100 * (percent) / (parent.pixellist.size()),
+					"Computing Curvature ");
 		}
-		
+
 		// Get the candidate points for fitting
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
-		// A Hash map for the slider loop from reference point, 0 to incremental positions
-		
+		// A Hash map for the slider loop from reference point, 0 to incremental
+		// positions
+
 		// Get mean co-ordinate from the candidate points
 		RealLocalizable centerpoint = Listordereing.getMeanCord(truths);
 
 		// Get the sparse list of points
 		Pair<RealLocalizable, List<RealLocalizable>> Ordered = Listordereing.getOrderedList(truths, parent.resolution);
 
-		
-		for (int i = 0; i < Ordered.getB().size() - 10; i+=10) {
-			
+		for (int i = 0; i < Ordered.getB().size() - 10; i += 10) {
+
 			double X = Ordered.getB().get(i).getDoublePosition(0);
 			double Y = Ordered.getB().get(i).getDoublePosition(1);
-			
+
 			double nextX = Ordered.getB().get(i + 10).getDoublePosition(0);
 			double nextY = Ordered.getB().get(i + 10).getDoublePosition(1);
-			
-			
-			
+
 			Arrow line = new Arrow(X, Y, nextX, nextY);
 			line.setStrokeWidth(0.01);
 			parent.overlay.add(line);
 		}
-		
-		OvalRoi oval = new OvalRoi((int)Ordered.getA().getDoublePosition(0), (int)Ordered.getA().getDoublePosition(1), 10, 10);
+
+		OvalRoi oval = new OvalRoi((int) Ordered.getA().getDoublePosition(0), (int) Ordered.getA().getDoublePosition(1),
+				10, 10);
 		oval.setStrokeWidth(10);
 		oval.setStrokeColor(Color.GREEN);
 		parent.overlay.add(oval);
 		parent.imp.updateAndDraw();
 		// Start sliding
-			if(parent.pixelcelltrackcirclefits) {
-				
-		  OverSliderLoop(Ordered.getB(), centerpoint);
-				
-			}
+		if (parent.pixelcelltrackcirclefits) {
 
-			else
-			 SliderLoop(
-						Ordered.getB(), centerpoint);
-		
-		
+			OverSliderLoop(Ordered.getB(), centerpoint);
+
+		}
+
+		else
+			SliderLoop(Ordered.getB(), centerpoint);
+
 		parent.Refcord = Ordered.getA();
-	
+
 		parent.AllRefcords.put(uniqueID, parent.Refcord);
-	
-		
 
 	}
 

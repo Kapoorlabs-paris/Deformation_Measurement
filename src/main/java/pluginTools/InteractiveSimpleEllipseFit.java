@@ -412,7 +412,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public HashMap<Integer, Double> HashresultSegIntensityA;
 	public HashMap<Integer, Double> HashresultSegIntensityB;
 	public HashMap<Integer, Double> HashresultSegPerimeter;
-	public HashMap<Integer, KymoSaveobject> KymoFileobject;
+	public HashMap<String, KymoSaveobject> KymoFileobject;
 	public Set<Integer> pixellist;
 	ColorProcessor cp = null;
 
@@ -829,7 +829,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
         }
 		
 		redoing = false;
-		KymoFileobject = new HashMap<Integer, KymoSaveobject>();
+		KymoFileobject = new HashMap<String, KymoSaveobject>();
 		localCurvature = new ArrayList<Curvatureobject>();
 		localSegment = new ArrayList<Segmentobject>();
 		functions = new ArrayList<RegressionFunction>();
@@ -1666,7 +1666,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public TextField lostframe, bordercorrection;
 	public Border origborder = new CompoundBorder(new TitledBorder("Enter filename for results files"),
 			new EmptyBorder(c.insets));
-	JPanel controlprev = new JPanel();
+	public JPanel controlprev = new JPanel();
 	JPanel controlnext = new JPanel();
 	final String alphastring = "Weightage for distance based cost";
 	final String cutoffstring = insideText.getName();
@@ -2256,7 +2256,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		PanelSelectFile.setBorder(selectfile);
 
 		panelSecond.add(PanelSelectFile, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 
 		Original.add(inputLabel, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));

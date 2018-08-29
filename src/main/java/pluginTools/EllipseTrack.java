@@ -803,7 +803,6 @@ public class EllipseTrack {
 		int z = parent.thirdDimension;
 		int t = parent.fourthDimension;
 		
-		System.out.println(parent.curvesupermode + " " + parent.pixelcelltrackcirclefits);
 		if (parent.curvesupermode) {
 
 

@@ -164,6 +164,7 @@ public class CurvatureTable {
 		rowvalues = new Object[parent.SegmentFinalresult.size()][colnames.length];
 
 		parent.table = new JTable(rowvalues, colnames);
+		parent.table.setPreferredSize(new Dimension(parent.SizeX, parent.SizeY));
 		parent.row = 0;
 		NumberFormat f = NumberFormat.getInstance();
 		for (Map.Entry<String, Segmentobject> entry : parent.SegmentFinalresult.entrySet()) {
@@ -215,9 +216,10 @@ public class CurvatureTable {
 
 	public static void makeGUI(final InteractiveSimpleEllipseFit parent) {
 
-		parent.PanelSelectFile.removeAll();
 
-		
+		parent.table.removeAll();
+		parent.scrollPane.removeAll();
+		parent.panelSecond.removeAll();
 		parent.table.setFillsViewportHeight(true);
 
 		parent.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -228,11 +230,10 @@ public class CurvatureTable {
 		parent.scrollPane.setAutoscrolls(true);
 		parent.PanelSelectFile.add(parent.scrollPane, BorderLayout.CENTER);
 
-
 		parent.PanelSelectFile.setBorder(parent.selectcell);
 
 		parent.panelSecond.add(parent.PanelSelectFile, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0,
-				GridBagConstraints.WEST, GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
+				GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 
 		parent.Original.add(parent.inputLabel, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
@@ -256,6 +257,10 @@ public class CurvatureTable {
 
 		parent.panelSecond.add(parent.Original, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
+		
+		parent.panelSecond.add(parent.controlprev, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
+		parent.panelFirst.setPreferredSize(parent.panelSecond.getSize());
 		parent.inputField.setEnabled(true);
 		parent.inputtrackField.setEnabled(true);
 		parent.Savebutton.setEnabled(true);
@@ -269,6 +274,8 @@ public class CurvatureTable {
 		parent.table.validate();
 		parent.panelSecond.repaint();
 		parent.panelSecond.validate();
+		parent.panelFirst.repaint();
+		parent.panelFirst.validate();
 		parent.Cardframe.repaint();
 		parent.Cardframe.validate();
 

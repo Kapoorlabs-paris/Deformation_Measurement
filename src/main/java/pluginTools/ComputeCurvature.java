@@ -106,7 +106,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	}
 
-	
 	public void MakeKymo(HashMap<String, ArrayList<Segmentobject>> sortedMappair, long[] size, String TrackID) {
 
 		RandomAccessibleInterval<FloatType> CurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
@@ -119,66 +118,63 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 
 		RandomAccess<FloatType> ranac = CurvatureKymo.randomAccess();
-		
+
 		RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
-		
+
 		RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
-		
+
 		while (itZ.hasNext()) {
 
 			Map.Entry<String, Integer> entry = itZ.next();
 
 			int time = entry.getValue();
-			
+
 			String timeID = entry.getKey();
-			
+
 			ArrayList<Segmentobject> currentlist = sortedMappair.get(TrackID + timeID);
 
 			ranac.setPosition(time, 0);
 			ranacimageA.setPosition(time, 0);
 			ranacimageB.setPosition(time, 0);
-			
+
 			if (currentlist != null)
 				for (Segmentobject currentobject : currentlist) {
 					int count = 0;
 
-					
 					ranac.setPosition(count, 1);
 					ranac.get().setReal(currentobject.Curvature);
-					
-					
+
 					ranacimageA.setPosition(count, 1);
 					ranacimageA.get().setReal(currentobject.IntensityA);
-					
+
 					ranacimageB.setPosition(count, 1);
 					ranacimageB.get().setReal(currentobject.IntensityB);
-					
+
 					count++;
-					
+
 				}
 		}
 
-		
-		double[] calibration = new double[] {parent.timecal, parent.calibration};
+		double[] calibration = new double[] { parent.timecal, parent.calibration };
 		Calibration cal = new Calibration();
 		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, "s um");
 		ImagePlus Curveimp = ImageJFunctions.show(CurvatureKymo);
 		Curveimp.setTitle("Curvature Kymo for TrackID: " + TrackID);
 		Curveimp.setCalibration(cal);
-		
+
 		ImagePlus IntensityAimp = ImageJFunctions.show(IntensityAKymo);
 		IntensityAimp.setTitle("Intensity ChA Kymo for TrackID: " + TrackID);
 		IntensityAimp.setCalibration(cal);
-		
-		
-		ImagePlus IntensityBimp =  ImageJFunctions.show(IntensityBKymo);
+
+		ImagePlus IntensityBimp = ImageJFunctions.show(IntensityBKymo);
 		IntensityBimp.setTitle("Intensity ChB for TrackID: " + TrackID);
 		IntensityBimp.setCalibration(cal);
-		
+
 		Curveimp.updateAndRepaintWindow();
 		IntensityAimp.updateAndRepaintWindow();
 		IntensityBimp.updateAndRepaintWindow();
 	}
+
 	public static List<double[]> getCopyList(List<double[]> copytruths) {
 
 		List<double[]> orderedtruths = new ArrayList<double[]>();
@@ -192,38 +188,35 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		return orderedtruths;
 	}
-	
-	public List<double[]> getNextinLine(List<double[]> currentlinelist, double[] Refpoint, double[] meanCord, int count) {
-		
+
+	public List<double[]> getNextinLine(List<double[]> currentlinelist, double[] Refpoint, double[] meanCord,
+			int count) {
+
 		List<double[]> copytruths = getCopyList(currentlinelist);
-		
+
 		List<double[]> sublisttruths = new ArrayList<double[]>();
-		
+
 		Iterator<double[]> listiter = copytruths.iterator();
-		
+
 		while (listiter.hasNext()) {
 
 			double[] alltuples = listiter.next();
 
-			
 			double angledeg = Distance.AngleVectorsDouble(alltuples, Refpoint, meanCord);
-			
-			
-				
-				if (angledeg > 0 )
-					
-					sublisttruths.add(alltuples);
-				
-			
+
+			if (angledeg > 0)
+
+				sublisttruths.add(alltuples);
 
 		}
 		return sublisttruths;
-		
+
 	}
+
 	public static double[] getMinCord(List<double[]> truths) {
 
 		double minVal = Double.MAX_VALUE;
-		
+
 		double[] minobject = null;
 		Iterator<double[]> iter = truths.iterator();
 
@@ -231,17 +224,18 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			double[] currentpair = iter.next();
 
-			if (currentpair[1] <= minVal ) {
+			if (currentpair[1] <= minVal) {
 
 				minobject = currentpair;
 				minVal = currentpair[1];
-				
+
 			}
-			
+
 		}
 
 		return minobject;
 	}
+
 	public static double[] getMeanCordDouble(List<double[]> truths) {
 
 		Iterator<double[]> iter = truths.iterator();
@@ -259,7 +253,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		return new double[] { Xmean / truths.size(), Ymean / truths.size() };
 	}
-	
+
 	public static double[] getNextNearest(double[] minCord, List<double[]> truths) {
 
 		double[] nextobject = null;
@@ -270,16 +264,14 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		for (double[] localcord : truths) {
 
-			
-			double[] twotuple = new double[] {localcord[0], localcord[1]};
+			double[] twotuple = new double[] { localcord[0], localcord[1] };
 			targetCoords.add(new RealPoint(twotuple));
 			targetNodes.add(new FlagNode<double[]>(twotuple));
 		}
 
 		if (targetNodes.size() > 0 && targetCoords.size() > 0) {
 
-			final KDTree<FlagNode<double[]>> Tree = new KDTree<FlagNode<double[]>>(targetNodes,
-					targetCoords);
+			final KDTree<FlagNode<double[]>> Tree = new KDTree<FlagNode<double[]>>(targetNodes, targetCoords);
 
 			final NNFlagsearchKDtree<double[]> Search = new NNFlagsearchKDtree<double[]>(Tree);
 
@@ -289,24 +281,21 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			nextobject = targetNode.getValue();
 		}
-		
-		for(double[] truth : truths) {
-			
-			if(nextobject[0] == truth[0] && nextobject[1] == truth[1]) {
-				
+
+		for (double[] truth : truths) {
+
+			if (nextobject[0] == truth[0] && nextobject[1] == truth[1]) {
+
 				bigobject = truth;
 				break;
 			}
-			
+
 		}
 
 		return bigobject;
 
 	}
 
-	
-	
-	
 	public void MakeInterKymo(HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size,
 			String TrackID) {
 
@@ -316,8 +305,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 				new FloatType());
 		RandomAccessibleInterval<FloatType> IntensityBKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
-	    RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
-		
+		RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
+
 		RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 
@@ -328,71 +317,60 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			Map.Entry<String, Integer> entry = itZ.next();
 
 			int time = entry.getValue();
-            String timeID = entry.getKey();
-			
+			String timeID = entry.getKey();
+
 			ArrayList<Intersectionobject> currentlist = sortedMappair.get(TrackID + timeID);
 
-			
-			
 			ranac.setPosition(time, 0);
 			ranacimageA.setPosition(time, 0);
 			ranacimageB.setPosition(time, 0);
-			if(currentlist!=null) {
-			for (Intersectionobject currentobject : currentlist) {
-				
-				
-				int count = 0;
-				
-				
-				ArrayList<double[]> sortedlinelist = currentobject.linelist;
-				
-				
-				
-				for (int i = 0; i < sortedlinelist.size(); ++i) {
+			if (currentlist != null) {
+				for (Intersectionobject currentobject : currentlist) {
 
-					ranac.setPosition(count, 1);
-					ranac.get().set((float) sortedlinelist.get(i)[2]);
+					int count = 0;
 
-					
-					ranacimageA.setPosition(count, 1);
-					ranacimageA.get().setReal(sortedlinelist.get(i)[3]);
-					
-					ranacimageB.setPosition(count, 1);
-					ranacimageB.get().setReal(sortedlinelist.get(i)[4]);
-					
-					count++;
+					ArrayList<double[]> sortedlinelist = currentobject.linelist;
+
+					for (int i = 0; i < sortedlinelist.size(); ++i) {
+
+						ranac.setPosition(count, 1);
+						ranac.get().set((float) sortedlinelist.get(i)[2]);
+
+						ranacimageA.setPosition(count, 1);
+						ranacimageA.get().setReal(sortedlinelist.get(i)[3]);
+
+						ranacimageB.setPosition(count, 1);
+						ranacimageB.get().setReal(sortedlinelist.get(i)[4]);
+
+						count++;
+					}
+
 				}
-
 			}
-			}
-
 
 		}
-		double[] calibration = new double[] {parent.timecal, parent.calibration};
+		double[] calibration = new double[] { parent.timecal, parent.calibration };
 		Calibration cal = new Calibration();
 		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, "s um");
 		ImagePlus Curveimp = ImageJFunctions.show(CurvatureKymo);
 		Curveimp.setTitle("Curvature Kymo for TrackID: " + TrackID);
 		Curveimp.setCalibration(cal);
-		
-		
+
 		ImagePlus IntensityAimp = ImageJFunctions.show(IntensityAKymo);
 		IntensityAimp.setTitle("Intensity ChA Kymo for TrackID: " + TrackID);
 		IntensityAimp.setCalibration(cal);
-		
-		
-		ImagePlus IntensityBimp =  ImageJFunctions.show(IntensityBKymo);
+
+		ImagePlus IntensityBimp = ImageJFunctions.show(IntensityBKymo);
 		IntensityBimp.setTitle("Intensity ChB for TrackID: " + TrackID);
 		IntensityBimp.setCalibration(cal);
-		
+
 		Curveimp.updateAndRepaintWindow();
 		IntensityAimp.updateAndRepaintWindow();
 		IntensityBimp.updateAndRepaintWindow();
-		
-	//	KymoSaveobject Kymos = new KymoSaveobject(CurvatureKymo, IntensityAKymo, IntensityBKymo);
-	//	parent.KymoFileobject.put(CellLabel, Kymos);
+
+		KymoSaveobject Kymos = new KymoSaveobject(CurvatureKymo, IntensityAKymo, IntensityBKymo);
+		parent.KymoFileobject.put(TrackID, Kymos);
 	}
-	
 
 	@Override
 	protected void done() {
@@ -406,8 +384,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		parent.resultDraw.clear();
 		parent.Tracklist.clear();
 		parent.denseTracklist.clear();
-		
-		
+
 		parent.SegmentTracklist.clear();
 		parent.table.removeAll();
 
@@ -461,29 +438,28 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 				Pair<HashMap<String, Integer>, HashMap<String, ArrayList<Intersectionobject>>> sortedMappair = GetZTTrackList(
 						parent);
-				
+
 				Pair<HashMap<String, Integer>, HashMap<String, ArrayList<Intersectionobject>>> densesortedMappair = GetZTdenseTrackList(
 						parent);
 				int TimedimensionKymo = parent.AccountedZ.size() + 1;
-				
+
 				/*
-				HashMap<Integer, Integer> idmap = sortedMappair.getA();
+				 * HashMap<Integer, Integer> idmap = sortedMappair.getA();
+				 * 
+				 * Iterator<Map.Entry<Integer, Integer>> it = idmap.entrySet().iterator();
+				 * 
+				 * while (it.hasNext()) {
+				 * 
+				 * Map.Entry<Integer, Integer> mapentry = it.next(); int id = mapentry.getKey();
+				 * 
+				 * int Xkymodimension = mapentry.getValue();
+				 * 
+				 * long[] size = new long[] { TimedimensionKymo, Xkymodimension };
+				 * MakeInterKymo(sortedMappair.getB(), size, id);
+				 * 
+				 * }
+				 */
 
-				Iterator<Map.Entry<Integer, Integer>> it = idmap.entrySet().iterator();
-			
-				while (it.hasNext()) {
-
-					Map.Entry<Integer, Integer> mapentry = it.next();
-					int id = mapentry.getKey();
-
-					int Xkymodimension = mapentry.getValue();
-
-					long[] size = new long[] { TimedimensionKymo, Xkymodimension };
-					MakeInterKymo(sortedMappair.getB(), size, id);
-
-				}
-				*/
-				
 				// For dense plot
 				HashMap<String, Integer> denseidmap = densesortedMappair.getA();
 
@@ -500,7 +476,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 				}
 
-
 			}
 
 		}
@@ -515,8 +490,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			Pair<HashMap<String, Integer>, HashMap<String, ArrayList<Segmentobject>>> sortedMappair = GetZTSegTrackList(
 					parent);
-			
-		
+
 			int TimedimensionKymo = parent.AccountedZ.size() + 1;
 			HashMap<String, Integer> idmap = sortedMappair.getA();
 
@@ -553,13 +527,12 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			DisplaySelected.select(parent);
 		}
 
-		if (parent.celltrackcirclefits || parent.pixelcelltrackcirclefits ) {
+		if (parent.celltrackcirclefits || parent.pixelcelltrackcirclefits) {
 			DisplaySelected.markAll(parent);
 			DisplaySelected.selectAll(parent);
 
 		}
 		if (parent.ndims < 3) {
-			
 
 			for (ArrayList<Curvatureobject> local : parent.AlllocalCurvature) {
 				Iterator<Curvatureobject> iterator = local.iterator();
@@ -637,23 +610,24 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 						model.setName(id, "Track" + id + entryZ.getKey());
 
 						final HashSet<Intersectionobject> Angleset = model.trackIntersectionobjects(id);
-						if(Angleset.size() > parent.AccountedZ.size() / 2) {
-						Iterator<Intersectionobject> Angleiter = Angleset.iterator();
+						if (Angleset.size() > parent.AccountedZ.size() / 2) {
+							Iterator<Intersectionobject> Angleiter = Angleset.iterator();
 
-						while (Angleiter.hasNext()) {
+							while (Angleiter.hasNext()) {
 
-							Intersectionobject currentangle = Angleiter.next();
-							parent.Tracklist.add(new ValuePair<String, Intersectionobject>(
-									Integer.toString(id) + entryZ.getKey(), currentangle));
+								Intersectionobject currentangle = Angleiter.next();
+								parent.Tracklist.add(new ValuePair<String, Intersectionobject>(
+										Integer.toString(id) + entryZ.getKey(), currentangle));
+							}
+							Collections.sort(parent.Tracklist, ThirdDimcomparison);
+							if (parent.fourthDimensionSize > 1)
+								Collections.sort(parent.Tracklist, FourthDimcomparison);
 						}
-						Collections.sort(parent.Tracklist, ThirdDimcomparison);
-						if (parent.fourthDimensionSize > 1)
-							Collections.sort(parent.Tracklist, FourthDimcomparison);
-					}
 					}
 					for (int id = minid; id <= maxid; ++id) {
 						Intersectionobject bestangle = null;
-						if (model.trackIntersectionobjects(id) != null && model.trackIntersectionobjects(id).size() > parent.AccountedZ.size() / 2) {
+						if (model.trackIntersectionobjects(id) != null
+								&& model.trackIntersectionobjects(id).size() > parent.AccountedZ.size() / 2) {
 
 							List<Intersectionobject> sortedList = new ArrayList<Intersectionobject>(
 									model.trackIntersectionobjects(id));
@@ -710,66 +684,63 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 				}
 			}
 
-
 		}
 
 	}
 
 	public void CurveddenseLineage() {
 
-		
+		for (Map.Entry<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> entryZ : parent.parentdensegraphZ
+				.entrySet()) {
 
-			for (Map.Entry<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> entryZ : parent.parentdensegraphZ
-					.entrySet()) {
+			TrackModel model = new TrackModel(entryZ.getValue());
 
-				TrackModel model = new TrackModel(entryZ.getValue());
+			int minid = Integer.MAX_VALUE;
+			int maxid = Integer.MIN_VALUE;
 
-				int minid = Integer.MAX_VALUE;
-				int maxid = Integer.MIN_VALUE;
+			for (final Integer id : model.trackIDs(true)) {
+
+				if (id > maxid)
+					maxid = id;
+
+				if (id < minid)
+					minid = id;
+
+			}
+
+			if (minid != Integer.MAX_VALUE) {
 
 				for (final Integer id : model.trackIDs(true)) {
 
-					if (id > maxid)
-						maxid = id;
+					Comparator<Pair<String, Intersectionobject>> ThirdDimcomparison = new Comparator<Pair<String, Intersectionobject>>() {
 
-					if (id < minid)
-						minid = id;
+						@Override
+						public int compare(final Pair<String, Intersectionobject> A,
+								final Pair<String, Intersectionobject> B) {
 
-				}
+							return A.getB().z - B.getB().z;
 
-				if (minid != Integer.MAX_VALUE) {
+						}
 
-					for (final Integer id : model.trackIDs(true)) {
+					};
 
-						Comparator<Pair<String, Intersectionobject>> ThirdDimcomparison = new Comparator<Pair<String, Intersectionobject>>() {
+					Comparator<Pair<String, Intersectionobject>> FourthDimcomparison = new Comparator<Pair<String, Intersectionobject>>() {
 
-							@Override
-							public int compare(final Pair<String, Intersectionobject> A,
-									final Pair<String, Intersectionobject> B) {
+						@Override
+						public int compare(final Pair<String, Intersectionobject> A,
+								final Pair<String, Intersectionobject> B) {
 
-								return A.getB().z - B.getB().z;
+							return A.getB().t - B.getB().t;
 
-							}
+						}
 
-						};
+					};
 
-						Comparator<Pair<String, Intersectionobject>> FourthDimcomparison = new Comparator<Pair<String, Intersectionobject>>() {
+					model.setName(id, "Track" + id + entryZ.getKey());
 
-							@Override
-							public int compare(final Pair<String, Intersectionobject> A,
-									final Pair<String, Intersectionobject> B) {
+					final HashSet<Intersectionobject> Angleset = model.trackIntersectionobjects(id);
 
-								return A.getB().t - B.getB().t;
-
-							}
-
-						};
-
-						model.setName(id, "Track" + id + entryZ.getKey());
-
-						final HashSet<Intersectionobject> Angleset = model.trackIntersectionobjects(id);
-
-						if(Angleset.size() > parent.AccountedZ.size() / 2) {
+					if (Angleset.size() > parent.AccountedZ.size() / 2) {
 						Iterator<Intersectionobject> Angleiter = Angleset.iterator();
 
 						while (Angleiter.hasNext()) {
@@ -782,73 +753,71 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 						if (parent.fourthDimensionSize > 1)
 							Collections.sort(parent.denseTracklist, FourthDimcomparison);
 					}
-					}
+				}
 
-					for (int id = minid; id <= maxid; ++id) {
-						Intersectionobject bestangle = null;
-						if (model.trackIntersectionobjects(id) != null&& model.trackIntersectionobjects(id).size() > parent.AccountedZ.size() / 2) {
+				for (int id = minid; id <= maxid; ++id) {
+					Intersectionobject bestangle = null;
+					if (model.trackIntersectionobjects(id) != null
+							&& model.trackIntersectionobjects(id).size() > parent.AccountedZ.size() / 2) {
 
-							List<Intersectionobject> sortedList = new ArrayList<Intersectionobject>(
-									model.trackIntersectionobjects(id));
+						List<Intersectionobject> sortedList = new ArrayList<Intersectionobject>(
+								model.trackIntersectionobjects(id));
 
-							Collections.sort(sortedList, new Comparator<Intersectionobject>() {
+						Collections.sort(sortedList, new Comparator<Intersectionobject>() {
 
-								@Override
-								public int compare(Intersectionobject o1, Intersectionobject o2) {
+							@Override
+							public int compare(Intersectionobject o1, Intersectionobject o2) {
 
-									return o1.t - o2.t;
-								}
+								return o1.t - o2.t;
+							}
 
-							});
+						});
 
-							Collections.sort(sortedList, new Comparator<Intersectionobject>() {
+						Collections.sort(sortedList, new Comparator<Intersectionobject>() {
 
-								@Override
-								public int compare(Intersectionobject o1, Intersectionobject o2) {
+							@Override
+							public int compare(Intersectionobject o1, Intersectionobject o2) {
 
-									return o1.z - o2.z;
-								}
+								return o1.z - o2.z;
+							}
 
-							});
+						});
 
-							
-							Iterator<Intersectionobject> iterator = sortedList.iterator();
+						Iterator<Intersectionobject> iterator = sortedList.iterator();
 
-							int count = 0;
-							while (iterator.hasNext()) {
+						int count = 0;
+						while (iterator.hasNext()) {
 
-								Intersectionobject currentangle = iterator.next();
-								if (count == 0)
+							Intersectionobject currentangle = iterator.next();
+							if (count == 0)
+								bestangle = currentangle;
+							if (parent.originalimg.numDimensions() > 3) {
+								if (currentangle.t == parent.fourthDimension) {
 									bestangle = currentangle;
-								if (parent.originalimg.numDimensions() > 3) {
-									if (currentangle.t == parent.fourthDimension) {
-										bestangle = currentangle;
-										count++;
-										break;
-									}
-								} else if (parent.originalimg.numDimensions() <= 3) {
-									if (currentangle.z == parent.thirdDimension) {
-										bestangle = currentangle;
-										count++;
-										break;
-
-									}
+									count++;
+									break;
+								}
+							} else if (parent.originalimg.numDimensions() <= 3) {
+								if (currentangle.z == parent.thirdDimension) {
+									bestangle = currentangle;
+									count++;
+									break;
 
 								}
 
 							}
-							
-							parent.Finalresult.put(Integer.toString(id) + entryZ.getKey(), bestangle);
+
 						}
 
+						parent.Finalresult.put(Integer.toString(id) + entryZ.getKey(), bestangle);
 					}
-				}
-				curvatureUtils.CurvatureTable.CreateTableTrackView(parent);
-			}
 
+				}
+			}
+			curvatureUtils.CurvatureTable.CreateTableTrackView(parent);
 		}
 
-	
+	}
 
 	public void CurvedSegmentLineage() {
 		if (parent.circlefits) {
@@ -896,9 +865,9 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 							Anglelist.add(current);
 
 						}
-						
-						if(Anglelist.size() > parent.AccountedZ.size() / 2)
-						parent.HashSegmentTrackList.put(id + entryZ.getKey(), Anglelist);
+
+						if (Anglelist.size() > parent.AccountedZ.size() / 2)
+							parent.HashSegmentTrackList.put(id + entryZ.getKey(), Anglelist);
 					}
 
 					for (final Integer id : model.trackIDs(true)) {
@@ -946,7 +915,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 					for (int id = minid; id <= maxid; ++id) {
 						Segmentobject bestangle = null;
 
-						if (model.trackSegmentobjects(id) != null && model.trackSegmentobjects(id).size() > parent.AccountedZ.size() / 2) {
+						if (model.trackSegmentobjects(id) != null
+								&& model.trackSegmentobjects(id).size() > parent.AccountedZ.size() / 2) {
 							List<Segmentobject> sortedList = new ArrayList<Segmentobject>(
 									model.trackSegmentobjects(id));
 
@@ -1019,51 +989,41 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			String TrackID = preangle.getA();
 			TrackIDset.add(TrackID);
 		}
-		
+
 		Iterator<String> iter = TrackIDset.iterator();
-		
-		while(iter.hasNext()) {
-			
+
+		while (iter.hasNext()) {
+
 			String TrackID = iter.next();
-			
+
 			Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
-		while (itZ.hasNext()) {
-			
-			Map.Entry<String, Integer> entry = itZ.next();
+			while (itZ.hasNext()) {
 
-			int z = entry.getValue();
+				Map.Entry<String, Integer> entry = itZ.next();
 
-			String timeID = entry.getKey();
+				int z = entry.getValue();
 
-			
-				
-			ArrayList<Segmentobject> currentframeobject = new ArrayList<Segmentobject>();
-			for (Pair<String, Segmentobject> currentangle : parent.SegmentTracklist) {
+				String timeID = entry.getKey();
 
-				
-				
-				
-				
-				if (currentangle.getB().z == z && currentangle.getA().equals(TrackID)) {
+				ArrayList<Segmentobject> currentframeobject = new ArrayList<Segmentobject>();
+				for (Pair<String, Segmentobject> currentangle : parent.SegmentTracklist) {
 
-					currentframeobject.add(currentangle.getB());
+					if (currentangle.getB().z == z && currentangle.getA().equals(TrackID)) {
 
-				}
-				
-				
-				
-				if (currentframeobject.size() > maxCurveDim) {
+						currentframeobject.add(currentangle.getB());
 
-					maxCurveDim = currentframeobject.size();
+					}
+
+					if (currentframeobject.size() > maxCurveDim) {
+
+						maxCurveDim = currentframeobject.size();
+
+					}
 
 				}
-				
-				
-			
-		}
-			sortedMap.put(TrackID+ timeID, currentframeobject);
-			maxidcurve.put(TrackID, maxCurveDim);
-		}
+				sortedMap.put(TrackID + timeID, currentframeobject);
+				maxidcurve.put(TrackID, maxCurveDim);
+			}
 		}
 		return new ValuePair<HashMap<String, Integer>, HashMap<String, ArrayList<Segmentobject>>>(maxidcurve,
 				sortedMap);
@@ -1077,61 +1037,56 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		HashMap<String, Integer> maxidcurve = new HashMap<String, Integer>();
 
-		
-
 		HashMap<String, ArrayList<Intersectionobject>> sortedMap = new HashMap<String, ArrayList<Intersectionobject>>();
 		HashSet<String> TrackIDset = new HashSet<String>();
 		for (Pair<String, Intersectionobject> preangle : parent.Tracklist) {
 			String TrackID = preangle.getA();
 			TrackIDset.add(TrackID);
 		}
-		
+
 		Iterator<String> iter = TrackIDset.iterator();
-		
-		while(iter.hasNext()) {
-			
+
+		while (iter.hasNext()) {
+
 			String TrackID = iter.next();
-			
+
 			Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
-		while (itZ.hasNext()) {
-			
-			Map.Entry<String, Integer> entry = itZ.next();
+			while (itZ.hasNext()) {
 
-			int z = entry.getValue();
+				Map.Entry<String, Integer> entry = itZ.next();
 
-			String timeID = entry.getKey();
-			
+				int z = entry.getValue();
+
+				String timeID = entry.getKey();
+
 				ArrayList<Intersectionobject> currentframeobject = new ArrayList<Intersectionobject>();
-			for (Pair<String, Intersectionobject> currentangle : parent.Tracklist) {
+				for (Pair<String, Intersectionobject> currentangle : parent.Tracklist) {
 
-				
-				if (currentangle.getB().z == z && currentangle.getA().equals(TrackID)) {
+					if (currentangle.getB().z == z && currentangle.getA().equals(TrackID)) {
 
-					currentframeobject.add(currentangle.getB());
+						currentframeobject.add(currentangle.getB());
+
+					}
+
+					for (int i = 0; i < currentframeobject.size(); ++i) {
+
+						int size = currentframeobject.get(i).linelist.size();
+
+						if (size > maxCurveDim)
+							maxCurveDim = size;
+
+					}
 
 				}
-
-				for (int i = 0; i < currentframeobject.size(); ++i) {
-
-					int size = currentframeobject.get(i).linelist.size();
-
-					if (size > maxCurveDim)
-						maxCurveDim = size;
-
-				}
-				
-				
-
+				sortedMap.put(TrackID + timeID, currentframeobject);
+				maxidcurve.put(TrackID, maxCurveDim);
 			}
-			sortedMap.put(TrackID + timeID, currentframeobject);
-			maxidcurve.put(TrackID, maxCurveDim);
-		}
 		}
 		return new ValuePair<HashMap<String, Integer>, HashMap<String, ArrayList<Intersectionobject>>>(maxidcurve,
 				sortedMap);
 
 	}
-	
+
 	public static Pair<HashMap<String, Integer>, HashMap<String, ArrayList<Intersectionobject>>> GetZTdenseTrackList(
 			final InteractiveSimpleEllipseFit parent) {
 
@@ -1139,61 +1094,56 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		HashMap<String, Integer> maxidcurve = new HashMap<String, Integer>();
 
-
 		HashMap<String, ArrayList<Intersectionobject>> sortedMap = new HashMap<String, ArrayList<Intersectionobject>>();
 
-		
 		Set<String> TrackIDset = new HashSet<String>();
-		 for (Pair<String, Intersectionobject> preangle : parent.denseTracklist) {
-			 String TrackID = preangle.getA();
-				TrackIDset.add(TrackID);
-			}
-			
-			Iterator<String> iter = TrackIDset.iterator();
-			
-			while(iter.hasNext()) {
-				
-				String TrackID = iter.next();
-
-				Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
-		while (itZ.hasNext()) {
-			
-			Map.Entry<String, Integer> entry = itZ.next();
-
-			int z = entry.getValue();
-
-		    String timeID = entry.getKey();
-
-		   
-				ArrayList<Intersectionobject> currentframeobject = new ArrayList<Intersectionobject>();
-				
-			for (Pair<String, Intersectionobject> currentangle : parent.denseTracklist) {
-
-				
-				if (currentangle.getB().z == z && currentangle.getA().equals(TrackID)) {
-
-					currentframeobject.add(currentangle.getB());
-
-				}
-
-				for (int i = 0; i < currentframeobject.size(); ++i) {
-
-					int size = currentframeobject.get(i).linelist.size();
-
-					if (size > maxCurveDim)
-						maxCurveDim = size;
-
-				}
-
-			}
-
-			sortedMap.put(TrackID + timeID, currentframeobject);
-			maxidcurve.put(TrackID , maxCurveDim);
-			
-}
+		for (Pair<String, Intersectionobject> preangle : parent.denseTracklist) {
+			String TrackID = preangle.getA();
+			TrackIDset.add(TrackID);
 		}
-		
-		
+
+		Iterator<String> iter = TrackIDset.iterator();
+
+		while (iter.hasNext()) {
+
+			String TrackID = iter.next();
+
+			Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
+			while (itZ.hasNext()) {
+
+				Map.Entry<String, Integer> entry = itZ.next();
+
+				int z = entry.getValue();
+
+				String timeID = entry.getKey();
+
+				ArrayList<Intersectionobject> currentframeobject = new ArrayList<Intersectionobject>();
+
+				for (Pair<String, Intersectionobject> currentangle : parent.denseTracklist) {
+
+					if (currentangle.getB().z == z && currentangle.getA().equals(TrackID)) {
+
+						currentframeobject.add(currentangle.getB());
+
+					}
+
+					for (int i = 0; i < currentframeobject.size(); ++i) {
+
+						int size = currentframeobject.get(i).linelist.size();
+
+						if (size > maxCurveDim)
+							maxCurveDim = size;
+
+					}
+
+				}
+
+				sortedMap.put(TrackID + timeID, currentframeobject);
+				maxidcurve.put(TrackID, maxCurveDim);
+
+			}
+		}
+
 		return new ValuePair<HashMap<String, Integer>, HashMap<String, ArrayList<Intersectionobject>>>(maxidcurve,
 				sortedMap);
 

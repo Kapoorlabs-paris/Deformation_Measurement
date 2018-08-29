@@ -8,15 +8,22 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import ellipsoidDetector.Intersectionobject;
+import ellipsoidDetector.KymoSaveobject;
 import hashMapSorter.SortCoordinates;
 import ij.IJ;
 import kalmanForSegments.Segmentobject;
+import net.imglib2.RandomAccess;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
+import net.imglib2.view.Views;
 import pluginTools.InteractiveSimpleEllipseFit;
 import utility.Curvatureobject;
 
@@ -51,8 +58,10 @@ public class SaveAllListener implements ActionListener {
 	NewSave();
 	
 	if(parent.celltrackcirclefits || parent.pixelcelltrackcirclefits) {
-	    OldSave();
-	    DenseSave();   
+	  
+		KymoSave();
+		//OldSave();
+	    //DenseSave();   
 	}
 	if (!parent.curveautomode && !parent.curvesupermode)
 		OldSave();
@@ -60,6 +69,84 @@ public class SaveAllListener implements ActionListener {
 	IJ.log("All trackes saved in: " + parent.saveFile.getAbsolutePath());
 	}
 	
+	
+	public void KymoSave() {
+		
+		
+	for(int tablepos = 0; tablepos< parent.table.getRowCount(); ++tablepos) {
+			
+			String ID = (String) parent.table.getValueAt(tablepos, 0);
+			
+			try {
+				File fichier = new File(
+						parent.saveFile + "//" + parent.addToName + "TrackID" +ID + ".txt");
+				
+				FileWriter fw = new FileWriter(fichier);
+				BufferedWriter bw = new BufferedWriter(fw);
+				bw.write("\tTrackID" + "\t" + "\t" + ID+ "\n");
+				
+				bw.write("\tArbritaryUnit\tTime\t\tCurvature\t \t Intensity \t \t IntensitySec\n");
+				
+				
+				KymoSaveobject Kymos = parent.KymoFileobject.get(ID);
+				
+				
+				RandomAccessibleInterval<FloatType> CurvatureKymo = Kymos.CurvatureKymo;
+				
+				RandomAccessibleInterval<FloatType> IntensityAKymo = Kymos.IntensityAKymo;
+				
+				RandomAccessibleInterval<FloatType> IntensityBKymo = Kymos.IntensityBKymo;
+				
+				int hyperslicedimension = 1;
+				
+				for (long pos = 0; pos< CurvatureKymo.dimension(hyperslicedimension); ++pos) {
+					
+					
+					RandomAccessibleInterval< FloatType > CurveView =
+	                        Views.hyperSlice( CurvatureKymo, hyperslicedimension, pos );
+					
+					RandomAccessibleInterval< FloatType > IntensityAView =
+	                        Views.hyperSlice( IntensityAKymo, hyperslicedimension, pos );
+					
+					RandomAccessibleInterval< FloatType > IntensityBView =
+	                        Views.hyperSlice( IntensityBKymo, hyperslicedimension, pos );
+					
+	 				RandomAccess<FloatType> Cranac = CurveView.randomAccess();
+					RandomAccess<FloatType> Aranac = IntensityAView.randomAccess();
+					RandomAccess<FloatType> Branac = IntensityBView.randomAccess();
+					
+					Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
+					
+					while (itZ.hasNext()) {
+
+						Map.Entry<String, Integer> entry = itZ.next();
+
+						int time = entry.getValue();
+						
+						Cranac.setPosition(time, 0);
+						Aranac.setPosition(time, 0);
+						Branac.setPosition(time, 0);
+						
+					bw.write("\t"+ pos +  "\t" + "\t" + time
+					+ "\t" + "\t" +
+					parent.nf.format(Cranac.get().get())
+	                  + "\t" + "\t" +
+					parent.nf.format(Aranac.get().get()) + "\t"  + "\t"+  "\t" + "\t" + parent.nf.format(Branac.get().get()) + 
+					"\n");
+			
+					}
+				}
+				
+				
+			    bw.close();
+				fw.close();
+			}
+			catch (IOException te) {
+			}
+			
+		}
+		
+	}
 	
 	public void DenseSave() {
 		
