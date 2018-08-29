@@ -187,32 +187,12 @@ public class ParallelResultDisplay {
 		try {
 			taskExecutor.invokeAll(tasks);
 			
-			RandomAccessibleInterval<FloatType> GlobalScale = new ArrayImgFactory<FloatType>().create(new long[] {100,100}, new FloatType());
 			
-			
-			final Cursor<FloatType> cursor = Views.iterable(GlobalScale).localizingCursor();
-
-			while (cursor.hasNext()) {
-
-				cursor.fwd();
-
-			
-
-					
-					double lambda = (cursor.getFloatPosition(0) - GlobalScale.min(0) ) / (GlobalScale.max(0) - GlobalScale.min(0));
-					
-						cursor.get().setReal( minCurvature + lambda * ( maxCurvature - minCurvature));
-
-				
-
-			}
 			ImagePlus imp = ImageJFunctions.show(probImg);
 			
 			imp.setTitle("Curvature Result");
 			IJ.run("Fire");
-			ImagePlus scale = ImageJFunctions.show(GlobalScale);
-			scale.setTitle("Global Color Bar");
-			IJ.run("Fire");
+			
 			
 			
 			
