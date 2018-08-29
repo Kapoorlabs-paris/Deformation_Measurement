@@ -166,136 +166,18 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		IntensityAimp.setTitle("Intensity ChA Kymo for TrackID: " + TrackID);
 		IntensityAimp.setCalibration(cal);
 
+		if(parent.twochannel) {
 		ImagePlus IntensityBimp = ImageJFunctions.show(IntensityBKymo);
 		IntensityBimp.setTitle("Intensity ChB for TrackID: " + TrackID);
 		IntensityBimp.setCalibration(cal);
-
+		IntensityBimp.updateAndRepaintWindow();
+		}
 		Curveimp.updateAndRepaintWindow();
 		IntensityAimp.updateAndRepaintWindow();
-		IntensityBimp.updateAndRepaintWindow();
+		
 	}
 
-	public static List<double[]> getCopyList(List<double[]> copytruths) {
-
-		List<double[]> orderedtruths = new ArrayList<double[]>();
-		Iterator<double[]> iter = copytruths.iterator();
-
-		while (iter.hasNext()) {
-
-			orderedtruths.add(iter.next());
-
-		}
-
-		return orderedtruths;
-	}
-
-	public List<double[]> getNextinLine(List<double[]> currentlinelist, double[] Refpoint, double[] meanCord,
-			int count) {
-
-		List<double[]> copytruths = getCopyList(currentlinelist);
-
-		List<double[]> sublisttruths = new ArrayList<double[]>();
-
-		Iterator<double[]> listiter = copytruths.iterator();
-
-		while (listiter.hasNext()) {
-
-			double[] alltuples = listiter.next();
-
-			double angledeg = Distance.AngleVectorsDouble(alltuples, Refpoint, meanCord);
-
-			if (angledeg > 0)
-
-				sublisttruths.add(alltuples);
-
-		}
-		return sublisttruths;
-
-	}
-
-	public static double[] getMinCord(List<double[]> truths) {
-
-		double minVal = Double.MAX_VALUE;
-
-		double[] minobject = null;
-		Iterator<double[]> iter = truths.iterator();
-
-		while (iter.hasNext()) {
-
-			double[] currentpair = iter.next();
-
-			if (currentpair[1] <= minVal) {
-
-				minobject = currentpair;
-				minVal = currentpair[1];
-
-			}
-
-		}
-
-		return minobject;
-	}
-
-	public static double[] getMeanCordDouble(List<double[]> truths) {
-
-		Iterator<double[]> iter = truths.iterator();
-		double Xmean = 0, Ymean = 0;
-		while (iter.hasNext()) {
-
-			double[] currentpair = iter.next();
-
-			double[] currentpoint = currentpair;
-
-			Xmean += currentpoint[0];
-			Ymean += currentpoint[1];
-
-		}
-
-		return new double[] { Xmean / truths.size(), Ymean / truths.size() };
-	}
-
-	public static double[] getNextNearest(double[] minCord, List<double[]> truths) {
-
-		double[] nextobject = null;
-
-		double[] bigobject = null;
-		final List<RealPoint> targetCoords = new ArrayList<RealPoint>(truths.size());
-		final List<FlagNode<double[]>> targetNodes = new ArrayList<FlagNode<double[]>>(truths.size());
-
-		for (double[] localcord : truths) {
-
-			double[] twotuple = new double[] { localcord[0], localcord[1] };
-			targetCoords.add(new RealPoint(twotuple));
-			targetNodes.add(new FlagNode<double[]>(twotuple));
-		}
-
-		if (targetNodes.size() > 0 && targetCoords.size() > 0) {
-
-			final KDTree<FlagNode<double[]>> Tree = new KDTree<FlagNode<double[]>>(targetNodes, targetCoords);
-
-			final NNFlagsearchKDtree<double[]> Search = new NNFlagsearchKDtree<double[]>(Tree);
-
-			Search.search(new RealPoint(minCord[0], minCord[1]));
-
-			final FlagNode<double[]> targetNode = Search.getSampler().get();
-
-			nextobject = targetNode.getValue();
-		}
-
-		for (double[] truth : truths) {
-
-			if (nextobject[0] == truth[0] && nextobject[1] == truth[1]) {
-
-				bigobject = truth;
-				break;
-			}
-
-		}
-
-		return bigobject;
-
-	}
-
+	
 	public void MakeInterKymo(HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size,
 			String TrackID) {
 
@@ -360,13 +242,15 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		IntensityAimp.setTitle("Intensity ChA Kymo for TrackID: " + TrackID);
 		IntensityAimp.setCalibration(cal);
 
+		if(parent.twochannel) {
 		ImagePlus IntensityBimp = ImageJFunctions.show(IntensityBKymo);
 		IntensityBimp.setTitle("Intensity ChB for TrackID: " + TrackID);
 		IntensityBimp.setCalibration(cal);
-
+		IntensityBimp.updateAndRepaintWindow();
+		}
 		Curveimp.updateAndRepaintWindow();
 		IntensityAimp.updateAndRepaintWindow();
-		IntensityBimp.updateAndRepaintWindow();
+		
 
 		KymoSaveobject Kymos = new KymoSaveobject(CurvatureKymo, IntensityAKymo, IntensityBKymo);
 		parent.KymoFileobject.put(TrackID, Kymos);

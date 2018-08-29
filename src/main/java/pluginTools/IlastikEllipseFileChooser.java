@@ -302,7 +302,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 			if(superpixel && !twochannel) {
 			
 				RandomAccessibleInterval<IntType> imagesuper = new ImgOpener().openImgs(impsuper.getOriginalFileInfo().directory + impsuper.getOriginalFileInfo().fileName, new IntType()).get(0);
-				new InteractiveSimpleEllipseFit(imagebefore, imagebefore, imagesuper, calibration, Wavesize, simple, superpixel, impsuper.getOriginalFileInfo().directory).run(null);
+				new InteractiveSimpleEllipseFit(imagebefore, imagebefore, imagesuper, calibration, Wavesize, simple, superpixel, impsuper.getOriginalFileInfo().directory, twochannel).run(null);
 			
 			}
 			if (simple && !twochannel)
@@ -310,14 +310,14 @@ public class IlastikEllipseFileChooser extends JPanel {
 			
 			if (curvesimple && !twochannel) {
 				// Activate curvature measurment simple
-				new InteractiveSimpleEllipseFit(imagebefore, imagebefore, calibration, Wavesize,simple, superpixel, curvesimple, curvesuper, impOrig.getOriginalFileInfo().directory).run(null);
+				new InteractiveSimpleEllipseFit(imagebefore, imagebefore, calibration, Wavesize,simple, superpixel, curvesimple, curvesuper, impOrig.getOriginalFileInfo().directory, twochannel).run(null);
 				
 			}
 			if(curvesuper && !twochannel) {
 				// Activate curvature measurment super
 			
 				RandomAccessibleInterval<IntType> imagesuper = new ImgOpener().openImgs(impsuper.getOriginalFileInfo().directory + impsuper.getOriginalFileInfo().fileName, new IntType()).get(0);
-				new InteractiveSimpleEllipseFit(imagebefore, imagebefore, imagesuper,calibration, Wavesize, simple, superpixel, curvesimple, curvesuper, impOrig.getOriginalFileInfo().directory).run(null);
+				new InteractiveSimpleEllipseFit(imagebefore, imagebefore, imagesuper,calibration, Wavesize, simple, superpixel, curvesimple, curvesuper, impOrig.getOriginalFileInfo().directory, twochannel).run(null);
 			}
 			
 			
@@ -326,7 +326,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 			
 				RandomAccessibleInterval<IntType> imagesuper = new ImgOpener().openImgs(impsuper.getOriginalFileInfo().directory + impsuper.getOriginalFileInfo().fileName, new IntType()).get(0);
 				RandomAccessibleInterval<FloatType> secimage = new ImgOpener().openImgs(impSec.getOriginalFileInfo().directory + impSec.getOriginalFileInfo().fileName, new FloatType()).get(0);
-				new InteractiveSimpleEllipseFit(imagebefore, secimage, imagebefore, imagesuper,calibration, Wavesize, simple, superpixel, curvesimple, curvesuper, impOrig.getOriginalFileInfo().directory).run(null);
+				new InteractiveSimpleEllipseFit(imagebefore, secimage, imagebefore, imagesuper,calibration, Wavesize, simple, superpixel, curvesimple, curvesuper, impOrig.getOriginalFileInfo().directory, twochannel).run(null);
 			}
 			
 			close(parent);

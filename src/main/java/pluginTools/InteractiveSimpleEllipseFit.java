@@ -333,6 +333,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float maxSearchradius = 100;
 	public float maxSearchradiusS = 10;
 	public int missedframes = 200;
+	
+	public final boolean twochannel;
 	public CostFunction<Intersectionobject, Intersectionobject> UserchosenCostFunction;
 	public CostFunction<Segmentobject, Segmentobject> UserchosenSegmentCostFunction;
 	public float alphaMin = 0;
@@ -563,7 +565,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.supermode = false;
 		this.curveautomode = false;
 		this.curvesupermode = false;
-		
+		this.twochannel = false;
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, final double calibration, final double timecal, File file) {
@@ -583,7 +585,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.supermode = false;
 		this.curveautomode = false;
 		this.curvesupermode = false;
-		
+		this.twochannel = false;
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, double calibration, double timecal) {
@@ -603,7 +605,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.supermode = false;
 		this.curveautomode = false;
 		this.curvesupermode = false;
-		
+		this.twochannel = false;
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, final double calibration, final double timecal, boolean automode) {
@@ -623,7 +625,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.supermode = false;
 		this.curveautomode = false;
 		this.curvesupermode = false;
-		
+		this.twochannel = false;
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
@@ -645,13 +647,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.supermode = false;
 		this.curveautomode = false;
 		this.curvesupermode = false;
-		
+		this.twochannel = false;
 		
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
 			RandomAccessibleInterval<FloatType> originalimgbefore, RandomAccessibleInterval<IntType> originalimgsuper, final double calibration, final double timecal,
-			boolean automode, boolean supermode, String inputdirectory) {
+			boolean automode, boolean supermode, String inputdirectory, boolean twochannel) {
 		this.inputfile = null;
 		this.inputdirectory = inputdirectory;
 		this.originalimg = originalimg;
@@ -670,13 +672,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.timecal = timecal;
 		this.curveautomode = false;
 		this.curvesupermode = false;
-	
+		this.twochannel = twochannel;
 	
 	}
 	
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
 			RandomAccessibleInterval<FloatType> originalimgbefore, final double calibration, final double timecal,
-			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode, String inputdirectory) {
+			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode, String inputdirectory, boolean twochannel) {
 		this.inputfile = null;
 		this.inputdirectory = inputdirectory;
 		this.originalimg = originalimg;
@@ -715,13 +717,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.supermode = supermode;
 		this.curveautomode = curveautomode;
 		this.curvesupermode = curvesupermode;
-		
+		this.twochannel = twochannel;
 	}
 	
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
 			RandomAccessibleInterval<FloatType> originalimgbefore, RandomAccessibleInterval<IntType> originalimgsuper,
 			final double calibration, final double timecal,
-			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode, String inputdirectory) {
+			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode, String inputdirectory, boolean twochannel) {
 		
 		this.inputfile = null;
 		this.inputdirectory = inputdirectory;
@@ -759,14 +761,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.supermode = supermode;
 		this.curveautomode = curveautomode;
 		this.curvesupermode = curvesupermode;
-		
+		this.twochannel = twochannel;
 		
 	}
 	
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, RandomAccessibleInterval<FloatType> originalSecimg,
 			RandomAccessibleInterval<FloatType> originalimgbefore, RandomAccessibleInterval<IntType> originalimgsuper,
 			final double calibration, final double timecal,
-			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode, String inputdirectory) {
+			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode, String inputdirectory, boolean twochannel) {
 		
 		this.inputfile = null;
 		this.inputdirectory = inputdirectory;
@@ -802,7 +804,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.supermode = supermode;
 		this.curveautomode = curveautomode;
 		this.curvesupermode = curvesupermode;
-		
+		this.twochannel = twochannel;
 		
 	}
 	
