@@ -1,5 +1,6 @@
 package pluginTools;
 
+import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -65,15 +66,17 @@ public class EllipseTrack {
 
 		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent, parent.originalimgsuper, z,
+		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.originalimgsuper, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
        
 		IntType min = new IntType();
 		IntType max = new IntType();
 		computeMinMax(Views.iterable(CurrentViewInt), min, max);
 		// Neglect the background class label
-		int currentLabel = max.get();
-
+		int currentLabel = min.get();
+		
+	
+		
            RandomAccessibleInterval<IntType> expanededtotalimg = ExpandBorder.extendBorder(parent, CurrentViewInt, currentLabel);
            ImageJFunctions.show(expanededtotalimg);
 		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
@@ -93,14 +96,14 @@ public class EllipseTrack {
 
 		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
-		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent, parent.originalimgsuper, z,
+		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.originalimgsuper, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 		IntType min = new IntType();
 		IntType max = new IntType();
 		computeMinMax(Views.iterable(CurrentViewInt), min, max);
 		// Neglect the background class label
-		int currentLabel = max.get();
-
+        int currentLabel = min.get();
+	
            RandomAccessibleInterval<IntType> expanededtotalimg = ExpandBorder.extendBorder(parent, CurrentViewInt, currentLabel);
 
 		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
@@ -200,7 +203,10 @@ public class EllipseTrack {
 		IntType max = new IntType();
 		computeMinMax(Views.iterable(CurrentInt), min, max);
 		// Neglect the background class label
-		int currentLabel = max.get();
+		  int currentLabel = min.get();
+			
+			parent.background = currentLabel;
+			parent.backField.setText(String.valueOf(new DecimalFormat("#.###").format(parent.background)));
 
            RandomAccessibleInterval<IntType> expanededtotalimg = ExpandBorder.extendBorder(parent, CurrentInt, currentLabel);
 
@@ -249,7 +255,7 @@ public class EllipseTrack {
 		RandomAccessibleInterval<BitType> CurrentView = utility.Slicer.getCurrentViewBit(parent.empty, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
-		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent, parent.emptyWater, z,
+		RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(parent.emptyWater, z,
 				parent.thirdDimensionSize, t, parent.fourthDimensionSize);
 
 		
@@ -257,7 +263,9 @@ public class EllipseTrack {
 		IntType max = new IntType();
 		computeMinMax(Views.iterable(CurrentViewInt), min, max);
 		// Neglect the background class label
-		int currentLabel = max.get();
+		  int currentLabel = min.get();
+			
+	
 
            RandomAccessibleInterval<IntType> expanededtotalimg = ExpandBorder.extendBorder(parent, CurrentViewInt, currentLabel);
 
@@ -813,7 +821,6 @@ public class EllipseTrack {
 
 		
 
-		parent.updatePreview(ValueChange.THIRDDIMmouse);
 
 	}
 	public RandomAccessibleInterval<IntType> getIntimg(RandomAccessibleInterval<BitType> CurrentView) {

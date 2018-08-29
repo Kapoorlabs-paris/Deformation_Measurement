@@ -231,10 +231,10 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			double[] currentpair = iter.next();
 
-			if (currentpair[0] <= minVal ) {
+			if (currentpair[1] <= minVal ) {
 
 				minobject = currentpair;
-				minVal = currentpair[0];
+				minVal = currentpair[1];
 				
 			}
 			
@@ -305,53 +305,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 	}
 
 	
-	public List<double[]> sortIntersectionListCord(ArrayList<double[]> currentlinelist) {
-		
-		List<double[]> copytruths = getCopyList(currentlinelist);
-		double[] minCord = getMinCord(copytruths);
-		double[] meanCord = getMeanCordDouble(copytruths);
-		double[] Refcord = minCord;
-		List<double[]> orderedtruths = new ArrayList<double[]>(currentlinelist.size());
-		orderedtruths.add(minCord);
-
-		int count = 0;
-		copytruths.remove(minCord);
-		do {
-		//order list of double[] by first two tuples only
-		List<double[]> subtruths = getNextinLine(copytruths, minCord, meanCord, count);
-		
-		if(subtruths !=null && subtruths.size() > 0) {
-			
-			count++;
-			double[] nextCord = getNextNearest(minCord, subtruths);
-			
-			copytruths.remove(nextCord);
-			if (copytruths.size() != 0) {
-				copytruths.add(nextCord);
-
-				double[] chosenCord  = nextCord;
-
-				minCord = chosenCord;
-				orderedtruths.add(minCord);
-
-				copytruths.remove(chosenCord);
-			} else {
-
-				orderedtruths.add(nextCord);
-				break;
-
-			}
-			
-		}
-		else break;
-	} while (copytruths.size() >= 0);
-			
-			
-		
-		return  orderedtruths;
-		
-		}
-		
 	
 	
 	public void MakeInterKymo(HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size,
@@ -391,10 +344,9 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 				int count = 0;
 				
 				
-				ArrayList<double[]> linelist = currentobject.linelist;
+				ArrayList<double[]> sortedlinelist = currentobject.linelist;
 				
-				// Sorting every time ID so we get the same rolling out of co-ordinates
-				List<double[]> sortedlinelist = sortIntersectionListCord(linelist); 
+				
 				
 				for (int i = 0; i < sortedlinelist.size(); ++i) {
 

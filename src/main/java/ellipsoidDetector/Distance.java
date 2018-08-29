@@ -98,10 +98,9 @@ public class Distance {
 		
         double argument = (slopeA - slopeB ) / (1 + slopeA * slopeB);
 		
-		double angledeg = Math.atan(argument);
+	
 		
-		
-		return angledeg;
+		return argument;
 	}
 	
 	public static double AngleVectorsDouble(final double[] pointA, final double[] pointB, final double[] midpoint) {
@@ -113,12 +112,15 @@ public class Distance {
 		
 		final double[] vB = new double[] { pointB[0] - midpoint[0], pointB[1] - midpoint[1]  };
 		
-		double slopeA = vA[1] / (vA[0] + 1.0e-10);
-		double slopeB = vB[1] / (vB[0] + 1.0e-10);
+		if(vA[0] > 0 && vB[0] > 0) {
+		double slopeA = vA[1] / (vA[0]);
+		double slopeB = vB[1] / (vB[0]);
 	    double argument = (slopeA - slopeB ) / (1 + slopeA * slopeB);
 		
-			double angledeg = Math.atan(argument);
-			return angledeg;
+			return argument;
+		}
+		
+		else return 0;
 	}
 	
      public static double AngleVectors(final Pair<String, Segmentobject> pointA, final Pair<String, Segmentobject> pointB) {
@@ -133,12 +135,15 @@ public class Distance {
 		final double[] vA = new double[] { pointAA[0] - pointmid[0], pointAA[1] - pointmid[1]  };
 		
 		final double[] vB = new double[] { pointBB[0] - pointmid[0], pointBB[1] - pointmid[1]  };
-		double slopeA = vA[1] / (vA[0] + 1.0e-10);
-		double slopeB = vB[1] / (vB[0] + 1.0e-10);
+		if(vA[0] > 0 && vB[0] > 0) {
+		double slopeA = vA[1] / (vA[0] );
+		double slopeB = vB[1] / (vB[0] );
 	    double argument = (slopeA - slopeB ) / (1 + slopeA * slopeB);
 		
-			double angledeg = Math.atan(argument);
-			return angledeg;
+			return argument;
+}
+		
+		else return 0;
 	}
      
  

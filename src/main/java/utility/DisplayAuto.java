@@ -40,6 +40,7 @@ public class DisplayAuto {
 				Roiobject currentobject = entry.getValue();
 				if (currentobject.fourthDimension == parent.fourthDimension
 						&& currentobject.thirdDimension == parent.thirdDimension) {
+					
 					if (currentobject.resultroi != null && parent.displayIntermediate) {
 						for (int i = 0; i < currentobject.resultroi.size(); ++i) {
 

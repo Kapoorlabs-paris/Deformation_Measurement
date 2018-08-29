@@ -105,7 +105,7 @@ public class Listordereing {
 			double angledeg = Distance.AngleVectors(Refpoint, listpoint, meanCord);
 			
 				
-				if (angledeg > 0 )
+				if (angledeg >= 0 )
 					sublisttruths.add(listpoint);
 				
 			
@@ -162,6 +162,8 @@ public class Listordereing {
 		minCord = getMinCord(copytruths);
 		RealLocalizable refcord = minCord;
 
+		System.out.println(meanCord.getDoublePosition(0) + " " + meanCord.getDoublePosition(1) +  "mean");
+	
 		orderedtruths.add(minCord);
 
 		copytruths.remove(minCord);
@@ -169,7 +171,6 @@ public class Listordereing {
 		do {
 
 			List<RealLocalizable> subcopytruths = getNexinLine(copytruths, minCord, meanCord, count);
-			
 			if (subcopytruths != null && subcopytruths.size() > 0) {
 				count++;
 				RealLocalizable nextCord = getNextNearest(minCord, subcopytruths);
@@ -438,10 +439,10 @@ public class Listordereing {
 
 			RealLocalizable currentpair = iter.next();
 
-			if (currentpair.getDoublePosition(0) <= minVal ) {
+			if (currentpair.getDoublePosition(1) <= minVal ) {
 
 				minobject = currentpair;
-				minVal = currentpair.getDoublePosition(0);
+				minVal = currentpair.getDoublePosition(1);
 				
 
 			}
@@ -471,10 +472,10 @@ public class Listordereing {
 		while (iter.hasNext()) {
 
 			Pair<String, Segmentobject> currentpair = iter.next();
-			if (currentpair.getB().centralpoint.getDoublePosition(0) <= minVal) {
+			if (currentpair.getB().centralpoint.getDoublePosition(1) <= minVal) {
 
 				minobject = currentpair;
-				minVal = currentpair.getB().centralpoint.getDoublePosition(0);
+				minVal = currentpair.getB().centralpoint.getDoublePosition(1);
 				
 			}
 			

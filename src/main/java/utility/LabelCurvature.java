@@ -1,5 +1,6 @@
 package utility;
 
+import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import ellipsoidDetector.Intersectionobject;
 import ellipsoidDetector.Tangentobject;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.Arrow;
 import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
@@ -113,7 +115,6 @@ public class LabelCurvature implements Runnable  {
 	
 	private void OverSliderLoop(List<RealLocalizable> Ordered, RealLocalizable centerpoint) {
 
-		String uniqueID = Integer.toString(z) + Integer.toString(t);
 		// Get the sparse list of points
 		HashMap<Integer, RegressionCurveSegment> Bestdelta = new HashMap<Integer, RegressionCurveSegment>();
 
@@ -163,19 +164,9 @@ public class LabelCurvature implements Runnable  {
 			parent.localSegment = resultpair.Seglist;
 			// Make intersection object here
 
-			Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor
-					.CurvaturetoIntersection(parent.localCurvature, parent.functions, centerpoint, parent.smoothing);
-			Intersectionobject sparsecurrentobject = currentobjectpair.getB();
 
 			
-			resultlineroi.addAll(sparsecurrentobject.linerois);
-			resultcurvelineroi.addAll(sparsecurrentobject.curvelinerois);
-			resultallcurvelineroi.addAll(sparsecurrentobject.curvealllinerois);
-			
-			if(index == 0) {
-			ellipselineroi.addAll(sparsecurrentobject.ellipselinerois);
-			segmentrect.addAll(sparsecurrentobject.segmentrect);
-			}
+		
 
 		}
 
@@ -300,10 +291,12 @@ public class LabelCurvature implements Runnable  {
 		// Make intersection object here
 
 		Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor
-				.CurvaturetoIntersection(parent.localCurvature, parent.functions, centerpoint, parent.smoothing);
+				.CurvaturetoIntersection(parent, parent.localCurvature, parent.functions, centerpoint, parent.smoothing);
 		Intersectionobject densecurrentobject = currentobjectpair.getA();
 		Intersectionobject sparsecurrentobject = currentobjectpair.getB();
-
+		
+	
+		
 		
 		AlldenseCurveintersection.add(densecurrentobject);
 		AllCurveintersection.add(sparsecurrentobject);
@@ -359,11 +352,15 @@ public class LabelCurvature implements Runnable  {
 
 			Bestdelta.put(count, resultpair);
 			count++;
-
+		
 			parent.localCurvature = resultpair.Curvelist;
 			
 			parent.functions = resultpair.functionlist;
 			parent.localSegment = resultpair.Seglist;
+			
+		
+		
+			
 			
 			return resultpair;
 		
@@ -374,9 +371,8 @@ public class LabelCurvature implements Runnable  {
 		
 			// Make intersection object here
 
-		 String uniqueID = Integer.toString(z) + Integer.toString(t);
 		 RegressionCurveSegment resultpair = CommonLoop(Ordered, centerpoint);
-			Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor.CurvaturetoIntersection(parent.localCurvature,
+			Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor.CurvaturetoIntersection(parent, parent.localCurvature,
 					parent.functions, centerpoint, parent.smoothing);
 
 			
@@ -387,23 +383,11 @@ public class LabelCurvature implements Runnable  {
 			if (parent.maxperimeter >=sparsecurrentobject.perimeter)
 				parent.maxperimeter = (int)Math.round(sparsecurrentobject.perimeter);
 			
-			 resultlineroi.addAll(sparsecurrentobject.linerois);
-			 resultcurvelineroi.addAll(sparsecurrentobject.curvelinerois);
-			 resultallcurvelineroi.addAll(sparsecurrentobject.curvealllinerois);
-					ellipselineroi.addAll(sparsecurrentobject.ellipselinerois);
-					segmentrect.addAll(sparsecurrentobject.segmentrect);
-			
 		
-
-			Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi, resultcurvelineroi, segmentrect,
-					z, t, celllabel, true);
-			parent.ZTRois.put(uniqueID, currentroiobject);
-			
-			
-			DisplayAuto.Display(parent);
+		
 		
 			
-
+			
 			
 			AlldenseCurveintersection.add(densecurrentobject);
 			AllCurveintersection.add(sparsecurrentobject);
@@ -440,10 +424,30 @@ public class LabelCurvature implements Runnable  {
 		// Get mean co-ordinate from the candidate points
 		RealLocalizable centerpoint = Listordereing.getMeanCord(truths);
 
-		parent.globalMaxcord = Listordereing.getMaxYCord(truths);
 		// Get the sparse list of points
 		Pair<RealLocalizable, List<RealLocalizable>> Ordered = Listordereing.getOrderedList(truths, parent.resolution);
 
+		
+		for (int i = 0; i < Ordered.getB().size() - 10; i+=10) {
+			
+			double X = Ordered.getB().get(i).getDoublePosition(0);
+			double Y = Ordered.getB().get(i).getDoublePosition(1);
+			
+			double nextX = Ordered.getB().get(i + 10).getDoublePosition(0);
+			double nextY = Ordered.getB().get(i + 10).getDoublePosition(1);
+			
+			
+			
+			Arrow line = new Arrow(X, Y, nextX, nextY);
+			line.setStrokeWidth(0.01);
+			parent.overlay.add(line);
+		}
+		
+		OvalRoi oval = new OvalRoi((int)Ordered.getA().getDoublePosition(0), (int)Ordered.getA().getDoublePosition(1), 10, 10);
+		oval.setStrokeWidth(10);
+		oval.setStrokeColor(Color.GREEN);
+		parent.overlay.add(oval);
+		parent.imp.updateAndDraw();
 		// Start sliding
 			if(parent.pixelcelltrackcirclefits) {
 				

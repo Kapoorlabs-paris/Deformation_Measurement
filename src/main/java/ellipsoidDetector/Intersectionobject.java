@@ -97,6 +97,32 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 		putFeature(YPOSITION, Intersectionpoint[1]);
 	}
 	
+	public Intersectionobject(final double[] Intersectionpoint, ArrayList<double[]> linelist,  final double perimeter,  final int celllabel,
+			final int z, final int t) {
+		super(3);
+		this.Intersectionpoint = Intersectionpoint;
+		this.angle = 0;
+		this.celllabel = celllabel;
+		this.linelist = linelist;
+		this.linerois = null;
+		this.curvelinerois = null;
+		this.curvealllinerois = null;
+		this.ellipselinerois = null;
+		this.segmentrect = null;
+		this.ellipsepair = null;
+		this.t = t;
+		this.z = z;
+		this.perimeter = perimeter;
+		this.ID = IDcounter.incrementAndGet();
+		this.name = "ID" + ID;
+		putFeature(Time,  (double) t);
+		putFeature(ZPOSITION, (double) z);
+		putFeature(XPOSITION, Intersectionpoint[0]);
+		putFeature(YPOSITION, Intersectionpoint[1]);
+	}
+	
+	
+	
 	public void setName( final String name )
 	{
 		this.name = name;

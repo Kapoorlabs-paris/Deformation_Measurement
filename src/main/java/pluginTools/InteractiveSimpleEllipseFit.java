@@ -21,11 +21,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -81,6 +83,7 @@ import kalmanTracker.NearestRoi;
 import listeners.AngleListener;
 import listeners.AutoEndListener;
 import listeners.AutoStartListener;
+import listeners.BackGroundListener;
 import listeners.BlackBorderListener;
 import listeners.ClearDisplayListener;
 import listeners.ClearforManual;
@@ -145,6 +148,7 @@ import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.Type;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -362,6 +366,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float alpha = 0.5f;
 	public float beta = 0.5f;
 	public ImageStack prestack;
+	  public int background = -1;
 	public MouseAdapter mouseadapter;
 	public ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>> superReducedSamples;
 	public ArrayList<Curvatureobject> localCurvature, interpolatedlocalCurvature;
@@ -410,6 +415,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public HashMap<Integer, KymoSaveobject> KymoFileobject;
 	public Set<Integer> pixellist;
 	ColorProcessor cp = null;
+
 	public HashMap<String, Intersectionobject> Finalresult;
 	public HashMap<String, Segmentobject> SegmentFinalresult;
 	public HashMap<Integer, Curvatureobject> Finalcurvatureresult;
@@ -557,6 +563,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.supermode = false;
 		this.curveautomode = false;
 		this.curvesupermode = false;
+		
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, final double calibration, final double timecal, File file) {
@@ -576,6 +583,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.supermode = false;
 		this.curveautomode = false;
 		this.curvesupermode = false;
+		
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, double calibration, double timecal) {
@@ -595,6 +603,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.supermode = false;
 		this.curveautomode = false;
 		this.curvesupermode = false;
+		
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, final double calibration, final double timecal, boolean automode) {
@@ -614,7 +623,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.supermode = false;
 		this.curveautomode = false;
 		this.curvesupermode = false;
-
+		
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
@@ -636,7 +645,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.supermode = false;
 		this.curveautomode = false;
 		this.curvesupermode = false;
-
+		
 		
 	}
 
@@ -661,7 +670,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.timecal = timecal;
 		this.curveautomode = false;
 		this.curvesupermode = false;
-
+	
 	
 	}
 	
@@ -706,7 +715,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.supermode = supermode;
 		this.curveautomode = curveautomode;
 		this.curvesupermode = curvesupermode;
-
+		
 	}
 	
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
@@ -928,9 +937,22 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					fourthDimension, fourthDimensionSize);
 		}
 
-
-	//	if(originalimgsuper!=null)
-	//		ImageJFunctions.show(originalimgsuper).setTitle("Super Pixel Segmentation");
+             if(originalimgsuper!=null) {
+			
+			
+			RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(originalimgsuper, thirdDimension,
+					thirdDimensionSize, fourthDimension, fourthDimensionSize);
+			IntType min = new IntType();
+			IntType max = new IntType();
+			computeMinMax(Views.iterable(CurrentViewInt), min, max);
+			// Neglect the background class label
+	        int currentLabel = min.get();
+			
+			background = currentLabel;
+			
+		}
+	
+		
 	
 		imp = ImageJFunctions.show(CurrentViewOrig);
 	
@@ -957,6 +979,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			highprob = utility.Slicer.computeValueFromScrollbarPosition(highprobslider.getValue(), highprobmin, highprobmax, scrollbarSize);
 			
 			updatePreview(ValueChange.SEG);
+			
+			
+		
 			
 		}
 
@@ -1539,10 +1564,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public TextField inputFieldZ, startT, endT, maxSizeField, minSizeField;
 	public TextField inputFieldmaxtry, interiorfield, exteriorfield;
 	public TextField inputFieldminpercent;
-	public TextField inputFieldmaxellipse;
+	public TextField inputFieldmaxellipse, backField;
 
 	public Label inputLabelmaxellipse;
-	public Label inputLabelminpercent;
+	public Label inputLabelminpercent, backLabel;
 	public Label inputLabelIter, inputtrackLabel, inputcellLabel;
 	public JPanel Original = new JPanel();
 	public int SizeX = 500;
@@ -1707,7 +1732,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		blackcorrectionlabel = new Label("Expand border");
 		bordercorrection = new TextField(1);
 		bordercorrection.setText(Float.toString(borderpixel));
-		
+	
 		
 		autoTstart = new Label("Start time for automation");
 		startT = new TextField(5);
@@ -1795,7 +1820,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		secdegreeField = new TextField(5);
 		secdegreeField.setText(Integer.toString(secdegree));
-
+		   
+		   backLabel = new Label("Background Label to ignore");
+		   backField = new TextField(5);
+		   backField.setText(Integer.toString(background));
 		inputLabelIter = new Label("Max. attempts to find ellipses");
 		final JScrollBar maxSearchS = new JScrollBar(Scrollbar.HORIZONTAL, maxSearchInit, 10, 0, 10 + scrollbarSize);
 	
@@ -1932,7 +1960,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			Probselect.add(endT, new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 	
-		
+			Probselect.add(backLabel, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			
+			Probselect.add(backField, new GridBagConstraints(3, 1, 3, 1, 0.1, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.RELATIVE, insets, 0, 0));
 			Probselect.setBorder(probborder);
 
 			panelFirst.add(Probselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
@@ -2324,7 +2356,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		inputField.addTextListener(new ETrackFilenameListener(this));
 		Savebutton.addActionListener(new SaveListener(this));
 		SaveAllbutton.addActionListener(new SaveAllListener(this));
-		
+		backField.addTextListener(new BackGroundListener(this));
 		ChooseMethod.addActionListener(new DrawListener(this, ChooseMethod));
 		ChooseColor.addActionListener(new ColorListener(this, ChooseColor));
 		panelFirst.setMinimumSize(new Dimension(SizeX, SizeY));
@@ -2350,6 +2382,28 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 	}
 
+	public static <T extends Comparable<T> & Type<T>> void computeMinMax(final Iterable<T> input, final T min, final T max) {
+		// create a cursor for the image (the order does not matter)
+		final Iterator<T> iterator = input.iterator();
+
+		// initialize min and max with the first image value
+		T type = iterator.next();
+
+		min.set(type);
+		max.set(type);
+
+		// loop over the rest of the data and determine min and max value
+		while (iterator.hasNext()) {
+			// we need this type more than once
+			type = iterator.next();
+
+			if (type.compareTo(min) < 0)
+				min.set(type);
+
+			if (type.compareTo(max) > 0)
+				max.set(type);
+		}
+	}
 
 
 	public static int round(double value) {

@@ -1,6 +1,7 @@
 package pluginTools;
 
 import java.awt.Rectangle;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,6 +30,7 @@ import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.Type;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.IntType;
@@ -178,13 +180,13 @@ public class Computeinwater {
 		ArrayList<Intersectionobject> AlldenseCurveintersection = new ArrayList<Intersectionobject>();
 		ArrayList<Segmentobject> AllCurveSegments = new ArrayList<Segmentobject>(); 
 		
-		
 		 
 		while (setiter.hasNext()) {
 
 			percent++;
 
 			int label = setiter.next();
+			if(label!=parent.background) {
 			// Creating a binary image in the integer image region from the boundary
 			// probability map
 			Watershedobject current =
@@ -199,6 +201,7 @@ public class Computeinwater {
 					AllCurveSegments, t, z,
 					parent.jpb, percent, label)));
 				
+			}
 		}
 				try {
 					
@@ -209,8 +212,7 @@ public class Computeinwater {
 					parent.ALLIntersections.put(uniqueID, AllCurveintersection);
 					parent.ALLdenseIntersections.put(uniqueID, AlldenseCurveintersection);
 					parent.ALLSegments.put(uniqueID, AllCurveSegments);
-					Roiobject currentroiobject = new Roiobject(ellipselineroi, resultallcurvelineroi, resultlineroi, resultcurvelineroi,Segmentrect, z, t, -1, true);
-					parent.ZTRois.put(uniqueID, currentroiobject);
+					
 
 				} catch (InterruptedException e1) {
 
@@ -221,5 +223,29 @@ public class Computeinwater {
 		
 
 	}
+	
+	public <T extends Comparable<T> & Type<T>> void computeMinMax(final Iterable<T> input, final T min, final T max) {
+		// create a cursor for the image (the order does not matter)
+		final Iterator<T> iterator = input.iterator();
+
+		// initialize min and max with the first image value
+		T type = iterator.next();
+
+		min.set(type);
+		max.set(type);
+
+		// loop over the rest of the data and determine min and max value
+		while (iterator.hasNext()) {
+			// we need this type more than once
+			type = iterator.next();
+
+			if (type.compareTo(min) < 0)
+				min.set(type);
+
+			if (type.compareTo(max) > 0)
+				max.set(type);
+		}
+	}
+		
 
 }

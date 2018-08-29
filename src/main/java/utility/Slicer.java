@@ -49,13 +49,13 @@ public class Slicer {
 			totalimg = originalimg;
 		}
 
-		if (thirdDimensionSize > 0 && fourthDimensionSize == 0) {
+		if (thirdDimensionSize > 1 && fourthDimensionSize == 0) {
 
 			totalimg = Views.hyperSlice(originalimg, 2, thirdDimension - 1);
 
 		}
 
-		if (fourthDimensionSize > 0) {
+		if (fourthDimensionSize > 1) {
 
 			RandomAccessibleInterval<T> pretotalimg = Views.hyperSlice(originalimg, 2, thirdDimension - 1);
 
@@ -94,7 +94,7 @@ public class Slicer {
 
 	}
 
-	public static RandomAccessibleInterval<IntType> getCurrentViewInt(InteractiveSimpleEllipseFit parent, RandomAccessibleInterval<IntType> originalimg,
+	public static RandomAccessibleInterval<IntType> getCurrentViewInt(RandomAccessibleInterval<IntType> originalimg,
 			int thirdDimension, int thirdDimensionSize, int fourthDimension, int fourthDimensionSize) {
 
 		final IntType type = originalimg.randomAccess().get().createVariable();

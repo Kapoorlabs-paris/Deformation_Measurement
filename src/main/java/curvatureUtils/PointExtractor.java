@@ -17,6 +17,7 @@ import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.ransac.RansacModels.DisplayasROI;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import pluginTools.InteractiveSimpleEllipseFit;
 import ransacPoly.QuadraticFunction;
 import ransacPoly.RegressionFunction;
 import utility.Curvatureobject;
@@ -32,7 +33,7 @@ public class PointExtractor {
 	 * @param functions
 	 * @return
 	 */
-	public static Pair<Intersectionobject, Intersectionobject> CurvaturetoIntersection(final ArrayList<Curvatureobject> localCurvature,
+	public static Pair<Intersectionobject, Intersectionobject> CurvaturetoIntersection(final InteractiveSimpleEllipseFit parent, final ArrayList<Curvatureobject> localCurvature,
 			final ArrayList<RegressionFunction> functions, final RealLocalizable centerpoint, double smoothing) {
 
 		ArrayList<Line> resultlineroi = new ArrayList<Line>();
@@ -41,7 +42,6 @@ public class PointExtractor {
 		double[] X = new double[localCurvature.size()];
 		double[] Y = new double[localCurvature.size()];
 		double[] Z = new double[localCurvature.size()];
-		double[] signZ = new double[localCurvature.size()];
 		double[] I = new double[localCurvature.size()];
 		double[] Isec = new double[localCurvature.size()];
 		int celllabel, t, z;
@@ -51,10 +51,7 @@ public class PointExtractor {
 		z = localCurvature.get(0).z;
 		perimeter = localCurvature.get(0).perimeter;
 		
-		ArrayList<OvalRoi> resultcurveline = new ArrayList<OvalRoi>();
 		ArrayList<EllipseRoi> ellipsecurveline = new ArrayList<EllipseRoi>();
-		ArrayList<OvalRoi> resultallcurveline = new ArrayList<OvalRoi>();
-		ArrayList<Roi> resultrectangle = new ArrayList<Roi>();
 
 		for (int i = 0; i < functions.size(); ++i) {
 
@@ -96,30 +93,11 @@ public class PointExtractor {
 				resultlineroi.add(line);
 			}
 			
-			if (regression.ellipse != null) {
 
-				EllipseRoi ellipse = DisplayasROI.create2DCircle(regression.ellipse.getCenter(),
-						regression.ellipse.getRadii() * regression.ellipse.getRadii());
-				ellipsecurveline.add(ellipse);
 			
 
-				double fixedwidth = Math.sqrt(Distance.DistanceSq(regression.ellipse.getStart(), regression.ellipse.getEnd()));
-				Roi rectangle = new Roi((int) (regression.ellipse.getMid()[0] - fixedwidth / 2),
-						(int)(regression.ellipse.getMid()[1] - fixedwidth / 2), (int)fixedwidth ,
-						(int) fixedwidth);
-				
-				resultrectangle.add(rectangle);
-
-			}
-
-			if (regression.inliers != null) {
-				resultcurveline.addAll(DisplayAuto.DisplayInliers(regression.inliers));
-				resultallcurveline.addAll(DisplayAuto.DisplayInliers(regression.candidates));
-			} else {
-
-				resultallcurveline.addAll(DisplayAuto.DisplayPointInliers(regression.Curvaturepoints));
-
-			}
+	
+		
 			
 			for (int index = 0; index < regression.Curvaturepoints.size() ; ++index) {
 				
@@ -133,7 +111,13 @@ public class PointExtractor {
 				// Make the line list for making intersection object
 				Sparselinelist.add(new double[] { X[index], Y[index], Z[index], I[index], Isec[index], perimeter });
 				
-			}
+				
+					
+					
+				
+			}			
+			
+			
 
 		}
 
@@ -152,11 +136,9 @@ public class PointExtractor {
 		// Compute the geometric mean of the object, which we would need for tracking
 		double[] mean = new double[] { centerpoint.getDoublePosition(0), centerpoint.getDoublePosition(1) };
 
-		Intersectionobject currentIntersection = new Intersectionobject(mean, linelist, resultlineroi, resultcurveline,
-				resultallcurveline, ellipsecurveline, resultrectangle, perimeter, celllabel, t, z);
+		Intersectionobject currentIntersection = new Intersectionobject(mean,linelist, perimeter, celllabel, t, z);
 		
-		Intersectionobject SparsecurrentIntersection = new Intersectionobject(mean, Sparselinelist, resultlineroi, resultcurveline,
-				resultallcurveline, ellipsecurveline, resultrectangle, perimeter, celllabel, t, z);
+		Intersectionobject SparsecurrentIntersection = new Intersectionobject(mean,Sparselinelist,  perimeter, celllabel, t, z);
 		
 		
 		return new ValuePair<Intersectionobject, Intersectionobject> (currentIntersection , SparsecurrentIntersection);
