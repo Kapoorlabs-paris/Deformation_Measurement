@@ -407,7 +407,11 @@ public class CurvatureFunction {
 
 			long[] posf = new long[] { (long) points.get(index).getW()[0], (long) points.get(index).getW()[1] };
 			net.imglib2.Point point = new net.imglib2.Point(posf);
-			Pair<Double, Double> Intensity = getIntensity(point);
+
+			long[] centerloc = new long[] { (long) center.getDoublePosition(0), (long)center.getDoublePosition(1) };
+			net.imglib2.Point centpos = new net.imglib2.Point(centerloc);
+			
+			Pair<Double, Double> Intensity = getIntensity(point, centpos);
 
 			Curvaturepoints.add(new double[] { points.get(index).getW()[0], points.get(index).getW()[1],
 					Math.abs(Kappa), perimeter, Kappa, Intensity.getA(), Intensity.getB() });
@@ -472,7 +476,11 @@ public class CurvatureFunction {
 			for (int d = 0; d < newpos.length; ++d)
 				longnewpos[d] = (long) newpos[d];
 			net.imglib2.Point intpoint = new net.imglib2.Point(longnewpos);
-			Pair<Double, Double> Intensity = getIntensity(intpoint);
+
+			long[] centerloc = new long[] { (long) centerpoint.getDoublePosition(0), (long)centerpoint.getDoublePosition(1) };
+			net.imglib2.Point centpos = new net.imglib2.Point(centerloc);
+			
+			Pair<Double, Double> Intensity = getIntensity(intpoint, centpos);
 
 			// Average the intensity.
 			meanIntensity += Intensity.getA();
@@ -549,7 +557,10 @@ public class CurvatureFunction {
 
 				long[] posf = new long[] { (long) p.getP1().getW()[0], (long) p.getP1().getW()[1] };
 				net.imglib2.Point point = new net.imglib2.Point(posf);
-				Pair<Double, Double> Intensity = getIntensity(point);
+				
+				long[] centerloc = new long[] { (long) center.getDoublePosition(0), (long)center.getDoublePosition(1) };
+				net.imglib2.Point inpoint = new net.imglib2.Point(centerloc);
+				Pair<Double, Double> Intensity = getIntensity(point, inpoint);
 				Curvaturepoints.add(new double[] { p.getP1().getW()[0], p.getP1().getW()[1], Math.max(0,Kappa), perimeter,
 						Kappa, Intensity.getA(), Intensity.getB() });
 
@@ -682,7 +693,7 @@ public class CurvatureFunction {
 	 * @return
 	 */
 
-	public Pair<Double, Double> getIntensity(Localizable point) {
+	public Pair<Double, Double> getIntensity(Localizable point, Localizable centerpoint) {
 
 		RandomAccess<FloatType> ranac = parent.CurrentViewOrig.randomAccess();
 
@@ -696,8 +707,8 @@ public class CurvatureFunction {
 
 		ranac.setPosition(point);
 		ranacsec.setPosition(ranac);
-		
-		
+		double mindistance = getDistance(point, centerpoint);
+		double[] currentPosition = new double[point.numDimensions()];
 		
 		 HyperSphere< FloatType > hyperSphere = new HyperSphere<FloatType>( parent.CurrentViewOrig, ranac, (int)parent.insidedistance );
 		HyperSphereCursor<FloatType> localcursor = hyperSphere.localizingCursor();
@@ -707,9 +718,16 @@ public class CurvatureFunction {
 			localcursor.fwd();
 			
 			ranacsec.setPosition(localcursor);
+			
+			ranacsec.localize(currentPosition);
+			
+			
+			double currentdistance = getDistance(localcursor, centerpoint);
+			if ((currentdistance - mindistance) <= parent.insidedistance) {
 			Intensity += localcursor.get().getRealDouble();
 			IntensitySec += ranacsec.get().getRealDouble();
 			Area++;
+			}
 		}
 	
 		
@@ -717,4 +735,21 @@ public class CurvatureFunction {
 		}
 	
 
+	public double getDistance(Localizable point, Localizable centerpoint) {
+		
+		double distance = 0;
+		
+		int ndims = point.numDimensions();
+		
+		
+		for (int i = 0; i < ndims; ++i) {
+			
+			distance+= (point.getDoublePosition(i) - centerpoint.getDoublePosition(i)) * (point.getDoublePosition(i) - centerpoint.getDoublePosition(i)) ;
+			
+		}
+		
+		return Math.sqrt(distance);
+		
+	}
+	
 }

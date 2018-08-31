@@ -2048,12 +2048,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				
 				SliderBoxGUI combocutoff = new SliderBoxGUI(insidestring, insideslider, cutoffField, insideText, scrollbarSize, insideCutoff, insideCutoffmax);
 				
-				Angleselect.add(combocutoff.BuildDisplay(), new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				Angleselect.add(combocutoff.BuildDisplay(), new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 				SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider, minInlierField, minInlierText, scrollbarSize, minNumInliers, minNumInliersmax);
 				
-				Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(5, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(5, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				
 			
@@ -2070,10 +2070,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 
 				Angleselect.add(indistText, new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0,
-						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 				Angleselect.add(interiorfield, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0,
-						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 				
 				
@@ -2088,13 +2088,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 						minInlierField, minInlierText, scrollbarSize, minNumInliers,
 						minNumInliersmax);
 
-				Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0,
+				Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0,
 						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			
-				Angleselect.add(displaySegments, new GridBagConstraints(3, 0, 2, 1, 0.0, 0.0,
-						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				Angleselect.add(Curvaturebutton, new GridBagConstraints(3, 3, 2, 1, 0.0, 0.0,
+			//	Angleselect.add(displaySegments, new GridBagConstraints(3, 0, 2, 1, 0.0, 0.0,
+			//			GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				Angleselect.add(Curvaturebutton, new GridBagConstraints(3, 2, 2, 1, 0.0, 0.0,
 						GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 				

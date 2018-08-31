@@ -62,13 +62,13 @@ public class RunpixelCelltrackCirclemodeListener implements ItemListener {
 					parent.minInlierField, parent.minInlierText, parent.scrollbarSize, parent.minNumInliers,
 					parent.minNumInliersmax);
 
-			parent.Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0,
+			parent.Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0,
 					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 		
 		
-			parent.Angleselect.add(parent.displaySegments, new GridBagConstraints(3, 0, 2, 1, 0.0, 0.0,
-					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
-			parent.Angleselect.add(parent.Curvaturebutton, new GridBagConstraints(3, 3, 2, 1, 0.0, 0.0,
+		//	parent.Angleselect.add(parent.displaySegments, new GridBagConstraints(3, 0, 2, 1, 0.0, 0.0,
+		//			GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
+			parent.Angleselect.add(parent.Curvaturebutton, new GridBagConstraints(3, 2, 2, 1, 0.0, 0.0,
 					GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
 
 			

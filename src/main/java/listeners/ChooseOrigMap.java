@@ -5,6 +5,8 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 import javax.swing.JComboBox;
 
@@ -42,8 +44,12 @@ public class ChooseOrigMap implements ActionListener {
 			if(parent.impOrig!=null) {
 			parent.calibration = parent.impOrig.getCalibration().pixelWidth;
 			parent.Wavesize = parent.impOrig.getCalibration().frameInterval;
-			parent.Fieldwavesize.setText(String.valueOf(new DecimalFormat("#.###").format(parent.Wavesize))); 
-			parent.inputFieldcalX.setText(String.valueOf(new DecimalFormat("#.###").format(parent.calibration)));
+			DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.getDefault());
+			otherSymbols.setDecimalSeparator('.');
+			otherSymbols.setGroupingSeparator(','); 
+			DecimalFormat df = new DecimalFormat(("#.###"), otherSymbols);
+			parent.Fieldwavesize.setText(String.valueOf(df.format(parent.Wavesize))); 
+			parent.inputFieldcalX.setText(String.valueOf(df.format(parent.calibration)));
 	}
 	
 	}
