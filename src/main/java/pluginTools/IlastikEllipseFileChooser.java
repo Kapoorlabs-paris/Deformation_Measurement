@@ -33,6 +33,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.log4j.BasicConfigurator;
 
+import batchMode.ExecuteBatch;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.WindowManager;
@@ -251,6 +252,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 	  public JButton DirB;
 	  public String chAIdentifier;
 	  public String chBIdentifier;
+	  public JButton RunBatch;
 	  protected class RuninBatchListener implements ItemListener {
 		  
 		  
@@ -275,7 +277,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 		  
 		  DirA = new JButton(LoadDirectoryA.getText());
 		  DirB = new JButton(LoadDirectoryB.getText());
-		  
+		  RunBatch = new JButton("Start batch processing");
 	       channelAidentifier = new TextField(5);
 	       channelAidentifier.setText("C1");
 			
@@ -300,7 +302,8 @@ public class IlastikEllipseFileChooser extends JPanel {
 			Panelfileoriginal.add(channelBidentifier, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			
-			
+			Panelfileoriginal.add(RunBatch,  new GridBagConstraints(2, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			panelFirst.add(Panelfileoriginal, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
@@ -309,6 +312,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 			GodoubleBatch.addItemListener(new DoubleChannelBatchListener(parent));
 		  DirA.addActionListener(new ChannelAListener(Cardframe));
 		  DirB.addActionListener(new ChannelBListener(Cardframe));
+		  RunBatch.addActionListener(new BatchmodeListener());
 		  panelFirst.repaint();
 		  panelFirst.validate();
 		  Panelfileoriginal.repaint();
@@ -318,6 +322,21 @@ public class IlastikEllipseFileChooser extends JPanel {
 		  
 		  
 	  }
+	  
+	  public class BatchmodeListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			
+			
+			new ExecuteBatch(Ch1_AllMovies, Ch2_AllMovies, chAIdentifier, chBIdentifier, new InteractiveSimpleEllipseFit(), Ch1_AllMovies[0], twochannel);
+			
+		}
+		  
+		  
+		  
+	  }
+	  
 	  public class ChAIdentifierListener implements TextListener {
 
 			

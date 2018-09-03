@@ -24,16 +24,18 @@ public class ExecuteBatch implements PlugIn, Runnable {
 	public final InteractiveSimpleEllipseFit parent;
 	public final String channelA;
 	public final String channelB;
-	
+	public final boolean twochannel;
 	public ExecuteBatch() {
 		this.parent = null;
 		this.C1_AllImages = null;
 		this.C2_AllImages = null;
 		this.channelA = null;
 		this.channelB = null;
+		twochannel = false;
 	};
 
-	public ExecuteBatch(final File[] C1_AllImages, final File[] C2_AllImages, final String channelA, final String channelB, final InteractiveSimpleEllipseFit parent, final File batchdirectory) {
+	public ExecuteBatch(final File[] C1_AllImages, final File[] C2_AllImages, final String channelA, final String channelB, 
+			final InteractiveSimpleEllipseFit parent, final File batchdirectory, final boolean twochannel) {
 
 		this.C1_AllImages = C1_AllImages;
 		this.C2_AllImages = C2_AllImages;
@@ -41,6 +43,7 @@ public class ExecuteBatch implements PlugIn, Runnable {
 		this.channelB = channelB;
 		this.parent = parent;
 		this.batchfolder = batchdirectory.getParent();
+		this.twochannel = twochannel;
 
 	}
 	

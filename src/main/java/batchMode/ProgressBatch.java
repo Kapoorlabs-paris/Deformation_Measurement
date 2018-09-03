@@ -23,7 +23,7 @@ public class ProgressBatch extends SwingWorker<Void, Void> {
 		// set up executor service
 		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
 
-		ProcessFiles.process(parent.C1_AllImages, parent.C2_AllImages, taskExecutor);
+		ProcessFiles.process(parent.C1_AllImages, parent.C2_AllImages, parent.channelA, parent.channelB, parent.twochannel, taskExecutor);
 
 		return null;
 
@@ -34,7 +34,7 @@ public class ProgressBatch extends SwingWorker<Void, Void> {
 		try {
 			parent.jpb.setIndeterminate(false);
 			get();
-			parent.frame.dispose();
+			
 		
 		} catch (ExecutionException | InterruptedException e) {
 			e.printStackTrace();
