@@ -219,7 +219,7 @@ public class CurvatureTable {
 
 		parent.table.removeAll();
 		parent.scrollPane.removeAll();
-		parent.panelSecond.removeAll();
+		
 		parent.table.setFillsViewportHeight(true);
 
 		parent.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -232,8 +232,6 @@ public class CurvatureTable {
 
 		parent.PanelSelectFile.setBorder(parent.selectcell);
 
-		parent.panelSecond.add(parent.PanelSelectFile, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0,
-				GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 
 		parent.Original.add(parent.inputLabel, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
@@ -255,11 +253,10 @@ public class CurvatureTable {
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		parent.Original.setBorder(parent.origborder);
 
-		parent.panelSecond.add(parent.Original, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+		parent.panelFirst.add(parent.PanelSelectFile, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL,parent.insets, 0, 0));
+		parent.panelFirst.add(parent.Original, new GridBagConstraints(5, 1, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
-		
-		parent.panelSecond.add(parent.controlprev, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0, GridBagConstraints.CENTER,
-				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
 		parent.panelFirst.setPreferredSize(parent.panelSecond.getSize());
 		parent.inputField.setEnabled(true);
 		parent.inputtrackField.setEnabled(true);
@@ -272,10 +269,7 @@ public class CurvatureTable {
 		parent.PanelSelectFile.validate();
 		parent.table.repaint();
 		parent.table.validate();
-		parent.panelSecond.repaint();
-		parent.panelSecond.validate();
-		parent.panelFirst.repaint();
-		parent.panelFirst.validate();
+		
 		parent.Cardframe.repaint();
 		parent.Cardframe.validate();
 
