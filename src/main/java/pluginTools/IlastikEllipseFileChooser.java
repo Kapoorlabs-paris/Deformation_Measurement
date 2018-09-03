@@ -13,18 +13,23 @@ import java.awt.TextComponent;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 import java.io.File;
+import java.io.FilenameFilter;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.log4j.BasicConfigurator;
 
@@ -43,6 +48,7 @@ import listeners.ChoosesecOrigMap;
 import listeners.ChoosesuperProbMap;
 import listeners.CurveSimplemodeListener;
 import listeners.CurveSupermodeListener;
+import listeners.DoubleChannelBatchListener;
 import listeners.DoubleChannelListener;
 import listeners.SimplemodeListener;
 import listeners.SupermodeListener;
@@ -71,7 +77,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 	  public Label inputLabelcalX, wavesize;
 	  public double calibration, Wavesize;
 
-	  public TextField inputFieldcalX, Fieldwavesize;
+	  public TextField inputFieldcalX, Fieldwavesize, channelAidentifier, channelBidentifier;
 	  public final Insets insets = new Insets(10, 0, 0, 0);
 	  public final GridBagLayout layout = new GridBagLayout();
 	  public final GridBagConstraints c = new GridBagConstraints();
@@ -86,22 +92,29 @@ public class IlastikEllipseFileChooser extends JPanel {
 	  public boolean curvesuper = true;
 	  public boolean curvesimple = false;
 	  public boolean twochannel = true;
-	 
+	  public boolean curvebatch = false;
+	  File[] Ch1_AllMovies;
+	  File[] Ch2_AllMovies;
 	  public CheckboxGroup runmode = new CheckboxGroup();
 	  public Checkbox Gosuper = new Checkbox("Angle tracking with Multicut Trained segmentation", superpixel, runmode);
 	  public Checkbox Gosimple = new Checkbox("Angle tracking with Pixel Classification output only", simple, runmode);
 	  
 	  public Checkbox Godouble = new Checkbox("Load a second channel", twochannel);
 	  
+	  public Checkbox GodoubleBatch = new Checkbox("Load second channel directory", twochannel);
+	  public Checkbox Gocurvesuper = new Checkbox("Curvature Measurement with Multicut Trained segmentation", curvesuper, runmode);
+	  public Checkbox Gocurvesimple = new Checkbox("Curvature Measurement with Pixel only", curvesimple, runmode);
 	  
-	  public Checkbox Gocurvesuper = new Checkbox("Curvature Measurment with Multicut Trained segmentation", curvesuper, runmode);
-	  public Checkbox Gocurvesimple = new Checkbox("Curvature Measurment with Pixel only", curvesimple, runmode);
+	  
+	  public Checkbox GoBatchcurve = new Checkbox("Batch Mode for Curvatrue Measurement", curvebatch, runmode);
 	  
 	  public Border choosefile = new CompoundBorder(new TitledBorder("Probability Map chooser"),
 				new EmptyBorder(c.insets));
 	  public Border choosesuperfile = new CompoundBorder(new TitledBorder("Superpixel SegMap chooser"),
 				new EmptyBorder(c.insets));
 	  public Border chooseoriginalfile = new CompoundBorder(new TitledBorder("Choose original Image"),
+				new EmptyBorder(c.insets));
+	  public Border choosedirectory = new CompoundBorder(new TitledBorder("Choose image directories"),
 				new EmptyBorder(c.insets));
 	  public Border LoadEtrack = new CompoundBorder(new TitledBorder("Done Selection"),
 				new EmptyBorder(c.insets));
@@ -151,8 +164,8 @@ public class IlastikEllipseFileChooser extends JPanel {
 		//			GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Panelrun.add(Gocurvesuper, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-		//	Panelrun.add(Gocurvesimple, new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-		//			GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Panelrun.add(GoBatchcurve, new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Panelrun.setBorder(runmodetrack);
 			panelFirst.add(Panelrun, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
@@ -214,7 +227,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 			ChoosesecImage.addActionListener(new ChoosesecOrigMap(this, ChoosesecImage));
 			inputFieldcalX.addTextListener(new CalXListener());
 			Fieldwavesize.addTextListener(new WaveListener());
-			
+			GoBatchcurve.addItemListener(new RuninBatchListener(this));
 			Done.addActionListener(new DoneListener());
 			ChoosesuperImage.addActionListener(new ChoosesuperProbMap(this, ChoosesuperImage));
 			
@@ -233,6 +246,203 @@ public class IlastikEllipseFileChooser extends JPanel {
 			Cardframe.pack();
 			Cardframe.setVisible(true);
 		}
+	  
+	  public JButton DirA;
+	  public JButton DirB;
+	  public String chAIdentifier;
+	  public String chBIdentifier;
+	  protected class RuninBatchListener implements ItemListener {
+		  
+		  
+		  final IlastikEllipseFileChooser parent;
+		  
+		  public RuninBatchListener(IlastikEllipseFileChooser parent) {
+			  
+			  this.parent = parent;
+		  }
+
+		@Override
+		public void itemStateChanged(ItemEvent e) {
+			
+		
+           panelFirst.removeAll();
+		   Panelfileoriginal.removeAll();	
+		  final Label LoadDirectoryA = new Label("Load channel 1 directory");	
+		  final Label LoadDirectoryB = new Label("Load channel 2 directory");	
+			
+		  final Label channelA = new Label("Channel 1 identifier name");
+		  final Label channelB = new Label("Channel 2 identifier name");
+		  
+		  DirA = new JButton(LoadDirectoryA.getText());
+		  DirB = new JButton(LoadDirectoryB.getText());
+		  
+	       channelAidentifier = new TextField(5);
+	       channelAidentifier.setText("C1");
+			
+	       channelBidentifier = new TextField(5);
+	       channelBidentifier.setText("C2");
+	       
+			Panelfileoriginal.add(Godouble,  new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Panelfileoriginal.add(DirA, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			if(twochannel)
+			Panelfileoriginal.add(DirB,  new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Panelfileoriginal.setBorder(choosedirectory);
+			
+			Panelfileoriginal.add(channelA, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Panelfileoriginal.add(channelAidentifier, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Panelfileoriginal.add(channelB, new GridBagConstraints(3, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Panelfileoriginal.add(channelBidentifier, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			
+			
+			panelFirst.add(Panelfileoriginal, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			
+			channelAidentifier.addTextListener(new ChAIdentifierListener());
+			channelBidentifier.addTextListener(new ChBIdentifierListener());
+			GodoubleBatch.addItemListener(new DoubleChannelBatchListener(parent));
+		  DirA.addActionListener(new ChannelAListener(Cardframe));
+		  DirB.addActionListener(new ChannelBListener(Cardframe));
+		  panelFirst.repaint();
+		  panelFirst.validate();
+		  Panelfileoriginal.repaint();
+		  Panelfileoriginal.validate();
+		}
+		  
+		  
+		  
+	  }
+	  public class ChAIdentifierListener implements TextListener {
+
+			
+			
+			
+			@Override
+			public void textValueChanged(TextEvent e) {
+				final TextComponent tc = (TextComponent)e.getSource();
+			    String s = tc.getText();
+			   
+			    if (s.length() > 0)
+			    	chAIdentifier = s;
+				
+			}
+			
+	  }
+	  
+	  public class ChBIdentifierListener implements TextListener {
+
+			
+			
+			
+			@Override
+			public void textValueChanged(TextEvent e) {
+				final TextComponent tc = (TextComponent)e.getSource();
+			    String s = tc.getText();
+			   
+			    if (s.length() > 0)
+			    	chBIdentifier = s;
+				
+			}
+			
+	  }
+	  
+	  
+	  JFileChooser chooserA;
+	  protected class ChannelAListener implements ActionListener {
+
+		  
+		  final Frame parent;
+		  
+		  public ChannelAListener(Frame parent) {
+			  
+			  this.parent = parent;
+		  }
+		  
+		@Override
+		public void actionPerformed(ActionEvent e) {
+		
+			
+			chooserA = new JFileChooser();
+			
+			if(chooserB!=null)
+				chooserA.setCurrentDirectory(chooserB.getSelectedFile());
+			else
+			chooserA.setCurrentDirectory(new java.io.File("."));
+			
+			chooserA.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+			chooserA.setAcceptAllFileFilterUsed(false);
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "tif", "nd2");
+
+			chooserA.setFileFilter(filter);
+			chooserA.showOpenDialog(parent);
+			if(chooserA.getSelectedFile()!=null)
+			Ch1_AllMovies = chooserA.getSelectedFile().listFiles(new FilenameFilter() {
+				
+				@Override
+				public boolean accept(File pathname, String filename) {
+					
+					return filename.endsWith(".tif");
+				}
+			});
+		}
+		  
+		  
+		  
+		  
+		  
+	  }
+	  
+	  JFileChooser chooserB;
+	  protected class ChannelBListener implements ActionListener {
+
+		  
+		  final Frame parent;
+		  
+		  public ChannelBListener(Frame parent) {
+			  
+			  this.parent = parent;
+		  }
+		  
+		@Override
+		public void actionPerformed(ActionEvent e) {
+		
+			
+			chooserB = new JFileChooser();
+			
+			if(chooserA!=null)
+				chooserB.setCurrentDirectory(chooserA.getSelectedFile());
+			else
+				chooserB.setCurrentDirectory(new java.io.File("."));
+			
+			chooserB.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+			chooserB.setAcceptAllFileFilterUsed(false);
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "tif", "nd2");
+
+			chooserB.setFileFilter(filter);
+			chooserB.showOpenDialog(parent);
+			if(chooserB.getSelectedFile()!=null)
+			Ch2_AllMovies = chooserB.getSelectedFile().listFiles(new FilenameFilter() {
+				
+				@Override
+				public boolean accept(File pathname, String filename) {
+					
+					return filename.endsWith(".tif");
+				}
+			});
+		}
+		  
+		  
+		  
+		  
+		  
+	  }
+	  
 	  public class CalXListener implements TextListener {
 
 			
