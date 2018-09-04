@@ -226,8 +226,10 @@ public class CurvatureFunction {
 
 			int endindex = i + maxpoints;
 
-			if(endindex > size)
+			if(endindex > size - 1)
 				break;
+			if(endindex + maxpoints> size)
+				endindex = size -1;
 			
 			
 			sublist = truths.subList(i, endindex);

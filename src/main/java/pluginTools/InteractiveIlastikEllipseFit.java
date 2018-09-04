@@ -32,7 +32,7 @@ public class InteractiveIlastikEllipseFit {
 		
 	
 		
-		ImagePlus impA = new Opener().openImage("//Users/aimachine/Documents/JLMCurvature/RegisteredImages/MulticutTest.tif");
+		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/JLMCurvature/RegisteredImages/MulticutTest.tif");
 		impA.show();
 		
 		

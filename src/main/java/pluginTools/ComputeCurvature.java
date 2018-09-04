@@ -194,7 +194,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
-
+        
 		RandomAccess<FloatType> ranac = CurvatureKymo.randomAccess();
 
 		while (itZ.hasNext()) {
@@ -234,6 +234,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 				}
 			}
 
+		
 		}
 		double[] calibration = new double[] { parent.timecal, parent.calibration };
 		Calibration cal = new Calibration();
@@ -262,8 +263,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		
 
 		int hyperslicedimension = 1;
-		
-		for (long pos = 0; pos< CurvatureKymo.dimension(hyperslicedimension); ++pos) {
+		ArrayList<Pair<Integer, Double>> poslist = new ArrayList<Pair<Integer, Double>>();
+		for (long pos = 0; pos< CurvatureKymo.dimension(hyperslicedimension) - 1; ++pos) {
 			
 			
 			RandomAccessibleInterval< FloatType > CurveView =
@@ -291,31 +292,12 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 				
 				
 			}
-			parent.StripList.put((int)pos, Math.sqrt(rms)/parent.AccountedZ.size());
+			poslist.add(new ValuePair<Integer, Double>((int)pos, Math.sqrt(rms/parent.AccountedZ.size())));
+			
 			
 		}
-		
-		RandomAccessibleInterval<FloatType> StripImage = new ArrayImgFactory<FloatType>().create(new long[] {parent.StripList.size(), 4},
-				new FloatType());
-		RandomAccess<FloatType> ranacStrip = StripImage.randomAccess();
-		
-		for (Map.Entry<Integer, Double> item : parent.StripList.entrySet()) {
-			
-			Cursor<FloatType> cur = Views.iterable(StripImage).localizingCursor();
-			ranacStrip.setPosition(item.getKey(), 0);
-			
-			while(cur.hasNext()) {
-			
-				cur.fwd();
-				if(cur.getDoublePosition(0) == ranacStrip.getDoublePosition(0))
-					cur.get().setReal(item.getValue());
-			
-			
-			}
-		}
-		ImagePlus RMSImage = ImageJFunctions.show(StripImage);
-		
-		RMSImage.setTitle("Root Mean square of Curvature");
+		parent.StripList.put(TrackID, poslist);
+		parent.updatePreview(ValueChange.THIRDDIMmouse);
 	}
 
 	@Override
@@ -387,7 +369,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 				Pair<HashMap<String, Integer>, HashMap<String, ArrayList<Intersectionobject>>> densesortedMappair = GetZTdenseTrackList(
 						parent);
-				int TimedimensionKymo = parent.AccountedZ.size() + 1;
+				parent.sortedMappair = densesortedMappair.getB();
+				int TimedimensionKymo = parent.AccountedZ.size();
 
 				/*
 				 * HashMap<Integer, Integer> idmap = sortedMappair.getA();
@@ -417,7 +400,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 					int Xkymodimension = mapentry.getValue();
 
-					long[] size = new long[] { TimedimensionKymo, Xkymodimension + 10 };
+					long[] size = new long[] { TimedimensionKymo, Xkymodimension + 1 };
 					MakeInterKymo(densesortedMappair.getB(), size, id);
 
 				}
@@ -656,8 +639,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			if (minid != Integer.MAX_VALUE) {
 
+				
 				for (final Integer id : model.trackIDs(true)) {
-
 					Comparator<Pair<String, Intersectionobject>> ThirdDimcomparison = new Comparator<Pair<String, Intersectionobject>>() {
 
 						@Override
