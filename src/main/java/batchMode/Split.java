@@ -2,6 +2,11 @@ package batchMode;
 
 import java.io.File;
 
+import io.scif.img.ImgIOException;
+import io.scif.img.ImgOpener;
+import net.imglib2.type.numeric.real.FloatType;
+
+
 public class Split implements Runnable {
 
 	
@@ -22,7 +27,19 @@ public class Split implements Runnable {
 
 	@Override
 	public void run() {
+		
+		
 		// TODO Auto-generated method stub
+		
+		
+		try {
+			parent.parent.originalimg = new ImgOpener().openImgs(ChA.getAbsolutePath(), new FloatType()).get(0);
+			
+			
+		} catch (ImgIOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 }

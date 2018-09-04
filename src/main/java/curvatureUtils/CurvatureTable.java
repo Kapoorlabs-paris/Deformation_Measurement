@@ -216,9 +216,7 @@ public class CurvatureTable {
 
 	public static void makeGUI(final InteractiveSimpleEllipseFit parent) {
 
-
-		parent.table.removeAll();
-		parent.scrollPane.removeAll();
+        parent.PanelSelectFile.removeAll();
 		
 		parent.table.setFillsViewportHeight(true);
 
@@ -230,34 +228,24 @@ public class CurvatureTable {
 		parent.scrollPane.setAutoscrolls(true);
 		parent.PanelSelectFile.add(parent.scrollPane, BorderLayout.CENTER);
 
-		parent.PanelSelectFile.setBorder(parent.selectcell);
+		parent.PanelSelectFile.setBorder(parent.selectfile);
 
 
-		parent.Original.add(parent.inputLabel, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		int size = 100;
+		parent.table.getColumnModel().getColumn(0).setPreferredWidth(size);
+		parent.table.getColumnModel().getColumn(1).setPreferredWidth(size);
+		parent.table.getColumnModel().getColumn(2).setPreferredWidth(size);
+		parent.table.getColumnModel().getColumn(3).setPreferredWidth(size);
+		parent.table.getColumnModel().getColumn(4).setPreferredWidth(size);
+		parent.table.setPreferredScrollableViewportSize(parent.table.getPreferredSize());
+		
+		parent.table.setMinimumSize(parent.table.getPreferredSize());
 
-		parent.Original.add(parent.inputField, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-
-		parent.Original.add(parent.inputcellLabel, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-
-		parent.Original.add(parent.inputtrackField, new GridBagConstraints(0, 6, 3, 1, 0.0, 0.0,
-				GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-
-		parent.Original.add(parent.ChooseDirectory, new GridBagConstraints(0, 7, 3, 1, 0.0, 0.0,
-				GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-		parent.Original.add(parent.Savebutton, new GridBagConstraints(0, 8, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
-				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-		parent.Original.add(parent.SaveAllbutton, new GridBagConstraints(0, 9, 3, 1, 0.0, 0.0, GridBagConstraints.NORTH,
-				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-		parent.Original.setBorder(parent.origborder);
-
-		parent.panelFirst.add(parent.PanelSelectFile, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.HORIZONTAL,parent.insets, 0, 0));
-		parent.panelFirst.add(parent.Original, new GridBagConstraints(5, 1, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-				GridBagConstraints.HORIZONTAL, parent.insets, 0, 0));
-		parent.panelFirst.setPreferredSize(parent.panelSecond.getSize());
+		
+		parent.scrollPane.setMinimumSize(parent.table.getPreferredSize());
+		
+		
+		parent.table.setFillsViewportHeight(true);
 		parent.inputField.setEnabled(true);
 		parent.inputtrackField.setEnabled(true);
 		parent.Savebutton.setEnabled(true);
@@ -270,8 +258,12 @@ public class CurvatureTable {
 		parent.table.repaint();
 		parent.table.validate();
 		
-		parent.Cardframe.repaint();
-		parent.Cardframe.validate();
+		parent.panelFirst.add(parent.PanelSelectFile, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL,parent.insets, 0, 0));
+		parent.panelFirst.repaint();
+		parent.panelFirst.validate();
+		parent.Cardframe.pack();
+	
 
 	}
 

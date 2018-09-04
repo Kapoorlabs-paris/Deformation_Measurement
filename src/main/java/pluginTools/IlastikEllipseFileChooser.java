@@ -34,6 +34,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.log4j.BasicConfigurator;
 
 import batchMode.ExecuteBatch;
+import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.WindowManager;
@@ -78,7 +79,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 	  public Label inputLabelcalX, wavesize;
 	  public double calibration, Wavesize;
 
-	  public TextField inputFieldcalX, Fieldwavesize, channelAidentifier, channelBidentifier;
+	  public TextField inputFieldcalX, Fieldwavesize, channelAidentifier, channelBidentifier, segmentationidentifier;
 	  public final Insets insets = new Insets(10, 0, 0, 0);
 	  public final GridBagLayout layout = new GridBagLayout();
 	  public final GridBagConstraints c = new GridBagConstraints();
@@ -96,6 +97,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 	  public boolean curvebatch = false;
 	  File[] Ch1_AllMovies;
 	  File[] Ch2_AllMovies;
+	  File[] Seg_AllMovies;
 	  public CheckboxGroup runmode = new CheckboxGroup();
 	  public Checkbox Gosuper = new Checkbox("Angle tracking with Multicut Trained segmentation", superpixel, runmode);
 	  public Checkbox Gosimple = new Checkbox("Angle tracking with Pixel Classification output only", simple, runmode);
@@ -249,9 +251,11 @@ public class IlastikEllipseFileChooser extends JPanel {
 		}
 	  
 	  public JButton DirA;
+	  public JButton DirSeg;
 	  public JButton DirB;
 	  public String chAIdentifier;
 	  public String chBIdentifier;
+	  public String chSegIdentifier;
 	  public JButton RunBatch;
 	  protected class RuninBatchListener implements ItemListener {
 		  
@@ -271,18 +275,24 @@ public class IlastikEllipseFileChooser extends JPanel {
 		   Panelfileoriginal.removeAll();	
 		  final Label LoadDirectoryA = new Label("Load channel 1 directory");	
 		  final Label LoadDirectoryB = new Label("Load channel 2 directory");	
-			
+		  final Label LoadDirectorySeg = new Label("Load segmentation image directory");	
+		  
 		  final Label channelA = new Label("Channel 1 identifier name");
 		  final Label channelB = new Label("Channel 2 identifier name");
+		  final Label channelSeg = new Label("Segmentation image identifier name");
 		  
 		  DirA = new JButton(LoadDirectoryA.getText());
 		  DirB = new JButton(LoadDirectoryB.getText());
+		  DirSeg = new JButton(LoadDirectorySeg.getText());
 		  RunBatch = new JButton("Start batch processing");
 	       channelAidentifier = new TextField(5);
 	       channelAidentifier.setText("C1");
 			
 	       channelBidentifier = new TextField(5);
 	       channelBidentifier.setText("C2");
+	       
+	       segmentationidentifier = new TextField(5);
+	       segmentationidentifier.setText("Segmentation");
 	       
 			Panelfileoriginal.add(Godouble,  new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
@@ -291,16 +301,25 @@ public class IlastikEllipseFileChooser extends JPanel {
 			if(twochannel)
 			Panelfileoriginal.add(DirB,  new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Panelfileoriginal.add(DirSeg, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			
 			Panelfileoriginal.setBorder(choosedirectory);
 			
-			Panelfileoriginal.add(channelA, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Panelfileoriginal.add(channelA, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-			Panelfileoriginal.add(channelAidentifier, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Panelfileoriginal.add(channelAidentifier, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Panelfileoriginal.add(channelB, new GridBagConstraints(3, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Panelfileoriginal.add(channelBidentifier, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			
+			Panelfileoriginal.add(channelSeg, new GridBagConstraints(3, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Panelfileoriginal.add(segmentationidentifier, new GridBagConstraints(3, 5, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			
 			
 			Panelfileoriginal.add(RunBatch,  new GridBagConstraints(2, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
@@ -309,6 +328,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 			
 			channelAidentifier.addTextListener(new ChAIdentifierListener());
 			channelBidentifier.addTextListener(new ChBIdentifierListener());
+			segmentationidentifier.addTextListener(new ChSegIdentifierListener());
 			GodoubleBatch.addItemListener(new DoubleChannelBatchListener(parent));
 		  DirA.addActionListener(new ChannelAListener(Cardframe));
 		  DirB.addActionListener(new ChannelBListener(Cardframe));
@@ -328,9 +348,10 @@ public class IlastikEllipseFileChooser extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			
-			
-			new ExecuteBatch(Ch1_AllMovies, Ch2_AllMovies, chAIdentifier, chBIdentifier, new InteractiveSimpleEllipseFit(), Ch1_AllMovies[0], twochannel);
-			
+			if(Ch1_AllMovies.length > 0 )
+			new ExecuteBatch(Ch1_AllMovies, Ch2_AllMovies, Seg_AllMovies, chAIdentifier, chBIdentifier, chSegIdentifier, new InteractiveSimpleEllipseFit(), Ch1_AllMovies[0], twochannel);
+			else
+				IJ.log("No image file found in the chosen directory");
 		}
 		  
 		  
@@ -370,7 +391,22 @@ public class IlastikEllipseFileChooser extends JPanel {
 			}
 			
 	  }
-	  
+	  public class ChSegIdentifierListener implements TextListener {
+
+			
+			
+			
+			@Override
+			public void textValueChanged(TextEvent e) {
+				final TextComponent tc = (TextComponent)e.getSource();
+			    String s = tc.getText();
+			   
+			    if (s.length() > 0)
+			    	chSegIdentifier = s;
+				
+			}
+			
+	  }
 	  
 	  JFileChooser chooserA;
 	  protected class ChannelAListener implements ActionListener {
@@ -525,6 +561,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 			//RandomAccessibleInterval<FloatType> image = new ImgOpener().openImgs(impA.getOriginalFileInfo().directory + impA.getOriginalFileInfo().fileName , new FloatType()).iterator().next();
 			RandomAccessibleInterval<FloatType> imagebefore = new ImgOpener().openImgs(impOrig.getOriginalFileInfo().directory + impOrig.getOriginalFileInfo().fileName, new FloatType()).get(0);
 		
+			
 			
 			WindowManager.closeAllWindows();
 			

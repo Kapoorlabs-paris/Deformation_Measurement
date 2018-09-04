@@ -46,7 +46,7 @@ public class SaverDirectory implements ActionListener {
 			System.out.println("No Selection ");
 		}
 		
-		
+		parent.Batchbutton.setEnabled(true);
 	}
 
 }

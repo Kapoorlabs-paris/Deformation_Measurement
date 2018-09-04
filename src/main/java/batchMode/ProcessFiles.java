@@ -15,7 +15,7 @@ public class ProcessFiles {
 
 	
 
-	public static void process(File[] directoryCh1, File[] directoryCh2, String Ch1, String Ch2, boolean twochannel, ExecutorService taskexecutor) {
+	public static void process(File[] directoryCh1, File[] directoryCh2, File[] directoryChSeg, String Ch1, String Ch2, String ChSeg, boolean twochannel, ExecutorService taskexecutor) {
 		 List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
 		 
 		 
@@ -23,7 +23,7 @@ public class ProcessFiles {
 		for (int fileindex = 0; fileindex < directoryCh1.length; ++fileindex) {
 			
 			File Ch2file = StringMatching(directoryCh1[fileindex],directoryCh2, Ch1, Ch2 );
-			ExecuteBatch parent = new ExecuteBatch(directoryCh1, directoryCh2, Ch1, Ch2, new InteractiveSimpleEllipseFit(), directoryCh1[0], twochannel);
+			ExecuteBatch parent = new ExecuteBatch(directoryCh1, directoryCh2,directoryChSeg, Ch1, Ch2, ChSeg, new InteractiveSimpleEllipseFit(), directoryCh1[0], twochannel);
 			if(Ch2file!=null) 
 			tasks.add(Executors.callable(new Split(parent, Ch2file, directoryCh1[fileindex], fileindex, parent.twochannel)));
 			else

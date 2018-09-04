@@ -56,6 +56,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
+import batchMode.SaveBatchListener;
 import comboSliderTextbox.SliderBoxGUI;
 import costMatrix.CostFunction;
 import curvatureUtils.DisplaySelected;
@@ -1584,6 +1585,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JButton Curvaturebutton = new JButton("Measure Local Curvature");
 	public JButton CurrentCurvaturebutton = new JButton("Measure Current Curvature");
 	public JButton Savebutton = new JButton("Save Track");
+	public JButton Batchbutton = new JButton("Save Parameters for batch mode and exit");
 	public JButton SaveAllbutton = new JButton("Save All Tracks");
 	public JButton Redobutton = new JButton("Compute/Recompute for current view");
 	
@@ -1657,6 +1659,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JScrollBar highprobslider = new JScrollBar(Scrollbar.HORIZONTAL, 0, 10, 0, 10 + scrollbarSize);
 
 	public JPanel PanelSelectFile = new JPanel();
+	public JPanel PanelBatch = new JPanel();
 	public Border selectfile = new CompoundBorder(new TitledBorder("Select Track"), new EmptyBorder(c.insets));
 	public Border selectcell = new CompoundBorder(new TitledBorder("Select Cell"), new EmptyBorder(c.insets));
 	public JLabel inputLabel = new JLabel("Filename:");
@@ -1858,8 +1861,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		Object[] colnames;
 		Object[][] rowvalues;
 		
-		colnames = new Object[] { "", "", "","",
-				"" };
+		colnames = new Object[] { "Track Id", "Location X", "Location Y", "Location Z/T", "Perimeter" };
 
 		rowvalues = new Object[0][colnames.length];
 	
@@ -2240,21 +2242,26 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		
 	  
-		table.setPreferredSize(new Dimension(SizeX, SizeY));
 		table.setFillsViewportHeight(true);
-
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
+       
 		scrollPane = new JScrollPane(table);
+		
 
 		scrollPane.getViewport().add(table);
 		scrollPane.setAutoscrolls(true);
 
 		PanelSelectFile.add(scrollPane, BorderLayout.CENTER);
-
-		PanelSelectFile.setBorder(selectfile);
-
 		
+		PanelSelectFile.setBorder(selectfile);
+		int size = 100;
+		table.getColumnModel().getColumn(0).setPreferredWidth(size);
+		table.getColumnModel().getColumn(1).setPreferredWidth(size);
+		table.getColumnModel().getColumn(2).setPreferredWidth(size);
+		table.getColumnModel().getColumn(3).setPreferredWidth(size);
+		table.getColumnModel().getColumn(4).setPreferredWidth(size);
+		table.setPreferredScrollableViewportSize(table.getPreferredSize());
+		table.setFillsViewportHeight(true);		
+		 
 
 		Original.add(inputLabel, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
@@ -2284,12 +2291,18 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		ChooseDirectory.setEnabled(false);
 		Savebutton.setEnabled(false);
 		SaveAllbutton.setEnabled(false);
+		Batchbutton.setEnabled(false);
+		PanelBatch.add(Batchbutton,  new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		
 		
 		panelFirst.add(PanelSelectFile, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 		panelFirst.add(Original, new GridBagConstraints(5, 1, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
+		
+		panelFirst.add(Batchbutton, new GridBagConstraints(5, 2, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 		timeslider.addAdjustmentListener(new TimeListener(this, timeText, timestring, fourthDimensionsliderInit,
 				fourthDimensionSize, scrollbarSize, timeslider));
 		if (ndims > 3)
@@ -2325,7 +2338,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		interiorfield.addTextListener(new InteriorDistListener(this));
 		exteriorfield.addTextListener(new ExteriorDistListener(this));
 		
-		
+		Batchbutton.addActionListener(new SaveBatchListener(this));
 		ClearDisplay.addActionListener(new ClearDisplayListener(this));
 		SelectRim.addActionListener(new RimLineSelectionListener(this));
 		degreeField.addTextListener(new DegreeListener(this, false));
@@ -2360,7 +2373,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		backField.addTextListener(new BackGroundListener(this));
 		ChooseMethod.addActionListener(new DrawListener(this, ChooseMethod));
 		ChooseColor.addActionListener(new ColorListener(this, ChooseColor));
-		panelFirst.setMinimumSize(new Dimension(SizeX, SizeY));
+		
 		IlastikAuto.addItemListener(new IlastikListener(this));
 		lowprobslider.addAdjustmentListener(new LowProbListener(this, lowprobText, lowprobstring, lowprobmin,
 				lowprobmax, scrollbarSize, lowprobslider));

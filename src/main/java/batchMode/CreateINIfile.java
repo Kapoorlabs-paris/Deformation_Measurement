@@ -21,7 +21,10 @@ public class CreateINIfile {
 		LocalPrefs.set("NumberofSegments.int", parent.minNumInliers);
 		LocalPrefs.set("Resolution.int", parent.resolution);
 		LocalPrefs.set("IntensityRadius.double", parent.insidedistance);
-		LocalPrefs.setHomeDir(parent.userfile.getParent());
+		if(parent.saveFile!=null)
+		LocalPrefs.setHomeDir(parent.saveFile.getAbsolutePath());
+		else
+			LocalPrefs.setHomeDir(new java.io.File(".").getAbsolutePath());
         LocalPrefs.savePreferences();
 		
 		System.exit(1);
