@@ -25,14 +25,14 @@ public class InteractiveIlastikEllipseFit {
 		///Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/RealCurveRaw.tif
 		///Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/BoundaryProbability.tif
 		///Users/aimachine/Documents/CurvatureTest/images_and_paper_for_curvature_measurements/MultiCut.tif
-		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/JuliaData/Julia/Subset/NewImagesOz/C2-20180822_HVJEfusion_mtmgLA_8x16_R60um.tif");
+		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/JuliaData/Julia/Subset/NewImagesOz/C2-20180824_HVJEfusion_4x16_R53um_3.tif");
 		impB.show();
 		
 	
 		
 	
 		
-		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/JuliaData/Julia/Subset/NewImagesOz/SuperPixelC2-20180822_HVJEfusion_mtmgLA_8x16_R60um.tif");
+		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/JuliaData/Julia/Subset/NewImagesOz/Binary_20180824_HVJEfusion_4x16_R53um_3.tif");
 		impA.show();
 		
 		

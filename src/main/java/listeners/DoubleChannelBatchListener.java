@@ -23,18 +23,18 @@ public class DoubleChannelBatchListener implements ItemListener {
 			parent.twochannel = true;
 		parent.Panelfileoriginal.add(parent.DirB,  new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-	
-		parent.Panelfileoriginal.validate();
 		parent.Panelfileoriginal.repaint();
+		parent.Panelfileoriginal.validate();
+		
 		
 		}
 		
 		else if (e.getStateChange() == ItemEvent.DESELECTED) {
 		parent.twochannel = false;
 			parent.Panelfileoriginal.remove(parent.DirB);
-			
-			parent.Panelfileoriginal.validate();
 			parent.Panelfileoriginal.repaint();
+			parent.Panelfileoriginal.validate();
+			
 			
 			
 		}

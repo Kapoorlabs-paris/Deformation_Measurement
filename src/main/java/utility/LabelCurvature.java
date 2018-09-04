@@ -390,6 +390,9 @@ public class LabelCurvature implements Runnable {
 
 		// Get the candidate points for fitting
 		truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
+		
+		IJ.log("Box size for curvature calculation = " + (int) ((truths.size() / parent.minNumInliers ) * parent.calibration) + " " + " um " );
+		
 		// A Hash map for the slider loop from reference point, 0 to incremental
 		// positions
 

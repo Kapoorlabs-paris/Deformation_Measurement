@@ -31,12 +31,11 @@ public class ChoosesecOrigMap implements ActionListener {
 
 		String imagename = (String) choice.getSelectedItem();
 		
-	
+	 parent.twochannel = true;
 		
 	    	parent.impSec = WindowManager.getImage(imagename);
 	    	
-	    	if(parent.impSec==null)
-	    	 	parent.impSec = parent.impSec;
+	
 			
 			
 			

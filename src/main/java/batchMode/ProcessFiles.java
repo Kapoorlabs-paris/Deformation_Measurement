@@ -9,6 +9,8 @@ import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 import ij.IJ;
+import net.imglib2.util.Pair;
+import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
 
 public class ProcessFiles {
@@ -22,12 +24,11 @@ public class ProcessFiles {
 		 
 		for (int fileindex = 0; fileindex < directoryCh1.length; ++fileindex) {
 			
-			File Ch2file = StringMatching(directoryCh1[fileindex],directoryCh2, Ch1, Ch2 );
+			Pair<File, File> Chfiles = StringMatching(directoryCh1[fileindex], directoryChSeg ,directoryCh2, Ch1, Ch2, ChSeg );
 			ExecuteBatch parent = new ExecuteBatch(directoryCh1, directoryCh2,directoryChSeg, Ch1, Ch2, ChSeg, new InteractiveSimpleEllipseFit(), directoryCh1[0], twochannel);
-			if(Ch2file!=null) 
-			tasks.add(Executors.callable(new Split(parent, Ch2file, directoryCh1[fileindex], fileindex, parent.twochannel)));
-			else
-				tasks.add(Executors.callable(new Split(parent, directoryCh1[fileindex], directoryCh1[fileindex], fileindex, parent.twochannel)));
+			if(Chfiles!=null) 
+			tasks.add(Executors.callable(new Split(parent, Chfiles.getA(), Chfiles.getB(), directoryCh1[fileindex], fileindex, parent.twochannel)));
+	
 			
 			
 			
@@ -47,11 +48,15 @@ public class ProcessFiles {
 
 		}
 	
-	public static File StringMatching(File imageA, File[] dir, String Ch1, String Ch2) {
+	public static Pair<File, File> StringMatching(File imageA, File[] dir, File[] dirSeg, String Ch1, String Ch2, String ChSeg) {
 		
 		File CH2pair = null;
-		
+		File CHSegpair = null;
+		System.out.println(Ch1 + " " + Ch2 + " " + ChSeg);
 		for (int fileindex = 0; fileindex < dir.length; ++fileindex) {
+			
+			
+			System.out.println(dir[fileindex].getName());
 			
 			String Name = dir[fileindex].getName().replaceAll(Ch2, Ch1);
 			
@@ -63,7 +68,20 @@ public class ProcessFiles {
 			
 		}
 		
-		return CH2pair;
+		for (int fileindex = 0; fileindex < dirSeg.length; ++fileindex) {
+			
+			String Name = dirSeg[fileindex].getName().replaceAll(ChSeg, Ch1);
+			
+			
+			if(imageA.getName().matches("(.*)"+ Name + "(.*)")) {
+				CHSegpair = dirSeg[fileindex];
+			
+						break;
+			}
+			
+		}
+		
+		return new ValuePair<File, File>(CH2pair,CHSegpair);
 	}
 	
 	

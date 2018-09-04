@@ -136,10 +136,10 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			ranac.setPosition(time, 0);
 			ranacimageA.setPosition(time, 0);
 			ranacimageB.setPosition(time, 0);
-
-			if (currentlist != null)
+			int count = 1;
+			if (currentlist != null) {
 				for (Segmentobject currentobject : currentlist) {
-					int count = 0;
+					
 
 					ranac.setPosition(count, 1);
 					ranac.get().setReal(currentobject.Curvature);
@@ -153,6 +153,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 					count++;
 
 				}
+		}
 		}
 
 		double[] calibration = new double[] { parent.timecal, parent.calibration };
@@ -209,7 +210,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			if (currentlist != null) {
 				for (Intersectionobject currentobject : currentlist) {
 
-					int count = 0;
+					int count = 1;
 
 					ArrayList<double[]> sortedlinelist = currentobject.linelist;
 
