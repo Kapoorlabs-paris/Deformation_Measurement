@@ -35,8 +35,7 @@ public class ProcessSliceDisplayCircleFit implements Runnable {
 		double[] Curvature = new double[TimeCurveList.size()];
 		double[] Intensity = new double[TimeCurveList.size()];
 		double[] IntensitySec = new double[TimeCurveList.size()];
-		
-		
+	
 		for (int index = 0; index < TimeCurveList.size(); ++index) {
 			
 			
@@ -52,10 +51,10 @@ public class ProcessSliceDisplayCircleFit implements Runnable {
 
 			
 
-					if ((Math.abs(cursor.getFloatPosition(0) - X[index])) <= 5
-							&& (Math.abs(cursor.getFloatPosition(1) - Y[index])) <= 5) {
+					if ((Math.abs(cursor.getFloatPosition(0) - X[index])) <= 2
+							&& (Math.abs(cursor.getFloatPosition(1) - Y[index])) <= 2) {
 
-						cursor.get().setReal(Curvature[index]);
+						cursor.get().setReal((Curvature[index]));
 
 					}
 					

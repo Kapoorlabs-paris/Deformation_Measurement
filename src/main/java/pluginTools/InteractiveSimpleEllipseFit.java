@@ -201,7 +201,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float insideCutoff = 15;
 	public float maxDist = 3;
 	public float outsideCutoff = insideCutoff;
-
+	public HashMap<Integer, Double> StripList = new HashMap<Integer, Double>();
 	public int minNumInliers = 10;
 	public int depth = 4;
 	public int maxsize = 100;
@@ -343,7 +343,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float betaMin = 0;
 	public float betaMax = 1;
 	public int increment = 0;
-	public int resolution = 2;
+	public int resolution = 1;
 	public int maxSearchradiusInit = (int) maxSearchradius;
 	public float maxSearchradiusMin = 1;
 	public float maxSearchradiusMax = maxSearchradius;

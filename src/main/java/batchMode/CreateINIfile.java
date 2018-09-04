@@ -21,6 +21,8 @@ public class CreateINIfile {
 		LocalPrefs.set("NumberofSegments.int", parent.minNumInliers);
 		LocalPrefs.set("Resolution.int", parent.resolution);
 		LocalPrefs.set("IntensityRadius.double", parent.insidedistance);
+		LocalPrefs.set("TimeCalibration.double", parent.timecal);
+		LocalPrefs.set("SpaceCalibration.double", parent.calibration);
 		if(parent.saveFile!=null)
 		LocalPrefs.setHomeDir(parent.saveFile.getAbsolutePath());
 		else

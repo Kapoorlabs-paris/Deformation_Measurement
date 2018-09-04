@@ -51,6 +51,7 @@ import kalmanTracker.KFsearch;
 import kalmanTracker.NearestNeighbourSearch;
 import kalmanTracker.NearestNeighbourSearch2D;
 import kalmanTracker.TrackModel;
+import net.imglib2.Cursor;
 import net.imglib2.KDTree;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
@@ -62,6 +63,7 @@ import net.imglib2.realtransform.Scale2D;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import net.imglib2.view.Views;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import track.TrackingFunctions;
 import utility.CreateTable;
@@ -204,13 +206,13 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			ArrayList<Intersectionobject> currentlist = sortedMappair.get(TrackID + timeID);
 
-			ranac.setPosition(time, 0);
-			ranacimageA.setPosition(time, 0);
-			ranacimageB.setPosition(time, 0);
+			ranac.setPosition(time - 1, 0);
+			ranacimageA.setPosition(time - 1 , 0);
+			ranacimageB.setPosition(time - 1, 0);
 			if (currentlist != null) {
 				for (Intersectionobject currentobject : currentlist) {
 
-					int count = 1;
+					int count = 0;
 
 					ArrayList<double[]> sortedlinelist = currentobject.linelist;
 
@@ -226,6 +228,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 						ranacimageB.get().setReal(sortedlinelist.get(i)[4]);
 
 						count++;
+					
 					}
 
 				}
@@ -255,6 +258,64 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		KymoSaveobject Kymos = new KymoSaveobject(CurvatureKymo, IntensityAKymo, IntensityBKymo);
 		parent.KymoFileobject.put(TrackID, Kymos);
+		
+		
+
+		int hyperslicedimension = 1;
+		
+		for (long pos = 0; pos< CurvatureKymo.dimension(hyperslicedimension); ++pos) {
+			
+			
+			RandomAccessibleInterval< FloatType > CurveView =
+                    Views.hyperSlice( CurvatureKymo, hyperslicedimension, pos );
+
+			
+				RandomAccess<FloatType> Cranac = CurveView.randomAccess();
+
+				
+			
+			Iterator<Map.Entry<String, Integer>> itZSec = parent.AccountedZ.entrySet().iterator();
+			
+			 double rms = 0;
+			while (itZSec.hasNext()) {
+				
+               
+				Map.Entry<String, Integer> entry = itZSec.next();
+
+				int time = entry.getValue();
+				
+				
+				Cranac.setPosition(time - 1, 0);
+			
+				rms+=Cranac.get().get() * Cranac.get().get();
+				
+				
+			}
+			parent.StripList.put((int)pos, Math.sqrt(rms)/parent.AccountedZ.size());
+			
+		}
+		
+		RandomAccessibleInterval<FloatType> StripImage = new ArrayImgFactory<FloatType>().create(new long[] {parent.StripList.size(), 4},
+				new FloatType());
+		RandomAccess<FloatType> ranacStrip = StripImage.randomAccess();
+		
+		for (Map.Entry<Integer, Double> item : parent.StripList.entrySet()) {
+			
+			Cursor<FloatType> cur = Views.iterable(StripImage).localizingCursor();
+			ranacStrip.setPosition(item.getKey(), 0);
+			
+			while(cur.hasNext()) {
+			
+				cur.fwd();
+				if(cur.getDoublePosition(0) == ranacStrip.getDoublePosition(0))
+					cur.get().setReal(item.getValue());
+			
+			
+			}
+		}
+		ImagePlus RMSImage = ImageJFunctions.show(StripImage);
+		
+		RMSImage.setTitle("Root Mean square of Curvature");
 	}
 
 	@Override

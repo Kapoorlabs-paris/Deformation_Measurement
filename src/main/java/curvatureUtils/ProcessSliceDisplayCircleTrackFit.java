@@ -54,8 +54,8 @@ public class ProcessSliceDisplayCircleTrackFit implements Runnable {
 
 			
 
-					if ((Math.abs(cursor.getFloatPosition(0) - X[index])) <= 5
-							&& (Math.abs(cursor.getFloatPosition(1) - Y[index])) <= 5) {
+					if ((Math.abs(cursor.getFloatPosition(0) - X[index])) <= 2
+							&& (Math.abs(cursor.getFloatPosition(1) - Y[index])) <= 2) {
 
 						cursor.get().setReal(Curvature[index]);
 

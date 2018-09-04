@@ -15,6 +15,8 @@ public class ExecuteBatch implements PlugIn, Runnable {
 	public int BackgroundLabel = (int) LocalPrefs.getDouble(".BackgroundLabel.int", 10);
 	public int Resolution = (int) LocalPrefs.getDouble(".Resolution.int", 10);
 	public double IntensityRadius = LocalPrefs.getDouble(".IntensityRadius.double", 10);
+	public double timecal = LocalPrefs.getDouble(".TimeCalibration.double", 1);
+	public double calibration = LocalPrefs.getDouble(".SpaceCalibration.double", 1);
 	public String batchfolder;
 	public String userfile;
 	public JProgressBar jpb;

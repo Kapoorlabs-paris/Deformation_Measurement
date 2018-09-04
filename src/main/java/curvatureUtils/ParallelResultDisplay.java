@@ -96,7 +96,7 @@ public class ParallelResultDisplay {
 		}
 
 		ImagePlus imp = ImageJFunctions.show(probImg);
-		imp.setTitle("Curvature Result");
+		imp.setTitle("Curvature RMS Result");
 		IJ.run("Fire");
 
 	
