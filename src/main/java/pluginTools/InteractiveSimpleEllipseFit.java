@@ -203,6 +203,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float maxDist = 3;
 	public float outsideCutoff = insideCutoff;
 	public HashMap<String, ArrayList<Pair<Integer, Double>>> StripList = new HashMap<String, ArrayList<Pair<Integer, Double>>>();
+	public ImagePlus RMStrackImages;
 	public int minNumInliers = 10;
 	public int depth = 4;
 	public int maxsize = 100;
@@ -1259,12 +1260,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				for (Map.Entry<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> entryZ : parentdensegraphZ
 						.entrySet()) {
 					TrackModel model = new TrackModel(entryZ.getValue());
+					RandomAccessibleInterval<FloatType> StripImage = new ArrayImgFactory<FloatType>()
+							.create(CurrentViewOrig, new FloatType());
+					RandomAccess<FloatType> ranacStrip = StripImage.randomAccess();
 					for (final Integer id : model.trackIDs(true)) {
 						String targetid = id + entryZ.getKey();
-						RandomAccessibleInterval<FloatType> StripImage = new ArrayImgFactory<FloatType>()
-								.create(CurrentViewOrig, new FloatType());
-						RandomAccess<FloatType> ranacStrip = StripImage.randomAccess();
+						
 
+						
 						for (Map.Entry<String, ArrayList<Pair<Integer, Double>>> item : StripList.entrySet()) {
 							String TrackID = item.getKey();
 							if (TrackID.equals(targetid)) {
@@ -1288,12 +1291,37 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 									}
 
 								}
-								ImagePlus RMSImage = ImageJFunctions.show(StripImage);
-
-								RMSImage.setTitle("Root Mean square of Curvature" + targetid);
+								
+								
+								
+								
 
 							}
 						}
+						
+						
+					  if(RMStrackImages == null) {
+						  
+						  RMStrackImages = ImageJFunctions.show(StripImage);
+						  
+					  }
+					  else {
+						  
+						  final float[] pixels = (float[]) RMStrackImages.getProcessor().getPixels();
+							final Cursor<FloatType> c = Views.iterable(StripImage).cursor();
+
+							for (int i = 0; i < pixels.length; ++i)
+								pixels[i] = c.next().get();
+
+							RMStrackImages.updateAndDraw();
+						  
+						  
+					  }
+						
+						
+
+					  RMStrackImages.setTitle("Root Mean square of Curvature" + targetid);
+						
 					}
 				}
 
