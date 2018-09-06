@@ -222,13 +222,12 @@ public class CurvatureFunction {
 
 		List<RealLocalizable> sublist = new ArrayList<RealLocalizable>();
 
-		for (int i = 0; i <= size; i += maxpoints) {
+		for (int i = 0; i <= size - maxpoints; i += maxpoints) {
 
 			int endindex = i + maxpoints;
 
-			if(endindex > size - 1)
-				break;
-			if(endindex + maxpoints> size)
+			
+			if(endindex  >= size)
 				endindex = size -1;
 			
 			

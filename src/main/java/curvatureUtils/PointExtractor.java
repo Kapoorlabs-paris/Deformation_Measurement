@@ -51,7 +51,6 @@ public class PointExtractor {
 		z = localCurvature.get(0).z;
 		perimeter = localCurvature.get(0).perimeter;
 		
-		ArrayList<EllipseRoi> ellipsecurveline = new ArrayList<EllipseRoi>();
 
 		for (int i = 0; i < functions.size(); ++i) {
 

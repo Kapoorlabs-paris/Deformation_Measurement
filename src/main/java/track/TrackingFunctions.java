@@ -40,6 +40,7 @@ public class TrackingFunctions {
 		for (Map.Entry<String, ArrayList<Intersectionobject>> entry : parent.ALLIntersections.entrySet()) {
 
 			ArrayList<Intersectionobject> bloblist = entry.getValue();
+			if(bloblist.size() > 0)
 			colllist.add(bloblist);
 		
 
@@ -64,6 +65,7 @@ public class TrackingFunctions {
 		for (Map.Entry<String, ArrayList<Intersectionobject>> entry : parent.ALLdenseIntersections.entrySet()) {
 
 			ArrayList<Intersectionobject> bloblist = entry.getValue();
+			if(bloblist.size() > 0)
 			colllist.add(bloblist);
 		
 
@@ -91,7 +93,7 @@ public class TrackingFunctions {
 		for (Map.Entry<String, ArrayList<Segmentobject>> entry : parent.ALLSegments.entrySet()) {
 
 			ArrayList<Segmentobject> bloblist = entry.getValue();
-			
+			if(bloblist.size() > 0)
 			colllist.add(bloblist);
 		
 		}
