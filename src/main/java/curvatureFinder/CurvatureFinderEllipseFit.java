@@ -5,9 +5,11 @@ import java.util.List;
 
 import javax.swing.JProgressBar;
 
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.FloatType;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.RegressionCurveSegment;
 
@@ -25,9 +27,10 @@ public class CurvatureFinderEllipseFit<T extends RealType<T> & NativeType<T>> im
 	private static final String BASE_ERROR_MSG = "[EllipseFit-]";
 	protected String errorMessage;
 	HashMap<Integer, RegressionCurveSegment> BestDelta = new HashMap<Integer, RegressionCurveSegment>();;
+	public final RandomAccessibleInterval<FloatType> ActualRoiimg;
 	
-	
-	public CurvatureFinderEllipseFit(final InteractiveSimpleEllipseFit parent, final List<RealLocalizable> Ordered,final RealLocalizable centerpoint,final JProgressBar jpb, final int percent,
+	public CurvatureFinderEllipseFit(final InteractiveSimpleEllipseFit parent, final List<RealLocalizable> Ordered,final RealLocalizable centerpoint, final RandomAccessibleInterval<FloatType> ActualRoiimg,
+			final JProgressBar jpb, final int percent,
 			final int celllabel,final int thirdDimension,final int fourthDimension ) {
 		
 		this.parent = parent;
@@ -38,6 +41,7 @@ public class CurvatureFinderEllipseFit<T extends RealType<T> & NativeType<T>> im
 		this.thirdDimension = thirdDimension;
 		this.fourthDimension = fourthDimension;
 		this.percent = percent;
+		this.ActualRoiimg = ActualRoiimg;
 	}
 	
 	

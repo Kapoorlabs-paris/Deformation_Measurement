@@ -5,9 +5,11 @@ import java.util.List;
 
 import javax.swing.JProgressBar;
 
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.FloatType;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.RegressionCurveSegment;
 
@@ -24,16 +26,18 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> imp
 	public final RealLocalizable centerpoint;
 	private static final String BASE_ERROR_MSG = "[CircleFit-]";
 	protected String errorMessage;
-	HashMap<Integer, RegressionCurveSegment> BestDelta = new HashMap<Integer, RegressionCurveSegment>();;
+	HashMap<Integer, RegressionCurveSegment> BestDelta = new HashMap<Integer, RegressionCurveSegment>();
+	public final RandomAccessibleInterval<FloatType> ActualRoiimg;
 	
-	
-	public CurvatureFinderCircleFit(final InteractiveSimpleEllipseFit parent, final List<RealLocalizable> Ordered,final RealLocalizable centerpoint,final JProgressBar jpb, final int percent,
+	public CurvatureFinderCircleFit(final InteractiveSimpleEllipseFit parent, final List<RealLocalizable> Ordered,final RealLocalizable centerpoint, final RandomAccessibleInterval<FloatType> ActualRoiimg,
+			final JProgressBar jpb, final int percent,
 			final int celllabel,final int thirdDimension,final int fourthDimension ) {
 		
 		this.parent = parent;
 		this.Ordered = Ordered;
 		this.centerpoint = centerpoint;
 		this.jpb = jpb;
+		this.ActualRoiimg = ActualRoiimg;
 		this.celllabel = celllabel;
 		this.thirdDimension = thirdDimension;
 		this.fourthDimension = fourthDimension;
