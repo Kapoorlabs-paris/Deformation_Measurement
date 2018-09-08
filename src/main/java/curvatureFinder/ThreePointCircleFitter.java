@@ -55,6 +55,8 @@ public class ThreePointCircleFitter {
 
 		DisplayListOverlay.ArrowDisplay(parent, Ordered);
 		
+		OverSliderLoop(Ordered.getB(), centerpoint);
+		
 	}
 	
 	
