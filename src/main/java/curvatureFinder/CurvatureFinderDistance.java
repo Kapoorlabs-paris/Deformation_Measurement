@@ -1,17 +1,21 @@
 package curvatureFinder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JProgressBar;
 
+import ellipsoidDetector.Intersectionobject;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.Pair;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.RegressionCurveSegment;
+import ransacPoly.RegressionFunction;
 
 public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> implements CurvatureFinders<T> {
 
@@ -71,6 +75,24 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> impl
 	public String getErrorMessage() {
 		
 		return errorMessage;
+	}
+
+
+	@Override
+	public Pair<RegressionFunction, ArrayList<double[]>> getLocalcurvature(ArrayList<double[]> Cordlist,
+			RealLocalizable centerpoint) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public void OverSliderLoop(InteractiveSimpleEllipseFit parent, List<RealLocalizable> Ordered,
+			RealLocalizable centerpoint, List<RealLocalizable> truths,
+			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Intersectionobject> AlldenseCurveintersection,
+			int ndims, int celllabel, int t, int z) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

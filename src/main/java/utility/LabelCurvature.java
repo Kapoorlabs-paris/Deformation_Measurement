@@ -17,7 +17,7 @@ import javax.swing.JProgressBar;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 
-import curvatureFinder.ThreePointCircleFitter;
+import curvatureFinder.CurvatureFinderCircleFit;
 import curvatureUtils.DisplaySelected;
 import curvatureUtils.PointExtractor;
 import ellipsoidDetector.Distance;
@@ -117,9 +117,9 @@ public class LabelCurvature implements Runnable {
 		
 		if (parent.pixelcelltrackcirclefits) {
 		
-		ThreePointCircleFitter curvecircle = new ThreePointCircleFitter(parent, AllCurveintersection, AlldenseCurveintersection, ActualRoiimg, jpb, percent, celllabel, z, t);
+			CurvatureFinderCircleFit<FloatType> curvecircle = new CurvatureFinderCircleFit<FloatType>(parent, AllCurveintersection, AlldenseCurveintersection, ActualRoiimg, jpb, percent, celllabel, z, t);
 		
-		curvecircle.execute();
+		curvecircle.process();
 		
 		}
 		

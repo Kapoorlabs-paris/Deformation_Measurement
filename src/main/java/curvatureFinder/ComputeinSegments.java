@@ -21,7 +21,6 @@ public class ComputeinSegments {
 
 	
 	
-	
 	public static void OverSliderLoop(InteractiveSimpleEllipseFit parent, List<RealLocalizable> Ordered, RealLocalizable centerpoint, List<RealLocalizable> truths,ArrayList<Intersectionobject> AllCurveintersection,
 	ArrayList<Intersectionobject> AlldenseCurveintersection, int ndims, int celllabel, int t, int z) {
 

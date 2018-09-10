@@ -75,7 +75,6 @@ public class CurvatureFunction {
 
 		// Make sublist, fixed size approach
 
-		MakeSegments(parent, truths, minNumInliers, Label, z);
 
 		// Now do the fitting
 		ArrayList<Segmentobject> Allcellsegment = new ArrayList<Segmentobject>();
@@ -206,7 +205,7 @@ public class CurvatureFunction {
 	
 
 	public void MakeSegments(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int numSeg,
-			int celllabel, int time) {
+			int celllabel) {
 
 		if(truths.size() < 3)
 			return;
@@ -490,13 +489,13 @@ public class CurvatureFunction {
 			
 			
 			AllCurvaturepoints.add(
-					new double[] { newpos[0], newpos[1], Math.max(0,Kappa), perimeter, Intensity.getA(), Intensity.getB() });
+					new double[] { newpos[0], newpos[1], Math.abs(Kappa), perimeter, Intensity.getA(), Intensity.getB() });
 		}
 
 		meanIntensity /= size;
 		meanSecIntensity /= size;
 		Curvaturepoints.add(
-				new double[] { pointB[0], pointB[1], (Kappa), perimeter, meanIntensity, meanSecIntensity });
+				new double[] { pointB[0], pointB[1], Math.abs(Kappa), perimeter, meanIntensity, meanSecIntensity });
 
 		RegressionFunction finalfunctionransac = new RegressionFunction(ellipsesegment.function, Curvaturepoints);
 
