@@ -15,7 +15,7 @@ import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
 
-public abstract class SegmentCreator<T extends RealType<T> & NativeType<T>>  implements CurvatureFinders<T> {
+public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  implements CurvatureFinders<T> {
 	
 	
 	public void MakeSegments(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int numSeg,
