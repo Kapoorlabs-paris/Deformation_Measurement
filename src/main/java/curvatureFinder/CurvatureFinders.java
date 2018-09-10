@@ -16,15 +16,15 @@ import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.RegressionCurveSegment;
 import ransacPoly.RegressionFunction;
 
-public interface CurvatureFinders<T extends RealType<T> & NativeType<T>> extends OutputAlgorithm<HashMap<Integer, RegressionCurveSegment> > {
+public interface CurvatureFinders<T extends RealType<T> & NativeType<T>>
+		extends OutputAlgorithm<HashMap<Integer, RegressionCurveSegment>> {
 
-	
-	
-	public  Pair<RegressionFunction, ArrayList<double[]>> getLocalcurvature(ArrayList<double[]> Cordlist,
+	public Pair<RegressionFunction, ArrayList<double[]>> getLocalcurvature(ArrayList<double[]> Cordlist,
 			RealLocalizable centerpoint);
-	
-	public void OverSliderLoop(InteractiveSimpleEllipseFit parent, List<RealLocalizable> Ordered, RealLocalizable centerpoint, List<RealLocalizable> truths,ArrayList<Intersectionobject> AllCurveintersection,
-			ArrayList<Intersectionobject> AlldenseCurveintersection, int ndims, int celllabel, int t, int z);
 
-	
+	public void OverSliderLoop(InteractiveSimpleEllipseFit parent, List<RealLocalizable> Ordered,
+			RealLocalizable centerpoint, List<RealLocalizable> truths,
+			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Intersectionobject> AlldenseCurveintersection,
+			int ndims, int celllabel, int t, int z);
+
 }

@@ -76,13 +76,7 @@ public class CurvatureFunction {
 
 		// Here you choose which method is used to detect curvature
 
-		Pair<RegressionFunction, ArrayList<double[]>> finalfunctionandList;
-
-		
-		// Polynomial fits
-		
-
-			finalfunctionandList = RansacBlock(pointlist, centerpoint, smoothing, maxError, minNumInliers, degree,
+		Pair<RegressionFunction, ArrayList<double[]>> finalfunctionandList = RansacBlock(pointlist, centerpoint, smoothing, maxError, minNumInliers, degree,
 					secdegree);
 
 		

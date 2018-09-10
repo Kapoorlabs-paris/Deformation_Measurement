@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import curvatureUtils.PointExtractor;
 import ellipsoidDetector.Intersectionobject;
+import kalmanForSegments.Segmentobject;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RealLocalizable;
@@ -21,9 +23,175 @@ import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.RegressionCurveSegment;
 import ransacPoly.RegressionFunction;
 import utility.Curvatureobject;
+import utility.Listordereing;
 
 public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  implements CurvatureFinders<T> {
 	
+	/**
+	 * 
+	 * Function to fit on a list of points which are not tree based
+	 * 
+	 * @param parent
+	 * @param centerpoint
+	 * @param sublist
+	 * @param functions
+	 * @param interpolatedCurvature
+	 * @param smoothing
+	 * @param maxError
+	 * @param minNumInliers
+	 * @param degree
+	 * @param secdegree
+	 * @return
+	 */
+	public Pair<RegressionFunction, ArrayList<double[]>> FitonList(InteractiveSimpleEllipseFit parent,
+			RealLocalizable centerpoint, List<RealLocalizable> sublist) {
+
+		ArrayList<double[]> Cordlist = new ArrayList<double[]>();
+
+		for (int i = 0; i < sublist.size(); ++i) {
+
+			Cordlist.add(new double[] { sublist.get(i).getDoublePosition(0), sublist.get(i).getDoublePosition(1) });
+		}
+
+		Pair<RegressionFunction, ArrayList<double[]>> resultcurvature = getLocalcurvature(Cordlist, centerpoint);
+
+		// Draw the function
+
+		return resultcurvature;
+
+	}
+	
+	public RegressionCurveSegment CommonLoop(InteractiveSimpleEllipseFit parent,	 List<RealLocalizable> Ordered, 
+			RealLocalizable centerpoint, int ndims, int celllabel, int t, int z) {
+
+		// Get the sparse list of points
+		HashMap<Integer, RegressionCurveSegment> Bestdelta = new HashMap<Integer, RegressionCurveSegment>();
+
+		int count = 0;
+	
+
+		int i = parent.increment;
+
+		// Get the sparse list of points
+
+		List<RealLocalizable> allorderedtruths = Listordereing.getList(Ordered, i);
+
+		if (parent.fourthDimensionSize > 1)
+			parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension,
+					parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
+		parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension,
+				parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
+		// Make a tree of a certain depth
+
+		int treedepth = parent.depth - 1;
+
+		if (treedepth <= 0)
+			treedepth = 0;
+
+
+		RegressionCurveSegment resultpair = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t);
+
+		// Here counter the segments where the number of inliers was too low
+
+		Bestdelta.put(count, resultpair);
+		count++;
+
+		parent.localCurvature = resultpair.Curvelist;
+
+		parent.functions = resultpair.functionlist;
+		parent.localSegment = resultpair.Seglist;
+
+		return resultpair;
+
+	}
+	
+	/**
+	 * 
+	 * Take in a list of ordered co-ordinates and compute a curvature object
+	 * containing the curvature information at each co-ordinate Makes a tree
+	 * structure of the list
+	 * 
+	 * @param orderedtruths
+	 * @param ndims
+	 * @param Label
+	 * @param t
+	 * @param z
+	 * @return
+	 */
+	public RegressionCurveSegment getCurvature(InteractiveSimpleEllipseFit parent,	List<RealLocalizable> truths, RealLocalizable centerpoint,
+			 int ndims, int Label,  int z, int t) {
+
+		ArrayList<Curvatureobject> curveobject = new ArrayList<Curvatureobject>();
+
+		ArrayList<double[]> totalinterpolatedCurvature = new ArrayList<double[]>();
+
+		ArrayList<RegressionFunction> totalfunctions = new ArrayList<RegressionFunction>();
+
+		double perimeter = 0;
+
+
+		MakeSegments(parent, truths, parent.minNumInliers, Label);
+		// Now do the fitting
+		ArrayList<Segmentobject> Allcellsegment = new ArrayList<Segmentobject>();
+		for (Map.Entry<Integer, List<RealLocalizable>> entry : parent.Listmap.entrySet()) {
+			
+			
+			List<RealLocalizable> sublist = entry.getValue();
+			/***
+			 * 
+			 * Main method that fitst on segments a function to get the curvature
+			 * 
+			 */
+			Pair<RegressionFunction, ArrayList<double[]>> localfunction = FitonList(parent, centerpoint, sublist);
+
+			perimeter += localfunction.getA().Curvaturepoints.get(0)[3];
+			totalfunctions.add(localfunction.getA());
+			totalinterpolatedCurvature.addAll(localfunction.getB());
+
+			RealLocalizable Cord = Listordereing.getMeanCord(sublist);
+			double Curvature = localfunction.getB().get(0)[2];
+			double IntensityA = localfunction.getB().get(0)[4];
+			double IntensityB = localfunction.getB().get(0)[5];
+			double SegPeri = localfunction.getB().get(0)[3];
+
+			Iterator<RealLocalizable> iter = sublist.iterator();
+			ArrayList<double[]> curvelist = new ArrayList<double[]>();
+			while (iter.hasNext()) {
+
+				RealLocalizable current = iter.next();
+
+				curvelist.add(new double[] { current.getDoublePosition(0), current.getDoublePosition(1), Curvature,
+						IntensityA, IntensityB });
+			}
+
+			Segmentobject cellsegment = new Segmentobject(curvelist, centerpoint, Cord, Curvature, IntensityA,
+					IntensityB, SegPeri, entry.getKey(), Label, z, t);
+
+			Allcellsegment.add(cellsegment);
+
+		}
+
+		for (int indexx = 0; indexx < totalinterpolatedCurvature.size(); ++indexx) {
+
+			Curvatureobject currentobject = new Curvatureobject(
+					totalinterpolatedCurvature.get(indexx)[2], perimeter, totalinterpolatedCurvature.get(indexx)[4],
+					totalinterpolatedCurvature.get(indexx)[5], Label, new double[] {
+							totalinterpolatedCurvature.get(indexx)[0], totalinterpolatedCurvature.get(indexx)[1] },
+					z, t);
+
+			curveobject.add(currentobject);
+
+		}
+
+		// All nodes are returned
+
+	
+		
+		
+		RegressionCurveSegment returnSeg = new RegressionCurveSegment(totalfunctions, curveobject, Allcellsegment);
+		return returnSeg;
+
+	}
 	
 	public Pair<Intersectionobject, Intersectionobject> GetAverage(InteractiveSimpleEllipseFit parent, RealLocalizable centerpoint, HashMap<Integer, RegressionCurveSegment> Bestdelta, int count){
 		
@@ -262,6 +430,22 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 		return Math.sqrt(distance);
 		
 	}
-	
+      public double getDistance(RealLocalizable point, RealLocalizable centerpoint) {
+  		
+  		double distance = 0;
+  		
+  		int ndims = point.numDimensions();
+  		
+  		
+  		for (int i = 0; i < ndims; ++i) {
+  			
+  			distance+= (point.getDoublePosition(i) - centerpoint.getDoublePosition(i)) * (point.getDoublePosition(i) - centerpoint.getDoublePosition(i)) ;
+  			
+  		}
+  		
+  		return Math.sqrt(distance);
+  		
+  	}
+  	
 
 }

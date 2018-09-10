@@ -325,7 +325,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 				int z = itZ.next().getValue();
 
-				if (parent.celltrackcirclefits || parent.pixelcelltrackcirclefits) {
+				
 
 					SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
 
@@ -333,23 +333,14 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 					CurvedLineage();
 
-				}
-				if (parent.circlefits) {
-
-					SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge> simpleSegmentgraph = track
-							.TrackSegmentfunction();
-
-					parent.parentgraphSegZ.put(Integer.toString(z), simpleSegmentgraph);
-
-					CurvedSegmentLineage();
-				}
+				
 			}
 
 		}
 
 		else {
 
-			if (parent.celltrackcirclefits || parent.pixelcelltrackcirclefits) {
+			
 
 				SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
 
@@ -407,37 +398,10 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			}
 
-		}
+		
 
-		if (parent.circlefits) {
 
-			SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge> simpleSegmentgraph = track.TrackSegmentfunction();
-
-			parent.parentgraphSegZ.put(Integer.toString(1), simpleSegmentgraph);
-
-			CurvedSegmentLineage();
-
-			Pair<HashMap<String, Integer>, HashMap<String, ArrayList<Segmentobject>>> sortedMappair = GetZTSegTrackList(
-					parent);
-
-			int TimedimensionKymo = parent.AccountedZ.size() + 1;
-			HashMap<String, Integer> idmap = sortedMappair.getA();
-
-			Iterator<Map.Entry<String, Integer>> it = idmap.entrySet().iterator();
-			while (it.hasNext()) {
-
-				Map.Entry<String, Integer> mapentry = it.next();
-				String id = mapentry.getKey();
-
-				int Xkymodimension = mapentry.getValue();
-
-				long[] size = new long[] { TimedimensionKymo, Xkymodimension };
-
-				MakeKymo(sortedMappair.getB(), size, id);
-
-			}
-
-		}
+		
 
 		try {
 			get();
@@ -450,17 +414,13 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 	}
 
 	public void CurvedLineage() {
-		if (parent.circlefits) {
+		
 
-			DisplaySelected.mark(parent);
-			DisplaySelected.select(parent);
-		}
-
-		if (parent.celltrackcirclefits || parent.pixelcelltrackcirclefits) {
+		
 			DisplaySelected.markAll(parent);
 			DisplaySelected.selectAll(parent);
 
-		}
+		
 		if (parent.ndims < 3) {
 
 			for (ArrayList<Curvatureobject> local : parent.AlllocalCurvature) {
@@ -749,17 +709,14 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 	}
 
 	public void CurvedSegmentLineage() {
-		if (parent.circlefits) {
-			DisplaySelected.mark(parent);
-			DisplaySelected.select(parent);
-		}
+			
 
-		if (parent.celltrackcirclefits || parent.pixelcelltrackcirclefits) {
+	
 
 			DisplaySelected.markAll(parent);
 			DisplaySelected.selectAll(parent);
 
-		}
+		
 
 		if (parent.ndims >= 3) {
 
