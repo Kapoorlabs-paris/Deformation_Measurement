@@ -94,7 +94,7 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 
 		DisplayListOverlay.ArrowDisplay(parent, Ordered, uniqueID);
 
-		getCurvature(parent, truths, centerpoint, ndims, celllabel, thirdDimension, fourthDimension);
+		getCurvature(parent, Ordered.getB(), centerpoint, ndims, celllabel, thirdDimension, fourthDimension);
 		
 		
 		return true;
