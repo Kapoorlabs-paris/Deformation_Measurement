@@ -1,2 +1,0 @@
-	TrackID		null
-	X-coordinates	Y-coordinates	Time		Curvature	 	Perimeter	 	 Intensity 	 	 IntensitySec
