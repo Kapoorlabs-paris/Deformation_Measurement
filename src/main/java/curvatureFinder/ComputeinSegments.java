@@ -22,7 +22,8 @@ public class ComputeinSegments {
 	
 	
 	
-	private void OverSliderLoop(InteractiveSimpleEllipseFit parent, List<RealLocalizable> Ordered, RealLocalizable centerpoint, List<RealLocalizable> truths, int ndims, int celllabel, int t, int z) {
+	public static void OverSliderLoop(InteractiveSimpleEllipseFit parent, List<RealLocalizable> Ordered, RealLocalizable centerpoint, List<RealLocalizable> truths,ArrayList<Intersectionobject> AllCurveintersection,
+	ArrayList<Intersectionobject> AlldenseCurveintersection, int ndims, int celllabel, int t, int z) {
 
 		// Get the sparse list of points
 		HashMap<Integer, RegressionCurveSegment> Bestdelta = new HashMap<Integer, RegressionCurveSegment>();
@@ -30,9 +31,9 @@ public class ComputeinSegments {
 		int count = 0;
 		if (parent.minNumInliers > truths.size())
 			parent.minNumInliers = truths.size();
-
+		
 		int i = parent.increment;
-		RegressionCurveSegment resultpair = CommonLoop(Ordered, centerpoint, ndims, celllabel, t , z);
+		RegressionCurveSegment resultpair = CommonLoop(parent, Ordered, centerpoint, ndims, celllabel, t , z);
 		int maxstride = parent.CellLabelsizemap.get(celllabel);
 
 		// Get the sparse list of points, skips parent.resolution pixel points
@@ -201,20 +202,18 @@ public class ComputeinSegments {
 		AlldenseCurveintersection.add(densecurrentobject);
 		AllCurveintersection.add(sparsecurrentobject);
 
-		AllCurveSegments.addAll(resultpair.Seglist);
 		parent.AlllocalCurvature.add(parent.localCurvature);
 
 	}
 	
-	private RegressionCurveSegment CommonLoop(InteractiveSimpleEllipseFit parent, List<RealLocalizable> truths,  List<RealLocalizable> Ordered, 
+	private static RegressionCurveSegment CommonLoop(InteractiveSimpleEllipseFit parent,	 List<RealLocalizable> Ordered, 
 			RealLocalizable centerpoint, int ndims, int celllabel, int t, int z) {
 
 		// Get the sparse list of points
 		HashMap<Integer, RegressionCurveSegment> Bestdelta = new HashMap<Integer, RegressionCurveSegment>();
 
 		int count = 0;
-		if (parent.minNumInliers > truths.size())
-			parent.minNumInliers = truths.size();
+	
 
 		int i = parent.increment;
 

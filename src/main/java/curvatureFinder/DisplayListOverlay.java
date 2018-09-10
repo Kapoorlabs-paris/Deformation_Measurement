@@ -13,7 +13,7 @@ public class DisplayListOverlay {
 
 	
 	
-	public static void ArrowDisplay(final InteractiveSimpleEllipseFit parent,Pair<RealLocalizable, List<RealLocalizable>> Ordered) {
+	public static void ArrowDisplay(final InteractiveSimpleEllipseFit parent,Pair<RealLocalizable, List<RealLocalizable>> Ordered, String uniqueID) {
 		
 		for (int i = 0; i < Ordered.getB().size() - 10; i += 10) {
 
@@ -34,7 +34,9 @@ public class DisplayListOverlay {
 		oval.setStrokeColor(Color.GREEN);
 		parent.overlay.add(oval);
 		parent.imp.updateAndDraw();
-		
+		parent.Refcord = Ordered.getA();
+
+		parent.AllRefcords.put(uniqueID, parent.Refcord);
 	}
 	
 }
