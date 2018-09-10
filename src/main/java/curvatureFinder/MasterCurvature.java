@@ -1,8 +1,12 @@
 package curvatureFinder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
+import curvatureUtils.PointExtractor;
+import ellipsoidDetector.Intersectionobject;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RealLocalizable;
@@ -14,9 +18,142 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
+import pluginTools.RegressionCurveSegment;
+import ransacPoly.RegressionFunction;
+import utility.Curvatureobject;
 
 public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  implements CurvatureFinders<T> {
 	
+	
+	public Pair<Intersectionobject, Intersectionobject> GetAverage(InteractiveSimpleEllipseFit parent, RealLocalizable centerpoint, HashMap<Integer, RegressionCurveSegment> Bestdelta, int count){
+		
+		RegressionCurveSegment resultpair = Bestdelta.get(0);
+		ArrayList<Curvatureobject> RefinedCurvature = new ArrayList<Curvatureobject>();
+		ArrayList<Curvatureobject> localCurvature = resultpair.Curvelist;
+
+		double[] X = new double[localCurvature.size()];
+		double[] Y = new double[localCurvature.size()];
+		double[] Z = new double[localCurvature.size()];
+		double[] I = new double[localCurvature.size()];
+		double[] ISec = new double[localCurvature.size()];
+
+		ArrayList<Double> CurvePeri = new ArrayList<Double>();
+		CurvePeri.add(localCurvature.get(0).perimeter);
+
+		for (int index = 0; index < localCurvature.size(); ++index) {
+
+			ArrayList<Double> CurveXY = new ArrayList<Double>();
+			ArrayList<Double> CurveI = new ArrayList<Double>();
+			ArrayList<Double> CurveISec = new ArrayList<Double>();
+
+			X[index] = localCurvature.get(index).cord[0];
+			Y[index] = localCurvature.get(index).cord[1];
+			Z[index] = localCurvature.get(index).radiusCurvature;
+			I[index] = localCurvature.get(index).Intensity;
+			ISec[index] = localCurvature.get(index).SecIntensity;
+
+			CurveXY.add(Z[index]);
+			CurveI.add(I[index]);
+			CurveISec.add(ISec[index]);
+			for (int secindex = 1; secindex < count; ++secindex) {
+
+				RegressionCurveSegment testpair = Bestdelta.get(secindex);
+
+				ArrayList<Curvatureobject> testlocalCurvature = testpair.Curvelist;
+
+				double[] Xtest = new double[testlocalCurvature.size()];
+				double[] Ytest = new double[testlocalCurvature.size()];
+				double[] Ztest = new double[testlocalCurvature.size()];
+				double[] Itest = new double[testlocalCurvature.size()];
+				double[] ISectest = new double[testlocalCurvature.size()];
+
+				CurvePeri.add(testlocalCurvature.get(0).perimeter);
+				for (int testindex = 0; testindex < testlocalCurvature.size(); ++testindex) {
+
+					Xtest[testindex] = testlocalCurvature.get(testindex).cord[0];
+					Ytest[testindex] = testlocalCurvature.get(testindex).cord[1];
+					Ztest[testindex] = testlocalCurvature.get(testindex).radiusCurvature;
+					Itest[index] = testlocalCurvature.get(testindex).Intensity;
+					ISectest[index] = testlocalCurvature.get(testindex).SecIntensity;
+					if (X[index] == Xtest[testindex] && Y[index] == Ytest[testindex]) {
+
+						CurveXY.add(Ztest[testindex]);
+						CurveI.add(Itest[index]);
+						CurveISec.add(ISectest[index]);
+
+					}
+
+				}
+
+			}
+			double frequdeltaperi = localCurvature.get(0).perimeter;
+			double frequdelta = Z[index];
+			double intensitydelta = I[index];
+			double intensitySecdelta = ISec[index];
+
+			Iterator<Double> setiter = CurveXY.iterator();
+			while (setiter.hasNext()) {
+
+				Double s = setiter.next();
+
+				frequdelta += s;
+
+			}
+
+			frequdelta /= CurveXY.size();
+			Iterator<Double> perisetiter = CurvePeri.iterator();
+			while (perisetiter.hasNext()) {
+
+				Double s = perisetiter.next();
+
+				frequdeltaperi += s;
+
+			}
+
+			frequdeltaperi /= CurvePeri.size();
+
+			Iterator<Double> Iiter = CurveI.iterator();
+			while (Iiter.hasNext()) {
+
+				Double s = Iiter.next();
+
+				intensitydelta += s;
+
+			}
+
+			intensitydelta /= CurveI.size();
+
+			Iterator<Double> ISeciter = CurveISec.iterator();
+			while (ISeciter.hasNext()) {
+
+				Double s = ISeciter.next();
+
+				intensitySecdelta += s;
+
+			}
+
+			intensitySecdelta /= CurveISec.size();
+
+			Curvatureobject newobject = new Curvatureobject((float) frequdelta, frequdeltaperi, intensitydelta,
+					intensitySecdelta, localCurvature.get(index).Label, localCurvature.get(index).cord,
+					localCurvature.get(index).t, localCurvature.get(index).z);
+
+			RefinedCurvature.add(newobject);
+		}
+
+		Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> Refinedresultpair = new ValuePair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>(
+				resultpair.functionlist, RefinedCurvature);
+		parent.localCurvature = Refinedresultpair.getB();
+		parent.functions.addAll(Refinedresultpair.getA());
+		// Make intersection object here
+
+		Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor.CurvaturetoIntersection(parent,
+				parent.localCurvature, parent.functions, centerpoint, parent.smoothing);
+		Intersectionobject densecurrentobject = currentobjectpair.getA();
+		Intersectionobject sparsecurrentobject = currentobjectpair.getB();
+		
+		return new ValuePair<Intersectionobject, Intersectionobject> (sparsecurrentobject, densecurrentobject);
+	}
 	
 	public void MakeSegments(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int numSeg,
 			int celllabel) {
