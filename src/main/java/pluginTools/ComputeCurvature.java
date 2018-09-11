@@ -300,6 +300,12 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
 	}
 
+	
+	
+	
+	
+	
+	
 	@Override
 	protected void done() {
 
@@ -355,12 +361,10 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 				CurveddenseLineage();
 
-				Pair<HashMap<String, Integer>, HashMap<String, ArrayList<Intersectionobject>>> sortedMappair = GetZTTrackList(
-						parent);
 
-				Pair<HashMap<String, Integer>, HashMap<String, ArrayList<Intersectionobject>>> densesortedMappair = GetZTdenseTrackList(
+				Binobject densesortedMappair = GetZTdenseTrackList(
 						parent);
-				parent.sortedMappair = densesortedMappair.getB();
+				parent.sortedMappair = densesortedMappair.sortedmap;
 				int TimedimensionKymo = parent.AccountedZ.size();
 
 				/*
@@ -381,7 +385,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 				 */
 
 				// For dense plot
-				HashMap<String, Integer> denseidmap = densesortedMappair.getA();
+				HashMap<String, Integer> denseidmap = densesortedMappair.maxid;
 
 				Iterator<Map.Entry<String, Integer>> denseit = denseidmap.entrySet().iterator();
 				while (denseit.hasNext()) {
@@ -392,9 +396,10 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 					int Xkymodimension = mapentry.getValue();
 
 					long[] size = new long[] { TimedimensionKymo, Xkymodimension + 1 };
-					MakeInterKymo(densesortedMappair.getB(), size, id);
+					MakeInterKymo(densesortedMappair.sortedmap, size, id);
 
 				}
+				
 
 			}
 
@@ -973,13 +978,18 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	}
 
-	public static Pair<HashMap<String, Integer>, HashMap<String, ArrayList<Intersectionobject>>> GetZTdenseTrackList(
+	public static Binobject GetZTdenseTrackList(
 			final InteractiveSimpleEllipseFit parent) {
 
 		int maxCurveDim = 0;
 
+		double binwidth = 0;
+		
 		HashMap<String, Integer> maxidcurve = new HashMap<String, Integer>();
 
+		HashMap<String, Double> bincurve = new HashMap<String, Double>();
+		
+		
 		HashMap<String, ArrayList<Intersectionobject>> sortedMap = new HashMap<String, ArrayList<Intersectionobject>>();
 
 		Set<String> TrackIDset = new HashSet<String>();
@@ -1016,22 +1026,25 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 					for (int i = 0; i < currentframeobject.size(); ++i) {
 
 						int size = currentframeobject.get(i).linelist.size();
-
+						binwidth = size;
 						if (size > maxCurveDim)
 							maxCurveDim = size;
 
 					}
+					
 
 				}
 
 				sortedMap.put(TrackID + timeID, currentframeobject);
 				maxidcurve.put(TrackID, maxCurveDim);
-
+                bincurve.put(TrackID, binwidth); 
+				 
 			}
 		}
+		
+		Binobject  binned = new Binobject(maxidcurve, sortedMap, bincurve);
 
-		return new ValuePair<HashMap<String, Integer>, HashMap<String, ArrayList<Intersectionobject>>>(maxidcurve,
-				sortedMap);
+		return binned;
 
 	}
 

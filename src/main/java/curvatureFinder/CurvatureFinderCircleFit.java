@@ -106,104 +106,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 		return true;
 	}
 
-	public Pair<RegressionFunction, ArrayList<double[]>> getLocalcurvature(InteractiveSimpleEllipseFit parent, ArrayList<double[]> Cordlist,
-			RealLocalizable centerpoint) {
-
-		double[] x = new double[Cordlist.size()];
-		double[] y = new double[Cordlist.size()];
-
-		ArrayList<Point> pointlist = new ArrayList<Point>();
-		ArrayList<RealLocalizable> list = new ArrayList<RealLocalizable>();
-		for (int index = 0; index < Cordlist.size() - 1; ++index) {
-			x[index] = Cordlist.get(index)[0];
-			y[index] = Cordlist.get(index)[1];
-
-			RealPoint point = new RealPoint(new double[] { x[index], y[index] });
-			list.add(point);
-			pointlist.add(new Point(new double[] { x[index], y[index] }));
-
-		}
-
-		// Here you choose which method is used to detect curvature
-
-		Pair<RegressionFunction, ArrayList<double[]>> finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, 2);
-
-		
-		
-		
-		
-		
-		return finalfunctionandList;
-
-	}
-
-	public Pair<RegressionFunction, ArrayList<double[]>> RansacEllipseBlock(InteractiveSimpleEllipseFit parent, final ArrayList<RealLocalizable> pointlist,
-			RealLocalizable centerpoint, int ndims) {
-
-		final RansacFunctionEllipsoid ellipsesegment = FitLocalEllipsoid.findLocalEllipsoid(pointlist, ndims);
-
-		double Kappa = 0;
-		double perimeter = 0;
-		ArrayList<double[]> Curvaturepoints = new ArrayList<double[]>();
-
-		ArrayList<double[]> AllCurvaturepoints = new ArrayList<double[]>();
-
-		double radii = ellipsesegment.function.getRadii();
-		double[] newpos = new double[ndims];
-		long[] longnewpos = new long[ndims];
-
-		perimeter = Distance.DistanceSqrt(pointlist.get(0), pointlist.get(pointlist.size() - 1));
-		perimeter = perimeter * parent.calibration;
-		int size = pointlist.size();
-		final double[] pointA = new double[ndims];
-		final double[] pointB = new double[ndims];
-		final double[] pointC = new double[ndims];
-		double meanIntensity = 0;
-		double meanSecIntensity = 0;
-		int splitindex;
-		if (size % 2 == 0)
-			splitindex = size / 2;
-		else
-			splitindex = (size - 1) / 2;
-
-		for (int i = 0; i < ndims; ++i) {
-			pointA[i] = pointlist.get(0).getDoublePosition(i);
-			pointB[i] = pointlist.get(splitindex).getDoublePosition(i);
-			pointC[i] = pointlist.get(size - 1).getDoublePosition(i);
-
-		}
-		for (RealLocalizable point : pointlist) {
-
-			point.localize(newpos);
-
-			Kappa = 1.0 / (radii * parent.calibration);
-			for (int d = 0; d < newpos.length; ++d)
-				longnewpos[d] = (long) newpos[d];
-			net.imglib2.Point intpoint = new net.imglib2.Point(longnewpos);
-
-			long[] centerloc = new long[] { (long) centerpoint.getDoublePosition(0),
-					(long) centerpoint.getDoublePosition(1) };
-			net.imglib2.Point centpos = new net.imglib2.Point(centerloc);
-
-			Pair<Double, Double> Intensity = getIntensity(parent, intpoint, centpos);
-
-			// Average the intensity.
-			meanIntensity += Intensity.getA();
-			meanSecIntensity += Intensity.getB();
-
-			AllCurvaturepoints.add(new double[] { newpos[0], newpos[1], Math.max(0,Kappa), perimeter, Intensity.getA(),
-					Intensity.getB() });
-		}
-
-		meanIntensity /= size;
-		meanSecIntensity /= size;
-		Curvaturepoints.add(
-				new double[] { pointB[0], pointB[1], Math.max(0,Kappa), perimeter, meanIntensity, meanSecIntensity });
-
-		RegressionFunction finalfunctionransac = new RegressionFunction(ellipsesegment.function, Curvaturepoints);
-
-		return new ValuePair<RegressionFunction, ArrayList<double[]>>(finalfunctionransac, AllCurvaturepoints);
-	}
+	
 
 	
 	public void OverSliderLoop(InteractiveSimpleEllipseFit parent, List<RealLocalizable> Ordered,
@@ -243,8 +146,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		}
 
-		Pair<Intersectionobject, Intersectionobject> sparseanddensepair = GetAverage(parent, centerpoint, Bestdelta,
-				count);
+		Pair<Intersectionobject, Intersectionobject> sparseanddensepair = GetAverage(parent, centerpoint, Bestdelta,count);
 		
 		AllCurveintersection.add(sparseanddensepair.getA());
 		AlldenseCurveintersection.add(sparseanddensepair.getB());
@@ -335,6 +237,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 			pointC[i] = pointlist.get(size - 1).getDoublePosition(i);
 
 		}
+		
 		for (RealLocalizable point : pointlist) {
 
 			point.localize(newpos);
@@ -344,21 +247,19 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 				longnewpos[d] = (long) newpos[d];
 			net.imglib2.Point intpoint = new net.imglib2.Point(longnewpos);
 
-			long[] centerloc = new long[] { (long) centerpoint.getDoublePosition(0), (long)centerpoint.getDoublePosition(1) };
+			long[] centerloc = new long[] { (long) centerpoint.getDoublePosition(0),
+					(long) centerpoint.getDoublePosition(1) };
 			net.imglib2.Point centpos = new net.imglib2.Point(centerloc);
-			
-			Pair<Double, Double> Intensity = getIntensity(parent,intpoint, centpos);
+
+			Pair<Double, Double> Intensity = getIntensity(parent, intpoint, centpos);
 
 			// Average the intensity.
 			meanIntensity += Intensity.getA();
 			meanSecIntensity += Intensity.getB();
-			
-			
-			
-			AllCurvaturepoints.add(
-					new double[] { newpos[0], newpos[1], Math.max(0,Kappa), perimeter, Intensity.getA(), Intensity.getB() });
-		}
 
+			AllCurvaturepoints.add(new double[] { newpos[0], newpos[1], Math.max(0,Kappa), perimeter, Intensity.getA(),
+					Intensity.getB() });
+		}
 		meanIntensity /= size;
 		meanSecIntensity /= size;
 		Curvaturepoints.add(

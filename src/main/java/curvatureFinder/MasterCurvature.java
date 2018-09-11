@@ -24,6 +24,7 @@ import pluginTools.RegressionCurveSegment;
 import ransacPoly.RegressionFunction;
 import utility.Curvatureobject;
 import utility.Listordereing;
+import utility.Roiobject;
 
 public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  implements CurvatureFinders<T> {
 	
@@ -179,6 +180,10 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 		return returnSeg;
 
 	}
+	
+
+	
+	
 	
 	public Pair<Intersectionobject, Intersectionobject> GetAverage(InteractiveSimpleEllipseFit parent, RealLocalizable centerpoint, HashMap<Integer, RegressionCurveSegment> Bestdelta, int count){
 		
