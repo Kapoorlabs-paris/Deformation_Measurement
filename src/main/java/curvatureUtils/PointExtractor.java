@@ -50,8 +50,11 @@ public class PointExtractor {
 		t = localCurvature.get(0).t;
 		z = localCurvature.get(0).z;
 		perimeter = localCurvature.get(0).perimeter;
-		
 
+		ArrayList<OvalRoi> resultcurveline = new ArrayList<OvalRoi>();
+		ArrayList<EllipseRoi> ellipsecurveline = new ArrayList<EllipseRoi>();
+		ArrayList<OvalRoi> resultallcurveline = new ArrayList<OvalRoi>();
+		ArrayList<Roi> resultrectangle = new ArrayList<Roi>();
 		for (int i = 0; i < functions.size(); ++i) {
 
 			RegressionFunction regression = functions.get(i);
@@ -93,9 +96,30 @@ public class PointExtractor {
 			}
 			
 
+			if (regression.ellipse != null) {
+
+				EllipseRoi ellipse = DisplayasROI.create2DCircle(regression.ellipse.getCenter(),
+						regression.ellipse.getRadii() * regression.ellipse.getRadii());
+				ellipsecurveline.add(ellipse);
+			
+				double fixedwidth = Math.sqrt(Distance.DistanceSq(regression.ellipse.getStart(), regression.ellipse.getEnd()));
+				Roi rectangle = new Roi((int) (regression.ellipse.getMid()[0] - fixedwidth / 2),
+						(int)(regression.ellipse.getMid()[1] - fixedwidth / 2), (int)fixedwidth ,
+						(int) fixedwidth);
+				
+				resultrectangle.add(rectangle);
 			
 
-	
+			}
+
+			if (regression.inliers != null) {
+				resultcurveline.addAll(DisplayAuto.DisplayInliers(regression.inliers));
+				resultallcurveline.addAll(DisplayAuto.DisplayInliers(regression.candidates));
+			} else {
+
+				resultallcurveline.addAll(DisplayAuto.DisplayPointInliers(regression.Curvaturepoints));
+
+			}
 		
 			
 			for (int index = 0; index < regression.Curvaturepoints.size() ; ++index) {
@@ -131,14 +155,39 @@ public class PointExtractor {
 			linelist.add(new double[] { X[index], Y[index], Z[index], I[index], Isec[index], perimeter });
 
 		}
+		
+		System.out.println(celllabel + " " + parent.background);
+		if(celllabel!=parent.background) {
+		for (int j = 0; j < ellipsecurveline.size(); ++j) {
+			EllipseRoi ellipse = ellipsecurveline.get(j);
+			ellipse.setStrokeColor(parent.colorInChange);
+			parent.overlay.add(ellipse);
+			}
+		
+			
+			for (int j = 0; j < resultrectangle.size(); ++j) {
 
+				Roi rect = resultrectangle.get(j);
+				
+				
+				rect.setStrokeColor(parent.colorLineA);
+
+				
+				parent.overlay.add(rect);
+			
+
+			}
+
+			parent.imp.updateAndDraw();
+		}
 		// Compute the geometric mean of the object, which we would need for tracking
 		double[] mean = new double[] { centerpoint.getDoublePosition(0), centerpoint.getDoublePosition(1) };
 
-		Intersectionobject currentIntersection = new Intersectionobject(mean,linelist, perimeter, celllabel, t, z);
+		Intersectionobject currentIntersection = new Intersectionobject(mean, linelist, resultlineroi, resultcurveline,
+				resultallcurveline, ellipsecurveline, resultrectangle, perimeter, celllabel, t, z);
 		
-		Intersectionobject SparsecurrentIntersection = new Intersectionobject(mean,Sparselinelist,  perimeter, celllabel, t, z);
-		
+		Intersectionobject SparsecurrentIntersection = new Intersectionobject(mean, Sparselinelist, resultlineroi, resultcurveline,
+				resultallcurveline, ellipsecurveline, resultrectangle, perimeter, celllabel, t, z);
 		
 		return new ValuePair<Intersectionobject, Intersectionobject> (currentIntersection , SparsecurrentIntersection);
 

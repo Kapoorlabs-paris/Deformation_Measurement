@@ -121,17 +121,12 @@ public class DisplayAuto {
 			}
 
 			if (parent.curveautomode || parent.curvesupermode) {
-				if(parent.circlefits) {
-				DisplaySelected.mark(parent);
-				DisplaySelected.select(parent);
-				}
 				
-				if(parent.celltrackcirclefits || parent.pixelcelltrackcirclefits) {
+				
 					
 					DisplaySelected.markAll(parent);
 					DisplaySelected.selectAll(parent);
 					
-				}
 			}
 
 		}

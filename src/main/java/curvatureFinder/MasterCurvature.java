@@ -81,13 +81,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 					parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
 		parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension,
 				parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
-		// Make a tree of a certain depth
-
-		int treedepth = parent.depth - 1;
-
-		if (treedepth <= 0)
-			treedepth = 0;
-
+	
 
 		RegressionCurveSegment resultpair = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t);
 
@@ -118,7 +112,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 	 * @param z
 	 * @return
 	 */
-	public RegressionCurveSegment getCurvature(InteractiveSimpleEllipseFit parent,	List<RealLocalizable> truths, RealLocalizable centerpoint,
+	public RegressionCurveSegment getCurvature(InteractiveSimpleEllipseFit parent,List<RealLocalizable> truths, RealLocalizable centerpoint,
 			 int ndims, int Label,  int z, int t) {
 
 		ArrayList<Curvatureobject> curveobject = new ArrayList<Curvatureobject>();
@@ -154,15 +148,11 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 			double IntensityB = localfunction.getB().get(0)[5];
 			double SegPeri = localfunction.getB().get(0)[3];
 
-			Iterator<RealLocalizable> iter = sublist.iterator();
 			ArrayList<double[]> curvelist = new ArrayList<double[]>();
-			while (iter.hasNext()) {
+		
 
-				RealLocalizable current = iter.next();
-
-				curvelist.add(new double[] { current.getDoublePosition(0), current.getDoublePosition(1), Curvature,
+				curvelist.add(new double[] { centerpoint.getDoublePosition(0), centerpoint.getDoublePosition(1), Curvature,
 						IntensityA, IntensityB });
-			}
 
 			Segmentobject cellsegment = new Segmentobject(curvelist, centerpoint, Cord, Curvature, IntensityA,
 					IntensityB, SegPeri, entry.getKey(), Label, z, t);
@@ -184,9 +174,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 		}
 
 		// All nodes are returned
-
-	
-		
 		
 		RegressionCurveSegment returnSeg = new RegressionCurveSegment(totalfunctions, curveobject, Allcellsegment);
 		return returnSeg;
@@ -223,6 +210,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 			CurveXY.add(Z[index]);
 			CurveI.add(I[index]);
 			CurveISec.add(ISec[index]);
+			
 			for (int secindex = 1; secindex < count; ++secindex) {
 
 				RegressionCurveSegment testpair = Bestdelta.get(secindex);
@@ -241,19 +229,22 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 					Xtest[testindex] = testlocalCurvature.get(testindex).cord[0];
 					Ytest[testindex] = testlocalCurvature.get(testindex).cord[1];
 					Ztest[testindex] = testlocalCurvature.get(testindex).radiusCurvature;
-					Itest[index] = testlocalCurvature.get(testindex).Intensity;
-					ISectest[index] = testlocalCurvature.get(testindex).SecIntensity;
+					Itest[testindex] = testlocalCurvature.get(testindex).Intensity;
+					ISectest[testindex] = testlocalCurvature.get(testindex).SecIntensity;
+					
+					
 					if (X[index] == Xtest[testindex] && Y[index] == Ytest[testindex]) {
 
 						CurveXY.add(Ztest[testindex]);
-						CurveI.add(Itest[index]);
-						CurveISec.add(ISectest[index]);
+						CurveI.add(Itest[testindex]);
+						CurveISec.add(ISectest[testindex]);
 
 					}
 
 				}
 
 			}
+			
 			double frequdeltaperi = localCurvature.get(0).perimeter;
 			double frequdelta = Z[index];
 			double intensitydelta = I[index];

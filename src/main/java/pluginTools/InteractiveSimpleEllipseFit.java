@@ -1732,7 +1732,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final Checkbox polymode = new Checkbox("Polynomial Fits", curvaturemode, polynomialfits);
 
 	final Checkbox circlemode = new Checkbox("Track Segment Circle Fits", curvaturemode, circlefits);
-	public final Checkbox distancemode = new Checkbox("Use distance method", curvaturemode, distancemethod);
+	public final Checkbox distancemode = new Checkbox("Use Distance Method", curvaturemode, distancemethod);
 	public final Checkbox Pixelcelltrackcirclemode = new Checkbox("Use Cirlce Fits", curvaturemode,
 			pixelcelltrackcirclefits);
 

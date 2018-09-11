@@ -13,11 +13,13 @@ import org.ojalgo.matrix.store.operation.GenerateApplyAndCopyHouseholderColumn;
 import curvatureUtils.PointExtractor;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
+import ij.gui.EllipseRoi;
 import kalmanForSegments.Segmentobject;
 import mpicbg.models.Point;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
+import net.imglib2.algorithm.ransac.RansacModels.Circle;
 import net.imglib2.algorithm.ransac.RansacModels.FitLocalEllipsoid;
 import net.imglib2.algorithm.ransac.RansacModels.RansacFunctionEllipsoid;
 import net.imglib2.type.NativeType;
@@ -30,7 +32,9 @@ import pluginTools.RegressionCurveSegment;
 import ransacPoly.RegressionFunction;
 import utility.CurvatureFunction;
 import utility.Curvatureobject;
+import utility.DisplayAuto;
 import utility.Listordereing;
+import utility.Roiobject;
 
 public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> extends MasterCurvature<T>
 		implements CurvatureFinders<T> {
@@ -124,6 +128,11 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		Pair<RegressionFunction, ArrayList<double[]>> finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, 2);
 
+		
+		
+		
+		
+		
 		return finalfunctionandList;
 
 	}
@@ -212,7 +221,6 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 		int i = parent.increment;
 		RegressionCurveSegment resultpair = CommonLoop(parent, Ordered, centerpoint, ndims, celllabel, t, z);
 		int maxstride = parent.CellLabelsizemap.get(celllabel);
-
 		// Get the sparse list of points, skips parent.resolution pixel points
 
 		for (int index = 0; index < maxstride; ++index) {
@@ -237,10 +245,11 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		Pair<Intersectionobject, Intersectionobject> sparseanddensepair = GetAverage(parent, centerpoint, Bestdelta,
 				count);
-
+		
 		AllCurveintersection.add(sparseanddensepair.getA());
 		AlldenseCurveintersection.add(sparseanddensepair.getB());
-
+		
+		
 		parent.AlllocalCurvature.add(parent.localCurvature);
 
 	}
@@ -276,11 +285,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		// Here you choose which method is used to detect curvature
 
-		Pair<RegressionFunction, ArrayList<double[]>> finalfunctionandList;
-
-		// Circle fits
-		
-			finalfunctionandList = RansacEllipseBlock(list, centerpoint, 2);
+		Pair<RegressionFunction, ArrayList<double[]>> finalfunctionandList = RansacEllipseBlock(list, centerpoint, 2);
 
 		return finalfunctionandList;
 	}
