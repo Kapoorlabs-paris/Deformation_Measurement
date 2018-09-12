@@ -6,6 +6,25 @@ import net.imglib2.util.Pair;
 
 public class Distance {
 
+	
+	
+	public static double AngularDistance( final double[] pointA, final double[] pointB, final double[] pointmid ) {
+		
+		
+		
+		
+		double radiusA = Math.sqrt(DistanceSq(pointA, pointmid));
+		double radiusB = Math.sqrt(DistanceSq(pointB, pointmid));
+		
+		double meanradius = 0.5 * (radiusA + radiusB);
+		double Eucdistance = Math.sqrt(DistanceSq(pointA, pointB));
+
+		double angulardistance = (Eucdistance / meanradius) * (360 / (2* 3.14));
+		
+		return (angulardistance);
+	}
+	
+	
 	/**
 	 * Retruns the squared distance between two double[]'S
 	 * 
@@ -112,40 +131,14 @@ public class Distance {
 		
 		final double[] vB = new double[] { pointB[0] - midpoint[0], pointB[1] - midpoint[1]  };
 		
-		if(vA[0] > 0 && vB[0] > 0) {
-		double slopeA = vA[1] / (vA[0]);
-		double slopeB = vB[1] / (vB[0]);
+		double slopeA = vA[1] / (vA[0]+ 1.0e-10);
+		double slopeB = vB[1] / (vB[0]+ 1.0e-10);
 	    double argument = (slopeA - slopeB ) / (1 + slopeA * slopeB);
 		
 			return argument;
-		}
-		
-		else return 0;
 	}
 	
-     public static double AngleVectors(final Pair<String, Segmentobject> pointA, final Pair<String, Segmentobject> pointB) {
-		
-		double[] pointAA = new double[pointA.getB().centralpoint.numDimensions()];
-		double[] pointBB = new double[pointB.getB().centralpoint.numDimensions()];
-		double[] pointmid = new double[pointA.getB().Cellcentralpoint.numDimensions()];
-		pointA.getB().centralpoint.localize(pointAA);
-		pointB.getB().centralpoint.localize(pointBB);
-		pointA.getB().Cellcentralpoint.localize(pointmid);
-		
-		final double[] vA = new double[] { pointAA[0] - pointmid[0], pointAA[1] - pointmid[1]  };
-		
-		final double[] vB = new double[] { pointBB[0] - pointmid[0], pointBB[1] - pointmid[1]  };
-		if(vA[0] > 0 && vB[0] > 0) {
-		double slopeA = vA[1] / (vA[0] );
-		double slopeB = vB[1] / (vB[0] );
-	    double argument = (slopeA - slopeB ) / (1 + slopeA * slopeB);
-		
-			return argument;
-}
-		
-		else return 0;
-	}
-     
+
  
    
      
