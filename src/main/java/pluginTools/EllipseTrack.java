@@ -78,7 +78,6 @@ public class EllipseTrack {
 	
 		
            RandomAccessibleInterval<IntType> expanededtotalimg = ExpandBorder.extendBorder(parent, CurrentViewInt, currentLabel);
-           ImageJFunctions.show(expanededtotalimg);
 		//RandomAccessibleInterval<BitType> CurrentViewthin = getThin(CurrentView);
 		GetPixelList(expanededtotalimg);
 		Computeinwater compute = new Computeinwater(parent, CurrentView, expanededtotalimg, t, z, (int) percent);
