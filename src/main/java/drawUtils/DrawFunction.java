@@ -2,6 +2,8 @@ package drawUtils;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import com.itextpdf.awt.geom.Rectangle;
 
@@ -12,9 +14,11 @@ import ij.gui.Overlay;
 import landmarks.RegistrationResult;
 import net.imglib2.Cursor;
 import net.imglib2.FinalInterval;
+import net.imglib2.Localizable;
 import net.imglib2.Point;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.algorithm.region.BresenhamLine;
 import net.imglib2.algorithm.region.hypersphere.HyperSphere;
@@ -23,6 +27,7 @@ import net.imglib2.util.Intervals;
 import net.imglib2.view.Views;
 import ransacPoly.RegressionFunction;
 import net.imglib2.roi.geom.GeomMasks;
+import net.imglib2.roi.geom.GeomMaths;
 import net.imglib2.roi.geom.real.Line;
 
 public class DrawFunction {
@@ -167,7 +172,45 @@ public class DrawFunction {
 
 	}
 	
+	/**
+	 * 
+	 * Line Drawing on a Random AccesibleInterval using GeomBresn
+	 * 
+	 * @param originalimg
+	 * @param startpoint
+	 * @param endpoint
+	 * @param Intensity
+	 */
+	public static <T extends RealType<T>> void DrawGeomBresnLines(final RandomAccessibleInterval<T> originalimg,
+			final double[] startpoint, final double[] endpoint, final double Intensity) {
 
+
+		RealPoint pointA = new RealPoint(startpoint);
+		RealPoint pointB = new RealPoint(endpoint);
+
+		RandomAccess<T> regionranac = originalimg.randomAccess();
+		List<RealLocalizable> vertexlist = new ArrayList<RealLocalizable>();
+		vertexlist.add(pointA);
+		vertexlist.add(pointB);
+		vertexlist.add(pointA);
+		
+		List<Localizable> pointlist = GeomMaths.bresenham(vertexlist);
+		
+		Iterator<Localizable> pointiter = pointlist.iterator();
+		
+		while(pointiter.hasNext()) {
+			
+			Localizable currentpoint = pointiter.next();
+			
+			regionranac.setPosition(currentpoint);
+			regionranac.get().setReal(Intensity);
+			
+		}
+		
+		
+		
+
+	}
 	
 
 }

@@ -212,8 +212,10 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 					for (int i = 0; i < sortedlinelist.size() ; i+= 5) {
 
 					
-						DrawFunction.DrawBrensLines(CurrentBlank, new long[] {(long)centerpoint[0],  (long)centerpoint[1]}, new long[] {(long)sortedlinelist.get(i)[0],  (long)sortedlinelist.get(i)[1]}  ,sortedlinelist.get(i)[2] / maxdist);
+						//DrawFunction.DrawBrensLines(CurrentBlank, new long[] {(long)centerpoint[0],  (long)centerpoint[1]}, new long[] {(long)sortedlinelist.get(i)[0],  (long)sortedlinelist.get(i)[1]}  ,sortedlinelist.get(i)[2] / maxdist);
 						
+						DrawFunction.DrawGeomBresnLines(CurrentBlank, new double[] {centerpoint[0],  centerpoint[1]}, new double[] {sortedlinelist.get(i)[0],  sortedlinelist.get(i)[1]}  ,sortedlinelist.get(i)[2] / maxdist);
+
 					}
 
 				}
