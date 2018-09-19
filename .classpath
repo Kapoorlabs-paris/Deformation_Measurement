@@ -35,5 +35,6 @@
 	<classpathentry exported="true" kind="lib" path="/Users/aimachine/Downloads/java3d-1_5_1-macosx/jzy3d/jzy3d-swt-0.9.1.jar"/>
 	<classpathentry exported="true" kind="src" path="/PolynomialRansac"/>
 	<classpathentry exported="true" kind="src" path="/MasterPanels"/>
+	<classpathentry kind="src" path="/imglib2-roi"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

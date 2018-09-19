@@ -34,6 +34,7 @@ import com.google.common.math.Quantiles.Scale;
 
 import costMatrix.PixelratiowDistCostFunction;
 import curvatureUtils.DisplaySelected;
+import drawUtils.DrawFunction;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import ellipsoidDetector.KymoSaveobject;
@@ -133,7 +134,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			int time = entry.getValue();
 
 			String timeID = entry.getKey();
-
+		
 			ArrayList<Segmentobject> currentlist = sortedMappair.get(TrackID + timeID);
 
 			ranac.setPosition(time, 0);
@@ -184,47 +185,42 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 
-		ImagePlus Bigimp = ImageJFunctions.show(parent.originalimg);
+		RandomAccessibleInterval<FloatType> Blank = new ArrayImgFactory<FloatType>().create(parent.originalimg, new FloatType());
 
-		Overlay o = Bigimp.getOverlay();
-
-		if (Bigimp.getOverlay() == null) {
-			o = new Overlay();
-			Bigimp.setOverlay(o);
-		}
-
-		
 
 		while (itZ.hasNext()) {
-			o.clear();
-			Bigimp.getOverlay().clear();
+			
+			
 			Map.Entry<String, Integer> entry = itZ.next();
-
+			int time = entry.getValue();
 			String timeID = entry.getKey();
-
+			
+			
+			RandomAccessibleInterval<FloatType> CurrentBlank = utility.Slicer.getCurrentView(Blank, time, parent.thirdDimensionSize, parent.fourthDimension,
+					parent.fourthDimensionSize);
+			
 			ArrayList<Intersectionobject> currentlist = sortedMappair.get(TrackID + timeID);
 
 			if (currentlist != null) {
+				double[] centerpoint = currentlist.get(0).Intersectionpoint;
 				for (Intersectionobject currentobject : currentlist) {
 
 					ArrayList<double[]> sortedlinelist = currentobject.linelist;
 					double maxdist = GetMaxdist(sortedlinelist, TrackID);
-					double[] centerpoint = currentobject.Intersectionpoint;
+					
 
-					for (int i = 0; i < sortedlinelist.size(); ++i) {
+					for (int i = 0; i < sortedlinelist.size() ; i+= 5) {
 
-						Line currentline = new Line(centerpoint[0], centerpoint[1], sortedlinelist.get(i)[0],
-								sortedlinelist.get(i)[1]);
-						currentline.setStrokeWidth(sortedlinelist.get(i)[2]/maxdist);
-
-						o.add(currentline);
+					
+						DrawFunction.DrawBrensLines(CurrentBlank, new long[] {(long)centerpoint[0],  (long)centerpoint[1]}, new long[] {(long)sortedlinelist.get(i)[0],  (long)sortedlinelist.get(i)[1]}  ,sortedlinelist.get(i)[2] / maxdist);
+						
 					}
 
 				}
 			}
-			Bigimp.updateAndDraw();
+			
 		}
-		
+		 ImageJFunctions.show(Blank);
 	
 
 	}
