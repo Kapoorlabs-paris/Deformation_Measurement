@@ -131,7 +131,11 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 
 		double perimeter = 0;
 
-
+		if (parent.fourthDimensionSize > 1)
+			parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension,
+					parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
+		parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension,
+				parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
 		MakeSegments(parent, truths, parent.minNumInliers, celllabel);
 		// Now do the fitting
 		ArrayList<Segmentobject> Allcellsegment = new ArrayList<Segmentobject>();

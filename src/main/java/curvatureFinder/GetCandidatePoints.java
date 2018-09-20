@@ -35,13 +35,12 @@ public class GetCandidatePoints {
 		
 		
 		List<RealLocalizable> truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
-		int boxsize = (int) ((truths.size() / parent.minNumInliers ) * parent.calibration);
-		if(parent.thirdDimension == parent.AutostartTime ) 
+		double boxsize = (int) ((truths.size() / parent.minNumInliers ) * parent.calibration);
 			
 	//	IJ.log("Box size for curvature calculation = " + (int) ((truths.size() / parent.minNumInliers ) * parent.calibration) + " " + " um " );
 		
 		
-		parent.SpecialminInlierField.setText("Box Size = " + " " + Integer.toString(Math.round(boxsize)) + " " + "um");
+		parent.SpecialminInlierField.setText("Box Size = " + " " + Double.toString(boxsize) + " " + "um");
 		parent.SpecialminInlierField.repaint();
 		parent.SpecialminInlierField.validate();
 		return truths;
