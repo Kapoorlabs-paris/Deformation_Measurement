@@ -45,6 +45,7 @@ import ij.ImageStack;
 import ij.gui.Line;
 import ij.gui.Overlay;
 import ij.measure.Calibration;
+import imageAxis.AxisRendering;
 import kalmanForSegments.Segmentobject;
 import kalmanForSegments.TrackSegmentModel;
 import kalmanTracker.ETrackCostFunction;
@@ -221,8 +222,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			}
 			
 		}
-		 ImageJFunctions.show(Blank);
-	
+		 ImagePlus imp = ImageJFunctions.show(Blank);
+		 AxisRendering.Reshape(imp);
 
 	}
 	

@@ -55,6 +55,8 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
+import org.scijava.plugin.Parameter;
+import org.scijava.ui.UIService;
 
 import batchMode.SaveBatchListener;
 import comboSliderTextbox.SliderBoxGUI;
@@ -169,6 +171,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	/**
 	 * 
 	 */
+	
+	@Parameter
+    public UIService uiService;
 	private static final long serialVersionUID = 1L;
 	public String usefolder = IJ.getDirectory("imagej");
 	public String addToName = "EllipseFits";

@@ -16,6 +16,7 @@ import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.Overlay;
+import imageAxis.AxisRendering;
 import kalmanForSegments.Segmentobject;
 import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
@@ -53,41 +54,11 @@ public class ParallelResultDisplay {
 		this.currentresultCurv = currentresultCurv;
 		probImg = new ArrayImgFactory<FloatType>().create( parent.originalimgbefore, new FloatType() );
 	
-		//SliceObserver sliceObserver = new SliceObserver( imp, new ImagePlusListener() );
+		this.imp = ImageJFunctions.show(probImg);
+		//SliceObserver sliceObserver = new SliceObserver( this.imp, new ImagePlusListener() );
 	}
 	
-	/**
-    * Generic, type-agnostic method to create an identical copy of an Img
-    *
-    * @param input - the Img to copy
-    * @return - the copy of the Img
-    */
-   public Img<FloatType> copyImage( final RandomAccessibleInterval< FloatType > input )
-   {
-       // create a new Image with the same properties
-       // note that the input provides the size for the new image as it implements
-       // the Interval interface
-       Img< FloatType > output = new ArrayImgFactory<FloatType>().create( input, new FloatType() );
 
-       // create a cursor for both images
-       Cursor< FloatType> cursorInput = Views.iterable(input).cursor();
-       Cursor< FloatType > cursorOutput = output.cursor();
-
-       // iterate over the input
-       while ( cursorInput.hasNext())
-       {
-           // move both cursors forward by one pixel
-           cursorInput.fwd();
-           cursorOutput.fwd();
-
-           // set the value of this pixel of the output image to the same as the input,
-           // every Type supports T.set( T type )
-           cursorOutput.get().set( cursorInput.get() );
-       }
-
-       // return the copy
-       return output;
-   }
 	public ImagePlus getImp() { return this.imp; } 
 	
 	
@@ -98,7 +69,7 @@ public class ParallelResultDisplay {
 		public void sliceChanged(ImagePlus arg0)
 		{
 			
-			IJ.log("Rendering curvature image, Click on the slice panel and be patient");
+			
 			imp.show();
 			Overlay o = imp.getOverlay();
 			
@@ -158,8 +129,9 @@ public class ParallelResultDisplay {
 			
 			
 			imp.updateAndDraw();
-			IJ.run("Fire");
 			
+			IJ.run("Fire");
+			IJ.log(" Told you it would work! ");
 		}
 		
 		
@@ -207,23 +179,45 @@ public class ParallelResultDisplay {
 				cursor.get().setReal(0 + lambda * (2 * maxCurvature - 0));
 
 		}
-		AxisType[] axisTypes = new AxisType[] { Axes.X, Axes.Y, Axes.TIME };
-
-		ImgPlus<FloatType> newimp = new ImgPlus<FloatType>(probImg, "Curvature Display", axisTypes);
-
-
-		ImgPlus<FloatType> img = new ImgPlus<FloatType>(ImgView.wrap(newimp.getImg(), new ArrayImgFactory<FloatType>()),
-				"Curvature Display", axisTypes);
-
-
-        ImagePlus imp = ImageJFunctions.show(img.getImg());
-        imp.setDimensions(imp.getNFrames(), imp.getNSlices(), imp.getNChannels());
+	    
+		AxisRendering.Reshape(imp);
 		IJ.run("Fire");
 
 	}
 	
 	
-	
+	/**
+	    * Generic, type-agnostic method to create an identical copy of an Img
+	    *
+	    * @param input - the Img to copy
+	    * @return - the copy of the Img
+	    */
+	   public Img<FloatType> copyImage( final RandomAccessibleInterval< FloatType > input )
+	   {
+	       // create a new Image with the same properties
+	       // note that the input provides the size for the new image as it implements
+	       // the Interval interface
+	       Img< FloatType > output = new ArrayImgFactory<FloatType>().create( input, new FloatType() );
+
+	       // create a cursor for both images
+	       Cursor< FloatType> cursorInput = Views.iterable(input).cursor();
+	       Cursor< FloatType > cursorOutput = output.cursor();
+
+	       // iterate over the input
+	       while ( cursorInput.hasNext())
+	       {
+	           // move both cursors forward by one pixel
+	           cursorInput.fwd();
+	           cursorOutput.fwd();
+
+	           // set the value of this pixel of the output image to the same as the input,
+	           // every Type supports T.set( T type )
+	           cursorOutput.get().set( cursorInput.get() );
+	       }
+
+	       // return the copy
+	       return output;
+	   }
 	
 	
 	

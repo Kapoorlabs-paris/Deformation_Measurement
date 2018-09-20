@@ -61,6 +61,7 @@ public class DisplaySelected {
 
 				if (SwingUtilities.isLeftMouseButton(e) && e.isShiftDown()) {
 					
+					
 					CurvatureTableDisplay.displayclicked(parent, parent.rowchoice);
 
 //					if (!parent.jFreeChartFrame.isVisible())

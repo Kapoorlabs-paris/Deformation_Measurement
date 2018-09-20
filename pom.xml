@@ -107,8 +107,8 @@
 
 	<dependency>
   <groupId>net.imagej</groupId>
-  <artifactId>ij</artifactId>
-  <version>1.51s</version>
+  <artifactId>imagej</artifactId>
+  
 </dependency>
 		
 		<dependency>
