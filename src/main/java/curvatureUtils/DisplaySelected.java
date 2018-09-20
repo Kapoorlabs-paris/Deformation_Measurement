@@ -128,6 +128,7 @@ public class DisplaySelected {
 								&& parent.thirdDimension == (int) dCordZ && parent.ndims > 3) {
 
 							parent.rowchoice = row;
+							parent.row = row;
 							distmin = dist;
 
 						}
@@ -135,6 +136,7 @@ public class DisplaySelected {
 								&& parent.ndims <= 3) {
 
 							parent.rowchoice = row;
+							parent.row = row;
 							distmin = dist;
 
 						}
