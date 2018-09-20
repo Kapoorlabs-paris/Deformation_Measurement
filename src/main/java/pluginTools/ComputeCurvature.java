@@ -363,10 +363,12 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		parent.table.removeAll();
 
 		
-		IJ.log(" Calculation is Complete, do a Shif + Left click near the Cell of your choice to display " + "\n "
-				   + " Kymographs for Curvature, Intensity " + " \n" + 
-				 "  RMS value which moves with the time slider to fit on the current view of the cell " + " \n" +
-				 " Curvature value display as lines connecting the center to the boundary of the cell over time");
+		IJ.log( "\n " +
+		"Calculation is Complete " +  "\n " +
+				      "do a Shift + Left click near the Cell of your choice to display " + "\n "
+				   + "Kymographs for Curvature, Intensity " + " \n" + 
+				     "RMS value which moves with the time slider to fit on the current view of the cell " + " \n" +
+				     "Curvature value display as lines connecting the center to the boundary of the cell over time");
 		
 		TrackingFunctions track = new TrackingFunctions(parent);
 		if (parent.ndims > 3) {

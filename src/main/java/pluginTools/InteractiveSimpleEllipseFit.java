@@ -98,6 +98,7 @@ import listeners.DegreeListener;
 import listeners.DeltasepListener;
 import listeners.DisplayBoxListener;
 import listeners.DisplayListener;
+import listeners.DisplayVisualListener;
 import listeners.DoSmoothingListener;
 import listeners.DrawListener;
 import listeners.ETrackFilenameListener;
@@ -1613,7 +1614,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JCheckBox IlastikAuto = new JCheckBox("Show Watershed Image", showWater);
 
 	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField, gaussfield, numsegField,
-			cutoffField, minInlierField, degreeField, secdegreeField, resolutionField;
+			cutoffField, minInlierField, SpecialminInlierField, degreeField, secdegreeField, resolutionField;
 
 	public TextField inputFieldZ, startT, endT, maxSizeField, minSizeField;
 	public TextField inputFieldmaxtry, interiorfield, exteriorfield;
@@ -1634,6 +1635,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JButton DisplayRoibutton = new JButton("Display roi selection");
 	public JButton Anglebutton = new JButton("Fit Ellipses and track angles");
 	public JButton Curvaturebutton = new JButton("Measure Local Curvature");
+	public JButton Displaybutton = new JButton("Display Visuals (time)");
 	public JButton CurrentCurvaturebutton = new JButton("Measure Current Curvature");
 	public JButton Savebutton = new JButton("Save Track");
 	public JButton Batchbutton = new JButton("Save Parameters for batch mode and exit");
@@ -1818,6 +1820,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		minInlierField = new TextField(textwidth);
 		minInlierField.setText(Integer.toString(minNumInliers));
 
+		SpecialminInlierField = new TextField(textwidth);
+		SpecialminInlierField.setText(Integer.toString(minNumInliers));
+		
 		inputtrackField = new TextField(textwidth);
 
 		inputFieldIter = new TextField(textwidth);
@@ -2115,6 +2120,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 				Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 8, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
+				Angleselect.add(SpecialminInlierField, new GridBagConstraints(3, 3, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
+				Angleselect.add(Displaybutton, new GridBagConstraints(3, 8, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 				Angleselect.setBorder(circletools);
 				panelFirst.add(Angleselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.CENTER,
@@ -2340,6 +2351,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		displaySegments.addItemListener(new DisplayBoxListener(this));
 		CurrentCurvaturebutton.addActionListener(new CurrentCurvatureListener(this));
 		Curvaturebutton.addActionListener(new CurvatureListener(this));
+		Displaybutton.addActionListener(new DisplayVisualListener(this));
 		Anglebutton.addActionListener(new AngleListener(this));
 		startT.addTextListener(new AutoStartListener(this));
 		endT.addTextListener(new AutoEndListener(this));

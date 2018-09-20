@@ -26,8 +26,8 @@ import utility.Curvatureobject;
 import utility.Listordereing;
 import utility.Roiobject;
 
-public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  implements CurvatureFinders<T> {
-	
+public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> implements CurvatureFinders<T> {
+
 	/**
 	 * 
 	 * Function to fit on a list of points which are not tree based
@@ -61,15 +61,14 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 		return resultcurvature;
 
 	}
-	
-	public RegressionCurveSegment CommonLoop(InteractiveSimpleEllipseFit parent,	 List<RealLocalizable> Ordered, 
+
+	public RegressionCurveSegment CommonLoop(InteractiveSimpleEllipseFit parent, List<RealLocalizable> Ordered,
 			RealLocalizable centerpoint, int ndims, int celllabel, int t, int z) {
 
 		// Get the sparse list of points
 		HashMap<Integer, RegressionCurveSegment> Bestdelta = new HashMap<Integer, RegressionCurveSegment>();
 
 		int count = 0;
-	
 
 		int i = parent.increment;
 
@@ -82,7 +81,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 					parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
 		parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension,
 				parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
-	
 
 		RegressionCurveSegment resultpair = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t);
 
@@ -99,7 +97,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 		return resultpair;
 
 	}
-	
+
 	/**
 	 * 
 	 * Take in a list of ordered co-ordinates and compute a curvature object
@@ -113,8 +111,8 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 	 * @param z
 	 * @return
 	 */
-	public RegressionCurveSegment getCurvature(InteractiveSimpleEllipseFit parent,List<RealLocalizable> truths, RealLocalizable centerpoint,
-			 int ndims, int Label,  int z, int t) {
+	public RegressionCurveSegment getCurvature(InteractiveSimpleEllipseFit parent, List<RealLocalizable> truths,
+			RealLocalizable centerpoint, int ndims, int Label, int z, int t) {
 
 		ArrayList<Curvatureobject> curveobject = new ArrayList<Curvatureobject>();
 
@@ -124,13 +122,11 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 
 		double perimeter = 0;
 
-
 		MakeSegments(parent, truths, parent.minNumInliers, Label);
 		// Now do the fitting
 		ArrayList<Segmentobject> Allcellsegment = new ArrayList<Segmentobject>();
 		for (Map.Entry<Integer, List<RealLocalizable>> entry : parent.Listmap.entrySet()) {
-			
-			
+
 			List<RealLocalizable> sublist = entry.getValue();
 			/***
 			 * 
@@ -150,10 +146,9 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 			double SegPeri = localfunction.getB().get(0)[3];
 
 			ArrayList<double[]> curvelist = new ArrayList<double[]>();
-		
 
-				curvelist.add(new double[] { centerpoint.getDoublePosition(0), centerpoint.getDoublePosition(1), Curvature,
-						IntensityA, IntensityB });
+			curvelist.add(new double[] { centerpoint.getDoublePosition(0), centerpoint.getDoublePosition(1), Curvature,
+					IntensityA, IntensityB });
 
 			Segmentobject cellsegment = new Segmentobject(curvelist, centerpoint, Cord, Curvature, IntensityA,
 					IntensityB, SegPeri, entry.getKey(), Label, z, t);
@@ -175,18 +170,15 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 		}
 
 		// All nodes are returned
-		
+
 		RegressionCurveSegment returnSeg = new RegressionCurveSegment(totalfunctions, curveobject, Allcellsegment);
 		return returnSeg;
 
 	}
-	
 
-	
-	
-	
-	public Pair<Intersectionobject, Intersectionobject> GetAverage(InteractiveSimpleEllipseFit parent, RealLocalizable centerpoint, HashMap<Integer, RegressionCurveSegment> Bestdelta, int count){
-		
+	public Pair<Intersectionobject, Intersectionobject> GetAverage(InteractiveSimpleEllipseFit parent,
+			RealLocalizable centerpoint, HashMap<Integer, RegressionCurveSegment> Bestdelta, int count) {
+
 		RegressionCurveSegment resultpair = Bestdelta.get(0);
 		ArrayList<Curvatureobject> RefinedCurvature = new ArrayList<Curvatureobject>();
 		ArrayList<Curvatureobject> localCurvature = resultpair.Curvelist;
@@ -215,7 +207,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 			CurveXY.add(Z[index]);
 			CurveI.add(I[index]);
 			CurveISec.add(ISec[index]);
-			
+
 			for (int secindex = 1; secindex < count; ++secindex) {
 
 				RegressionCurveSegment testpair = Bestdelta.get(secindex);
@@ -236,8 +228,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 					Ztest[testindex] = testlocalCurvature.get(testindex).radiusCurvature;
 					Itest[testindex] = testlocalCurvature.get(testindex).Intensity;
 					ISectest[testindex] = testlocalCurvature.get(testindex).SecIntensity;
-					
-					
+
 					if (X[index] == Xtest[testindex] && Y[index] == Ytest[testindex]) {
 
 						CurveXY.add(Ztest[testindex]);
@@ -249,7 +240,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 				}
 
 			}
-			
+
 			double frequdeltaperi = localCurvature.get(0).perimeter;
 			double frequdelta = Z[index];
 			double intensitydelta = I[index];
@@ -315,58 +306,57 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 				parent.localCurvature, parent.functions, centerpoint, parent.smoothing);
 		Intersectionobject densecurrentobject = currentobjectpair.getA();
 		Intersectionobject sparsecurrentobject = currentobjectpair.getB();
-		
-		return new ValuePair<Intersectionobject, Intersectionobject> (sparsecurrentobject, densecurrentobject);
+
+		return new ValuePair<Intersectionobject, Intersectionobject>(sparsecurrentobject, densecurrentobject);
 	}
-	
+
 	public void MakeSegments(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int numSeg,
 			int celllabel) {
 
-		if(truths.size() < 3)
+		if (truths.size() < 3)
 			return;
 		else {
-		int size = truths.size();
+			int size = truths.size();
 
-		
-		int maxpoints = Math.round(size / numSeg);
-		if (maxpoints <= 2)
-			maxpoints = 3;
-       int biggestsize = maxpoints;		
-		int segmentLabel = 1;
+			int maxpoints = size / numSeg;
+			if (maxpoints <= 2)
+				maxpoints = 3;
+			int biggestsize = maxpoints;
+			int segmentLabel = 1;
 
-		List<RealLocalizable> sublist = new ArrayList<RealLocalizable>();
+			List<RealLocalizable> sublist = new ArrayList<RealLocalizable>();
 
-		for (int i = 0; i <= size ; i += maxpoints) {
+			int startindex = 0;
+			int endindex = startindex + maxpoints;
 
-			int endindex = i + maxpoints;
+			while (true) {
 
-			
-			if(endindex  >= size)
-				endindex = size;
-			
-			if(endindex >= size - 2)
-			
-				endindex = size ;
 				
-			if(endindex - i > 2) {
-			
-			sublist = truths.subList(i, endindex);
-			parent.Listmap.put(segmentLabel, sublist);
-			
-			
-				biggestsize = endindex;
-			
-			
-			parent.CellLabelsizemap.put(celllabel, biggestsize);
-			segmentLabel++;
+				
+				if(size - endindex  < 2 * maxpoints)
+					endindex = size;
+				
+				sublist = truths.subList(startindex, Math.min(endindex, size));
+				parent.Listmap.put(segmentLabel, sublist);
+
+				if (biggestsize >= endindex - startindex)
+					biggestsize = endindex - startindex;
+
+				parent.CellLabelsizemap.put(celllabel, biggestsize);
+				segmentLabel++;
+
+				startindex = endindex;
+				endindex = startindex + maxpoints;
+
+				if (endindex >= size)
+					break;
+
 			}
-			
-		}
-			
+
 		}
 
 	}
-	
+
 	/**
 	 * Obtain intensity in the user defined
 	 * 
@@ -374,7 +364,8 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 	 * @return
 	 */
 
-	public Pair<Double, Double> getIntensity(InteractiveSimpleEllipseFit parent, Localizable point, Localizable centerpoint) {
+	public Pair<Double, Double> getIntensity(InteractiveSimpleEllipseFit parent, Localizable point,
+			Localizable centerpoint) {
 
 		RandomAccess<FloatType> ranac = parent.CurrentViewOrig.randomAccess();
 
@@ -390,64 +381,62 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 		ranacsec.setPosition(ranac);
 		double mindistance = getDistance(point, centerpoint);
 		double[] currentPosition = new double[point.numDimensions()];
-		
-		 HyperSphere< FloatType > hyperSphere = new HyperSphere<FloatType>( parent.CurrentViewOrig, ranac, (int)parent.insidedistance );
+
+		HyperSphere<FloatType> hyperSphere = new HyperSphere<FloatType>(parent.CurrentViewOrig, ranac,
+				(int) parent.insidedistance);
 		HyperSphereCursor<FloatType> localcursor = hyperSphere.localizingCursor();
 		int Area = 1;
-		while(localcursor.hasNext()) {
-			
+		while (localcursor.hasNext()) {
+
 			localcursor.fwd();
-			
+
 			ranacsec.setPosition(localcursor);
-			
+
 			ranacsec.localize(currentPosition);
-			
-			
+
 			double currentdistance = getDistance(localcursor, centerpoint);
 			if ((currentdistance - mindistance) <= parent.insidedistance) {
-			Intensity += localcursor.get().getRealDouble();
-			IntensitySec += ranacsec.get().getRealDouble();
-			Area++;
+				Intensity += localcursor.get().getRealDouble();
+				IntensitySec += ranacsec.get().getRealDouble();
+				Area++;
 			}
 		}
-	
-		
-			return new ValuePair<Double, Double>(Intensity/ Area, IntensitySec/Area);
-		}
-	
-	
-      public double getDistance(Localizable point, Localizable centerpoint) {
-		
-		double distance = 0;
-		
-		int ndims = point.numDimensions();
-		
-		
-		for (int i = 0; i < ndims; ++i) {
-			
-			distance+= (point.getDoublePosition(i) - centerpoint.getDoublePosition(i)) * (point.getDoublePosition(i) - centerpoint.getDoublePosition(i)) ;
-			
-		}
-		
-		return Math.sqrt(distance);
-		
+
+		return new ValuePair<Double, Double>(Intensity / Area, IntensitySec / Area);
 	}
-      public double getDistance(RealLocalizable point, RealLocalizable centerpoint) {
-  		
-  		double distance = 0;
-  		
-  		int ndims = point.numDimensions();
-  		
-  		
-  		for (int i = 0; i < ndims; ++i) {
-  			
-  			distance+= (point.getDoublePosition(i) - centerpoint.getDoublePosition(i)) * (point.getDoublePosition(i) - centerpoint.getDoublePosition(i)) ;
-  			
-  		}
-  		
-  		return Math.sqrt(distance);
-  		
-  	}
-  	
+
+	public double getDistance(Localizable point, Localizable centerpoint) {
+
+		double distance = 0;
+
+		int ndims = point.numDimensions();
+
+		for (int i = 0; i < ndims; ++i) {
+
+			distance += (point.getDoublePosition(i) - centerpoint.getDoublePosition(i))
+					* (point.getDoublePosition(i) - centerpoint.getDoublePosition(i));
+
+		}
+
+		return Math.sqrt(distance);
+
+	}
+
+	public double getDistance(RealLocalizable point, RealLocalizable centerpoint) {
+
+		double distance = 0;
+
+		int ndims = point.numDimensions();
+
+		for (int i = 0; i < ndims; ++i) {
+
+			distance += (point.getDoublePosition(i) - centerpoint.getDoublePosition(i))
+					* (point.getDoublePosition(i) - centerpoint.getDoublePosition(i));
+
+		}
+
+		return Math.sqrt(distance);
+
+	}
 
 }

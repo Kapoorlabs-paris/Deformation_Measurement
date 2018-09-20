@@ -27,6 +27,7 @@ public class MinInlierLocListener implements TextListener {
 
 	}
 
+
 	@Override
 	public void textValueChanged(TextEvent e) {
 		final TextComponent tc = (TextComponent) e.getSource();
@@ -75,3 +76,5 @@ public class MinInlierLocListener implements TextListener {
 	}
 
 }
+
+

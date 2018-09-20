@@ -48,7 +48,7 @@ public class CurvatureTableDisplay {
 		parent.row = trackindex;
 		String ID = (String) parent.table.getValueAt(trackindex, 0);
 		ArrayList<Pair<String, double[]>> currentresultPeri = new ArrayList<Pair<String, double[]>>();
-		ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>> currentresultCurv = new ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>>();
+		
 
 		for (Pair<String, double[]> currentperi : parent.resultAngle) {
 
@@ -81,21 +81,6 @@ public class CurvatureTableDisplay {
 
 			long[] size = new long[] { TimedimensionKymo, Xkymodimension + 1 };
 			ComputeCurvature.MakeInterKymo(parent, densesortedMappair.sortedmap, size, ID);
-			ComputeCurvature.MakeDistanceFan(parent, densesortedMappair.sortedmap, ID);
-		
-
-		
-		for (Pair<String, Pair<Integer, ArrayList<double[]>>> currentCurvature : parent.resultCurvature) {
-
-			if (ID.equals(currentCurvature.getA())) {
-
-				currentresultCurv.add(currentCurvature);
-
-			}
-
-		}
-		ParallelResultDisplay display = new ParallelResultDisplay(parent, currentresultCurv);
-		display.ResultDisplayCircleFit();
 
 
 
