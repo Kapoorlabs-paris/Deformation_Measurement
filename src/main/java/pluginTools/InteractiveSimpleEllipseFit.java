@@ -1249,7 +1249,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			if (Tracklist.size() > 0 && (curveautomode || curvesupermode)) {
 
 				ComputeCurvature current = new ComputeCurvature(this, null);
-
 				current.CurvedLineage();
 
 			}

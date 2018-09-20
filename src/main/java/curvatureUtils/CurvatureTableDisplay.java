@@ -32,6 +32,8 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
+import pluginTools.Binobject;
+import pluginTools.ComputeCurvature;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.ChartMaker;
@@ -64,11 +66,24 @@ public class CurvatureTableDisplay {
 			parent.imp.setOverlay(parent.overlay);
 			parent.imp.updateAndDraw();
 		}
+		Binobject densesortedMappair = ComputeCurvature.GetZTdenseTrackList(parent);
+		parent.sortedMappair = densesortedMappair.sortedmap;
+		int TimedimensionKymo = parent.AccountedZ.size();
 
-//		parent.contdataset.removeAllSeries();
-//		parent.contdataset.addSeries(ChartMaker.drawCurvePoints(currentresultPeri));
+	
 
-	//	parent.chart = utility.ChartMaker.makeChart(parent.contdataset, "Perimeter Evolution", "Time", "Perimeter");
+		// For dense plot
+		HashMap<String, Integer> denseidmap = densesortedMappair.maxid;
+
+		
+		int Xkymodimension = denseidmap.get(ID);
+	
+
+			long[] size = new long[] { TimedimensionKymo, Xkymodimension + 1 };
+			ComputeCurvature.MakeInterKymo(parent, densesortedMappair.sortedmap, size, ID);
+			ComputeCurvature.MakeDistanceFan(parent, densesortedMappair.sortedmap, ID);
+		
+
 		
 		for (Pair<String, Pair<Integer, ArrayList<double[]>>> currentCurvature : parent.resultCurvature) {
 
@@ -82,8 +97,7 @@ public class CurvatureTableDisplay {
 		ParallelResultDisplay display = new ParallelResultDisplay(parent, currentresultCurv);
 		display.ResultDisplayCircleFit();
 
-//		parent.jFreeChartFrame.dispose();
-//		parent.jFreeChartFrame.repaint();
+
 
 	}
 

@@ -182,7 +182,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	}
 
-	public void MakeDistanceFan(HashMap<String, ArrayList<Intersectionobject>> sortedMappair, String TrackID) {
+	public static void MakeDistanceFan(InteractiveSimpleEllipseFit parent, HashMap<String, ArrayList<Intersectionobject>> sortedMappair, String TrackID) {
 
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 
@@ -227,7 +227,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	}
 	
-	public double GetMaxdist(ArrayList<double[]> linelist, String TrackID) {
+	public static double GetMaxdist(ArrayList<double[]> linelist, String TrackID) {
 		
 		double maxdist = Double.MIN_VALUE;
 		
@@ -240,7 +240,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		return maxdist;
 	}
 
-	public void MakeInterKymo(HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size,
+	public static  void MakeInterKymo(InteractiveSimpleEllipseFit parent, HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size,
 			String TrackID) {
 
 		RandomAccessibleInterval<FloatType> CurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
@@ -362,6 +362,12 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		parent.SegmentTracklist.clear();
 		parent.table.removeAll();
 
+		
+		IJ.log(" Calculation is Complete, do a Shif + Left click near the Cell of your choice to display " + "\n "
+				   + " Kymographs for Curvature, Intensity " + " \n" + 
+				 "  RMS value which moves with the time slider to fit on the current view of the cell " + " \n" +
+				 " Curvature value display as lines connecting the center to the boundary of the cell over time");
+		
 		TrackingFunctions track = new TrackingFunctions(parent);
 		if (parent.ndims > 3) {
 
@@ -395,27 +401,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			CurveddenseLineage();
 
-			Binobject densesortedMappair = GetZTdenseTrackList(parent);
-			parent.sortedMappair = densesortedMappair.sortedmap;
-			int TimedimensionKymo = parent.AccountedZ.size();
-
 		
-
-			// For dense plot
-			HashMap<String, Integer> denseidmap = densesortedMappair.maxid;
-
-			Iterator<Map.Entry<String, Integer>> denseit = denseidmap.entrySet().iterator();
-			while (denseit.hasNext()) {
-
-				Map.Entry<String, Integer> mapentry = denseit.next();
-				String id = mapentry.getKey();
-
-				int Xkymodimension = mapentry.getValue();
-
-				long[] size = new long[] { TimedimensionKymo, Xkymodimension + 1 };
-				MakeInterKymo(densesortedMappair.sortedmap, size, id);
-				MakeDistanceFan(densesortedMappair.sortedmap, id);
-			}
 
 		}
 

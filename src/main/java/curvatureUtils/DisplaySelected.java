@@ -63,6 +63,8 @@ public class DisplaySelected {
 					
 					
 					CurvatureTableDisplay.displayclicked(parent, parent.rowchoice);
+					
+					
 
 //					if (!parent.jFreeChartFrame.isVisible())
 //						parent.jFreeChartFrame = utility.ChartMaker.display(parent.chart, new Dimension(500, 500));
