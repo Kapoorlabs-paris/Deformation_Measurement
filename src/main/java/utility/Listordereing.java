@@ -37,20 +37,6 @@ public class Listordereing {
 		return orderedtruths;
 	}
 
-	public static ArrayList<Pair<String, Segmentobject>> getCopySegList(
-			ArrayList<Pair<String, Segmentobject>> copytruths) {
-
-		ArrayList<Pair<String, Segmentobject>> orderedtruths = new ArrayList<Pair<String, Segmentobject>>();
-		Iterator<Pair<String, Segmentobject>> iter = copytruths.iterator();
-
-		while (iter.hasNext()) {
-
-			orderedtruths.add(iter.next());
-
-		}
-
-		return orderedtruths;
-	}
 
 	public static ArrayList<Pair<String, Intersectionobject>> getCopyInterList(
 			ArrayList<Pair<String, Intersectionobject>> copytruths) {
@@ -116,30 +102,7 @@ public class Listordereing {
 
 	}
 
-	public static List<Pair<String, Segmentobject>> getNexinSegLine(ArrayList<Pair<String, Segmentobject>> truths,
-			RealLocalizable Refpoint, RealLocalizable meanCord, int count) {
 
-		ArrayList<Pair<String, Segmentobject>> copytruths = getCopySegList(truths);
-
-		ArrayList<Pair<String, Segmentobject>> sublisttruths = new ArrayList<Pair<String, Segmentobject>>();
-
-		Iterator<Pair<String, Segmentobject>> listiter = copytruths.iterator();
-
-		while (listiter.hasNext()) {
-
-			Pair<String, Segmentobject> listpoint = listiter.next();
-
-			double angledeg = Distance.AngleVectors(Refpoint, listpoint.getB().Cellcentralpoint, meanCord);
-			
-				if (angledeg > 0 )
-					sublisttruths.add(listpoint);
-				
-			
-
-		}
-		return sublisttruths;
-
-	}
 
 	/**
 	 * Return an ordered list of XY coordinates starting from the reference position
@@ -207,58 +170,7 @@ public class Listordereing {
 		return new ValuePair<RealLocalizable, List<RealLocalizable>>(refcord, skiporderedtruths);
 	}
 
-	/**
-	 * Return an ordered list of XY coordinates starting from the reference position
-	 * which is the lowest point below the center of the list of points
-	 * 
-	 * @param truths
-	 * @return
-	 */
-
-	public static ArrayList<Pair<String, Segmentobject>> getOrderedSegList(
-			ArrayList<Pair<String, Segmentobject>> truths) {
-
-		ArrayList<Pair<String, Segmentobject>> copytruths = getCopySegList(truths);
-		ArrayList<Pair<String, Segmentobject>> orderedtruths = new ArrayList<Pair<String, Segmentobject>>(
-				truths.size());
-		// Get the starting minX and minY co-ordinates
-		Pair<String, Segmentobject> minCord = getMinSegCord(copytruths);
-		orderedtruths.add(minCord);
-
-		RealLocalizable meanCord = getMeanSeg(copytruths);
-		copytruths.remove(minCord);
-		
-		int count = 0;
-		do {
-
-			List<Pair<String, Segmentobject>> subcopytruths = getNexinSegLine(copytruths,
-					minCord.getB().Cellcentralpoint, meanCord, count);
-			if (subcopytruths != null && subcopytruths.size() > 0) {
-				
-				count++;
-				Pair<String, Segmentobject> nextCord = getSegNextNearest(minCord, subcopytruths);
-				copytruths.remove(nextCord);
-
-				if (copytruths.size() != 0) {
-					copytruths.add(nextCord);
-					Pair<String, Segmentobject> chosenCord = null;
-					chosenCord = nextCord;
-
-					minCord = chosenCord;
-					orderedtruths.add(minCord);
-					copytruths.remove(chosenCord);
-				} else {
-
-					orderedtruths.add(nextCord);
-					break;
-
-				}
-			}
-			else break;
-		} while (copytruths.size() >= 0);
-
-		return orderedtruths;
-	}
+	
 
 	public static RealLocalizable GetCurrentRefpoint(List<RealLocalizable> truths, RealLocalizable Refpoint,
 			RealLocalizable SecRefpoint) {

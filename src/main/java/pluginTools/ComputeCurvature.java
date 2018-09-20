@@ -202,7 +202,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			
 			ArrayList<Intersectionobject> currentlist = sortedMappair.get(TrackID + timeID);
 
-			if (currentlist != null) {
+			if (currentlist != null && currentlist.size() > 0) {
 				double[] centerpoint = currentlist.get(0).Intersectionpoint;
 				for (Intersectionobject currentobject : currentlist) {
 
@@ -399,22 +399,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			parent.sortedMappair = densesortedMappair.sortedmap;
 			int TimedimensionKymo = parent.AccountedZ.size();
 
-			/*
-			 * HashMap<Integer, Integer> idmap = sortedMappair.getA();
-			 * 
-			 * Iterator<Map.Entry<Integer, Integer>> it = idmap.entrySet().iterator();
-			 * 
-			 * while (it.hasNext()) {
-			 * 
-			 * Map.Entry<Integer, Integer> mapentry = it.next(); int id = mapentry.getKey();
-			 * 
-			 * int Xkymodimension = mapentry.getValue();
-			 * 
-			 * long[] size = new long[] { TimedimensionKymo, Xkymodimension };
-			 * MakeInterKymo(sortedMappair.getB(), size, id);
-			 * 
-			 * }
-			 */
+		
 
 			// For dense plot
 			HashMap<String, Integer> denseidmap = densesortedMappair.maxid;
@@ -735,209 +720,9 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	}
 
-	public void CurvedSegmentLineage() {
+	
 
-		DisplaySelected.markAll(parent);
-		DisplaySelected.selectAll(parent);
-
-		if (parent.ndims >= 3) {
-
-			for (Map.Entry<String, SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge>> entryZ : parent.parentgraphSegZ
-					.entrySet()) {
-
-				TrackSegmentModel model = new TrackSegmentModel(entryZ.getValue());
-
-				int minid = Integer.MAX_VALUE;
-				int maxid = Integer.MIN_VALUE;
-
-				for (final Integer id : model.trackIDs(true)) {
-
-					if (id > maxid)
-						maxid = id;
-
-					if (id < minid)
-						minid = id;
-
-				}
-
-				if (minid != Integer.MAX_VALUE) {
-
-					for (final Integer id : model.trackIDs(true)) {
-
-						final HashSet<Segmentobject> Angleset = model.trackSegmentobjects(id);
-
-						final ArrayList<Segmentobject> Anglelist = new ArrayList<Segmentobject>();
-
-						for (Segmentobject current : Angleset) {
-
-							Anglelist.add(current);
-
-						}
-
-						if (Anglelist.size() > parent.AccountedZ.size() / 2)
-							parent.HashSegmentTrackList.put(id + entryZ.getKey(), Anglelist);
-					}
-
-					for (final Integer id : model.trackIDs(true)) {
-
-						model.setName(id, "Track" + id + entryZ.getKey());
-
-						HashMap<String, ArrayList<Segmentobject>> HashSegmentTrackList = SortTimeorZ
-								.sortByCordSeg(parent.HashSegmentTrackList);
-
-						Iterator<Segmentobject> Angleiter = HashSegmentTrackList.get(id + entryZ.getKey()).iterator();
-
-						while (Angleiter.hasNext()) {
-
-							Segmentobject currentangle = Angleiter.next();
-
-							parent.SegmentTracklist.add(new ValuePair<String, Segmentobject>(
-									Integer.toString(id) + entryZ.getKey(), currentangle));
-						}
-
-					}
-					Comparator<Pair<String, Segmentobject>> ThirdDimcomparison = new Comparator<Pair<String, Segmentobject>>() {
-
-						@Override
-						public int compare(final Pair<String, Segmentobject> A, final Pair<String, Segmentobject> B) {
-
-							return A.getB().z - B.getB().z;
-
-						}
-
-					};
-
-					Comparator<Pair<String, Segmentobject>> FourthDimcomparison = new Comparator<Pair<String, Segmentobject>>() {
-
-						@Override
-						public int compare(final Pair<String, Segmentobject> A, final Pair<String, Segmentobject> B) {
-
-							return A.getB().t - B.getB().t;
-
-						}
-
-					};
-
-					Collections.sort(parent.SegmentTracklist, ThirdDimcomparison);
-
-					for (int id = minid; id <= maxid; ++id) {
-						Segmentobject bestangle = null;
-
-						if (model.trackSegmentobjects(id) != null
-								&& model.trackSegmentobjects(id).size() > parent.AccountedZ.size() / 2) {
-							List<Segmentobject> sortedList = new ArrayList<Segmentobject>(
-									model.trackSegmentobjects(id));
-
-							Collections.sort(sortedList, new Comparator<Segmentobject>() {
-
-								@Override
-								public int compare(Segmentobject o1, Segmentobject o2) {
-
-									return o1.t - o2.t;
-								}
-
-							});
-							Collections.sort(sortedList, new Comparator<Segmentobject>() {
-
-								@Override
-								public int compare(Segmentobject o1, Segmentobject o2) {
-
-									return o1.z - o2.z;
-								}
-
-							});
-
-							Iterator<Segmentobject> iterator = sortedList.iterator();
-
-							int count = 0;
-							while (iterator.hasNext()) {
-
-								Segmentobject currentangle = iterator.next();
-								if (count == 0)
-									bestangle = currentangle;
-								if (parent.originalimg.numDimensions() > 3) {
-									if (currentangle.t == parent.fourthDimension) {
-										bestangle = currentangle;
-										count++;
-										break;
-									}
-								} else if (parent.originalimg.numDimensions() <= 3) {
-									if (currentangle.z == parent.thirdDimension) {
-										bestangle = currentangle;
-										count++;
-										break;
-
-									}
-
-								}
-
-							}
-							parent.SegmentFinalresult.put(Integer.toString(id) + entryZ.getKey(), bestangle);
-
-						}
-
-					}
-				}
-			}
-			curvatureUtils.CurvatureTable.CreateSegTableTrackView(parent);
-
-		}
-
-	}
-
-	public static Pair<HashMap<String, Integer>, HashMap<String, ArrayList<Segmentobject>>> GetZTSegTrackList(
-			final InteractiveSimpleEllipseFit parent) {
-
-		int maxCurveDim = 0;
-
-		HashMap<String, Integer> maxidcurve = new HashMap<String, Integer>();
-		HashMap<String, ArrayList<Segmentobject>> sortedMap = new HashMap<String, ArrayList<Segmentobject>>();
-		HashSet<String> TrackIDset = new HashSet<String>();
-		for (Pair<String, Segmentobject> preangle : parent.SegmentTracklist) {
-			String TrackID = preangle.getA();
-			TrackIDset.add(TrackID);
-		}
-
-		Iterator<String> iter = TrackIDset.iterator();
-
-		while (iter.hasNext()) {
-
-			String TrackID = iter.next();
-
-			Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
-			while (itZ.hasNext()) {
-
-				Map.Entry<String, Integer> entry = itZ.next();
-
-				int z = entry.getValue();
-
-				String timeID = entry.getKey();
-
-				ArrayList<Segmentobject> currentframeobject = new ArrayList<Segmentobject>();
-				for (Pair<String, Segmentobject> currentangle : parent.SegmentTracklist) {
-
-					if (currentangle.getB().z == z && currentangle.getA().equals(TrackID)) {
-
-						currentframeobject.add(currentangle.getB());
-
-					}
-
-					if (currentframeobject.size() > maxCurveDim) {
-
-						maxCurveDim = currentframeobject.size();
-
-					}
-
-				}
-				sortedMap.put(TrackID + timeID, currentframeobject);
-				maxidcurve.put(TrackID, maxCurveDim);
-			}
-		}
-		return new ValuePair<HashMap<String, Integer>, HashMap<String, ArrayList<Segmentobject>>>(maxidcurve,
-				sortedMap);
-
-	}
-
+	
 	public static Pair<HashMap<String, Integer>, HashMap<String, ArrayList<Intersectionobject>>> GetZTTrackList(
 			final InteractiveSimpleEllipseFit parent) {
 
@@ -1062,23 +847,5 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	}
 
-	/**
-	 * 
-	 * A special sorting scheme for segments to be sorted based on closeness to the
-	 * refence point
-	 * 
-	 * @param parent
-	 * @param segobject
-	 * @param t
-	 * @param z
-	 * @return
-	 */
-	public static ArrayList<Pair<String, Segmentobject>> OrderCords(final InteractiveSimpleEllipseFit parent,
-			final ArrayList<Pair<String, Segmentobject>> segobject, String UniqueID) {
 
-		ArrayList<Pair<String, Segmentobject>> Sortedsegobject = Listordereing.getOrderedSegList(segobject);
-
-		return Sortedsegobject;
-
-	}
 }

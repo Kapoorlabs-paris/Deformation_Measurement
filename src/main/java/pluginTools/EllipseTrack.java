@@ -391,11 +391,9 @@ public class EllipseTrack {
 
 					int z = entryZ.getValue();
 					
-					System.out.println("In Block Repeat Manual");
 					
 					BlockRepeatManual(percent, z, t);
 
-					System.out.println("Invoke Block Repeat Manual");
 				}
 
 			}

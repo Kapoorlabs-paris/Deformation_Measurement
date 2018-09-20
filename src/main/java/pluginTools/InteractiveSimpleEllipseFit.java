@@ -126,7 +126,6 @@ import listeners.RListener;
 import listeners.RedoListener;
 import listeners.ResolutionListener;
 import listeners.RimLineSelectionListener;
-import listeners.RimSelectionListener;
 import listeners.RoiListener;
 import listeners.RunCelltrackCirclemodeListener;
 import listeners.RunCirclemodeListener;
@@ -1254,13 +1253,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				current.CurvedLineage();
 
 			}
-			if (SegmentTracklist.size() > 0 && (curveautomode || curvesupermode)) {
-
-				ComputeCurvature current = new ComputeCurvature(this, null);
-
-				current.CurvedSegmentLineage();
-
-			}
+		
 			if (StripList.size() > 0) {
 
 				for (Map.Entry<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> entryZ : parentdensegraphZ

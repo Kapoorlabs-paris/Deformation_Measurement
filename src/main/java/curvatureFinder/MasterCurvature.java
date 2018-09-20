@@ -328,7 +328,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 		int size = truths.size();
 
 		
-		int maxpoints = size / numSeg;
+		int maxpoints = Math.round(size / numSeg);
 		if (maxpoints <= 2)
 			maxpoints = 3;
        int biggestsize = maxpoints;		
@@ -336,24 +336,30 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>>  im
 
 		List<RealLocalizable> sublist = new ArrayList<RealLocalizable>();
 
-		for (int i = 0; i <= size - maxpoints; i += maxpoints) {
+		for (int i = 0; i <= size ; i += maxpoints) {
 
 			int endindex = i + maxpoints;
 
 			
 			if(endindex  >= size)
-				endindex = size -1;
+				endindex = size;
 			
+			if(endindex >= size - 2)
+			
+				endindex = size ;
+				
+			if(endindex - i > 2) {
 			
 			sublist = truths.subList(i, endindex);
 			parent.Listmap.put(segmentLabel, sublist);
 			
-			if(biggestsize >= endindex - i)
-				biggestsize = endindex - i;
+			
+				biggestsize = endindex;
 			
 			
 			parent.CellLabelsizemap.put(celllabel, biggestsize);
 			segmentLabel++;
+			}
 			
 		}
 			

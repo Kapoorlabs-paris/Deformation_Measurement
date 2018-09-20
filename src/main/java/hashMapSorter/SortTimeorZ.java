@@ -96,39 +96,6 @@ public class SortTimeorZ {
 	
 
 	
-	public static   HashMap<String, ArrayList<Segmentobject>> sortByCordSeg(HashMap<String, ArrayList<Segmentobject>> map){
-		
-		
-		ArrayList<Pair<String , Segmentobject>> firstframelist = new ArrayList<Pair<String,Segmentobject>>();
-			
-			for(Map.Entry<String, ArrayList<Segmentobject>> entry: map.entrySet()) {
-				
-				String id = entry.getKey();
-				firstframelist.add(new ValuePair<String, Segmentobject> (id, entry.getValue().get(0)));
-				
-			}
-			
-			
-			
-			
-			String[] orderedid = new String[firstframelist.size()];
 	
-			ArrayList<Pair<String , Segmentobject>> orderedfirstframelist =	Listordereing.getOrderedSegList(firstframelist);
-			int count = 0;
-			for(Pair<String , Segmentobject> current: orderedfirstframelist ) {
-				orderedid[count] = current.getA();
-				count++;
-			}
-			
-			HashMap<String, ArrayList<Segmentobject>> sortedHashMap = new LinkedHashMap<String, ArrayList<Segmentobject>>();
-		for	(int fillcount = 0; fillcount < orderedid.length; ++fillcount) {
-		
-				String id = orderedid[fillcount];
-				sortedHashMap.put(id, map.get(id));
-		}			
-			
-		return sortedHashMap;
-		
-	}
 	
 }
