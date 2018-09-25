@@ -105,9 +105,9 @@
 		<!-- Fiji dependencies -->
 		<!-- https://mvnrepository.com/artifact/net.imagej/ij -->
 
-	<dependency>
+<dependency>
   <groupId>net.imagej</groupId>
-  <artifactId>imagej</artifactId>
+  <artifactId>ij</artifactId>
   
 </dependency>
 		

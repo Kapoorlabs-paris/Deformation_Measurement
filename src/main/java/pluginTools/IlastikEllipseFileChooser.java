@@ -109,7 +109,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 	  public Checkbox Gocurvesimple = new Checkbox("Curvature Measurement with Pixel only", curvesimple, runmode);
 	  
 	  
-	  public Checkbox GoBatchcurve = new Checkbox("Batch Mode for Curvatrue Measurement", curvebatch, runmode);
+	  public Checkbox GoBatchcurve = new Checkbox("Batch Mode for Curvature Measurement", curvebatch, runmode);
 	  
 	  public Border choosefile = new CompoundBorder(new TitledBorder("Probability Map chooser"),
 				new EmptyBorder(c.insets));

@@ -10,11 +10,11 @@ import ij.IJ;
 import pluginTools.InteractiveSimpleEllipseFit;
 
 
-public class SaverDirectory implements ActionListener {
+public class SaveDirectory implements ActionListener {
 	
     InteractiveSimpleEllipseFit parent;
     
-	public SaverDirectory(InteractiveSimpleEllipseFit parent) {
+	public SaveDirectory(InteractiveSimpleEllipseFit parent) {
 
 		this.parent = parent;
 

@@ -28,7 +28,7 @@ import net.imglib2.view.Views;
 import pluginTools.InteractiveSimpleEllipseFit;
 import utility.Curvatureobject;
 
-public class SaveListener implements ActionListener {
+public class SaverListener implements ActionListener {
 
 	final InteractiveSimpleEllipseFit parent;
 	
@@ -47,7 +47,7 @@ public class SaveListener implements ActionListener {
 	int perimeterLabel = 5;
 	
 
-	public SaveListener(final InteractiveSimpleEllipseFit parent) {
+	public SaverListener(final InteractiveSimpleEllipseFit parent) {
 
 		this.parent = parent;
 	}
