@@ -12,7 +12,7 @@ public class InteractiveIlastikEllipseFit {
 
 	public static void main(String[] args) {
 
-		new ImageJ();
+		//new ImageJ();
 		JFrame frame = new JFrame("");
 		// /Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/Stage3Training/TestEtrack/TestTimeLapse/Test3_1/RawData.tif
 		// /Users/aimachine/Documents/IlastikJLM/datasets_for_ilastic_training/Stage3Training/TestEtrack/TestTimeLapse/Test3_1/MulticutSegmentation.tif

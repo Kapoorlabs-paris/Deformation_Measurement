@@ -1,5 +1,6 @@
 package imageAxis;
 
+import ij.IJ;
 import ij.ImagePlus;
 
 public class AxisRendering {
@@ -9,7 +10,6 @@ public class AxisRendering {
 	public static void Reshape(ImagePlus imp) {
 		
 		int channels, frames;
-		
 		
 		
 		if(imp.getNChannels() > imp.getNFrames()) {
@@ -24,7 +24,9 @@ public class AxisRendering {
 		    frames = imp.getNFrames();
 			
 		}
-		imp.setDimensions(channels, imp.getNSlices(), frames);
+		
+		IJ.log(imp.getNSlices() + " " + channels + " " + frames);
+		//imp.setDimensions(channels, imp.getNSlices(), frames);
 		
 		
 	}
