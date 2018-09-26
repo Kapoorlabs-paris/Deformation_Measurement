@@ -46,9 +46,9 @@ public class TrackingFunctions {
 
 		}
 
-		KFsearch Tsearch = new KFsearch(colllist, parent.UserchosenCostFunction,  parent.maxSearchradius ,
-				 parent.maxSearchradius, 
-				parent.thirdDimensionSize / 4, parent.AccountedZ, parent.jpb);
+		KFsearch Tsearch = new KFsearch(colllist, parent.UserchosenCostFunction,  parent.originalimg.dimension(0) *  parent.originalimg.dimension(1),
+				parent.originalimg.dimension(0) *  parent.originalimg.dimension(1), 
+				parent.thirdDimensionSize - 1, parent.AccountedZ, parent.jpb);
 		Tsearch.process();
 		SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = Tsearch.getResult();
 
@@ -71,9 +71,9 @@ public class TrackingFunctions {
 
 		}
 
-		KFsearch Tsearch = new KFsearch(colllist, parent.UserchosenCostFunction,  parent.maxSearchradius ,
-				 parent.maxSearchradius, 
-				parent.thirdDimensionSize / 4, parent.AccountedZ, parent.jpb);
+		KFsearch Tsearch = new KFsearch(colllist, parent.UserchosenCostFunction,  parent.originalimg.dimension(0) *  parent.originalimg.dimension(1),
+				parent.originalimg.dimension(0) *  parent.originalimg.dimension(1), 
+				parent.thirdDimensionSize - 1, parent.AccountedZ, parent.jpb);
 		Tsearch.process();
 		SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = Tsearch.getResult();
 
@@ -81,36 +81,6 @@ public class TrackingFunctions {
 
 	}
 
-	public SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge> TrackSegmentfunction() {
-
-		parent.UserchosenSegmentCostFunction = new ETrackSegmentCostFunction(1, 0);
-
-		ArrayList<ArrayList<Segmentobject>> colllist = new ArrayList<ArrayList<Segmentobject>>();
-		parent.ALLSegments = hashMapSorter.SortTimeorZ.sortByInteger(parent.ALLSegments);
-		
-		
-		
-		for (Map.Entry<String, ArrayList<Segmentobject>> entry : parent.ALLSegments.entrySet()) {
-
-			ArrayList<Segmentobject> bloblist = entry.getValue();
-			if(bloblist.size() > 0)
-			colllist.add(bloblist);
-		
-		}
-		
-		
 	
-		
-		
-
-		KFSegmentsearch Tsearch = new KFSegmentsearch(colllist, parent.UserchosenSegmentCostFunction, parent.maxSearchradius ,
-				 parent.maxSearchradius, 
-				parent.thirdDimensionSize / 4, parent.AccountedZ, parent.jpb);
-		Tsearch.process();
-		SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge> simplegraph = Tsearch.getResult();
-
-		return simplegraph;
-
-	}
 
 }
