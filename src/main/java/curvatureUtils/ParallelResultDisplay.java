@@ -26,7 +26,7 @@ public class ParallelResultDisplay {
 	final InteractiveSimpleEllipseFit parent;
 	final ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>> currentresultCurv;
 	public ImagePlus imp;
-	Img<FloatType> probImg;
+	RandomAccessibleInterval<FloatType> probImg;
 	// Create a constructor
 
 
@@ -36,7 +36,7 @@ public class ParallelResultDisplay {
 		this.currentresultCurv = currentresultCurv;
 		probImg = new ArrayImgFactory<FloatType>().create( parent.originalimgbefore, new FloatType() );
 	
-		this.imp = ImageJFunctions.show(probImg);
+		this.imp = ImageJFunctions.wrapFloat(probImg, "");
 		//SliceObserver sliceObserver = new SliceObserver( this.imp, new ImagePlusListener() );
 	}
 	
@@ -162,7 +162,7 @@ public class ParallelResultDisplay {
 
 		}
 	    
-		AxisRendering.Reshape(imp);
+		AxisRendering.Reshape(probImg, "Curvature Color coded");
 		IJ.run("Fire");
 
 	}

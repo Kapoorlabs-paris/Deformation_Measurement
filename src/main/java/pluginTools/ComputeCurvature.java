@@ -222,8 +222,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			}
 			
 		}
-		 ImagePlus imp = ImageJFunctions.show(Blank);
-		 AxisRendering.Reshape(imp);
+		 AxisRendering.Reshape(Blank, "Fan display");
 
 	}
 	
