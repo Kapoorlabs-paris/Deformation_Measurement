@@ -1857,12 +1857,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		final JScrollBar alphaS = new JScrollBar(Scrollbar.HORIZONTAL, alphaInit, 10, 0, 10 + scrollbarSize);
 		final JScrollBar betaS = new JScrollBar(Scrollbar.HORIZONTAL, betaInit, 10, 0, 10 + scrollbarSize);
 
-		maxSearchradius = utility.ScrollbarUtils.computeValueFromScrollbarPosition(maxSearchS.getValue(),
+		maxSearchradius = utility.ETrackScrollbarUtils.computeValueFromScrollbarPosition(maxSearchS.getValue(),
 				maxSearchradiusMin, maxSearchradiusMax, scrollbarSize);
 
-		alpha = utility.ScrollbarUtils.computeValueFromScrollbarPosition(alphaS.getValue(), alphaMin, alphaMax,
+		alpha = utility.ETrackScrollbarUtils.computeValueFromScrollbarPosition(alphaS.getValue(), alphaMin, alphaMax,
 				scrollbarSize);
-		beta = utility.ScrollbarUtils.computeValueFromScrollbarPosition(betaS.getValue(), betaMin, betaMax,
+		beta = utility.ETrackScrollbarUtils.computeValueFromScrollbarPosition(betaS.getValue(), betaMin, betaMax,
 				scrollbarSize);
 
 		String[] DrawType = { "Closed Loops", "Semi-Closed Loops" };
