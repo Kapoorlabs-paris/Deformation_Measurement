@@ -70,11 +70,11 @@ public class TrackingFunctions {
 		
 
 		}
-
 		KFsearch Tsearch = new KFsearch(colllist, parent.UserchosenCostFunction,  parent.originalimg.dimension(0) *  parent.originalimg.dimension(1),
 				parent.originalimg.dimension(0) *  parent.originalimg.dimension(1), 
 				parent.thirdDimensionSize - 1, parent.AccountedZ, parent.jpb);
 		Tsearch.process();
+		
 		SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = Tsearch.getResult();
 
 		return simplegraph;

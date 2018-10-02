@@ -390,11 +390,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		else {
 
-			SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
-
-			parent.parentgraphZ.put(Integer.toString(1), simplegraph);
-
-			CurvedLineage();
+	
 
 			SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simpledensegraph = track.Trackdensefunction();
 
@@ -578,7 +574,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 	}
 
 	public void CurveddenseLineage() {
-
+		DisplaySelected.markAll(parent);
+		DisplaySelected.selectAll(parent);
 		for (Map.Entry<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> entryZ : parent.parentdensegraphZ
 				.entrySet()) {
 

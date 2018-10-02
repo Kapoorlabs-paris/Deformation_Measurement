@@ -129,6 +129,8 @@ public class LabelCurvature implements Runnable {
 		
 		curvedistance.process();
 		
+	
+		
 	     }
 	}
 

@@ -14,6 +14,7 @@ import java.util.Map;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
+import curvatureUtils.CurvatureTableDisplay;
 import ellipsoidDetector.Intersectionobject;
 import ellipsoidDetector.KymoSaveobject;
 import hashMapSorter.SortCoordinates;
@@ -57,16 +58,11 @@ public class SaverListener implements ActionListener {
 		
 		
 	
-			if(parent.circlefits)
-				NewSave();
-			if(parent.celltrackcirclefits || parent.pixelcelltrackcirclefits) {
+			
+		
 				KymoSave();
 				
-				//    OldSave();
-			  //  DenseSave();   
-			}
-			if (!parent.curveautomode && !parent.curvesupermode)
-				OldSave();
+				
 				
 				
 				IJ.log("All trackes saved in: " + parent.saveFile.getAbsolutePath());
@@ -177,7 +173,11 @@ public class SaverListener implements ActionListener {
 			
 			
 			KymoSaveobject Kymos = parent.KymoFileobject.get(ID);
-			
+			if(Kymos==null) {
+				
+				CurvatureTableDisplay.displayclicked(parent, parent.rowchoice);
+				Kymos = parent.KymoFileobject.get(ID);
+			}
 			
 			RandomAccessibleInterval<FloatType> CurvatureKymo = Kymos.CurvatureKymo;
 			
@@ -210,9 +210,9 @@ public class SaverListener implements ActionListener {
 					Map.Entry<String, Integer> entry = itZ.next();
 
 					int time = entry.getValue();
-					Cranac.setPosition(time, 0);
-					Aranac.setPosition(time, 0);
-					Branac.setPosition(time, 0);
+					Cranac.setPosition(time - 1, 0);
+					Aranac.setPosition(time - 1, 0);
+					Branac.setPosition(time - 1, 0);
 					
 				bw.write("\t"+ pos +  "\t" + "\t" + time
 				+ "\t" + "\t" +

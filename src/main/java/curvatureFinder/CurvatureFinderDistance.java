@@ -94,8 +94,9 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 
 		DisplayListOverlay.ArrowDisplay(parent, Ordered, uniqueID);
 
-		getCurvature(parent, Ordered.getB(), centerpoint, ndims, celllabel, thirdDimension, fourthDimension);
 		
+		OverSliderLoop(parent, Ordered.getB(), centerpoint, truths, AllCurveintersection,
+				AlldenseCurveintersection, ndims, celllabel, fourthDimension, thirdDimension);
 		
 		return true;
 	}
@@ -107,113 +108,6 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 	}
 
 	
-	/**
-	 * 
-	 * Take in a list of ordered co-ordinates and compute a curvature object
-	 * containing the curvature information at each co-ordinate Makes a tree
-	 * structure of the list
-	 * 
-	 * @param orderedtruths
-	 * @param ndims
-	 * @param Label
-	 * @param t
-	 * @param z
-	 * @return
-	 */
-	public RegressionCurveSegment getCurvature(InteractiveSimpleEllipseFit parent,	List<RealLocalizable> truths, RealLocalizable centerpoint,
-			 int ndims, int Label,  int z, int t) {
-
-		ArrayList<Curvatureobject> curveobject = new ArrayList<Curvatureobject>();
-
-		ArrayList<double[]> totalinterpolatedCurvature = new ArrayList<double[]>();
-
-		ArrayList<RegressionFunction> totalfunctions = new ArrayList<RegressionFunction>();
-
-		double perimeter = 0;
-
-		if (parent.fourthDimensionSize > 1)
-			parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension,
-					parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
-		parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension,
-				parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
-		MakeSegments(parent, truths, parent.minNumInliers, celllabel);
-		// Now do the fitting
-		ArrayList<Segmentobject> Allcellsegment = new ArrayList<Segmentobject>();
-		for (Map.Entry<Integer, List<RealLocalizable>> entry : parent.Listmap.entrySet()) {
-			
-			
-			List<RealLocalizable> sublist = entry.getValue();
-			/***
-			 * 
-			 * Main method that fitst on segments a function to get the curvature
-			 * 
-			 */
-			Pair<RegressionFunction, ArrayList<double[]>> localfunction = FitonList(parent, centerpoint, sublist);
-
-			perimeter += localfunction.getA().Curvaturepoints.get(0)[3];
-			totalfunctions.add(localfunction.getA());
-			totalinterpolatedCurvature.addAll(localfunction.getB());
-
-			RealLocalizable Cord = Listordereing.getMeanCord(sublist);
-			double Curvature = localfunction.getB().get(0)[2];
-			double IntensityA = localfunction.getB().get(0)[4];
-			double IntensityB = localfunction.getB().get(0)[5];
-			double SegPeri = localfunction.getB().get(0)[3];
-
-			Iterator<RealLocalizable> iter = sublist.iterator();
-			ArrayList<double[]> curvelist = new ArrayList<double[]>();
-			while (iter.hasNext()) {
-
-				RealLocalizable current = iter.next();
-
-				curvelist.add(new double[] { current.getDoublePosition(0), current.getDoublePosition(1), Curvature,
-						IntensityA, IntensityB });
-			}
-
-			Segmentobject cellsegment = new Segmentobject(curvelist, centerpoint, Cord, Curvature, IntensityA,
-					IntensityB, SegPeri, entry.getKey(), Label, z, t);
-
-			Allcellsegment.add(cellsegment);
-
-		}
-
-		for (int indexx = 0; indexx < totalinterpolatedCurvature.size(); ++indexx) {
-
-			Curvatureobject currentobject = new Curvatureobject(
-					totalinterpolatedCurvature.get(indexx)[2], perimeter, totalinterpolatedCurvature.get(indexx)[4],
-					totalinterpolatedCurvature.get(indexx)[5], Label, new double[] {
-							totalinterpolatedCurvature.get(indexx)[0], totalinterpolatedCurvature.get(indexx)[1] },
-					z, t);
-
-			curveobject.add(currentobject);
-
-		}
-
-		// All nodes are returned
-
-	
-		
-		
-		RegressionCurveSegment resultpair = new RegressionCurveSegment(totalfunctions, curveobject, Allcellsegment);
-		Bestdelta.put(0, resultpair);
-		parent.localCurvature = resultpair.Curvelist;
-		parent.functions = resultpair.functionlist;
-		parent.localSegment = resultpair.Seglist;
-		
-		Pair<Intersectionobject, Intersectionobject> sparseanddensepair = GetAverage(parent, centerpoint, Bestdelta,
-				1);
-
-		AllCurveintersection.add(sparseanddensepair.getA());
-		AlldenseCurveintersection.add(sparseanddensepair.getB());
-
-		parent.AlllocalCurvature.add(parent.localCurvature);
-		
-		
-		
-		
-		return resultpair;
-
-	}
 	
 	
 
@@ -317,7 +211,43 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 			RealLocalizable centerpoint, List<RealLocalizable> truths,
 			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Intersectionobject> AlldenseCurveintersection,
 			int ndims, int celllabel, int t, int z) {
-		// TODO Auto-generated method stub
+
+
+		int count = 0;
+		if (parent.minNumInliers > truths.size())
+			parent.minNumInliers = truths.size();
+
+		int i = parent.increment;
+		RegressionCurveSegment resultpair = CommonLoop(parent, Ordered, centerpoint, ndims, celllabel, t, z);
+		// Get the sparse list of points, skips parent.resolution pixel points
+
+		int index = 0;
+			List<RealLocalizable> allorderedtruths = Listordereing.getList(Ordered, i + index);
+
+			if (parent.fourthDimensionSize > 1)
+				parent.timeslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.fourthDimension,
+						parent.fourthDimensionsliderInit, parent.fourthDimensionSize, parent.scrollbarSize));
+			parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension,
+					parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
+
+			resultpair = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t);
+
+			Bestdelta.put(count, resultpair);
+			count++;
+
+			parent.localCurvature = resultpair.Curvelist;
+			parent.functions = resultpair.functionlist;
+			parent.localSegment = resultpair.Seglist;
+
+		
+
+		Pair<Intersectionobject, Intersectionobject> sparseanddensepair = GetAverage(parent, centerpoint, Bestdelta,count);
+		
+		AllCurveintersection.add(sparseanddensepair.getA());
+		AlldenseCurveintersection.add(sparseanddensepair.getB());
+		
+		
+		parent.AlllocalCurvature.add(parent.localCurvature);
 		
 	}
 

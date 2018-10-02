@@ -116,7 +116,6 @@ import listeners.ResolutionListener;
 import listeners.RimLineSelectionListener;
 import listeners.RoiListener;
 import listeners.RunCelltrackCirclemodeListener;
-import listeners.RunCirclemodeListener;
 import listeners.RunPolymodeListener;
 import listeners.RunpixelCelltrackCirclemodeListener;
 import listeners.SaverAllListener;
@@ -2315,7 +2314,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		minInlierslider.addAdjustmentListener(new MinInlierListener(this, minInlierText, mininlierstring,
 				minNumInliersmin, scrollbarSize, minInlierslider));
 
-		circlemode.addItemListener(new RunCirclemodeListener(this));
 		distancemode.addItemListener(new RunCelltrackCirclemodeListener(this));
 		Pixelcelltrackcirclemode.addItemListener(new RunpixelCelltrackCirclemodeListener(this));
 

@@ -14,6 +14,7 @@ import java.util.Map;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
+import curvatureUtils.CurvatureTableDisplay;
 import ellipsoidDetector.Intersectionobject;
 import ellipsoidDetector.KymoSaveobject;
 import hashMapSorter.SortCoordinates;
@@ -53,16 +54,9 @@ public class SaverAllListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		
-	if(parent.circlefits)
-	NewSave();
 	
-	if(parent.celltrackcirclefits || parent.pixelcelltrackcirclefits) {
 	  
 		KymoSave();
-		//OldSave();
-	    //DenseSave();   
-	}
 	if (!parent.curveautomode && !parent.curvesupermode)
 		OldSave();
 	
@@ -89,8 +83,12 @@ public class SaverAllListener implements ActionListener {
 				
 				
 				KymoSaveobject Kymos = parent.KymoFileobject.get(ID);
-				
-				
+				if(Kymos==null) {
+					
+					CurvatureTableDisplay.displayclicked(parent, tablepos);
+					Kymos = parent.KymoFileobject.get(ID);
+					
+				}
 				RandomAccessibleInterval<FloatType> CurvatureKymo = Kymos.CurvatureKymo;
 				
 				RandomAccessibleInterval<FloatType> IntensityAKymo = Kymos.IntensityAKymo;
@@ -99,7 +97,7 @@ public class SaverAllListener implements ActionListener {
 				
 				int hyperslicedimension = 1;
 				
-				for (long pos = 0; pos< CurvatureKymo.dimension(hyperslicedimension); ++pos) {
+				for (long pos = 0; pos < CurvatureKymo.dimension(hyperslicedimension); ++pos) {
 					
 					
 					RandomAccessibleInterval< FloatType > CurveView =
@@ -123,10 +121,9 @@ public class SaverAllListener implements ActionListener {
 
 						int time = entry.getValue();
 						
-						Cranac.setPosition(time, 0);
-						Aranac.setPosition(time, 0);
-						Branac.setPosition(time, 0);
-						
+						Cranac.setPosition(time - 1, 0);
+						Aranac.setPosition(time - 1, 0);
+						Branac.setPosition(time - 1, 0);
 					bw.write("\t"+ pos +  "\t" + "\t" + time
 					+ "\t" + "\t" +
 					parent.nf.format(Cranac.get().get())
@@ -137,10 +134,10 @@ public class SaverAllListener implements ActionListener {
 					}
 				}
 				
-				
 			    bw.close();
 				fw.close();
 			}
+			
 			catch (IOException te) {
 			}
 			

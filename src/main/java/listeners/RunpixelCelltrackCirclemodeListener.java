@@ -23,7 +23,7 @@ public class RunpixelCelltrackCirclemodeListener implements ItemListener {
 
 			parent.pixelcelltrackcirclefits = false;
 			
-			parent.distancemethod = false;
+			parent.distancemethod = true;
 
 		}
 
