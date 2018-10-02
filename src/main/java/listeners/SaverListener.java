@@ -59,13 +59,16 @@ public class SaverListener implements ActionListener {
 		
 	
 			
-		
-				KymoSave();
+		if (!parent.curveautomode && !parent.curvesupermode)
+			OldSave();
+		else
+		  KymoSave();
+
 				
 				
 				
 				
-				IJ.log("All trackes saved in: " + parent.saveFile.getAbsolutePath());
+				IJ.log("Choosen Track saved in: " + parent.saveFile.getAbsolutePath());
 			
 			
 		
@@ -132,7 +135,7 @@ public class SaverListener implements ActionListener {
 					if(currentID.equals(ID)) {
 						
 						
-						bw.write("\t"+ parent.nf.format(currentangle.getB().centralpoint.getDoublePosition(0)) +  "\t" + "\t" + parent.nf.format(currentangle.getB().centralpoint.getDoublePosition(1))
+						bw.write("\t"+ parent.nf.format(currentangle.getB().centralpoint.getDoublePosition(XcordLabel)) +  "\t" + "\t" + parent.nf.format(currentangle.getB().centralpoint.getDoublePosition(YcordLabel))
 								+ "\t" + "\t" +
 								"\t" + "\t" + currentangle.getB().z + 
 								parent.nf.format(currentangle.getB().Curvature) + "\t"  + "\t"+  "\t" + "\t" + parent.nf.format(currentangle.getB().Perimeter) + "\t" + "\t"  

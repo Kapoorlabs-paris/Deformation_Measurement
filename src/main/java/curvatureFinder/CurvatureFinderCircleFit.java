@@ -2,24 +2,15 @@ package curvatureFinder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
 import javax.swing.JProgressBar;
 
-import org.ojalgo.matrix.store.operation.GenerateApplyAndCopyHouseholderColumn;
-
-import curvatureUtils.PointExtractor;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
-import ij.gui.EllipseRoi;
-import kalmanForSegments.Segmentobject;
 import mpicbg.models.Point;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
-import net.imglib2.algorithm.ransac.RansacModels.Circle;
 import net.imglib2.algorithm.ransac.RansacModels.FitLocalEllipsoid;
 import net.imglib2.algorithm.ransac.RansacModels.RansacFunctionEllipsoid;
 import net.imglib2.type.NativeType;
@@ -30,11 +21,7 @@ import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.RegressionCurveSegment;
 import ransacPoly.RegressionFunction;
-import utility.CurvatureFunction;
-import utility.Curvatureobject;
-import utility.DisplayAuto;
 import utility.Listordereing;
-import utility.Roiobject;
 
 public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> extends MasterCurvature<T>
 		implements CurvatureFinders<T> {

@@ -28,19 +28,9 @@ public class CurvatureListener implements ActionListener {
 
 		
 		ClearStuff();
-		if (parent.curveautomode) {
-
-	
-			parent.StartCurvatureComputing();
-			
-		
-		}
-
-		if (parent.curvesupermode) {
 
 		
 			parent.StartCurvatureComputing();
-		}
 
 	}
 	
@@ -50,6 +40,7 @@ public class CurvatureListener implements ActionListener {
 		parent.table.repaint();
 		parent.localCurvature.clear();
 		parent.AlllocalCurvature.clear();
+		parent.KymoFileobject.clear();
 		parent.overlay.clear();
 		parent.Tracklist.clear();
 		if(parent.imp!=null && parent.mvl!=null)

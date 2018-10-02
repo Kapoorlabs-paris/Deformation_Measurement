@@ -84,7 +84,6 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 
 		List<RealLocalizable> truths = GetCandidatePoints.ListofPoints(parent, ActualRoiimg, jpb, percent,
 				fourthDimension, thirdDimension);
-		System.out.println(truths.size() + " " + "list size");
 		// Get mean co-ordinate from the candidate points
 		RealLocalizable centerpoint = Listordereing.getMeanCord(truths);
 
@@ -93,7 +92,6 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 
 		DisplayListOverlay.ArrowDisplay(parent, Ordered, uniqueID);
 
-		System.out.println(Ordered.getB().size() + " " + "Ordered list size");
 		OverSliderLoop(parent, Ordered.getB(), centerpoint, truths, AllCurveintersection, AlldenseCurveintersection,
 				ndims, celllabel, fourthDimension, thirdDimension);
 
@@ -212,21 +210,17 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 		RegressionCurveSegment resultpair = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t);
 
 		// Here counter the segments where the number of inliers was too low
-		IJ.log("In common loop take 3");
 		Bestdelta.put(0, resultpair);
 
 		parent.localCurvature = resultpair.Curvelist;
 
 		parent.functions = resultpair.functionlist;
 		// Get the sparse list of points, skips parent.resolution pixel points
-		IJ.log("Executing");
 
 		Pair<Intersectionobject, Intersectionobject> sparseanddensepair = GetSingle(parent, centerpoint, Bestdelta);
 
 		AllCurveintersection.add(sparseanddensepair.getA());
 		AlldenseCurveintersection.add(sparseanddensepair.getB());
-		IJ.log(Double.toString(sparseanddensepair.getB().perimeter));
-		System.out.println(sparseanddensepair.getB().perimeter);
 		parent.AlllocalCurvature.add(parent.localCurvature);
 
 	}

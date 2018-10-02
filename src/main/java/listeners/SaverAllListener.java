@@ -54,11 +54,11 @@ public class SaverAllListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-	
-	  
-		KymoSave();
-	if (!parent.curveautomode && !parent.curvesupermode)
-		OldSave();
+		if (!parent.curveautomode && !parent.curvesupermode)
+			OldSave();
+		else
+		  KymoSave();
+
 	
 	IJ.log("All trackes saved in: " + parent.saveFile.getAbsolutePath());
 	}
