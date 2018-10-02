@@ -142,7 +142,6 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 			parent.localCurvature = resultpair.Curvelist;
 			parent.functions = resultpair.functionlist;
-			parent.localSegment = resultpair.Seglist;
 
 		}
 
@@ -175,7 +174,9 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		ArrayList<Point> pointlist = new ArrayList<Point>();
 		ArrayList<RealLocalizable> list = new ArrayList<RealLocalizable>();
+		
 		for (int index = 0; index < Cordlist.size() - 1; ++index) {
+			
 			x[index] = Cordlist.get(index)[0];
 			y[index] = Cordlist.get(index)[1];
 
@@ -187,7 +188,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		// Here you choose which method is used to detect curvature
 
-		Pair<RegressionFunction, ArrayList<double[]>> finalfunctionandList = RansacEllipseBlock(list, centerpoint, 2);
+		Pair<RegressionFunction, ArrayList<double[]>> finalfunctionandList = RansacEllipseBlock(list, centerpoint, centerpoint.numDimensions());
 
 		return finalfunctionandList;
 	}
@@ -212,13 +213,16 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		ArrayList<double[]> AllCurvaturepoints = new ArrayList<double[]>();
 
-		double[] center = ellipsesegment.function.getCenter();
 		double radii = ellipsesegment.function.getRadii();
 		double[] newpos = new double[ndims];
 		long[] longnewpos = new long[ndims];
-
-		perimeter = Distance.DistanceSqrt(pointlist.get(0), pointlist.get(pointlist.size() - 1));
-		perimeter = perimeter * parent.calibration;
+		for (int i = 0; i < pointlist.size() - 1; ++i) {
+			
+			perimeter += Distance.DistanceSqrt(pointlist.get(i), pointlist.get(i + 1));
+				
+			}
+			
+			perimeter = perimeter * parent.calibration;
 		int size = pointlist.size();
 		final double[] pointA = new double[ndims];
 		final double[] pointB = new double[ndims];

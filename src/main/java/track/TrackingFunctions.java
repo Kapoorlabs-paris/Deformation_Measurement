@@ -61,10 +61,13 @@ public class TrackingFunctions {
 		parent.UserchosenCostFunction = new ETrackCostFunction(1, 0);
 
 		ArrayList<ArrayList<Intersectionobject>> colllist = new ArrayList<ArrayList<Intersectionobject>>();
+		System.out.println(parent.ALLdenseIntersections.size() + " " );
 		parent.ALLdenseIntersections = hashMapSorter.SortTimeorZ.sortByIntegerInter(parent.ALLdenseIntersections);
+		
 		for (Map.Entry<String, ArrayList<Intersectionobject>> entry : parent.ALLdenseIntersections.entrySet()) {
 
 			ArrayList<Intersectionobject> bloblist = entry.getValue();
+			System.out.println(bloblist.size() + " " + " list size");
 			if(bloblist.size() > 0)
 			colllist.add(bloblist);
 		

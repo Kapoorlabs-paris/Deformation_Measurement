@@ -12,16 +12,14 @@ public class RegressionCurveSegment {
 	
 	public final ArrayList<RegressionFunction> functionlist;
 	public final ArrayList<Curvatureobject> Curvelist;
-	public final ArrayList<Segmentobject> Seglist;
 	
-	public RegressionCurveSegment(final ArrayList<RegressionFunction> functionlist, final ArrayList<Curvatureobject> Curvelist, final ArrayList<Segmentobject> Seglist) {
+	public RegressionCurveSegment(final ArrayList<RegressionFunction> functionlist, final ArrayList<Curvatureobject> Curvelist) {
 		
 		
 		this.functionlist = functionlist;
 		
 		this.Curvelist = Curvelist;
 		
-		this.Seglist = Seglist;
 		
 		
 	}

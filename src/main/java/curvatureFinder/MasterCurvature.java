@@ -8,6 +8,7 @@ import java.util.Map;
 
 import curvatureUtils.PointExtractor;
 import ellipsoidDetector.Intersectionobject;
+import ij.IJ;
 import kalmanForSegments.Segmentobject;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
@@ -44,6 +45,14 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	 * @param secdegree
 	 * @return
 	 */
+
+	static int xindex = 0;
+	static int yindex = 1;
+	static int curveindex = 2;
+	static int periindex = 3;
+	static int intensityAindex = 4;
+	static int intensityBindex = 5;
+
 	public Pair<RegressionFunction, ArrayList<double[]>> FitonList(InteractiveSimpleEllipseFit parent,
 			RealLocalizable centerpoint, List<RealLocalizable> sublist) {
 
@@ -51,7 +60,8 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 		for (int i = 0; i < sublist.size(); ++i) {
 
-			Cordlist.add(new double[] { sublist.get(i).getDoublePosition(0), sublist.get(i).getDoublePosition(1) });
+			Cordlist.add(new double[] { sublist.get(i).getDoublePosition(xindex),
+					sublist.get(i).getDoublePosition(yindex) });
 		}
 
 		Pair<RegressionFunction, ArrayList<double[]>> resultcurvature = getLocalcurvature(Cordlist, centerpoint);
@@ -68,8 +78,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		// Get the sparse list of points
 		HashMap<Integer, RegressionCurveSegment> Bestdelta = new HashMap<Integer, RegressionCurveSegment>();
 
-		int count = 0;
-
 		int i = parent.increment;
 
 		// Get the sparse list of points
@@ -85,19 +93,16 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		RegressionCurveSegment resultpair = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t);
 
 		// Here counter the segments where the number of inliers was too low
-
-		Bestdelta.put(count, resultpair);
-		count++;
+		Bestdelta.put(0, resultpair);
 
 		parent.localCurvature = resultpair.Curvelist;
 
 		parent.functions = resultpair.functionlist;
-		parent.localSegment = resultpair.Seglist;
-
 		return resultpair;
 
 	}
 
+	
 	/**
 	 * 
 	 * Take in a list of ordered co-ordinates and compute a curvature object
@@ -124,7 +129,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 		MakeSegments(parent, truths, parent.minNumInliers, Label);
 		// Now do the fitting
-		ArrayList<Segmentobject> Allcellsegment = new ArrayList<Segmentobject>();
 		for (Map.Entry<Integer, List<RealLocalizable>> entry : parent.Listmap.entrySet()) {
 
 			List<RealLocalizable> sublist = entry.getValue();
@@ -135,34 +139,26 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			 */
 			Pair<RegressionFunction, ArrayList<double[]>> localfunction = FitonList(parent, centerpoint, sublist);
 
-			perimeter += localfunction.getA().Curvaturepoints.get(0)[3];
+			perimeter += localfunction.getA().Curvaturepoints.get(0)[periindex];
 			totalfunctions.add(localfunction.getA());
 			totalinterpolatedCurvature.addAll(localfunction.getB());
-
-			RealLocalizable Cord = Listordereing.getMeanCord(sublist);
-			double Curvature = localfunction.getB().get(0)[2];
-			double IntensityA = localfunction.getB().get(0)[4];
-			double IntensityB = localfunction.getB().get(0)[5];
-			double SegPeri = localfunction.getB().get(0)[3];
-
+			double Curvature = localfunction.getB().get(0)[curveindex];
+			double IntensityA = localfunction.getB().get(0)[intensityAindex];
+			double IntensityB = localfunction.getB().get(0)[intensityBindex];
 			ArrayList<double[]> curvelist = new ArrayList<double[]>();
 
-			curvelist.add(new double[] { centerpoint.getDoublePosition(0), centerpoint.getDoublePosition(1), Curvature,
-					IntensityA, IntensityB });
-
-			Segmentobject cellsegment = new Segmentobject(curvelist, centerpoint, Cord, Curvature, IntensityA,
-					IntensityB, SegPeri, entry.getKey(), Label, z, t);
-
-			Allcellsegment.add(cellsegment);
-
+			curvelist.add(new double[] { centerpoint.getDoublePosition(xindex), centerpoint.getDoublePosition(yindex),
+					Curvature, IntensityA, IntensityB });
+		
 		}
 
 		for (int indexx = 0; indexx < totalinterpolatedCurvature.size(); ++indexx) {
 
-			Curvatureobject currentobject = new Curvatureobject(
-					totalinterpolatedCurvature.get(indexx)[2], perimeter, totalinterpolatedCurvature.get(indexx)[4],
-					totalinterpolatedCurvature.get(indexx)[5], Label, new double[] {
-							totalinterpolatedCurvature.get(indexx)[0], totalinterpolatedCurvature.get(indexx)[1] },
+			Curvatureobject currentobject = new Curvatureobject(totalinterpolatedCurvature.get(indexx)[curveindex],
+					perimeter, totalinterpolatedCurvature.get(indexx)[intensityAindex],
+					totalinterpolatedCurvature.get(indexx)[intensityBindex], Label,
+					new double[] { totalinterpolatedCurvature.get(indexx)[xindex],
+							totalinterpolatedCurvature.get(indexx)[yindex] },
 					z, t);
 
 			curveobject.add(currentobject);
@@ -171,7 +167,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 		// All nodes are returned
 
-		RegressionCurveSegment returnSeg = new RegressionCurveSegment(totalfunctions, curveobject, Allcellsegment);
+		RegressionCurveSegment returnSeg = new RegressionCurveSegment(totalfunctions, curveobject);
 		return returnSeg;
 
 	}
@@ -188,9 +184,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		double[] Z = new double[localCurvature.size()];
 		double[] I = new double[localCurvature.size()];
 		double[] ISec = new double[localCurvature.size()];
-
-		ArrayList<Double> CurvePeri = new ArrayList<Double>();
-		CurvePeri.add(localCurvature.get(0).perimeter);
 
 		for (int index = 0; index < localCurvature.size(); ++index) {
 
@@ -220,7 +213,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 				double[] Itest = new double[testlocalCurvature.size()];
 				double[] ISectest = new double[testlocalCurvature.size()];
 
-				CurvePeri.add(testlocalCurvature.get(0).perimeter);
 				for (int testindex = 0; testindex < testlocalCurvature.size(); ++testindex) {
 
 					Xtest[testindex] = testlocalCurvature.get(testindex).cord[0];
@@ -256,16 +248,94 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			}
 
 			frequdelta /= CurveXY.size();
-			Iterator<Double> perisetiter = CurvePeri.iterator();
-			while (perisetiter.hasNext()) {
 
-				Double s = perisetiter.next();
+			Iterator<Double> Iiter = CurveI.iterator();
+			while (Iiter.hasNext()) {
 
-				frequdeltaperi += s;
+				Double s = Iiter.next();
+
+				intensitydelta += s;
 
 			}
 
-			frequdeltaperi /= CurvePeri.size();
+			intensitydelta /= CurveI.size();
+
+			Iterator<Double> ISeciter = CurveISec.iterator();
+			while (ISeciter.hasNext()) {
+
+				Double s = ISeciter.next();
+
+				intensitySecdelta += s;
+
+			}
+
+			intensitySecdelta /= CurveISec.size();
+
+			Curvatureobject newobject = new Curvatureobject((float) frequdelta, frequdeltaperi, intensitydelta,
+					intensitySecdelta, localCurvature.get(index).Label, localCurvature.get(index).cord,
+					localCurvature.get(index).t, localCurvature.get(index).z);
+
+			RefinedCurvature.add(newobject);
+		}
+
+		Pair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>> Refinedresultpair = new ValuePair<ArrayList<RegressionFunction>, ArrayList<Curvatureobject>>(
+				resultpair.functionlist, RefinedCurvature);
+		parent.localCurvature = Refinedresultpair.getB();
+		parent.functions.addAll(Refinedresultpair.getA());
+		// Make intersection object here
+
+		Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor.CurvaturetoIntersection(parent,
+				parent.localCurvature, parent.functions, centerpoint, parent.smoothing);
+		Intersectionobject densecurrentobject = currentobjectpair.getA();
+		Intersectionobject sparsecurrentobject = currentobjectpair.getB();
+
+		return new ValuePair<Intersectionobject, Intersectionobject>(sparsecurrentobject, densecurrentobject);
+	}
+
+	public Pair<Intersectionobject, Intersectionobject> GetSingle(InteractiveSimpleEllipseFit parent,
+			RealLocalizable centerpoint, HashMap<Integer, RegressionCurveSegment> Bestdelta) {
+
+		RegressionCurveSegment resultpair = Bestdelta.get(0);
+		ArrayList<Curvatureobject> RefinedCurvature = new ArrayList<Curvatureobject>();
+		ArrayList<Curvatureobject> localCurvature = resultpair.Curvelist;
+
+		double[] X = new double[localCurvature.size()];
+		double[] Y = new double[localCurvature.size()];
+		double[] Z = new double[localCurvature.size()];
+		double[] I = new double[localCurvature.size()];
+		double[] ISec = new double[localCurvature.size()];
+
+		for (int index = 0; index < localCurvature.size(); ++index) {
+
+			ArrayList<Double> CurveXY = new ArrayList<Double>();
+			ArrayList<Double> CurveI = new ArrayList<Double>();
+			ArrayList<Double> CurveISec = new ArrayList<Double>();
+
+			X[index] = localCurvature.get(index).cord[0];
+			Y[index] = localCurvature.get(index).cord[1];
+			Z[index] = localCurvature.get(index).radiusCurvature;
+			I[index] = localCurvature.get(index).Intensity;
+			ISec[index] = localCurvature.get(index).SecIntensity;
+
+			CurveXY.add(Z[index]);
+			CurveI.add(I[index]);
+			CurveISec.add(ISec[index]);
+
+			double frequdeltaperi = localCurvature.get(0).perimeter;
+			double frequdelta = Z[index];
+			double intensitydelta = I[index];
+			double intensitySecdelta = ISec[index];
+
+			Iterator<Double> setiter = CurveXY.iterator();
+			while (setiter.hasNext()) {
+
+				Double s = setiter.next();
+
+				frequdelta += s;
+
+			}
+
+			frequdelta /= CurveXY.size();
 
 			Iterator<Double> Iiter = CurveI.iterator();
 			while (Iiter.hasNext()) {
@@ -331,11 +401,9 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 			while (true) {
 
-				
-				
-				if(size - endindex  < 2 * maxpoints)
+				if (size - endindex < 2 * maxpoints)
 					endindex = size;
-				
+
 				sublist = truths.subList(startindex, Math.min(endindex, size));
 				parent.Listmap.put(segmentLabel, sublist);
 
