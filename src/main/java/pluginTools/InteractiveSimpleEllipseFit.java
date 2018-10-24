@@ -1285,7 +1285,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 						}
 						
 						
-					  if(RMStrackImages == null) {
+					  if(RMStrackImages == null || !RMStrackImages.isVisible()) {
 						  
 						  RMStrackImages = ImageJFunctions.show(StripImage);
 						  
