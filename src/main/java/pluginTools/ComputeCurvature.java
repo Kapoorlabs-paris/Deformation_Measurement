@@ -44,6 +44,7 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Line;
 import ij.gui.Overlay;
+import ij.io.FileSaver;
 import ij.measure.Calibration;
 import imageAxis.AxisRendering;
 import kalmanForSegments.Segmentobject;
@@ -135,7 +136,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			int time = entry.getValue();
 
 			String timeID = entry.getKey();
-		
+
 			ArrayList<Segmentobject> currentlist = sortedMappair.get(TrackID + timeID);
 
 			ranac.setPosition(time, 0);
@@ -182,24 +183,23 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	}
 
-	public static void MakeDistanceFan(InteractiveSimpleEllipseFit parent, HashMap<String, ArrayList<Intersectionobject>> sortedMappair, String TrackID) {
+	public static void MakeDistanceFan(InteractiveSimpleEllipseFit parent,
+			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, String TrackID) {
 
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 
-		RandomAccessibleInterval<FloatType> Blank = new ArrayImgFactory<FloatType>().create(parent.originalimg, new FloatType());
-
+		RandomAccessibleInterval<FloatType> Blank = new ArrayImgFactory<FloatType>().create(parent.originalimg,
+				new FloatType());
 
 		while (itZ.hasNext()) {
-			
-			
+
 			Map.Entry<String, Integer> entry = itZ.next();
 			int time = entry.getValue();
 			String timeID = entry.getKey();
-			
-			
-			RandomAccessibleInterval<FloatType> CurrentBlank = utility.Slicer.getCurrentView(Blank, time, parent.thirdDimensionSize, parent.fourthDimension,
-					parent.fourthDimensionSize);
-			
+
+			RandomAccessibleInterval<FloatType> CurrentBlank = utility.Slicer.getCurrentView(Blank, time,
+					parent.thirdDimensionSize, parent.fourthDimension, parent.fourthDimensionSize);
+
 			ArrayList<Intersectionobject> currentlist = sortedMappair.get(TrackID + timeID);
 
 			if (currentlist != null && currentlist.size() > 0) {
@@ -208,39 +208,38 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 					ArrayList<double[]> sortedlinelist = currentobject.linelist;
 					double maxdist = GetMaxdist(sortedlinelist, TrackID);
-					
 
-					for (int i = 0; i < sortedlinelist.size() ; ++i) {
+					for (int i = 0; i < sortedlinelist.size(); ++i) {
 
-					
-						
-						DrawFunction.DrawGeomBresnLines(CurrentBlank, new double[] {centerpoint[0],  centerpoint[1]}, new double[] {sortedlinelist.get(i)[0],  sortedlinelist.get(i)[1]}  ,sortedlinelist.get(i)[2] / maxdist);
+						DrawFunction.DrawGeomBresnLines(CurrentBlank, new double[] { centerpoint[0], centerpoint[1] },
+								new double[] { sortedlinelist.get(i)[0], sortedlinelist.get(i)[1] },
+								sortedlinelist.get(i)[2] / maxdist);
 
 					}
 
 				}
 			}
-			
+
 		}
-		 AxisRendering.Reshape(Blank, "Fan display");
+		AxisRendering.Reshape(Blank, "Fan display");
 
 	}
-	
+
 	public static double GetMaxdist(ArrayList<double[]> linelist, String TrackID) {
-		
+
 		double maxdist = Double.MIN_VALUE;
-		
+
 		for (int i = 0; i < linelist.size(); ++i) {
-			
-			if(linelist.get(i)[2] >= maxdist)
+
+			if (linelist.get(i)[2] >= maxdist)
 				maxdist = linelist.get(i)[2];
-			
+
 		}
 		return maxdist;
 	}
 
-	public static  void MakeInterKymo(InteractiveSimpleEllipseFit parent, HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size,
-			String TrackID) {
+	public static void MakeInterKymo(InteractiveSimpleEllipseFit parent,
+			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size, String TrackID) {
 
 		RandomAccessibleInterval<FloatType> CurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
@@ -345,6 +344,119 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
 	}
 
+	public static void SaveInterKymo(InteractiveSimpleEllipseFit parent,
+			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size, String TrackID) {
+
+		RandomAccessibleInterval<FloatType> CurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
+				new FloatType());
+		RandomAccessibleInterval<FloatType> IntensityAKymo = new ArrayImgFactory<FloatType>().create(size,
+				new FloatType());
+		RandomAccessibleInterval<FloatType> IntensityBKymo = new ArrayImgFactory<FloatType>().create(size,
+				new FloatType());
+		RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
+
+		RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
+		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
+
+		RandomAccess<FloatType> ranac = CurvatureKymo.randomAccess();
+
+		while (itZ.hasNext()) {
+
+			Map.Entry<String, Integer> entry = itZ.next();
+
+			int time = entry.getValue();
+			String timeID = entry.getKey();
+
+			ArrayList<Intersectionobject> currentlist = sortedMappair.get(TrackID + timeID);
+
+			ranac.setPosition(time - 1, 0);
+			ranacimageA.setPosition(time - 1, 0);
+			ranacimageB.setPosition(time - 1, 0);
+			if (currentlist != null) {
+				for (Intersectionobject currentobject : currentlist) {
+
+					int count = 0;
+
+					ArrayList<double[]> sortedlinelist = currentobject.linelist;
+
+					for (int i = 0; i < sortedlinelist.size(); ++i) {
+
+						ranac.setPosition(count, 1);
+						ranac.get().set((float) sortedlinelist.get(i)[2]);
+
+						ranacimageA.setPosition(count, 1);
+						ranacimageA.get().setReal(sortedlinelist.get(i)[3]);
+
+						ranacimageB.setPosition(count, 1);
+						ranacimageB.get().setReal(sortedlinelist.get(i)[4]);
+
+						count++;
+
+					}
+
+				}
+			}
+
+		}
+		double[] calibration = new double[] { parent.timecal, parent.calibration };
+		Calibration cal = new Calibration();
+		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, "s um");
+		
+		
+		ImagePlus Curveimp = ImageJFunctions.wrapFloat(CurvatureKymo, "Curvature ChA Kymo for TrackID: " + TrackID);
+
+		FileSaver fsC = new FileSaver(Curveimp);
+
+		fsC.saveAsTiff(parent.saveFile + "//" + parent.addToName + Curveimp.getTitle() + ".tif");
+
+		ImagePlus IntensityAimp = ImageJFunctions.wrapFloat(IntensityAKymo,
+				"Intensity ChA Kymo for TrackID: " + TrackID);
+
+		FileSaver fsB = new FileSaver(IntensityAimp);
+
+		fsB.saveAsTiff(parent.saveFile + "//" + parent.addToName + IntensityAimp.getTitle() + ".tif");
+
+		if (parent.twochannel) {
+			ImagePlus IntensityBimp = ImageJFunctions.wrapFloat(IntensityBKymo,
+					"Intensity ChB Kymo for TrackID: " + TrackID);
+
+			FileSaver fsBB = new FileSaver(IntensityBimp);
+
+			fsBB.saveAsTiff(parent.saveFile + "//" + parent.addToName + IntensityBimp.getTitle() + ".tif");
+
+		}
+
+		KymoSaveobject Kymos = new KymoSaveobject(CurvatureKymo, IntensityAKymo, IntensityBKymo);
+		parent.KymoFileobject.put(TrackID, Kymos);
+
+		int hyperslicedimension = 1;
+		ArrayList<Pair<Integer, Double>> poslist = new ArrayList<Pair<Integer, Double>>();
+		for (long pos = 0; pos < CurvatureKymo.dimension(hyperslicedimension) - 1; ++pos) {
+
+			RandomAccessibleInterval<FloatType> CurveView = Views.hyperSlice(CurvatureKymo, hyperslicedimension, pos);
+
+			RandomAccess<FloatType> Cranac = CurveView.randomAccess();
+
+			Iterator<Map.Entry<String, Integer>> itZSec = parent.AccountedZ.entrySet().iterator();
+
+			double rms = 0;
+			while (itZSec.hasNext()) {
+
+				Map.Entry<String, Integer> entry = itZSec.next();
+
+				int time = entry.getValue();
+
+				Cranac.setPosition(time - 1, 0);
+
+				rms += Cranac.get().get() * Cranac.get().get();
+
+			}
+			poslist.add(new ValuePair<Integer, Double>((int) pos, Math.sqrt(rms / parent.AccountedZ.size())));
+
+		}
+		parent.StripList.put(TrackID, poslist);
+	}
+
 	@Override
 	protected void done() {
 
@@ -361,14 +473,12 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		parent.SegmentTracklist.clear();
 		parent.table.removeAll();
 
-		
-		IJ.log( "\n " +
-		"Calculation is Complete " +  "\n " +
-				      "do a Shift + Left click near the Cell of your choice to display " + "\n "
-				   + "Kymographs for Curvature, Intensity " + " \n" + 
-				     "RMS value which moves with the time slider to fit on the current view of the cell " + " \n" +
-				     "Curvature value display as lines connecting the center to the boundary of the cell over time");
-		
+		IJ.log("\n " + "Calculation is Complete " + "\n "
+				+ "do a Shift + Left click near the Cell of your choice to display " + "\n "
+				+ "Kymographs for Curvature, Intensity " + " \n"
+				+ "RMS value which moves with the time slider to fit on the current view of the cell " + " \n"
+				+ "Curvature value display as lines connecting the center to the boundary of the cell over time");
+
 		TrackingFunctions track = new TrackingFunctions(parent);
 		if (parent.ndims > 3) {
 
@@ -390,15 +500,11 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		else {
 
-	
-
 			SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simpledensegraph = track.Trackdensefunction();
 
 			parent.parentdensegraphZ.put(Integer.toString(1), simpledensegraph);
 
 			CurveddenseLineage();
-
-		
 
 		}
 
@@ -704,9 +810,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	}
 
-	
-
-	
 	public static Pair<HashMap<String, Integer>, HashMap<String, ArrayList<Intersectionobject>>> GetZTTrackList(
 			final InteractiveSimpleEllipseFit parent) {
 
@@ -830,6 +933,5 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		return binned;
 
 	}
-
 
 }

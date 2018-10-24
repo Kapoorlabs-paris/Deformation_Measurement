@@ -88,6 +88,50 @@ public class CurvatureTableDisplay {
 
 
 	
+	public static void saveclicked(InteractiveSimpleEllipseFit parent, int trackindex) {
+
+		// Make something happen
+		parent.row = trackindex;
+		String ID = (String) parent.table.getValueAt(trackindex, 0);
+		ArrayList<Pair<String, double[]>> currentresultPeri = new ArrayList<Pair<String, double[]>>();
+		
+
+		for (Pair<String, double[]> currentperi : parent.resultAngle) {
+
+			if (ID.equals(currentperi.getA())) {
+
+				currentresultPeri.add(currentperi);
+
+			}
+
+		}
+
+	
+
+		if (parent.imp != null) {
+			parent.imp.setOverlay(parent.overlay);
+			parent.imp.updateAndDraw();
+		}
+		Binobject densesortedMappair = ComputeCurvature.GetZTdenseTrackList(parent);
+		parent.sortedMappair = densesortedMappair.sortedmap;
+		int TimedimensionKymo = parent.AccountedZ.size();
+
+	
+
+		// For dense plot
+		HashMap<String, Integer> denseidmap = densesortedMappair.maxid;
+
+		
+		int Xkymodimension = denseidmap.get(ID);
+	
+
+			long[] size = new long[] { TimedimensionKymo, Xkymodimension + 1 };
+			ComputeCurvature.SaveInterKymo(parent, densesortedMappair.sortedmap, size, ID);
+
+
+
+	}
+	
 
 	public static Pair<Double, Double> RangePlot(ArrayList<Curvatureobject> currentresultCurvature, int index) {
 

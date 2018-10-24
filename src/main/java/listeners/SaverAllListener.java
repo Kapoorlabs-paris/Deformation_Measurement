@@ -85,10 +85,14 @@ public class SaverAllListener implements ActionListener {
 				KymoSaveobject Kymos = parent.KymoFileobject.get(ID);
 				if(Kymos==null) {
 					
-					CurvatureTableDisplay.displayclicked(parent, tablepos);
+					CurvatureTableDisplay.saveclicked(parent, tablepos);
 					Kymos = parent.KymoFileobject.get(ID);
 					
 				}
+				else
+					CurvatureTableDisplay.saveclicked(parent, tablepos);
+				
+				
 				RandomAccessibleInterval<FloatType> CurvatureKymo = Kymos.CurvatureKymo;
 				
 				RandomAccessibleInterval<FloatType> IntensityAKymo = Kymos.IntensityAKymo;
