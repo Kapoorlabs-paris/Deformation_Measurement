@@ -257,6 +257,14 @@ public class IlastikEllipseFileChooser extends JPanel {
 	  public String chBIdentifier;
 	  public String chSegIdentifier;
 	  public JButton RunBatch;
+	  
+	 public Label LoadDirectoryA = new Label("Load channel 1 directory");	
+	 public Label LoadDirectoryB = new Label("Load channel 2 directory");	
+	 public Label LoadDirectorySeg = new Label("Load segmentation image directory");	
+	  
+	 public Label channelA = new Label("Channel 1 identifier name");
+	 public Label channelB = new Label("Channel 2 identifier name");
+	 public Label channelSeg = new Label("Segmentation image identifier name");
 	  protected class RuninBatchListener implements ItemListener {
 		  
 		  
@@ -273,13 +281,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 			  System.setProperty("scijava.log.level", "None");
            panelFirst.removeAll();
 		   Panelfileoriginal.removeAll();	
-		  final Label LoadDirectoryA = new Label("Load channel 1 directory");	
-		  final Label LoadDirectoryB = new Label("Load channel 2 directory");	
-		  final Label LoadDirectorySeg = new Label("Load segmentation image directory");	
-		  
-		  final Label channelA = new Label("Channel 1 identifier name");
-		  final Label channelB = new Label("Channel 2 identifier name");
-		  final Label channelSeg = new Label("Segmentation image identifier name");
+		
 		  
 		  DirA = new JButton(LoadDirectoryA.getText());
 		  DirB = new JButton(LoadDirectoryB.getText());
@@ -296,13 +298,14 @@ public class IlastikEllipseFileChooser extends JPanel {
 	       segmentationidentifier = new TextField(5);
 	       segmentationidentifier.setText("Segmentation");
 	       chSegIdentifier = segmentationidentifier.getText();
-		//	Panelfileoriginal.add(Godouble,  new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-		//			GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Panelfileoriginal.add(GodoubleBatch,  new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Panelfileoriginal.add(DirA, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		
-			Panelfileoriginal.add(DirB,  new GridBagConstraints(3, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			
+			
+			
 			Panelfileoriginal.add(DirSeg, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			
@@ -312,10 +315,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Panelfileoriginal.add(channelAidentifier, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-			Panelfileoriginal.add(channelB, new GridBagConstraints(3, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-			Panelfileoriginal.add(channelBidentifier, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		
 			
 			Panelfileoriginal.add(channelSeg, new GridBagConstraints(3, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
@@ -351,12 +351,35 @@ public class IlastikEllipseFileChooser extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			
-			if(Ch1_AllMovies.length > 0 )
-			new ExecuteBatch(Ch1_AllMovies, Ch2_AllMovies, Seg_AllMovies, chAIdentifier, chBIdentifier, chSegIdentifier, new InteractiveSimpleEllipseFit(), Ch1_AllMovies[0], twochannel).run(null);
+			
+			
+			
+			if(Ch1_AllMovies.length > 0 && !twochannel) {
+				
+				
+				
+			   new ExecuteBatch(Ch1_AllMovies, Seg_AllMovies, chAIdentifier, chSegIdentifier, new InteractiveSimpleEllipseFit(), Ch1_AllMovies[0], twochannel).run();
+			
+			
+			}
+			
+			if(twochannel)
+			if (Ch1_AllMovies.length > 0 && Ch2_AllMovies.length > 0) {
+				
+				new ExecuteBatch(Ch1_AllMovies, Ch2_AllMovies, Seg_AllMovies, chAIdentifier, chBIdentifier, chSegIdentifier, new InteractiveSimpleEllipseFit(), Ch1_AllMovies[0], twochannel).run();
+				
+			}
+			
+			else if(Ch1_AllMovies.length != Ch2_AllMovies.length) {
+				
+				IJ.log("Number of files in both the directories should be the same");
+				
+			}
+			
 			else
 				IJ.log("No image file found in the chosen directory");
 			
-			close(Cardframe);
+			
 		}
 		  
 		  

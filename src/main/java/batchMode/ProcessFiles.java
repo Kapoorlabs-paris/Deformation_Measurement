@@ -17,7 +17,7 @@ public class ProcessFiles {
 
 	
 
-	public static void process(File[] directoryCh1, File[] directoryCh2, File[] directoryChSeg, String Ch1, String Ch2, String ChSeg, boolean twochannel, ExecutorService taskexecutor) {
+	public static void process(ExecuteBatch parent, File[] directoryCh1, File[] directoryCh2, File[] directoryChSeg, String Ch1, String Ch2, String ChSeg, boolean twochannel, ExecutorService taskexecutor) {
 		 List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
 		 
 		 
@@ -25,9 +25,40 @@ public class ProcessFiles {
 		for (int fileindex = 0; fileindex < directoryCh1.length; ++fileindex) {
 			
 			Pair<File, File> Chfiles = StringMatching(directoryCh1[fileindex], directoryChSeg ,directoryCh2, Ch1, Ch2, ChSeg );
-			ExecuteBatch parent = new ExecuteBatch(directoryCh1, directoryCh2,directoryChSeg, Ch1, Ch2, ChSeg, new InteractiveSimpleEllipseFit(), directoryCh1[0], twochannel);
+			
 			if(Chfiles!=null) 
-			tasks.add(Executors.callable(new Split(parent, Chfiles.getA(), Chfiles.getB(), directoryCh1[fileindex], fileindex, parent.twochannel)));
+			tasks.add(Executors.callable(new Split(parent, Chfiles.getA(), Chfiles.getB(), directoryChSeg[fileindex], fileindex, parent.twochannel)));
+	
+			
+			
+			
+			
+		}
+		try {
+			taskexecutor.invokeAll(tasks);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+		}
+		
+		
+		
+		
+	
+		
+
+		}
+	
+	
+	public static void process(ExecuteBatch parent, File[] directoryCh1, File[] directoryChSeg, String Ch1,  String ChSeg, boolean twochannel, ExecutorService taskexecutor) {
+		 List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
+		 
+		 
+		 
+		for (int fileindex = 0; fileindex < directoryCh1.length; ++fileindex) {
+			
+			
+		
+			tasks.add(Executors.callable(new Split(parent, directoryCh1[fileindex],directoryChSeg[fileindex], fileindex, parent.twochannel)));
 	
 			
 			
