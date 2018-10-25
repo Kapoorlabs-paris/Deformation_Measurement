@@ -14,4 +14,22 @@ public class ProgressBar {
 
 	}
 	
+	public static void SetProgressBarTime(JProgressBar jpb, double percent, int framenumber, int thirdDimsize) {
+
+		jpb.setValue((int) percent);
+		jpb.setOpaque(true);
+		jpb.setStringPainted(true);
+		jpb.setString("Time point = " + framenumber + "/" + thirdDimsize);
+
+	}
+	
+	public static void SetProgressBarTime(JProgressBar jpb, double percent, int framenumber, int thirdDimsize,
+			String message) {
+
+		jpb.setValue((int) percent);
+		jpb.setOpaque(true);
+		jpb.setStringPainted(true);
+		jpb.setString(message + "= " + framenumber + "/" + thirdDimsize);
+
+	}
 }

@@ -23,6 +23,13 @@ public class CreateINIfile {
 		LocalPrefs.set("IntensityRadius.double", parent.insidedistance);
 		LocalPrefs.set("TimeCalibration.double", parent.timecal);
 		LocalPrefs.set("SpaceCalibration.double", parent.calibration);
+		LocalPrefs.set("CurvatureViaCircle.boolean", parent.pixelcelltrackcirclefits);
+		LocalPrefs.set("CurvatureViaDistance.boolean", parent.distancemethod);
+		
+		
+		
+		
+		
 		if(parent.saveFile!=null)
 		LocalPrefs.setHomeDir(parent.saveFile.getAbsolutePath());
 		else

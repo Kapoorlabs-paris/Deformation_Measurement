@@ -351,7 +351,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			
-			
+			WindowManager.closeAllWindows();
 			
 			
 			if(Ch1_AllMovies.length > 0 && !twochannel) {

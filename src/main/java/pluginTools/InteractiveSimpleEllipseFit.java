@@ -158,8 +158,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	 * 
 	 */
 	
-	@Parameter
-    public UIService uiService;
+	
 	private static final long serialVersionUID = 1L;
 	public String usefolder = IJ.getDirectory("imagej");
 	public String addToName = "EllipseFits";
@@ -308,8 +307,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public int ndims;
 	public boolean usedefaultrim = true;
 	public MouseListener ovalml;
-	public final double calibration;
-	public final double timecal;
+	public double calibration;
+	public double timecal;
 	public double insidedistance = 10;
 	public double outsidedistance = 0;
 	public int[] boundarypoint;

@@ -8,6 +8,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+
 import ij.IJ;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -20,14 +25,22 @@ public class ProcessFiles {
 	public static void process(ExecuteBatch parent, File[] directoryCh1, File[] directoryCh2, File[] directoryChSeg, String Ch1, String Ch2, String ChSeg, boolean twochannel, ExecutorService taskexecutor) {
 		 List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
 		 
-		 
-		 
+			parent.label = new JLabel("Progress..");
+			parent.frame = new JFrame();
+			parent.panel = new JPanel();
+			parent.frame.add(parent.panel);
+			parent.frame.pack();
+			parent.frame.setSize(500, 200);
+			parent.frame.setVisible(true);
+			JProgressBar fileprogress = new JProgressBar();
 		for (int fileindex = 0; fileindex < directoryCh1.length; ++fileindex) {
 			
 			Pair<File, File> Chfiles = StringMatching(directoryCh1[fileindex], directoryChSeg ,directoryCh2, Ch1, Ch2, ChSeg );
 			
+		
+			
 			if(Chfiles!=null) 
-			tasks.add(Executors.callable(new Split(parent, Chfiles.getA(), Chfiles.getB(), directoryChSeg[fileindex], fileindex, parent.twochannel)));
+			tasks.add(Executors.callable(new Split(parent, Chfiles.getA(), Chfiles.getB(), directoryChSeg[fileindex], fileindex, parent.twochannel, fileprogress)));
 	
 			
 			
@@ -49,16 +62,23 @@ public class ProcessFiles {
 		}
 	
 	
-	public static void process(ExecuteBatch parent, File[] directoryCh1, File[] directoryChSeg, String Ch1,  String ChSeg, boolean twochannel, ExecutorService taskexecutor) {
+	public static void processSingle(ExecuteBatch parent, File[] directoryCh1, File[] directoryChSeg, String Ch1,  String ChSeg, boolean twochannel, ExecutorService taskexecutor) {
 		 List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
 		 
 		 
-		 
+			parent.label = new JLabel("Progress..");
+			parent.frame = new JFrame();
+			parent.panel = new JPanel();
+			parent.frame.add(parent.panel);
+			parent.frame.pack();
+			parent.frame.setSize(500, 200);
+			parent.frame.setVisible(true);
+			JProgressBar fileprogress = new JProgressBar();
 		for (int fileindex = 0; fileindex < directoryCh1.length; ++fileindex) {
 			
-			
 		
-			tasks.add(Executors.callable(new Split(parent, directoryCh1[fileindex],directoryChSeg[fileindex], fileindex, parent.twochannel)));
+		
+			tasks.add(Executors.callable(new Split(parent, directoryCh1[fileindex],directoryChSeg[fileindex], fileindex, parent.twochannel, fileprogress)));
 	
 			
 			

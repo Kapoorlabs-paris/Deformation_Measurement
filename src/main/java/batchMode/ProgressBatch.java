@@ -22,11 +22,11 @@ public class ProgressBatch extends SwingWorker<Void, Void> {
 		int nThreads = Runtime.getRuntime().availableProcessors();
 		// set up executor service
 		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
-
+		
 		if(parent.twochannel)
 		ProcessFiles.process(parent, parent.C1_AllImages, parent.C2_AllImages, parent.SegmentationImages, parent.channelA, parent.channelB, parent.channelSeg, parent.twochannel, taskExecutor);
 		else
-		ProcessFiles.process(parent, parent.C1_AllImages, parent.SegmentationImages, parent.channelA, parent.channelSeg, parent.twochannel, taskExecutor);	
+		ProcessFiles.processSingle(parent, parent.C1_AllImages, parent.SegmentationImages, parent.channelA, parent.channelSeg, parent.twochannel, taskExecutor);	
 		
 		return null;
 
