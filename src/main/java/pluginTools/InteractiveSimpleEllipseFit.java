@@ -52,6 +52,7 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 import org.scijava.plugin.Parameter;
 import org.scijava.ui.UIService;
 
+import batchMode.BatchKymoSave;
 import batchMode.SaveBatchListener;
 import comboSliderTextbox.SliderBoxGUI;
 import costMatrix.CostFunction;
@@ -161,10 +162,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	
 	private static final long serialVersionUID = 1L;
 	public String usefolder = IJ.getDirectory("imagej");
-	public String addToName = "EllipseFits";
+	public String addToName = "ETrack";
 	public final int scrollbarSize = 1000;
 	public double maxError = 3;
 	public int degree = 3;
+	public final String inputstring;
 	public int secdegree = 2;
 	public double minellipsepoints = 9;
 	public double mincirclepoints = 3;
@@ -548,10 +550,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.curveautomode = false;
 		this.curvesupermode = false;
 		this.twochannel = false;
+		this.inputstring = null;
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, final double calibration,
-			final double timecal, File file) {
+			final double timecal, File file, String inputstring) {
 		this.inputfile = file;
 		this.inputdirectory = file.getParent();
 		this.originalimg = originalimg;
@@ -569,10 +572,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.curveautomode = false;
 		this.curvesupermode = false;
 		this.twochannel = false;
+		this.inputstring = inputstring;
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, double calibration,
-			double timecal) {
+			double timecal, String inputstring) {
 		this.inputfile = null;
 		this.inputdirectory = null;
 		this.originalimg = originalimg;
@@ -590,10 +594,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.curveautomode = false;
 		this.curvesupermode = false;
 		this.twochannel = false;
+		this.inputstring = inputstring;
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg, final double calibration,
-			final double timecal, boolean automode) {
+			final double timecal, boolean automode, String inputstring) {
 		this.inputfile = null;
 		this.inputdirectory = null;
 		this.originalimg = originalimg;
@@ -611,11 +616,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.curveautomode = false;
 		this.curvesupermode = false;
 		this.twochannel = false;
+		this.inputstring = inputstring;
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
 			RandomAccessibleInterval<FloatType> originalimgbefore, final double calibration, final double timecal,
-			boolean automode, String inputdirectory) {
+			boolean automode, String inputdirectory, String inputstring) {
 		this.inputfile = null;
 		this.inputdirectory = inputdirectory;
 		this.originalimg = originalimg;
@@ -634,13 +640,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.curveautomode = false;
 		this.curvesupermode = false;
 		this.twochannel = false;
-
+		this.inputstring = inputstring;
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
 			RandomAccessibleInterval<FloatType> originalimgbefore, RandomAccessibleInterval<IntType> originalimgsuper,
 			final double calibration, final double timecal, boolean automode, boolean supermode, String inputdirectory,
-			boolean twochannel) {
+			boolean twochannel, String inputstring) {
 		this.inputfile = null;
 		this.inputdirectory = inputdirectory;
 		this.originalimg = originalimg;
@@ -660,13 +666,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.curveautomode = false;
 		this.curvesupermode = false;
 		this.twochannel = twochannel;
-
+		this.inputstring = inputstring;
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
 			RandomAccessibleInterval<FloatType> originalimgbefore, final double calibration, final double timecal,
 			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode, String inputdirectory,
-			boolean twochannel) {
+			boolean twochannel, String inputstring) {
 		this.inputfile = null;
 		this.inputdirectory = inputdirectory;
 		this.originalimg = originalimg;
@@ -706,12 +712,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.curveautomode = curveautomode;
 		this.curvesupermode = curvesupermode;
 		this.twochannel = twochannel;
+		this.inputstring = inputstring;
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
 			RandomAccessibleInterval<FloatType> originalimgbefore, RandomAccessibleInterval<IntType> originalimgsuper,
 			final double calibration, final double timecal, boolean automode, boolean supermode, boolean curveautomode,
-			boolean curvesupermode, String inputdirectory, boolean twochannel) {
+			boolean curvesupermode, String inputdirectory, boolean twochannel, String inputstring) {
 
 		this.inputfile = null;
 		this.inputdirectory = inputdirectory;
@@ -752,14 +759,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.curveautomode = curveautomode;
 		this.curvesupermode = curvesupermode;
 		this.twochannel = twochannel;
-
+		this.inputstring = inputstring;
 	}
 
 	public InteractiveSimpleEllipseFit(RandomAccessibleInterval<FloatType> originalimg,
 			RandomAccessibleInterval<FloatType> originalSecimg, RandomAccessibleInterval<FloatType> originalimgbefore,
 			RandomAccessibleInterval<IntType> originalimgsuper, final double calibration, final double timecal,
 			boolean automode, boolean supermode, boolean curveautomode, boolean curvesupermode, String inputdirectory,
-			boolean twochannel) {
+			boolean twochannel, String inputstring) {
 
 		this.inputfile = null;
 		this.inputdirectory = inputdirectory;
@@ -800,6 +807,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.curvesupermode = curvesupermode;
 		this.twochannel = twochannel;
 
+		this.inputstring = inputstring;
 	}
 
 	public void run(String arg0) {
@@ -978,14 +986,237 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		panelFirst.repaint();
 		panelFirst.validate();
 
-		Card();
+		Card(false);
 
 		if (curvesupermode || curveautomode)
 			StartCurvatureComputingCurrent();
 		saveFile = new java.io.File(".");
 
 	}
+	public void runBatch(File savefile) {
 
+		
+		displaymin = 0;
+		displaymax = 1;
+
+		if ((automode) || (curveautomode)) {
+
+			originalimgsmooth = new ArrayImgFactory<FloatType>().create(originalimg, new FloatType());
+			try {
+
+				Gauss3.gauss(gaussradius, Views.extendBorder(originalimg), originalimgsmooth);
+
+			} catch (IncompatibleTypeException es) {
+
+				es.printStackTrace();
+			}
+		}
+
+		redoing = false;
+		KymoFileobject = new HashMap<String, KymoSaveobject>();
+		localCurvature = new ArrayList<Curvatureobject>();
+		localSegment = new ArrayList<Segmentobject>();
+		functions = new ArrayList<RegressionFunction>();
+		interpolatedlocalCurvature = new ArrayList<Curvatureobject>();
+		AllRefcords = new HashMap<String, RealLocalizable>();
+		AlllocalCurvature = new ArrayList<ArrayList<Curvatureobject>>();
+		superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>>();
+		pixellist = new HashSet<Integer>();
+		rtAll = new ResultsTable();
+		jpb = new JProgressBar();
+		Allrois = new ArrayList<Roi>();
+		ZTRois = new HashMap<String, Roiobject>();
+		AutoZTRois = new HashMap<String, Roiobject>();
+		DefaultZTRois = new HashMap<String, Roiobject>();
+		IntersectionZTRois = new HashMap<String, Roiobject>();
+		Clickedpoints = new int[2];
+		ALLIntersections = new HashMap<String, ArrayList<Intersectionobject>>();
+		ALLdenseIntersections = new HashMap<String, ArrayList<Intersectionobject>>();
+		ALLSegments = new HashMap<String, ArrayList<Segmentobject>>();
+		HashresultCurvature = new HashMap<Integer, ArrayList<double[]>>();
+		SubHashresultCurvature = new HashMap<Integer, List<RealLocalizable>>();
+		HashresultSegCurvature = new HashMap<Integer, Double>();
+		HashresultSegIntensityA = new HashMap<Integer, Double>();
+		HashresultSegIntensityB = new HashMap<Integer, Double>();
+		HashresultSegPerimeter = new HashMap<Integer, Double>();
+
+		HashSegmentTrackList = new HashMap<String, ArrayList<Segmentobject>>();
+		HashTrackList = new HashMap<String, ArrayList<Intersectionobject>>();
+		HashdenseTrackList = new HashMap<String, ArrayList<Intersectionobject>>();
+		Finalresult = new HashMap<String, Intersectionobject>();
+		SegmentFinalresult = new HashMap<String, Segmentobject>();
+		Finalcurvatureresult = new HashMap<Integer, Curvatureobject>();
+		Tracklist = new ArrayList<Pair<String, Intersectionobject>>();
+		denseTracklist = new ArrayList<Pair<String, Intersectionobject>>();
+		SegmentTracklist = new ArrayList<Pair<String, Segmentobject>>();
+		resultDraw = new HashMap<String, Pair<ArrayList<double[]>, ArrayList<Line>>>();
+		resultDrawLine = new HashMap<String, ArrayList<Line>>();
+		Accountedframes = new HashMap<String, Integer>();
+		AccountedZ = new HashMap<String, Integer>();
+	
+		CellCurvature = new ArrayList<Curvatureobject>();
+		setlowprob(lowprob);
+		sethighprob(highprob);
+		setInsidecut(insideCutoff);
+
+		// minNumInliers = (int) Math.round(timecal / calibration);
+
+		setminInliers(minNumInliers);
+
+		if (ndims < 3) {
+
+			thirdDimensionSize = 0;
+			fourthDimensionSize = 0;
+		}
+
+		if (ndims == 3) {
+
+			fourthDimension = 1;
+			thirdDimension = 1;
+			fourthDimensionSize = 0;
+
+			thirdDimensionSize = (int) originalimg.dimension(2);
+			AutostartTime = thirdDimension;
+			AutoendTime = thirdDimensionSize;
+			maxframegap = thirdDimensionSize / 4;
+		}
+
+		if (ndims == 4) {
+
+			fourthDimension = 1;
+			thirdDimension = 1;
+
+			thirdDimensionSize = (int) originalimg.dimension(2);
+			fourthDimensionSize = (int) originalimg.dimension(3);
+			AutostartTime = fourthDimension;
+			AutoendTime = fourthDimensionSize;
+			prestack = new ImageStack((int) originalimg.dimension(0), (int) originalimg.dimension(1),
+					java.awt.image.ColorModel.getRGBdefault());
+		}
+
+		if (ndims > 4) {
+
+			System.out.println("Image has wrong dimensionality, upload an XYT/XYZ/XY image");
+			return;
+		}
+
+		if (originalimgbefore == null)
+			originalimgbefore = originalimg;
+		setTime(fourthDimension);
+		setZ(thirdDimension);
+		
+		CurrentView = utility.Slicer.getCurrentView(originalimg, thirdDimension, thirdDimensionSize, fourthDimension,
+				fourthDimensionSize);
+		if (automode || curveautomode)
+			CurrentViewSmooth = utility.Slicer.getCurrentView(originalimgsmooth, thirdDimension, thirdDimensionSize,
+					fourthDimension, fourthDimensionSize);
+		if (originalimgbefore != null) {
+			CurrentViewOrig = utility.Slicer.getCurrentView(originalimgbefore, thirdDimension, thirdDimensionSize,
+					fourthDimension, fourthDimensionSize);
+
+		}
+		if (originalSecimg != null) {
+
+			CurrentViewSecOrig = utility.Slicer.getCurrentView(originalSecimg, thirdDimension, thirdDimensionSize,
+					fourthDimension, fourthDimensionSize);
+		}
+
+		if (originalimgsuper != null) {
+
+			RandomAccessibleInterval<IntType> CurrentViewInt = utility.Slicer.getCurrentViewInt(originalimgsuper,
+					thirdDimension, thirdDimensionSize, fourthDimension, fourthDimensionSize);
+			IntType min = new IntType();
+			IntType max = new IntType();
+			computeMinMax(Views.iterable(CurrentViewInt), min, max);
+			// Neglect the background class label
+			int currentLabel = min.get();
+
+			background = currentLabel;
+
+		}
+		
+		imp = ImageJFunctions.show(CurrentViewOrig);
+
+		imp.setTitle("Active Image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
+		// Create empty Hyperstack
+
+		empty = new ArrayImgFactory<BitType>().create(originalimg, new BitType());
+		emptysmooth = new ArrayImgFactory<BitType>().create(originalimg, new BitType());
+		emptyWater = new ArrayImgFactory<IntType>().create(originalimg, new IntType());
+
+		if (!automode && !supermode && !curveautomode && !curvesupermode) {
+			roimanager = RoiManager.getInstance();
+
+			if (roimanager == null) {
+				roimanager = new RoiManager();
+			}
+		}
+		updatePreview(ValueChange.ALL);
+		if (automode || supermode || curveautomode || curvesupermode) {
+
+			lowprobslider.setValue(computeScrollbarPositionFromValue(lowprob, lowprobmin, lowprobmax, scrollbarSize));
+			highprobslider
+					.setValue(computeScrollbarPositionFromValue(highprob, highprobmin, highprobmax, scrollbarSize));
+			lowprob = utility.Slicer.computeValueFromScrollbarPosition(lowprobslider.getValue(), lowprobmin, lowprobmax,
+					scrollbarSize);
+			highprob = utility.Slicer.computeValueFromScrollbarPosition(highprobslider.getValue(), highprobmin,
+					highprobmax, scrollbarSize);
+
+			updatePreview(ValueChange.SEG);
+
+		}
+
+	
+
+	
+
+		Card(true);
+		
+		CleanMe();
+		StartCurvatureComputing(true, savefile);
+        
+	
+	}
+	
+	public void CleanMe() {
+		
+		table.removeAll();
+		table.repaint();
+		localCurvature.clear();
+		AlllocalCurvature.clear();
+		KymoFileobject.clear();
+		overlay.clear();
+		Tracklist.clear();
+		if(imp!=null && mvl!=null)
+		imp.getCanvas().removeMouseListener(mvl);
+		if(imp!=null && ml!=null)
+		imp.getCanvas().removeMouseMotionListener(ml);
+		starttime = Integer.parseInt(startT.getText());
+		endtime = Integer.parseInt(endT.getText());
+		resolution = Integer.parseInt(resolutionField.getText());
+		displayCircle.setState(false);
+		displaySegments.setState(false);
+		displayIntermediate = false;
+		displayIntermediateBox = false;
+		parentgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(
+				DefaultWeightedEdge.class);
+		parentgraphZ = new HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
+		empty = utility.Binarization.CreateBinaryBit(originalimg, lowprob, highprob);
+		parentgraphSegZ = new HashMap<String, SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge>>();
+		parentdensegraphZ = new HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
+		ALLSegments.clear();
+		SegmentFinalresult.clear();
+		overlay.clear();
+		AccountedZ.clear();
+		AutostartTime = Integer.parseInt(startT.getText());
+		if (AutostartTime <= 0)
+			AutostartTime = 1;
+		AutoendTime = Integer.parseInt(endT.getText());
+		for(int z = AutostartTime; z <= AutoendTime; ++z)
+			AccountedZ.put(Integer.toString(z), z);
+		
+	}
+	
 	public void repaintView(ImagePlus Activeimp, RandomAccessibleInterval<FloatType> Activeimage) {
 		if (Activeimp == null || !Activeimp.isVisible()) {
 			Activeimp = ImageJFunctions.show(Activeimage);
@@ -1235,7 +1466,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			}
 			if (Tracklist.size() > 0 && (curveautomode || curvesupermode)) {
 
-				ComputeCurvature current = new ComputeCurvature(this, null);
+				ComputeCurvature current = new ComputeCurvature(this, null, false, null);
 				current.CurvedLineage();
 
 			}
@@ -1367,9 +1598,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	}
 
-	public void StartCurvatureComputing() {
+	public void StartCurvatureComputing(boolean batchmode, File savefile) {
 
-		ComputeCurvature compute = new ComputeCurvature(this, jpb);
+		ComputeCurvature compute = new ComputeCurvature(this, jpb, batchmode, savefile );
 
 		compute.execute();
 
@@ -1752,7 +1983,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	int textwidth = 5;
 
-	public void Card() {
+	public void Card(boolean hide) {
 
 		minInlierText = new Label(mininlierstring + " = " + minNumInliers, Label.CENTER);
 		lostlabel = new Label("Number of frames for loosing the track");
@@ -2380,6 +2611,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		Cardframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		Cardframe.pack();
+		if(!hide)
 		Cardframe.setVisible(true);
 
 	}

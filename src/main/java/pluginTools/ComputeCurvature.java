@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 
 import com.google.common.math.Quantiles.Scale;
 
+import batchMode.BatchKymoSave;
 import costMatrix.PixelratiowDistCostFunction;
 import curvatureUtils.DisplaySelected;
 import drawUtils.DrawFunction;
@@ -82,12 +84,17 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	final InteractiveSimpleEllipseFit parent;
 	final JProgressBar jpb;
-
-	public ComputeCurvature(final InteractiveSimpleEllipseFit parent, final JProgressBar jpb) {
+    final boolean batchmode;
+    final File savefile;
+	public ComputeCurvature(final InteractiveSimpleEllipseFit parent, final JProgressBar jpb, final boolean batchmode, final File savefile) {
 
 		this.parent = parent;
 
 		this.jpb = jpb;
+		
+		this.batchmode = batchmode;
+		
+		this.savefile = savefile;
 	}
 
 	@Override
@@ -422,14 +429,14 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		FileSaver fsC = new FileSaver(Curveimp);
 
-		fsC.saveAsTiff(parent.saveFile + "//" + parent.addToName + Curveimp.getTitle() + ".tif");
+		fsC.saveAsTiff(parent.saveFile + "//" + parent.addToName + parent.inputstring + "Curvature"   + "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
 		ImagePlus IntensityAimp = ImageJFunctions.wrapFloat(IntensityAKymo,
 				"Intensity ChA Kymo for TrackID: " + TrackID);
 
 		FileSaver fsB = new FileSaver(IntensityAimp);
 
-		fsB.saveAsTiff(parent.saveFile + "//" + parent.addToName + IntensityAimp.getTitle() + ".tif");
+		fsB.saveAsTiff(parent.saveFile + "//" + parent.addToName + parent.inputstring + "Intensity"   +  "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
 		if (parent.twochannel) {
 			ImagePlus IntensityBimp = ImageJFunctions.wrapFloat(IntensityBKymo,
@@ -437,7 +444,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			FileSaver fsBB = new FileSaver(IntensityBimp);
 
-			fsBB.saveAsTiff(parent.saveFile + "//" + parent.addToName + IntensityBimp.getTitle() + ".tif");
+			fsBB.saveAsTiff(parent.saveFile + "//" + parent.addToName + parent.inputstring +"Intensity"   +  "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
 		}
 
@@ -504,7 +511,9 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		parent.SegmentTracklist.clear();
 		parent.table.removeAll();
 
-		IJ.log("\n " + "Calculation is Complete " + "\n "
+		IJ.log("\n " + "Calculation is Complete or was interupted "  + "\n "
+		        + "IF RUNNING IN BATCH MODE, Results are automatically saved in Results folder"
+		        + "IF IT WAS NOT A KEYBOARD INTERUPT: " + "\n "
 				+ "do a Shift + Left click near the Cell of your choice to display " + "\n "
 				+ "Kymographs for Curvature, Intensity " + " \n"
 				+ "RMS value which moves with the time slider to fit on the current view of the cell " + " \n"
@@ -546,7 +555,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		} catch (ExecutionException e) {
 
 		}
-
+		if(batchmode)
+			BatchKymoSave.KymoSave(parent, savefile, parent.Cardframe);
 	}
 
 	public void CurvedLineage() {
@@ -707,6 +717,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			}
 
 		}
+		
+	
 
 	}
 

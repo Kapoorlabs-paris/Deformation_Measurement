@@ -22,25 +22,18 @@ public class ProcessFiles {
 
 	
 
-	public static void process(ExecuteBatch parent, File[] directoryCh1, File[] directoryCh2, File[] directoryChSeg, String Ch1, String Ch2, String ChSeg, boolean twochannel, ExecutorService taskexecutor) {
+	public static void process(File[] directoryCh1, File[] directoryCh2, File[] directoryChSeg, String Ch1, String Ch2, String ChSeg, boolean twochannel, ExecutorService taskexecutor) {
 		 List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
 		 
-			parent.label = new JLabel("Progress..");
-			parent.frame = new JFrame();
-			parent.panel = new JPanel();
-			parent.frame.add(parent.panel);
-			parent.frame.pack();
-			parent.frame.setSize(500, 200);
-			parent.frame.setVisible(true);
-			JProgressBar fileprogress = new JProgressBar();
+			
 		for (int fileindex = 0; fileindex < directoryCh1.length; ++fileindex) {
 			
 			Pair<File, File> Chfiles = StringMatching(directoryCh1[fileindex], directoryChSeg ,directoryCh2, Ch1, Ch2, ChSeg );
 			
 		
-			
+			ExecuteBatch parent = new ExecuteBatch(directoryCh1, directoryCh2,directoryChSeg, Ch1, Ch2, ChSeg, new InteractiveSimpleEllipseFit(), directoryCh1[0], twochannel);
 			if(Chfiles!=null) 
-			tasks.add(Executors.callable(new Split(parent, Chfiles.getA(), Chfiles.getB(), directoryChSeg[fileindex], fileindex, parent.twochannel, fileprogress)));
+			tasks.add(Executors.callable(new Split(parent, Chfiles.getA(), Chfiles.getB(), directoryChSeg[fileindex], fileindex, parent.twochannel)));
 	
 			
 			
@@ -62,23 +55,17 @@ public class ProcessFiles {
 		}
 	
 	
-	public static void processSingle(ExecuteBatch parent, File[] directoryCh1, File[] directoryChSeg, String Ch1,  String ChSeg, boolean twochannel, ExecutorService taskexecutor) {
+	public static void processSingle(File[] directoryCh1, File[] directoryChSeg, String Ch1,  String ChSeg, boolean twochannel, ExecutorService taskexecutor) {
 		 List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
 		 
 		 
-			parent.label = new JLabel("Progress..");
-			parent.frame = new JFrame();
-			parent.panel = new JPanel();
-			parent.frame.add(parent.panel);
-			parent.frame.pack();
-			parent.frame.setSize(500, 200);
-			parent.frame.setVisible(true);
-			JProgressBar fileprogress = new JProgressBar();
+	
 		for (int fileindex = 0; fileindex < directoryCh1.length; ++fileindex) {
 			
+			File Segfile = SingleStringMatching(directoryCh1[fileindex], directoryChSeg , Ch1, ChSeg );
 		
-		
-			tasks.add(Executors.callable(new Split(parent, directoryCh1[fileindex],directoryChSeg[fileindex], fileindex, parent.twochannel, fileprogress)));
+			ExecuteBatch parent = new ExecuteBatch(directoryCh1, directoryChSeg, Ch1, ChSeg, new InteractiveSimpleEllipseFit(), directoryCh1[0], twochannel);
+			tasks.add(Executors.callable(new Split(parent, directoryCh1[fileindex],Segfile, fileindex, parent.twochannel)));
 	
 			
 			
@@ -88,7 +75,7 @@ public class ProcessFiles {
 		try {
 			taskexecutor.invokeAll(tasks);
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
+			
 		}
 		
 		
@@ -121,7 +108,7 @@ public class ProcessFiles {
 		
 		for (int fileindex = 0; fileindex < dirSeg.length; ++fileindex) {
 			
-			String Name = dirSeg[fileindex].getName().replaceAll(ChSeg, Ch1);
+			String Name = dirSeg[fileindex].getName();
 			
 			
 			if(imageA.getName().matches("(.*)"+ Name + "(.*)")) {
@@ -134,6 +121,27 @@ public class ProcessFiles {
 		
 		return new ValuePair<File, File>(CH2pair,CHSegpair);
 	}
+	public static File SingleStringMatching(File imageA,  File[] dirSeg, String Ch1,  String ChSeg) {
+		
+		
+		File CHSegpair = null;
 	
+	
+		
+		for (int fileindex = 0; fileindex < dirSeg.length; ++fileindex) {
+			
+		
+			String Name = dirSeg[fileindex].getName();
+			System.out.println(Name + " " + imageA.getName());
+			if(imageA.getName().matches("(.*)"+ Name + "(.*)")) {
+				CHSegpair = dirSeg[fileindex];
+			System.out.println(CHSegpair.getName());
+						break;
+			}
+			
+		}
+		
+		return CHSegpair;
+	}
 	
 }

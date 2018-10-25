@@ -36,8 +36,10 @@ import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
+import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
@@ -47,6 +49,7 @@ import pluginTools.ComputeAngles;
 import pluginTools.ComputeCurvature;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
+import ransacPoly.RegressionFunction;
 import utility.Curvatureobject;
 import utility.DisplayAuto;
 import utility.Roiobject;
@@ -61,57 +64,11 @@ public class ExecuteBatch implements PlugIn, Runnable {
 	public final File[] C1_AllImages;
 	public final File[] C2_AllImages;
 	public final File[] SegmentationImages;
-
+	
 	public JLabel label = new JLabel("Progress..");
+	
 	public JFrame frame = new JFrame();
 	public JPanel panel = new JPanel();
-	public int Progressmin = 0;
-	public int Progressmax = 100;
-	public int max = Progressmax;
-	public Color confirmedRois = Color.BLUE;
-	public Color defaultRois = Color.YELLOW;
-	public Color colorChange = Color.GRAY;
-	public Color colorInChange = Color.RED;
-	public int maxlabel;
-	public Color colorOval = Color.CYAN;
-	public Color colorDet = Color.GREEN;
-	public Color colorLineA = Color.YELLOW;
-	public Color colorLineB = Color.YELLOW;
-	public Color colorPoints = Color.RED;
-	public Color colorresult = Color.magenta;
-	public ArrayList<Pair<String, Intersectionobject>> Tracklist;
-	public ArrayList<Pair<String, Intersectionobject>> denseTracklist;
-
-	public HashMap<String, ArrayList<Intersectionobject>> HashTrackList;
-	public HashMap<String, ArrayList<Intersectionobject>> HashdenseTrackList;
-	public SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> parentgraph;
-	public HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> parentgraphZ;
-	public HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> parentdensegraphZ;
-	public HashMap<String, SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge>> parentgraphSegZ;
-	public HashMap<String, ArrayList<Intersectionobject>> ALLIntersections;
-	public HashMap<String, ArrayList<Intersectionobject>> ALLdenseIntersections;
-	public HashMap<String, ArrayList<Segmentobject>> ALLSegments;
-	public HashMap<Integer, ArrayList<double[]>> HashresultCurvature;
-	public HashMap<Integer, List<RealLocalizable>> SubHashresultCurvature;
-
-	public HashMap<Integer, Double> HashresultSegCurvature;
-	public HashMap<Integer, Double> HashresultSegIntensityA;
-	public HashMap<Integer, Double> HashresultSegIntensityB;
-	public HashMap<Integer, Double> HashresultSegPerimeter;
-	public HashMap<String, KymoSaveobject> KymoFileobject;
-	public Set<Integer> pixellist;
-	ColorProcessor cp = null;
-
-	public HashMap<String, Intersectionobject> Finalresult;
-	public HashMap<String, Segmentobject> SegmentFinalresult;
-	public HashMap<Integer, Curvatureobject> Finalcurvatureresult;
-	public ArrayList<Node<RealLocalizable>> Allnodes = new ArrayList<Node<RealLocalizable>>();
-	public HashMap<String, Node<RealLocalizable>> Nodemap = new HashMap<String, Node<RealLocalizable>>();
-	public HashMap<Integer, List<RealLocalizable>> Listmap = new HashMap<Integer, List<RealLocalizable>>();
-	public HashMap<Integer, Integer> CellLabelsizemap = new HashMap<Integer, Integer>();
-	public Overlay overlay;
-	public HashMap<String, ArrayList<Pair<Integer, Double>>> StripList = new HashMap<String, ArrayList<Pair<Integer, Double>>>();
-	
 	
 	public int minNumInliers = LocalPrefs.getInt(".NumberofSegments", 10);
 	public int background = LocalPrefs.getInt(".BackgroundLabel.int", 0);
@@ -122,48 +79,20 @@ public class ExecuteBatch implements PlugIn, Runnable {
 
 	public boolean pixelcelltrackcirclefits = LocalPrefs.getBoolean(".CurvatureViaCircle.boolean", true);
 	public boolean distancemethod = LocalPrefs.getBoolean(".CurvatureViaDistance.boolean", false);
-	public RandomAccessibleInterval<FloatType> originalimgsmooth;
-	public RandomAccessibleInterval<FloatType> originalimg;
-	public RandomAccessibleInterval<FloatType> originalSecimg;
-	public RandomAccessibleInterval<IntType> originalimgsuper;
-	public RandomAccessibleInterval<FloatType> originalimgbefore;
+
 	
-	public boolean automode;
-	public boolean supermode;
-	public boolean curveautomode;
-	public boolean curvesupermode;
 	public final InteractiveSimpleEllipseFit parent;
 	public final String channelA;
 	public final String channelB;
 	public final String channelSeg;
 	public final boolean twochannel;
 	
-	public RandomAccessibleInterval<FloatType> CurrentView;
-	public RandomAccessibleInterval<FloatType> CurrentViewSmooth;
-	public RandomAccessibleInterval<FloatType> CurrentViewOrig;
-	public RandomAccessibleInterval<FloatType> CurrentViewSecOrig;
-	public RandomAccessibleInterval<FloatType> CurrentResultView;
-	public ArrayList<Curvatureobject> localCurvature, interpolatedlocalCurvature;
-	public ArrayList<ArrayList<Curvatureobject>> AlllocalCurvature;
-	public ArrayList<Pair<String, double[]>> resultAngle;
-	public ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>> resultCurvature;
-	public String uniqueID, tmpID, ZID, TID;
-	
-	public int thirdDimensionslider = 1;
-	public int thirdDimensionsliderInit = 1;
-	public int fourthDimensionslider = 1;
-	public int fourthDimensionsliderInit = 1;
-	public int fourthDimension;
-	public int thirdDimension;
-	public int thirdDimensionSize;
-	public int fourthDimensionSize;
-	public ImagePlus imp;
-	public ImagePlus localimp;
+
 	public float lowprob = 0f;
 	public float highprob = 1f;
 	public ImagePlus RMStrackImages;
-	
-	
+	public String addToName = "EllipseFitsBatchMode";
+	public int maxframegap = 10;
 	public HashMap<String, ArrayList<Intersectionobject>> sortedMappair = new HashMap<String, ArrayList<Intersectionobject>>();
 	
 	public ExecuteBatch() {
@@ -216,6 +145,10 @@ public class ExecuteBatch implements PlugIn, Runnable {
 		parent.usefolder = batchfolder;
 
 		LocalPrefs.load(C1_AllImages[0].getParent(), IJ.getApplet());
+		
+		
+		
+		
 		ProgressBatch startbatch = new ProgressBatch(this);
 		startbatch.execute();
 
@@ -223,6 +156,14 @@ public class ExecuteBatch implements PlugIn, Runnable {
 
 	@Override
 	public void run(String arg) {
+		parent.calibration = calibration;
+		parent.timecal = timecal;
+		parent.resolution = resolution;
+		parent.background = background;
+		parent.minNumInliers = minNumInliers;
+		parent.pixelcelltrackcirclefits = pixelcelltrackcirclefits;
+		parent.distancemethod = distancemethod;
+		
 		run();
 
 	}
@@ -232,145 +173,5 @@ public class ExecuteBatch implements PlugIn, Runnable {
 		jpb = new JProgressBar();
 		goTrack();
 	}
-	public void updatePreview(final ValueChange change) {
 	
-
-		uniqueID = Integer.toString(thirdDimension) + Integer.toString(fourthDimension);
-		ZID = Integer.toString(thirdDimension);
-		TID = Integer.toString(fourthDimension);
-		tmpID = Float.toString(thirdDimension) + Float.toString(fourthDimension);
-		overlay = imp.getOverlay();
-
-		if (overlay == null) {
-
-			overlay = new Overlay();
-			imp.setOverlay(overlay);
-		}
-
-	
-
-		if (change == ValueChange.SEG) {
-
-			if (!supermode && !curvesupermode) {
-				RandomAccessibleInterval<FloatType> tempview = null;
-
-				if (automode || curveautomode)
-					tempview = utility.Binarization.CreateBinary(CurrentViewSmooth, lowprob, highprob);
-
-				if (localimp == null || !localimp.isVisible() && automode) {
-					localimp = ImageJFunctions.show(tempview);
-
-				}
-
-				else {
-
-					final float[] pixels = (float[]) localimp.getProcessor().getPixels();
-					final Cursor<FloatType> c = Views.iterable(tempview).cursor();
-
-					for (int i = 0; i < pixels.length; ++i)
-						pixels[i] = c.next().get();
-
-					localimp.updateAndDraw();
-
-				}
-
-				if (automode || curveautomode)
-					localimp.setTitle(
-							"Seg Image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
-
-			}
-		}
-
-		
-		if (change == ValueChange.THIRDDIMmouse || change == ValueChange.FOURTHDIMmouse) {
-			if (Tracklist.size() > 0 && (automode || supermode)) {
-
-				ComputeAngles current = new ComputeAngles(parent, null);
-
-				current.Lineage();
-
-			}
-			if (Tracklist.size() > 0 && (curveautomode || curvesupermode)) {
-
-				ComputeCurvature current = new ComputeCurvature(parent, null);
-				current.CurvedLineage();
-
-			}
-		
-			if (StripList.size() > 0) {
-
-				for (Map.Entry<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> entryZ : parentdensegraphZ
-						.entrySet()) {
-					TrackModel model = new TrackModel(entryZ.getValue());
-					RandomAccessibleInterval<FloatType> StripImage = new ArrayImgFactory<FloatType>()
-							.create(CurrentViewOrig, new FloatType());
-					RandomAccess<FloatType> ranacStrip = StripImage.randomAccess();
-					for (final Integer id : model.trackIDs(true)) {
-						String targetid = id + entryZ.getKey();
-						
-
-						
-						for (Map.Entry<String, ArrayList<Pair<Integer, Double>>> item : StripList.entrySet()) {
-							String TrackID = item.getKey();
-							if (TrackID.equals(targetid)) {
-								for (Pair<Integer, Double> singleitem : item.getValue()) {
-
-									String TimeId = Integer.toString(thirdDimension);
-
-									ArrayList<Intersectionobject> currentlist = sortedMappair.get(TrackID + TimeId);
-
-									for (Intersectionobject currentobject : currentlist) {
-
-										ArrayList<double[]> sortedlinelist = currentobject.linelist;
-
-										int i = singleitem.getA();
-
-										if(sortedlinelist.size() > i) {
-										ranacStrip.setPosition(new long[] { (long) sortedlinelist.get(i)[0],
-												(long) sortedlinelist.get(i)[1] });
-										ranacStrip.get().setReal(singleitem.getB());
-										}
-									}
-
-								}
-								
-								
-								
-								
-
-							}
-						}
-						
-						
-					  if(RMStrackImages == null || !RMStrackImages.isVisible()) {
-						  
-						  RMStrackImages = ImageJFunctions.show(StripImage);
-						  
-					  }
-					  else {
-						  
-						  final float[] pixels = (float[]) RMStrackImages.getProcessor().getPixels();
-							final Cursor<FloatType> c = Views.iterable(StripImage).cursor();
-
-							for (int i = 0; i < pixels.length; ++i)
-								pixels[i] = c.next().get();
-
-							RMStrackImages.updateAndDraw();
-						  
-						  
-					  }
-						
-						
-
-					  RMStrackImages.setTitle("Root Mean square of Curvature" + targetid);
-						
-					}
-				}
-
-			}
-			
-
-		}
-
-	}
 }
