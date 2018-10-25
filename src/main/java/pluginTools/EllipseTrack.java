@@ -86,6 +86,8 @@ public class EllipseTrack {
 	
 	public void BlockRepeatCurve(double percent, int z, int t) {
 
+		
+		
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
 		percent++;
 		if(jpb!=null )
@@ -431,7 +433,11 @@ public class EllipseTrack {
 						parent.fourthDimension = t;
 
 						BlockRepeatCurve(percent, z, t);
-
+						if(IJ.escapePressed()) {
+							IJ.resetEscape();
+							break;
+								
+						}
 					}
 				}
 
@@ -445,7 +451,11 @@ public class EllipseTrack {
 					parent.ZID = Integer.toString(z);
 					parent.AccountedZ.put(parent.ZID, z);
 					BlockRepeatCurve(percent, z, 1);
-
+					if(IJ.escapePressed()) {
+						IJ.resetEscape();
+						break;
+							
+					}
 				}
 
 			} else {
@@ -453,7 +463,7 @@ public class EllipseTrack {
 				int t = parent.fourthDimension;
 
 				BlockRepeatCurve(percent, z, t);
-
+				
 			}
 
 		}
@@ -470,7 +480,12 @@ public class EllipseTrack {
 						parent.fourthDimension = t;
 
 						BlockRepeatAutoCurve(percent, z, t);
-
+						
+						if(IJ.escapePressed()) {
+							IJ.resetEscape();
+							break;
+								
+						}
 					}
 				}
 
@@ -484,7 +499,11 @@ public class EllipseTrack {
 					parent.ZID = Integer.toString(z);
 					parent.AccountedZ.put(parent.ZID, z);
 					BlockRepeatAutoCurve(percent, z, 1);
-
+					if(IJ.escapePressed()) {
+						IJ.resetEscape();
+						break;
+							
+					}
 				}
 
 			} else {

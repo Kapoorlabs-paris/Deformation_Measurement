@@ -98,16 +98,31 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		HashMap<String, Integer> mapZ = SortTimeorZ.sortByValues(parent.AccountedZ);
 		parent.AccountedZ = mapZ;
-
-		EllipseTrack newtrack = new EllipseTrack(parent, jpb);
-		newtrack.ComputeCurvature();
-
+		
 		parent.inputField.setEnabled(false);
 		parent.inputtrackField.setEnabled(false);
 		parent.Savebutton.setEnabled(false);
 		parent.SaveAllbutton.setEnabled(false);
 		parent.ChooseDirectory.setEnabled(false);
+		
+		
+		parent.CurrentCurvaturebutton.setEnabled(false);
+		parent.Curvaturebutton.setEnabled(false);
+        parent.timeslider.setEnabled(false);
+        parent.inputFieldT.setEnabled(false);
+        parent.distancemode.setEnabled(false);
+        parent.Pixelcelltrackcirclemode.setEnabled(false);
+        parent.resolutionField.setEnabled(false);
+        parent.interiorfield.setEnabled(false);
+        parent.Displaybutton.setEnabled(false);
+        parent.minInlierslider.setEnabled(false);
+        parent.minInlierField.setEnabled(false);
+		
+		EllipseTrack newtrack = new EllipseTrack(parent, jpb);
+		newtrack.ComputeCurvature();
 
+		
+		
 		return null;
 
 	}
@@ -460,6 +475,22 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 	@Override
 	protected void done() {
 
+		
+	
+		
+		parent.CurrentCurvaturebutton.setEnabled(true);
+		parent.Curvaturebutton.setEnabled(true);
+        parent.timeslider.setEnabled(true);
+        parent.inputFieldT.setEnabled(true);
+        parent.distancemode.setEnabled(true);
+        parent.Pixelcelltrackcirclemode.setEnabled(true);
+        parent.resolutionField.setEnabled(true);
+        parent.interiorfield.setEnabled(true);
+        parent.Displaybutton.setEnabled(true);
+        parent.minInlierslider.setEnabled(true);
+        parent.minInlierField.setEnabled(true);
+		
+		
 		parent.jpb.setIndeterminate(false);
 		parent.Cardframe.validate();
 

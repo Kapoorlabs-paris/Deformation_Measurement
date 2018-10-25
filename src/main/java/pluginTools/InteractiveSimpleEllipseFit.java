@@ -195,6 +195,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float outsideCutoff = insideCutoff;
 	public HashMap<String, ArrayList<Pair<Integer, Double>>> StripList = new HashMap<String, ArrayList<Pair<Integer, Double>>>();
 	public ImagePlus RMStrackImages;
+	// Number of segments
 	public int minNumInliers = 10;
 	public int depth = 4;
 	public int maxsize = 100;
@@ -309,7 +310,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public MouseListener ovalml;
 	public final double calibration;
 	public final double timecal;
-	public double insidedistance = 1;
+	public double insidedistance = 10;
 	public double outsidedistance = 0;
 	public int[] boundarypoint;
 	public int[] midpoint;
