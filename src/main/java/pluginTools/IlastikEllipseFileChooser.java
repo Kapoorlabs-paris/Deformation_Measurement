@@ -296,7 +296,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 	       channelBidentifier.setText("C2");
 	       chBIdentifier = channelBidentifier.getText();
 	       segmentationidentifier = new TextField(5);
-	       segmentationidentifier.setText("Segmentation");
+	       segmentationidentifier.setText("Cseg");
 	       chSegIdentifier = segmentationidentifier.getText();
 			Panelfileoriginal.add(GodoubleBatch,  new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
@@ -317,10 +317,10 @@ public class IlastikEllipseFileChooser extends JPanel {
 					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		
 			
-		//	Panelfileoriginal.add(channelSeg, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-		//			GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-		//	Panelfileoriginal.add(segmentationidentifier, new GridBagConstraints(3, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-		//			GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Panelfileoriginal.add(channelSeg, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Panelfileoriginal.add(segmentationidentifier, new GridBagConstraints(3, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			
 			
 			Panelfileoriginal.add(RunBatch,  new GridBagConstraints(2, 6, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
