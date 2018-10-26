@@ -166,7 +166,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public final int scrollbarSize = 1000;
 	public double maxError = 3;
 	public int degree = 3;
-	public final String inputstring;
+	public String inputstring;
 	public int secdegree = 2;
 	public double minellipsepoints = 9;
 	public double mincirclepoints = 3;
@@ -366,6 +366,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public ArrayList<Pair<String, Intersectionobject>> Tracklist;
 	public ArrayList<Pair<String, Intersectionobject>> denseTracklist;
 
+	public int boxsize;
 	public HashMap<String, ArrayList<Intersectionobject>> HashTrackList;
 	public HashMap<String, ArrayList<Intersectionobject>> HashdenseTrackList;
 
@@ -543,8 +544,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		this.chart = utility.ChartMaker.makeChart(dataset, "Angle evolution", "Timepoint", "Angle");
 		this.jFreeChartFrame = utility.ChartMaker.display(chart, new Dimension(500, 500));
 		this.jFreeChartFrame.setVisible(false);
-		this.calibration = 0;
-		this.timecal = 0;
+		this.calibration = 1;
+		this.timecal = 1;
 		this.automode = false;
 		this.supermode = false;
 		this.curveautomode = false;
@@ -993,11 +994,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		saveFile = new java.io.File(".");
 
 	}
-	public void runBatch(File savefile) {
+	public  void runBatch(File savefile) {
 
 		
 		displaymin = 0;
 		displaymax = 1;
+	
 
 		if ((automode) || (curveautomode)) {
 
@@ -1100,8 +1102,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			return;
 		}
 
-		if (originalimgbefore == null)
-			originalimgbefore = originalimg;
+		
 		setTime(fourthDimension);
 		setZ(thirdDimension);
 		
@@ -1173,6 +1174,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		Card(true);
 		
 		CleanMe();
+		StartCurvatureComputingCurrent();
+		
+		System.out.println("Box size inside is" +  this.boxsize);
 		StartCurvatureComputing(true, savefile);
         
 	
@@ -1191,9 +1195,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		imp.getCanvas().removeMouseListener(mvl);
 		if(imp!=null && ml!=null)
 		imp.getCanvas().removeMouseMotionListener(ml);
-		starttime = Integer.parseInt(startT.getText());
-		endtime = Integer.parseInt(endT.getText());
-		resolution = Integer.parseInt(resolutionField.getText());
+
 		displayCircle.setState(false);
 		displaySegments.setState(false);
 		displayIntermediate = false;

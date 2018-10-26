@@ -33,6 +33,7 @@ public class ProcessFiles {
 
 			ExecuteBatch parent = new ExecuteBatch(directoryCh1, directoryCh2, directoryChSeg, Ch1, Ch2, ChSeg,
 					new InteractiveSimpleEllipseFit(), directoryCh1[0], twochannel);
+			parent.run(null);
 
 			if (Chfiles != null)
 				taskexecutor.execute(new Split(parent, Chfiles.getA(), Chfiles.getB(), directoryChSeg[fileindex],
@@ -51,6 +52,7 @@ public class ProcessFiles {
 
 			ExecuteBatch parent = new ExecuteBatch(directoryCh1, directoryChSeg, Ch1, ChSeg,
 					new InteractiveSimpleEllipseFit(), directoryCh1[0], twochannel);
+			parent.run(null);
 			taskexecutor.execute(new Split(parent, directoryCh1[fileindex], Segfile, fileindex, parent.twochannel));
 
 		}

@@ -86,11 +86,13 @@ public class Split implements Runnable {
 
 	ExecutorService checkTasksExecutorService = new ThreadPoolExecutor(1, 10, 100000, TimeUnit.MILLISECONDS,
 			new SynchronousQueue<Runnable>());
-
+	ImgOpener imgOpener = new ImgOpener();
+	SCIFIOConfig config = new SCIFIOConfig();
+	
 	@Override
 	public void run() {
-
-		org.apache.log4j.BasicConfigurator.configure();
+		config.imgOpenerSetImgModes(ImgMode.CELL);
+	//	org.apache.log4j.BasicConfigurator.configure();
 		JProgressBar fileprogress = new JProgressBar();
 		fileprogress.setIndeterminate(false);
 
@@ -105,23 +107,23 @@ public class Split implements Runnable {
 		parent.frame.setVisible(true);
 
 		parent.panel.add(fileprogress);
-		System.out.println(parent.batchfolder + " " + fileindex);
-		ImgOpener imgOpener = new ImgOpener();
-		SCIFIOConfig config = new SCIFIOConfig();
-		config.imgOpenerSetImgModes(ImgMode.CELL);
+		System.out.println(parent.batchfolder + " " + fileindex + " " + parent.boxsize + " I am box");
+		
+		
+		
+		
 		try {
-			RandomAccessibleInterval<FloatType> originalimgbefore = imgOpener
+			parent.parent.originalimgbefore = imgOpener
 					.openImgs(ChA.getAbsolutePath(), new FloatType()).get(0);
-
-			if (parent.twochannel) {
-
-			}
-
-			RandomAccessibleInterval<IntType> originalimgsuper = imgOpener
+            parent.parent.originalimg = parent.parent.originalimgbefore;
+		
+            parent.parent.ndims = parent.parent.originalimg.numDimensions();
+			parent.parent.originalimgsuper = imgOpener
 					.openImgs(ChSeg.getAbsolutePath(), new IntType()).get(0);
 
 			parent.parent.addToName = ChA.getName().replaceFirst("[.][^.]+$", "");
 
+			parent.parent.inputstring = ChA.getName();
 			new File(parent.batchfolder + "/Results").mkdirs();
 
 			File Savefolder = new File(parent.batchfolder + "/Results");
@@ -132,17 +134,13 @@ public class Split implements Runnable {
 					"Processing Files (please wait)");
 
 			if (!parent.twochannel)
-				new InteractiveSimpleEllipseFit(originalimgbefore, originalimgbefore, originalimgsuper,
-						parent.calibration, parent.timecal, false, false, false, true, parent.batchfolder, twochannel,
-						ChA.getName()).runBatch(Savefolder);
+				parent.parent.runBatch(Savefolder);
 			if (parent.twochannel) {
 
-				RandomAccessibleInterval<FloatType> originalSecimg = imgOpener
+				parent.parent.originalSecimg = imgOpener
 						.openImgs(ChB.getAbsolutePath(), new FloatType()).get(0);
 
-				new InteractiveSimpleEllipseFit(originalimgbefore, originalSecimg, originalimgsuper, parent.calibration,
-						parent.timecal, false, false, false, true, parent.batchfolder, twochannel, ChA.getName())
-								.runBatch(Savefolder);
+				parent.parent.runBatch(Savefolder);
 
 			}
 

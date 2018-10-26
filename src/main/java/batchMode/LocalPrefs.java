@@ -21,14 +21,14 @@ import ij.process.ColorProcessor;
 import ij.text.TextWindow;
 
 /**
-This class contains the ImageJ preferences, which are 
-loaded from the "IJ_Props.txt" and "IJ_Prefs.txt" files.
-@see ij.ImageJ
+This class contains the ETrack preferences, which are 
+loaded from "ETrack_Prefs.txt" files.
+@see V Kapoor
 */
 public class LocalPrefs {
 
 	public static final String PREFS_NAME = "ETrack_Prefs.txt";
-	public static final String DIR_IMAGE = "dir.image";
+	
 	public static final String FCOLOR = "fcolor";
 	public static final String BCOLOR = "bcolor";
 	public static final String ROICOLOR = "roicolor";
@@ -277,10 +277,7 @@ public class LocalPrefs {
 
 	/** Returns the default directory, if any, or null. */
 	public static String getDefaultDirectory() {
-		if (commandLineMacro)
-			return null;
-		else
-			return getString(DIR_IMAGE);
+		return homeDir;
 	}
 
 	/** Finds an string in IJ_Props or IJ_Prefs.txt. */
@@ -384,7 +381,7 @@ public class LocalPrefs {
 			Properties prefs = new Properties();
 			String dir = OpenDialog.getDefaultDirectory();
 			if (dir!=null)
-				prefs.put(DIR_IMAGE, dir);
+				
 			prefs.put(ROICOLOR, Tools.c2hex(Roi.getColor()));
 			prefs.put(SHOW_ALL_COLOR, Tools.c2hex(ImageCanvas.getShowAllColor()));
 			prefs.put(FCOLOR, Tools.c2hex(Toolbar.getForegroundColor()));

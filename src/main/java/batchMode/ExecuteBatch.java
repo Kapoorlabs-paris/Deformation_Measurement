@@ -76,7 +76,7 @@ public class ExecuteBatch implements PlugIn, Runnable {
 	public int resolution = LocalPrefs.getInt(".Resolution.int", 1);
 	public double timecal = LocalPrefs.getDouble(".TimeCalibration", 1);
 	public double calibration = LocalPrefs.getDouble(".SpaceCalibration", 1);
-
+    public int boxsize = LocalPrefs.getInt(".Box.int", 11);
 	public boolean pixelcelltrackcirclefits = LocalPrefs.getBoolean(".CurvatureViaCircle.boolean", true);
 	public boolean distancemethod = LocalPrefs.getBoolean(".CurvatureViaDistance.boolean", false);
 
@@ -163,8 +163,8 @@ public class ExecuteBatch implements PlugIn, Runnable {
 		parent.minNumInliers = minNumInliers;
 		parent.pixelcelltrackcirclefits = pixelcelltrackcirclefits;
 		parent.distancemethod = distancemethod;
-		
-		run();
+		parent.boxsize = boxsize;
+	    parent.curvesupermode = true;
 
 	}
 

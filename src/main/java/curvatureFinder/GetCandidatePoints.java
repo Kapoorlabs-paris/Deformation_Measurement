@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.swing.JProgressBar;
 
+import batchMode.LocalPrefs;
 import ij.IJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
@@ -35,12 +36,11 @@ public class GetCandidatePoints {
 		
 		
 		List<RealLocalizable> truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
-		double boxsize = (int) ((truths.size() / parent.minNumInliers ) * parent.calibration);
+		parent.boxsize = LocalPrefs.getInt(".Box.int", (int) ((truths.size() / parent.minNumInliers ) * parent.calibration));
 			
-	//	IJ.log("Box size for curvature calculation = " + (int) ((truths.size() / parent.minNumInliers ) * parent.calibration) + " " + " um " );
 		
-		
-		parent.SpecialminInlierField.setText("Box Size = " + " " + Double.toString(boxsize) + " " + "um");
+		parent.minNumInliers = (int)(( truths.size()  * parent.calibration ) / parent.boxsize);
+		parent.SpecialminInlierField.setText("Box Size = " + " " + Double.toString(parent.boxsize) + " " + "um");
 		parent.SpecialminInlierField.repaint();
 		parent.SpecialminInlierField.validate();
 		return truths;

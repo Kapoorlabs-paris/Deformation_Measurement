@@ -25,7 +25,7 @@ public class CreateINIfile {
 		LocalPrefs.set("SpaceCalibration.double", parent.calibration);
 		LocalPrefs.set("CurvatureViaCircle.boolean", parent.pixelcelltrackcirclefits);
 		LocalPrefs.set("CurvatureViaDistance.boolean", parent.distancemethod);
-		
+		LocalPrefs.set("Box.int", parent.boxsize);
 		
 		
 		
@@ -35,7 +35,7 @@ public class CreateINIfile {
 		else
 			LocalPrefs.setHomeDir(new java.io.File(".").getAbsolutePath());
         LocalPrefs.savePreferences();
-		
+		System.out.println(LocalPrefs.getHomeDir() + " " + parent.saveFile.getAbsolutePath());
 		System.exit(1);
 	}
 	
