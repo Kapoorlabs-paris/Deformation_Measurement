@@ -429,14 +429,14 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		FileSaver fsC = new FileSaver(Curveimp);
 
-		fsC.saveAsTiff(parent.saveFile + "//" + parent.addToName + parent.inputstring + "Curvature"   + "TrackID" + Integer.parseInt(TrackID) + ".tif");
+		fsC.saveAsTiff(parent.saveFile + "//" + "Curvature_"    + parent.inputstring.replaceFirst("[.][^.]+$", "") + "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
 		ImagePlus IntensityAimp = ImageJFunctions.wrapFloat(IntensityAKymo,
 				"Intensity ChA Kymo for TrackID: " + TrackID);
 
 		FileSaver fsB = new FileSaver(IntensityAimp);
 
-		fsB.saveAsTiff(parent.saveFile + "//" + parent.addToName + parent.inputstring + "Intensity"   +  "TrackID" + Integer.parseInt(TrackID) + ".tif");
+		fsB.saveAsTiff(  parent.saveFile+ "//" + "Intensity_C1" + parent.inputstring.replaceFirst("[.][^.]+$", "")   +  "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
 		if (parent.twochannel) {
 			ImagePlus IntensityBimp = ImageJFunctions.wrapFloat(IntensityBKymo,
@@ -444,7 +444,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			FileSaver fsBB = new FileSaver(IntensityBimp);
 
-			fsBB.saveAsTiff(parent.saveFile + "//" + parent.addToName + parent.inputstring +"Intensity"   +  "TrackID" + Integer.parseInt(TrackID) + ".tif");
+			fsBB.saveAsTiff(parent.saveFile + "//" + "Intensity_C2"   +  parent.inputstring.replaceFirst("[.][^.]+$", "") + "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
 		}
 

@@ -73,7 +73,7 @@ public class SaverAllListener implements ActionListener {
 			
 			try {
 				File fichier = new File(
-						parent.saveFile + "//" + parent.addToName + parent.inputstring + "TrackID" + Integer.parseInt(ID) + ".txt");
+						parent.saveFile + "//" + parent.addToName + parent.inputstring.replaceFirst("[.][^.]+$", "") + "TrackID" + Integer.parseInt(ID) + ".txt");
 				
 				FileWriter fw = new FileWriter(fichier);
 				BufferedWriter bw = new BufferedWriter(fw);

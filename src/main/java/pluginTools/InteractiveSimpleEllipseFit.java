@@ -162,7 +162,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	
 	private static final long serialVersionUID = 1L;
 	public String usefolder = IJ.getDirectory("imagej");
-	public String addToName = "ETrack";
+	public String addToName = "ETrack_";
 	public final int scrollbarSize = 1000;
 	public double maxError = 3;
 	public int degree = 3;
