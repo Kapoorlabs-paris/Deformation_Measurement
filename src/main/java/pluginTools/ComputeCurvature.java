@@ -537,7 +537,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 				parent.parentgraphZ.put(Integer.toString(z), simplegraph);
 
-				CurvedLineage();
+				CurvedLineage(parent);
 
 			}
 
@@ -549,7 +549,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			parent.parentdensegraphZ.put(Integer.toString(1), simpledensegraph);
 
-			CurveddenseLineage();
+			CurveddenseLineage(parent);
 
 		}
 
@@ -564,7 +564,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			BatchKymoSave.KymoSave(parent, savefile, parent.Cardframe);
 	}
 
-	public void CurvedLineage() {
+	public static void CurvedLineage(InteractiveSimpleEllipseFit parent) {
 
 		DisplaySelected.markAll(parent);
 		DisplaySelected.selectAll(parent);
@@ -727,7 +727,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	}
 
-	public void CurveddenseLineage() {
+	public static void CurveddenseLineage(InteractiveSimpleEllipseFit parent) {
 		DisplaySelected.markAll(parent);
 		DisplaySelected.selectAll(parent);
 		for (Map.Entry<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> entryZ : parent.parentdensegraphZ

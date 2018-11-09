@@ -69,7 +69,6 @@ public class TrackingFunctions {
 			ArrayList<Intersectionobject> bloblist = entry.getValue();
 			if(bloblist.size() > 0) {
 			colllist.add(bloblist);
-			System.out.println(entry.getKey() + "Strings" + bloblist.get(0).linelist.get(0)[3]);
 
 			}
 			

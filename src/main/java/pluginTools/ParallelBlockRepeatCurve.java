@@ -1,12 +1,19 @@
 package pluginTools;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.JProgressBar;
 
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.SimpleWeightedGraph;
+
 import curvatureUtils.ExpandBorder;
 import ellipsoidDetector.Intersectionobject;
+import ij.IJ;
+import ij.ImageStack;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.Type;
@@ -14,11 +21,14 @@ import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.view.Views;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
+import track.TrackingFunctions;
 
 public class ParallelBlockRepeatCurve  implements Runnable {
 
 	
 	public final InteractiveSimpleEllipseFit parent;
+	
+	public final ArrayList<HashMap<String, ArrayList<Intersectionobject>>> Alldensemap;
 	
 	public final int z;
 	
@@ -28,7 +38,7 @@ public class ParallelBlockRepeatCurve  implements Runnable {
 	
 	public final JProgressBar jpb;
 	
-	public ParallelBlockRepeatCurve(final InteractiveSimpleEllipseFit parent, final JProgressBar jpb, final int z, final int t, final int percent) {
+	public ParallelBlockRepeatCurve(final InteractiveSimpleEllipseFit parent, final ArrayList<HashMap<String, ArrayList<Intersectionobject>>> Alldensemap,  final JProgressBar jpb, final int z, final int t, final int percent) {
 		
 		this.parent = parent;
 		
@@ -39,6 +49,8 @@ public class ParallelBlockRepeatCurve  implements Runnable {
 		this.percent = percent;
 		
 		this.jpb = jpb;
+		
+		this.Alldensemap = Alldensemap;
 	}
 	
 	
@@ -71,8 +83,82 @@ public class ParallelBlockRepeatCurve  implements Runnable {
 		GetPixelList(expanededtotalimg);
 		
 		Computeinwater compute = new Computeinwater(parent, CurrentView, expanededtotalimg, t, z, (int) percent);
-	    compute.ParallelRansacCurve();
+		HashMap<String, ArrayList<Intersectionobject>> densemap = compute.DualParallelRansacCurve();
 	
+		Alldensemap.add(densemap);
+	}
+	
+	public static void done(InteractiveSimpleEllipseFit parent) {
+		
+		
+
+		
+		parent.CurrentCurvaturebutton.setEnabled(true);
+		parent.Curvaturebutton.setEnabled(true);
+        parent.timeslider.setEnabled(true);
+        parent.inputFieldT.setEnabled(true);
+        parent.distancemode.setEnabled(true);
+        parent.Pixelcelltrackcirclemode.setEnabled(true);
+        parent.resolutionField.setEnabled(true);
+        parent.interiorfield.setEnabled(true);
+        parent.Displaybutton.setEnabled(true);
+        parent.minInlierslider.setEnabled(true);
+        parent.minInlierField.setEnabled(true);
+		
+		
+		parent.jpb.setIndeterminate(false);
+		parent.Cardframe.validate();
+
+		parent.prestack = new ImageStack((int) parent.originalimg.dimension(0), (int) parent.originalimg.dimension(1),
+				java.awt.image.ColorModel.getRGBdefault());
+
+		parent.resultDraw.clear();
+		parent.Tracklist.clear();
+		parent.denseTracklist.clear();
+
+		parent.SegmentTracklist.clear();
+		parent.table.removeAll();
+
+		IJ.log("\n " + "Calculation is Complete or was interupted "  + "\n "
+		        + "IF RUNNING IN BATCH MODE, Results are automatically saved in Results folder"
+		        + "IF IT WAS NOT A KEYBOARD INTERUPT: " + "\n "
+				+ "do a Shift + Left click near the Cell of your choice to display " + "\n "
+				+ "Kymographs for Curvature, Intensity " + " \n"
+				+ "RMS value which moves with the time slider to fit on the current view of the cell " + " \n"
+				+ "Curvature value display as lines connecting the center to the boundary of the cell over time");
+
+		TrackingFunctions track = new TrackingFunctions(parent);
+		if (parent.ndims > 3) {
+
+			Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
+
+			while (itZ.hasNext()) {
+
+				int z = itZ.next().getValue();
+
+			
+				SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
+
+				parent.parentgraphZ.put(Integer.toString(z), simplegraph);
+
+				ComputeCurvature.CurvedLineage(parent);
+
+			}
+
+		}
+
+		else {
+
+			SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simpledensegraph = track.Trackdensefunction();
+
+			parent.parentdensegraphZ.put(Integer.toString(1), simpledensegraph);
+
+			ComputeCurvature.CurveddenseLineage(parent);
+
+		}
+
+		
+		
 	}
 
 	public  void GetPixelList(RandomAccessibleInterval<IntType> intimg) {

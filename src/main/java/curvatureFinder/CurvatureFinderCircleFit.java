@@ -74,6 +74,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 	@Override
 	public boolean process() {
+		
 		int ndims = ActualRoiimg.numDimensions();
 		String uniqueID = Integer.toString(thirdDimension) + Integer.toString(fourthDimension);
 

@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import distanceTransform.DistWatershedBinary;
 import distanceTransform.WatershedBinary;
+import ellipsoidDetector.Intersectionobject;
 import ij.IJ;
 
 import javax.swing.JProgressBar;
@@ -435,7 +437,7 @@ public class EllipseTrack {
 		// set up executor service
 		final ExecutorService taskExecutorStart = Executors.newFixedThreadPool(nThreads);
 		 List<Callable<Object>> tasksStart = new ArrayList<Callable<Object>>();
-			
+		 ArrayList<HashMap<String, ArrayList<Intersectionobject>>> Alldensemap = new ArrayList<HashMap<String, ArrayList<Intersectionobject>>>();
 			
 			
 			if (parent.originalimg.numDimensions() > 3) {
@@ -447,12 +449,10 @@ public class EllipseTrack {
 
 						parent.thirdDimension = z;
 						parent.fourthDimension = t;
-
-						final ParallelBlockRepeatCurve ParallelCurve = new ParallelBlockRepeatCurve(parent, jpb, z, t, percent);
-						tasksStart.add(Executors.callable(ParallelCurve));
+						parent.updatePreview(ValueChange.THIRDDIMmouse);
 						
-						
-						//BlockRepeatCurve(percent, z, t);
+					//	tasksStart.add(Executors.callable(new ParallelBlockRepeatCurve(parent, Alldensemap, jpb, z, t, percent)));
+						BlockRepeatCurve(percent, z, t);
 						
 						
 						if(IJ.escapePressed()) {
@@ -474,12 +474,8 @@ public class EllipseTrack {
 					parent.ZID = Integer.toString(z);
 					parent.AccountedZ.put(parent.ZID, z);
 				
-					
-					
-			//	
-				//	final ParallelBlockRepeatCurve ParallelCurve = new ParallelBlockRepeatCurve(parent, jpb, z, 1, percent);
-				//	tasksStart.add(Executors.callable(ParallelCurve));
-				
+					parent.updatePreview(ValueChange.THIRDDIMmouse);
+				//	tasksStart.add(Executors.callable(new ParallelBlockRepeatCurve(parent, Alldensemap, jpb, z, 1, percent)));
 					BlockRepeatCurve(percent, z, 1);
 					if(IJ.escapePressed()) {
 						IJ.resetEscape();
@@ -491,13 +487,15 @@ public class EllipseTrack {
 			} else {
 				int z = parent.thirdDimension;
 				int t = parent.fourthDimension;
-
+				parent.updatePreview(ValueChange.THIRDDIMmouse);
+			//	tasksStart.add(Executors.callable(new ParallelBlockRepeatCurve(parent, Alldensemap, jpb, z, t, percent)));
+				
 				BlockRepeatCurve(percent, z, t);
 				
 			}
 
 		
-			
+		/*	
 				
 				try {
 					
@@ -510,9 +508,29 @@ public class EllipseTrack {
 				}
 				
 		
+		Iterator<HashMap<String, ArrayList<Intersectionobject>>> mapiter = Alldensemap.iterator();
 		
+		while(mapiter.hasNext()) {
+			
+			HashMap<String, ArrayList<Intersectionobject>> currentmap = mapiter.next();
+			
+			for (Map.Entry<String, ArrayList<Intersectionobject>> entry : currentmap.entrySet()) {
+				
+				
+				ArrayList<Intersectionobject> bloblist = entry.getValue();
+				String ID = entry.getKey();
+				
+				parent.ALLdenseIntersections.put(ID, bloblist);
+				System.out.println(ID + " " + bloblist.size() + " I am puting");
+			}
+			
+			
+			
+		}
+		
+		ParallelBlockRepeatCurve.done(parent);
 
-		parent.updatePreview(ValueChange.THIRDDIMmouse);
+		*/
 
 	}
 

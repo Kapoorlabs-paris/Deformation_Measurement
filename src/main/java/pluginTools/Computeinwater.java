@@ -225,6 +225,55 @@ public class Computeinwater {
 
 	}
 	
+	
+	public HashMap<String, ArrayList<Intersectionobject>> DualParallelRansacCurve() {
+
+
+		ArrayList<Line> resultlineroi = new ArrayList<Line>();
+		ArrayList<OvalRoi> resultcurvelineroi = new ArrayList<OvalRoi>();
+		ArrayList<OvalRoi> resultallcurvelineroi = new ArrayList<OvalRoi>();
+		ArrayList<EllipseRoi> ellipselineroi = new ArrayList<EllipseRoi>();
+		ArrayList<Roi>Segmentrect = new ArrayList<Roi>();
+		// Obtain the points of intersections
+
+		Iterator<Integer> setiter = parent.pixellist.iterator();
+		parent.superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>>();
+		ArrayList<Intersectionobject> AllCurveintersection = new ArrayList<Intersectionobject>();
+		ArrayList<Intersectionobject> AlldenseCurveintersection = new ArrayList<Intersectionobject>();
+		HashMap<String, ArrayList<Intersectionobject>> densemap = new HashMap<String, ArrayList<Intersectionobject>>();
+		 
+		while (setiter.hasNext()) {
+
+			percent++;
+
+			int label = setiter.next();
+			if(label!=parent.background) {
+			// Creating a binary image in the integer image region from the boundary
+			// probability map
+			Watershedobject current =
+
+					utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
+
+
+			
+			    List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
+			    new LabelCurvature(parent, current.source, truths, resultlineroi, resultcurvelineroi,resultallcurvelineroi,ellipselineroi, Segmentrect,  AllCurveintersection, AlldenseCurveintersection, 
+						 t, z,
+						parent.jpb, percent, label).run();
+				
+				
+				
+			}
+		}
+					String uniqueID = Integer.toString(z) + Integer.toString(t);
+					densemap.put(uniqueID, AlldenseCurveintersection);
+
+				
+			
+		return densemap;
+
+	}
+	
 	public <T extends Comparable<T> & Type<T>> void computeMinMax(final Iterable<T> input, final T min, final T max) {
 		// create a cursor for the image (the order does not matter)
 		final Iterator<T> iterator = input.iterator();
