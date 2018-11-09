@@ -20,6 +20,7 @@ import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.RegressionCurveSegment;
+import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import ransacPoly.RegressionFunction;
 import utility.Listordereing;
 
@@ -74,7 +75,6 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 	@Override
 	public boolean process() {
 		int ndims = ActualRoiimg.numDimensions();
-
 		String uniqueID = Integer.toString(thirdDimension) + Integer.toString(fourthDimension);
 
 		List<RealLocalizable> truths = GetCandidatePoints.ListofPoints(parent, ActualRoiimg, jpb, percent,

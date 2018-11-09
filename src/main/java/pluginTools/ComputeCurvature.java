@@ -348,14 +348,18 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			Iterator<Map.Entry<String, Integer>> itZSec = parent.AccountedZ.entrySet().iterator();
 
 			double rms = 0;
+			int count  = 0;
 			while (itZSec.hasNext()) {
 
 				Map.Entry<String, Integer> entry = itZSec.next();
 
 				int time = entry.getValue();
 
-				Cranac.setPosition(time - 1, 0);
+				
+				count ++;
+				Cranac.setPosition(count , 0);
 
+				
 				rms += Cranac.get().get() * Cranac.get().get();
 
 			}
@@ -528,6 +532,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 				int z = itZ.next().getValue();
 
+			
 				SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
 
 				parent.parentgraphZ.put(Integer.toString(z), simplegraph);

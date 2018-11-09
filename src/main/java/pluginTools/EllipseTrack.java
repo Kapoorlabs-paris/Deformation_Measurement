@@ -1,8 +1,17 @@
 package pluginTools;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import distanceTransform.DistWatershedBinary;
 import distanceTransform.WatershedBinary;
@@ -418,10 +427,17 @@ public class EllipseTrack {
 
 		// Main method for computing intersections and tangents and angles between
 		// tangents
-		double percent = 0;
+		int percent = 0;
 
-		if (parent.curvesupermode) {
+	
 
+		int nThreads = Runtime.getRuntime().availableProcessors();
+		// set up executor service
+		final ExecutorService taskExecutorStart = Executors.newFixedThreadPool(nThreads);
+		 List<Callable<Object>> tasksStart = new ArrayList<Callable<Object>>();
+			
+			
+			
 			if (parent.originalimg.numDimensions() > 3) {
 
 				for (int t = parent.AutostartTime; t <= parent.AutoendTime; ++t) {
@@ -432,7 +448,13 @@ public class EllipseTrack {
 						parent.thirdDimension = z;
 						parent.fourthDimension = t;
 
-						BlockRepeatCurve(percent, z, t);
+						final ParallelBlockRepeatCurve ParallelCurve = new ParallelBlockRepeatCurve(parent, jpb, z, t, percent);
+						tasksStart.add(Executors.callable(ParallelCurve));
+						
+						
+						//BlockRepeatCurve(percent, z, t);
+						
+						
 						if(IJ.escapePressed()) {
 							IJ.resetEscape();
 							break;
@@ -443,13 +465,21 @@ public class EllipseTrack {
 
 			}
 
-			else if (parent.originalimg.numDimensions() > 2) {
+			else if (parent.originalimg.numDimensions() > 2 && parent.originalimg.numDimensions() < 4) {
 
+				
 				for (int z = parent.AutostartTime; z <= parent.AutoendTime; ++z) {
 
 					parent.thirdDimension = z;
 					parent.ZID = Integer.toString(z);
 					parent.AccountedZ.put(parent.ZID, z);
+				
+					
+					
+			//	
+				//	final ParallelBlockRepeatCurve ParallelCurve = new ParallelBlockRepeatCurve(parent, jpb, z, 1, percent);
+				//	tasksStart.add(Executors.callable(ParallelCurve));
+				
 					BlockRepeatCurve(percent, z, 1);
 					if(IJ.escapePressed()) {
 						IJ.resetEscape();
@@ -466,54 +496,20 @@ public class EllipseTrack {
 				
 			}
 
-		}
-
-		if (parent.curveautomode) {
-
-			if (parent.originalimg.numDimensions() > 3) {
-				for (int t = parent.AutostartTime; t <= parent.AutoendTime; ++t) {
-					parent.TID = Integer.toString(t);
-					parent.Accountedframes.put(parent.TID, t);
-					for (int z = 1; z <= parent.thirdDimensionSize; ++z) {
-
-						parent.thirdDimension = z;
-						parent.fourthDimension = t;
-
-						BlockRepeatAutoCurve(percent, z, t);
-						
-						if(IJ.escapePressed()) {
-							IJ.resetEscape();
-							break;
-								
-						}
-					}
+		
+			
+				
+				try {
+					
+				
+					taskExecutorStart.invokeAll(tasksStart);
+					
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-
-			}
-
-			else if (parent.originalimg.numDimensions() > 2) {
-
-				for (int z = parent.AutostartTime; z <= parent.AutoendTime; ++z) {
-
-					parent.thirdDimension = z;
-					parent.ZID = Integer.toString(z);
-					parent.AccountedZ.put(parent.ZID, z);
-					BlockRepeatAutoCurve(percent, z, 1);
-					if(IJ.escapePressed()) {
-						IJ.resetEscape();
-						break;
-							
-					}
-				}
-
-			} else {
-				int z = parent.thirdDimension;
-				int t = parent.fourthDimension;
-				BlockRepeatAutoCurve(percent, z, t);
-
-			}
-		}
-
+				
+		
 		
 
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
@@ -722,7 +718,7 @@ public class EllipseTrack {
 
 	}
 
-	public void GetPixelList(RandomAccessibleInterval<IntType> intimg) {
+	public  void GetPixelList(RandomAccessibleInterval<IntType> intimg) {
 
 		IntType min = new IntType();
 		IntType max = new IntType();

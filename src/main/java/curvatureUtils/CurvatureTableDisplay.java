@@ -79,7 +79,7 @@ public class CurvatureTableDisplay {
 		int Xkymodimension = denseidmap.get(ID);
 	
 
-			long[] size = new long[] { TimedimensionKymo, Xkymodimension + 1 };
+			long[] size = new long[] { TimedimensionKymo , Xkymodimension + 10 };
 			ComputeCurvature.MakeInterKymo(parent, densesortedMappair.sortedmap, size, ID);
 
 

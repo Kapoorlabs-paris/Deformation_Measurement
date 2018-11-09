@@ -107,7 +107,6 @@ public class Split implements Runnable {
 		parent.frame.setVisible(true);
 
 		parent.panel.add(fileprogress);
-		System.out.println(parent.batchfolder + " " + fileindex + " " + parent.boxsize + " I am box");
 		
 		
 		

@@ -39,6 +39,7 @@ public class TrackingFunctions {
 		parent.ALLIntersections = hashMapSorter.SortTimeorZ.sortByIntegerInter(parent.ALLIntersections);
 		for (Map.Entry<String, ArrayList<Intersectionobject>> entry : parent.ALLIntersections.entrySet()) {
 
+			System.out.println(entry.getKey() + "Strings");
 			ArrayList<Intersectionobject> bloblist = entry.getValue();
 			if(bloblist.size() > 0)
 			colllist.add(bloblist);
@@ -64,12 +65,14 @@ public class TrackingFunctions {
 		parent.ALLdenseIntersections = hashMapSorter.SortTimeorZ.sortByIntegerInter(parent.ALLdenseIntersections);
 		
 		for (Map.Entry<String, ArrayList<Intersectionobject>> entry : parent.ALLdenseIntersections.entrySet()) {
-
+			
 			ArrayList<Intersectionobject> bloblist = entry.getValue();
-			if(bloblist.size() > 0)
+			if(bloblist.size() > 0) {
 			colllist.add(bloblist);
-		
+			System.out.println(entry.getKey() + "Strings" + bloblist.get(0).linelist.get(0)[3]);
 
+			}
+			
 		}
 		KFsearch Tsearch = new KFsearch(colllist, parent.UserchosenCostFunction,  parent.originalimg.dimension(0) *  parent.originalimg.dimension(1),
 				parent.originalimg.dimension(0) *  parent.originalimg.dimension(1), 

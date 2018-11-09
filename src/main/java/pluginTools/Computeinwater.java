@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -194,11 +195,13 @@ public class Computeinwater {
 
 
 			
-			List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
-			
+			    List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
+		
 				tasks.add(Executors.callable( new LabelCurvature(parent, current.source, truths, resultlineroi, resultcurvelineroi,resultallcurvelineroi,ellipselineroi, Segmentrect,  AllCurveintersection, AlldenseCurveintersection, 
 					 t, z,
 					parent.jpb, percent, label)));
+				
+				
 				
 			}
 		}
@@ -212,9 +215,9 @@ public class Computeinwater {
 					parent.ALLdenseIntersections.put(uniqueID, AlldenseCurveintersection);
 					
 
-				} catch (InterruptedException e1) {
+				} catch (InterruptedException e)  {
 
-					System.out.println(e1 + " Task not executed");
+					System.out.println(e + " Task not executed");
 					
 				}
 			

@@ -43,6 +43,7 @@ import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.RegressionCurveSegment;
+import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import ransacPoly.RegressionFunction;
 
 public class LabelCurvature implements Runnable {
@@ -115,6 +116,10 @@ public class LabelCurvature implements Runnable {
 	
 	
 	private void CurvatureFinderChoice() {
+		
+	
+		
+	
 		
 		if (parent.pixelcelltrackcirclefits) {
 		
