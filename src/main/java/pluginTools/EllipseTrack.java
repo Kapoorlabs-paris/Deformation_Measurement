@@ -449,7 +449,6 @@ public class EllipseTrack {
 
 						parent.thirdDimension = z;
 						parent.fourthDimension = t;
-						parent.updatePreview(ValueChange.THIRDDIMmouse);
 						
 					//	tasksStart.add(Executors.callable(new ParallelBlockRepeatCurve(parent, Alldensemap, jpb, z, t, percent)));
 						BlockRepeatCurve(percent, z, t);
@@ -474,7 +473,6 @@ public class EllipseTrack {
 					parent.ZID = Integer.toString(z);
 					parent.AccountedZ.put(parent.ZID, z);
 				
-					parent.updatePreview(ValueChange.THIRDDIMmouse);
 				//	tasksStart.add(Executors.callable(new ParallelBlockRepeatCurve(parent, Alldensemap, jpb, z, 1, percent)));
 					BlockRepeatCurve(percent, z, 1);
 					if(IJ.escapePressed()) {
@@ -487,7 +485,6 @@ public class EllipseTrack {
 			} else {
 				int z = parent.thirdDimension;
 				int t = parent.fourthDimension;
-				parent.updatePreview(ValueChange.THIRDDIMmouse);
 			//	tasksStart.add(Executors.callable(new ParallelBlockRepeatCurve(parent, Alldensemap, jpb, z, t, percent)));
 				
 				BlockRepeatCurve(percent, z, t);

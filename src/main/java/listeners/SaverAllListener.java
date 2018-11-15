@@ -56,9 +56,11 @@ public class SaverAllListener implements ActionListener {
 		
 		if (!parent.curveautomode && !parent.curvesupermode)
 			OldSave();
-		else
+		else {
 		  KymoSave();
-
+		  DenseSave(); 
+		  
+		}
 	
 	IJ.log("All trackes saved in: " + parent.saveFile.getAbsolutePath());
 	}
@@ -158,7 +160,7 @@ public class SaverAllListener implements ActionListener {
 			
 			try {
 				File fichier = new File(
-						parent.saveFile + "//" + parent.addToName + "Dense List" +  "CellID" +ID + ".txt");
+						parent.saveFile + "//" + "Co-ordinates" + parent.addToName +  parent.inputstring.replaceFirst("[.][^.]+$", "") +  "CellID" +ID + ".txt");
 
 				FileWriter fw = new FileWriter(fichier);
 				BufferedWriter bw = new BufferedWriter(fw);

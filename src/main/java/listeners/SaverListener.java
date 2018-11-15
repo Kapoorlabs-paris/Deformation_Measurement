@@ -61,10 +61,10 @@ public class SaverListener implements ActionListener {
 			
 		if (!parent.curveautomode && !parent.curvesupermode)
 			OldSave();
-		else
+		else {
 		  KymoSave();
-
-				
+		  DenseSave(); 
+		}	
 				
 				
 				
@@ -84,7 +84,7 @@ public class SaverListener implements ActionListener {
 		if (!parent.curveautomode && !parent.curvesupermode) {
 			try {
 				File fichier = new File(
-						parent.saveFile + "//" + parent.addToName + "TrackID" +ID + ".txt");
+						 parent.saveFile + "//" + "Co-ordinates" + parent.addToName + "TrackID" +ID + ".txt");
 
 				FileWriter fw = new FileWriter(fichier);
 				BufferedWriter bw = new BufferedWriter(fw);
@@ -122,7 +122,7 @@ public class SaverListener implements ActionListener {
 		
 			try {
 				File fichier = new File(
-						parent.saveFile + "//" + parent.addToName + "SegmentID" +ID + ".txt");
+						parent.saveFile + "//" + "Co-ordinates" + parent.addToName + "SegmentID" +ID + ".txt");
 
 				FileWriter fw = new FileWriter(fichier);
 				BufferedWriter bw = new BufferedWriter(fw);
@@ -248,7 +248,7 @@ public class SaverListener implements ActionListener {
 		
 		try {
 			File fichier = new File(
-					parent.saveFile + "//" + parent.addToName + "TrackID" +ID + ".txt");
+					parent.saveFile + "//" +"Co-ordinates" + parent.addToName +  parent.inputstring.replaceFirst("[.][^.]+$", "") + "TrackID" +ID + ".txt");
 
 			FileWriter fw = new FileWriter(fichier);
 			BufferedWriter bw = new BufferedWriter(fw);
