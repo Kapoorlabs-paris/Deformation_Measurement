@@ -254,7 +254,8 @@ public class SaverListener implements ActionListener {
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write("\tTrackID" + "\t" + "\t" + ID+ "\n");
 			bw.write("\tX-coordinates\tY-coordinates\tTime\t\tCurvature\t \tPerimeter\t \t Intensity \t \t IntensitySec\n");
-			for (Pair<String, Intersectionobject> currentangle : parent.Tracklist) {
+		
+			for (Pair<String, Intersectionobject> currentangle : parent.denseTracklist) {
 				
 				String currentID = currentangle.getA();
 				if(currentID.equals(ID)) {

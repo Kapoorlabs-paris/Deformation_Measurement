@@ -383,18 +383,39 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	public void MakeSegments(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int numSeg,
 			int celllabel) {
 
-		List<RealLocalizable> copytruths = new ArrayList<RealLocalizable>();
+		List<RealLocalizable> copytruths = new ArrayList<RealLocalizable>(truths);
 		if (truths.size() < 3)
 			return;
 		else {
 			int size = truths.size();
 
+			int remainder = size % numSeg;
+			
+			
 			int maxpoints = size / numSeg;
 			if (maxpoints <= 2)
 				maxpoints = 3;
 			int biggestsize = maxpoints;
 			int segmentLabel = 1;
 
+			int index = truths.size() - 1;
+			do {
+				
+				if(index >= truths.size())
+					index = 0;
+				
+				
+			copytruths.add(truths.get(truths.size() - 1));
+			
+			  index++;
+			
+			} while(copytruths.size() % numSeg!= 0);
+			
+			size = copytruths.size();
+			maxpoints = size / numSeg;
+			if (maxpoints <= 2)
+				maxpoints = 3;
+			
 			List<RealLocalizable> sublist = new ArrayList<RealLocalizable>();
 
 			int startindex = 0;
@@ -404,10 +425,9 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 			
 				
-				if (size - endindex < 2 * maxpoints)
-					endindex = size;
+			
 
-				sublist = truths.subList(startindex, Math.min(endindex, size));
+				sublist = copytruths.subList(startindex, Math.min(endindex, size));
 				parent.Listmap.put(segmentLabel, sublist);
 
 				if (biggestsize >= endindex - startindex)

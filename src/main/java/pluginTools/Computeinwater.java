@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
+import batchMode.LocalPrefs;
 import curvatureUtils.PointExtractor;
 import ellipsoidDetector.Intersectionobject;
 import ellipsoidDetector.Tangentobject;
@@ -126,7 +127,8 @@ public class Computeinwater {
 			// more than 9 candidate points for ellipse fitting
 			List<Pair<RealLocalizable, FloatType>> truths = new ArrayList<Pair<RealLocalizable, FloatType>>();
 			
-			
+		      
+				
 			if (current.Size > parent.minperimeter / 3 * parent.minperimeter / 3
 					&& current.Size < parent.maxperimeter / 3 * parent.maxperimeter / 3
 					&& current.meanIntensity > parent.minellipsepoints) {

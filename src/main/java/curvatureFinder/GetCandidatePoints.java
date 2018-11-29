@@ -37,7 +37,6 @@ public class GetCandidatePoints {
 		
 		List<RealLocalizable> truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
 		parent.boxsize = LocalPrefs.getInt(".Box.int", (int) ((truths.size() / parent.minNumInliers ) * parent.calibration));
-			
 		
 		parent.minNumInliers = (int)(( truths.size()  * parent.calibration ) / parent.boxsize);
 		parent.SpecialminInlierField.setText("Box Size = " + " " + Double.toString(parent.boxsize) + " " + "um");
