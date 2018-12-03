@@ -54,7 +54,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	static int intensityBindex = 5;
 
 	public Pair<RegressionFunction, ArrayList<double[]>> FitonList(InteractiveSimpleEllipseFit parent,
-			RealLocalizable centerpoint, List<RealLocalizable> sublist) {
+			RealLocalizable centerpoint, List<RealLocalizable> sublist, int strideindex) {
 
 		ArrayList<double[]> Cordlist = new ArrayList<double[]>();
 
@@ -64,7 +64,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 					sublist.get(i).getDoublePosition(yindex) });
 		}
 
-		Pair<RegressionFunction, ArrayList<double[]>> resultcurvature = getLocalcurvature(Cordlist, centerpoint);
+		Pair<RegressionFunction, ArrayList<double[]>> resultcurvature = getLocalcurvature(Cordlist, centerpoint, strideindex);
 
 		// Draw the function
 
@@ -90,8 +90,11 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension,
 				parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
 
-		RegressionCurveSegment resultpair = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t);
+		RegressionCurveSegment resultpair = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t, 0);
 
+		
+		
+		
 		// Here counter the segments where the number of inliers was too low
 		Bestdelta.put(0, resultpair);
 
@@ -114,10 +117,11 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	 * @param Label
 	 * @param t
 	 * @param z
+	 * @param strideindex 
 	 * @return
 	 */
 	public RegressionCurveSegment getCurvature(InteractiveSimpleEllipseFit parent, List<RealLocalizable> truths,
-			RealLocalizable centerpoint, int ndims, int Label, int z, int t) {
+			RealLocalizable centerpoint, int ndims, int Label, int z, int t, int strideindex) {
 
 		ArrayList<Curvatureobject> curveobject = new ArrayList<Curvatureobject>();
 
@@ -137,7 +141,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			 * Main method that fits on segments a function to get the curvature
 			 * 
 			 */
-			Pair<RegressionFunction, ArrayList<double[]>> localfunction = FitonList(parent, centerpoint, sublist);
+			Pair<RegressionFunction, ArrayList<double[]>> localfunction = FitonList(parent, centerpoint, sublist, strideindex);
 
 			perimeter += localfunction.getA().Curvaturepoints.get(0)[periindex];
 			totalfunctions.add(localfunction.getA());

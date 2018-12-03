@@ -6,7 +6,7 @@ public class LineProfileCircle {
 	
 	public final double intensity;
 	
-	public final double secintnesity;
+	public final double secintensity;
 	
 	
 	public LineProfileCircle(final int count, final double intensity, final double secintensity) {
@@ -16,7 +16,7 @@ public class LineProfileCircle {
 		
 		this.intensity = intensity;
 		
-		this.secintnesity = secintensity;
+		this.secintensity = secintensity;
 		
 	}
 	

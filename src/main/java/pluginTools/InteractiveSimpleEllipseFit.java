@@ -56,6 +56,7 @@ import batchMode.BatchKymoSave;
 import batchMode.SaveBatchListener;
 import comboSliderTextbox.SliderBoxGUI;
 import costMatrix.CostFunction;
+import curvatureFinder.LineProfileCircle;
 import curvatureUtils.Node;
 import ellipsoidDetector.Intersectionobject;
 import ellipsoidDetector.KymoSaveobject;
@@ -166,7 +167,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public final int scrollbarSize = 1000;
 	public double maxError = 3;
 	public int degree = 3;
-	public int linescan = 10; 
 	public String inputstring;
 	public int secdegree = 2;
 	public double minellipsepoints = 9;
@@ -372,7 +372,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public HashMap<String, ArrayList<Intersectionobject>> HashdenseTrackList;
 
 	public ArrayList<Pair<String, Segmentobject>> SegmentTracklist;
-
+    public HashMap<String, ArrayList<LineProfileCircle>> TimeLineScanIntensity;
 	public HashMap<String, ArrayList<Segmentobject>> HashSegmentTrackList;
 	public ArrayList<Pair<String, double[]>> resultAngle;
 	public ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>> resultCurvature;
@@ -858,6 +858,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		HashresultSegIntensityB = new HashMap<Integer, Double>();
 		HashresultSegPerimeter = new HashMap<Integer, Double>();
 
+		
+		TimeLineScanIntensity = new HashMap<String, ArrayList<LineProfileCircle>>();
 		HashSegmentTrackList = new HashMap<String, ArrayList<Segmentobject>>();
 		HashTrackList = new HashMap<String, ArrayList<Intersectionobject>>();
 		HashdenseTrackList = new HashMap<String, ArrayList<Intersectionobject>>();

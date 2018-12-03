@@ -106,7 +106,7 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 
 	@Override
 	public Pair<RegressionFunction, ArrayList<double[]>> getLocalcurvature(ArrayList<double[]> Cordlist,
-			RealLocalizable centerpoint) {
+			RealLocalizable centerpoint, int strideindex) {
 		double[] x = new double[Cordlist.size()];
 		double[] y = new double[Cordlist.size()];
 
@@ -122,13 +122,13 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 
 		// Here you choose which method is used to detect curvature
 
-		Pair<RegressionFunction, ArrayList<double[]>> Curvaturedistancelist = DistanceCurvatureBlock(list, centerpoint);
+		Pair<RegressionFunction, ArrayList<double[]>> Curvaturedistancelist = DistanceCurvatureBlock(list, centerpoint, 0);
 
 		return Curvaturedistancelist;
 	}
 
 	public Pair<RegressionFunction, ArrayList<double[]>> DistanceCurvatureBlock(
-			final ArrayList<RealLocalizable> pointlist, RealLocalizable centerpoint) {
+			final ArrayList<RealLocalizable> pointlist, RealLocalizable centerpoint, int strideindex) {
 
 		double Kappa = 0;
 		double perimeter = 0;
@@ -207,7 +207,7 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 		// Get the sparse list of points
 
 		List<RealLocalizable> allorderedtruths = Listordereing.getList(Ordered, i);
-		RegressionCurveSegment resultpair = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t);
+		RegressionCurveSegment resultpair = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t, 0);
 
 		// Here counter the segments where the number of inliers was too low
 		Bestdelta.put(0, resultpair);

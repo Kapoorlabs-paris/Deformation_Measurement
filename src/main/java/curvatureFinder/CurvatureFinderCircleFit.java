@@ -92,10 +92,16 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		OverSliderLoop(parent, Ordered.getB(), centerpoint, truths, AllCurveintersection,
 				AlldenseCurveintersection, ndims, celllabel, fourthDimension, thirdDimension);
+		
+		
+		
+		
+		
 		return true;
 	}
 
 	
+
 
 	
 	public void OverSliderLoop(InteractiveSimpleEllipseFit parent, List<RealLocalizable> Ordered,
@@ -124,7 +130,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 			parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension,
 					parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
 
-			resultpair = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t);
+			resultpair = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t, index);
 
 			Bestdelta.put(count, resultpair);
 			count++;
@@ -157,7 +163,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 	@Override
 	public Pair<RegressionFunction, ArrayList<double[]>> getLocalcurvature(ArrayList<double[]> Cordlist,
-			RealLocalizable centerpoint) {
+			RealLocalizable centerpoint, int strideindex) {
 		double[] x = new double[Cordlist.size()];
 		double[] y = new double[Cordlist.size()];
 
@@ -177,7 +183,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		// Here you choose which method is used to detect curvature
 
-		Pair<RegressionFunction, ArrayList<double[]>> finalfunctionandList = RansacEllipseBlock(list, centerpoint, centerpoint.numDimensions());
+		Pair<RegressionFunction, ArrayList<double[]>> finalfunctionandList = RansacEllipseBlock(list, centerpoint, centerpoint.numDimensions(), strideindex);
 
 		return finalfunctionandList;
 	}
@@ -197,7 +203,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 	 */
 
 	public Pair<RegressionFunction, ArrayList<double[]>> RansacEllipseBlock(final ArrayList<RealLocalizable> pointlist,
-			RealLocalizable centerpoint, int ndims) {
+			RealLocalizable centerpoint, int ndims, int strideindex) {
 
 		final RansacFunctionEllipsoid ellipsesegment = FitLocalEllipsoid.findLocalEllipsoid(pointlist, ndims);
 
@@ -239,6 +245,8 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		}
 		
+		ArrayList<LineProfileCircle> AverageLineScanIntensity = new ArrayList<LineProfileCircle>(); 
+		
 		for (RealLocalizable point : pointlist) {
 
 			point.localize(newpos);
@@ -254,14 +262,16 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 			Pair<Double, Double> Intensity = getIntensity(parent, intpoint, centpos);
 
+			
+			if(strideindex == 0) {
 			LinefunctionCircle NormalLine = new LinefunctionCircle(ellipsesegment.function, intpoint);
 			
 			double[] NormalSlopeIntercept = NormalLine.NormalatPoint();
 			
-			double startNormalX = centerpoint.getDoublePosition(0) - parent.linescan / (Math.sqrt(1 + NormalSlopeIntercept[0] * NormalSlopeIntercept[0]));
+			double startNormalX = centerpoint.getDoublePosition(0) - parent.insidedistance / (Math.sqrt(1 + NormalSlopeIntercept[0] * NormalSlopeIntercept[0]));
 			double startNormalY = NormalSlopeIntercept[0] * startNormalX + NormalSlopeIntercept[1];
 			
-			double endNormalX = centerpoint.getDoublePosition(0) + parent.linescan / (Math.sqrt(1 + NormalSlopeIntercept[0] * NormalSlopeIntercept[0]));
+			double endNormalX = centerpoint.getDoublePosition(0) + parent.insidedistance / (Math.sqrt(1 + NormalSlopeIntercept[0] * NormalSlopeIntercept[0]));
 			double endNormalY = NormalSlopeIntercept[0] * endNormalX + NormalSlopeIntercept[1];
 			
 			long[] startNormal = { (long)startNormalX, (long)startNormalY };
@@ -270,6 +280,35 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 			
 			long[] endNormal = { (long)endNormalX, (long)endNormalY};
 			
+			ArrayList<LineProfileCircle> LineScanIntensity = getLineScanIntensity(parent, startNormal, midNormal, endNormal, NormalSlopeIntercept[0], NormalSlopeIntercept[1]);
+			if(AverageLineScanIntensity.size() == 0)
+				AverageLineScanIntensity = LineScanIntensity;
+			
+			else {
+				
+				for (int index = 0; index < LineScanIntensity.size(); ++index) {
+					
+					
+					if(AverageLineScanIntensity.get(index).count == LineScanIntensity.get(index).count) {
+						
+						LineProfileCircle average = new LineProfileCircle(AverageLineScanIntensity.get(index).count, AverageLineScanIntensity.get(index).intensity + LineScanIntensity.get(index).intensity,
+								AverageLineScanIntensity.get(index).secintensity + LineScanIntensity.get(index).secintensity);
+								
+						
+						AverageLineScanIntensity.set(index, average);
+						
+						
+					}
+					
+					
+				}
+				
+				
+			}
+				
+			
+			}
+				
 			// Average the intensity.
 			meanIntensity += Intensity.getA();
 			meanSecIntensity += Intensity.getB();
@@ -284,6 +323,10 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		RegressionFunction finalfunctionransac = new RegressionFunction(ellipsesegment.function, Curvaturepoints);
 
+		parent.TimeLineScanIntensity.put(parent.uniqueID, AverageLineScanIntensity);
+		
+		
+		
 		return new ValuePair<RegressionFunction, ArrayList<double[]>>(finalfunctionransac, AllCurvaturepoints);
 	}
 	
@@ -297,6 +340,14 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 		
 		RandomAccess<FloatType> ranac = parent.CurrentViewOrig.randomAccess();
 
+		
+		long minXdim = parent.CurrentViewOrig.min(0);
+		long minYdim = parent.CurrentViewOrig.min(1);
+		
+		long maxXdim = parent.CurrentViewOrig.max(0);
+		long maxYdim = parent.CurrentViewOrig.max(1);
+		
+		
 		double Intensity = 0;
 		double IntensitySec = 0;
 		RandomAccess<FloatType> ranacsec;
@@ -318,14 +369,22 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 		while(true) {
 			
 			count++;
-			long nextX = (long) (startNormal[0] + parent.linescan/ Math.sqrt(1 + slope * slope));
+			long nextX = (long) (startNormal[0] + parent.insidedistance/ Math.sqrt(1 + slope * slope));
 			long nextY = (long) (slope * nextX + intercept);
+			
+			
+			if(nextX > minXdim && nextX < maxXdim && nextY > minYdim && nextY < maxYdim) {
 			
 			ranac.setPosition(new long[] {nextX, nextY});
 			ranacsec.setPosition(ranac);
 			
 			Intensity = ranac.get().get();
 			IntensitySec = ranacsec.get().get();
+			
+			}
+			
+			startNormal[0] = nextX;
+			
 			
 			linescan = new LineProfileCircle(count, Intensity, IntensitySec);
 			LineScanIntensity.add(linescan);
