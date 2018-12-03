@@ -123,9 +123,11 @@ public class LabelCurvature implements Runnable {
 		
 		if (parent.pixelcelltrackcirclefits) {
 		
-			CurvatureFinderCircleFit<FloatType> curvecircle = new CurvatureFinderCircleFit<FloatType>(parent, AllCurveintersection, AlldenseCurveintersection, ActualRoiimg, jpb, percent, celllabel, z, t);
+		CurvatureFinderCircleFit<FloatType> curvecircle = new CurvatureFinderCircleFit<FloatType>(parent, AllCurveintersection, AlldenseCurveintersection, ActualRoiimg, jpb, percent, celllabel, z, t);
 		
-		     curvecircle.process();
+		curvecircle.process();
+		
+		
 		}
 		
 		if(parent.distancemethod) {

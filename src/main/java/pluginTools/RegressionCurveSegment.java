@@ -2,6 +2,7 @@ package pluginTools;
 
 import java.util.ArrayList;
 
+import curvatureFinder.LineProfileCircle;
 import kalmanForSegments.Segmentobject;
 import ransacPoly.RegressionFunction;
 import utility.Curvatureobject;
@@ -12,6 +13,18 @@ public class RegressionCurveSegment {
 	
 	public final ArrayList<RegressionFunction> functionlist;
 	public final ArrayList<Curvatureobject> Curvelist;
+	public final ArrayList<LineProfileCircle> LineScanIntensity;
+	
+	public RegressionCurveSegment(final ArrayList<RegressionFunction> functionlist, final ArrayList<Curvatureobject> Curvelist, final ArrayList<LineProfileCircle> LineScanIntensity) {
+		
+		
+		this.functionlist = functionlist;
+		
+		this.Curvelist = Curvelist;
+		
+		this.LineScanIntensity = LineScanIntensity;
+		
+	}
 	
 	public RegressionCurveSegment(final ArrayList<RegressionFunction> functionlist, final ArrayList<Curvatureobject> Curvelist) {
 		
@@ -20,9 +33,8 @@ public class RegressionCurveSegment {
 		
 		this.Curvelist = Curvelist;
 		
-		
+		this.LineScanIntensity = null;
 		
 	}
-	
 
 }

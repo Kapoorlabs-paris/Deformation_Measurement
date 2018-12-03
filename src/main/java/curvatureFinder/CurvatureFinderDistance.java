@@ -105,7 +105,7 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 	}
 
 	@Override
-	public Pair<RegressionFunction, ArrayList<double[]>> getLocalcurvature(ArrayList<double[]> Cordlist,
+	public RegressionLineProfile getLocalcurvature(ArrayList<double[]> Cordlist,
 			RealLocalizable centerpoint, int strideindex) {
 		double[] x = new double[Cordlist.size()];
 		double[] y = new double[Cordlist.size()];
@@ -122,12 +122,12 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 
 		// Here you choose which method is used to detect curvature
 
-		Pair<RegressionFunction, ArrayList<double[]>> Curvaturedistancelist = DistanceCurvatureBlock(list, centerpoint, 0);
+		RegressionLineProfile Curvaturedistancelist = DistanceCurvatureBlock(list, centerpoint, 0);
 
 		return Curvaturedistancelist;
 	}
 
-	public Pair<RegressionFunction, ArrayList<double[]>> DistanceCurvatureBlock(
+	public RegressionLineProfile DistanceCurvatureBlock(
 			final ArrayList<RealLocalizable> pointlist, RealLocalizable centerpoint, int strideindex) {
 
 		double Kappa = 0;
@@ -189,7 +189,10 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 
 		RegressionFunction finalfunctionransac = new RegressionFunction(Curvaturepoints);
 
-		return new ValuePair<RegressionFunction, ArrayList<double[]>>(finalfunctionransac, AllCurvaturepoints);
+		
+		RegressionLineProfile currentprofile = new RegressionLineProfile(finalfunctionransac, AllCurvaturepoints);
+		
+		return currentprofile;
 
 	}
 

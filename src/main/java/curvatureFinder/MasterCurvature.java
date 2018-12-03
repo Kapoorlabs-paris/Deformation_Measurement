@@ -53,7 +53,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	static int intensityAindex = 4;
 	static int intensityBindex = 5;
 
-	public Pair<RegressionFunction, ArrayList<double[]>> FitonList(InteractiveSimpleEllipseFit parent,
+	public RegressionLineProfile FitonList(InteractiveSimpleEllipseFit parent,
 			RealLocalizable centerpoint, List<RealLocalizable> sublist, int strideindex) {
 
 		ArrayList<double[]> Cordlist = new ArrayList<double[]>();
@@ -64,10 +64,11 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 					sublist.get(i).getDoublePosition(yindex) });
 		}
 
-		Pair<RegressionFunction, ArrayList<double[]>> resultcurvature = getLocalcurvature(Cordlist, centerpoint, strideindex);
+		RegressionLineProfile resultcurvature = getLocalcurvature(Cordlist, centerpoint, strideindex);
 
 		// Draw the function
 
+		
 		return resultcurvature;
 
 	}
@@ -90,7 +91,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension,
 				parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
 
-		RegressionCurveSegment resultpair = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t, 0);
+		RegressionCurveSegment resultpair = getCurvatureLineScan(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t);
 
 		
 		
@@ -129,6 +130,8 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 		ArrayList<RegressionFunction> totalfunctions = new ArrayList<RegressionFunction>();
 
+		
+		
 		double perimeter = 0;
 
 		MakeSegments(parent, truths, parent.minNumInliers, Label);
@@ -141,14 +144,14 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			 * Main method that fits on segments a function to get the curvature
 			 * 
 			 */
-			Pair<RegressionFunction, ArrayList<double[]>> localfunction = FitonList(parent, centerpoint, sublist, strideindex);
+			RegressionLineProfile localfunction = FitonList(parent, centerpoint, sublist, strideindex);
 
-			perimeter += localfunction.getA().Curvaturepoints.get(0)[periindex];
-			totalfunctions.add(localfunction.getA());
-			totalinterpolatedCurvature.addAll(localfunction.getB());
-			double Curvature = localfunction.getB().get(0)[curveindex];
-			double IntensityA = localfunction.getB().get(0)[intensityAindex];
-			double IntensityB = localfunction.getB().get(0)[intensityBindex];
+			perimeter += localfunction.regfunc.Curvaturepoints.get(0)[periindex];
+			totalfunctions.add(localfunction.regfunc);
+			totalinterpolatedCurvature.addAll(localfunction.AllCurvaturepoints);
+			double Curvature = localfunction.AllCurvaturepoints.get(0)[curveindex];
+			double IntensityA = localfunction.AllCurvaturepoints.get(0)[intensityAindex];
+			double IntensityB = localfunction.AllCurvaturepoints.get(0)[intensityBindex];
 			ArrayList<double[]> curvelist = new ArrayList<double[]>();
 
 			curvelist.add(new double[] { centerpoint.getDoublePosition(xindex), centerpoint.getDoublePosition(yindex),
@@ -171,11 +174,109 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 		// All nodes are returned
 
-		RegressionCurveSegment returnSeg = new RegressionCurveSegment(totalfunctions, curveobject);
+	
+		RegressionCurveSegment returnSeg =  new RegressionCurveSegment(totalfunctions, curveobject);
+		
 		return returnSeg;
 
 	}
 
+	
+	
+	public RegressionCurveSegment getCurvatureLineScan(InteractiveSimpleEllipseFit parent, List<RealLocalizable> truths,
+			RealLocalizable centerpoint, int ndims, int Label, int z, int t) {
+
+		ArrayList<Curvatureobject> curveobject = new ArrayList<Curvatureobject>();
+
+		ArrayList<double[]> totalinterpolatedCurvature = new ArrayList<double[]>();
+
+		ArrayList<RegressionFunction> totalfunctions = new ArrayList<RegressionFunction>();
+
+		ArrayList<LineProfileCircle> totalscan = new ArrayList<LineProfileCircle>();
+		
+		double perimeter = 0;
+
+		MakeSegments(parent, truths, parent.minNumInliers, Label);
+		// Now do the fitting
+		for (Map.Entry<Integer, List<RealLocalizable>> entry : parent.Listmap.entrySet()) {
+
+			List<RealLocalizable> sublist = entry.getValue();
+			/***
+			 * 
+			 * Main method that fits on segments a function to get the curvature
+			 * 
+			 */
+			RegressionLineProfile localfunction = FitonList(parent, centerpoint, sublist, 0);
+
+			if (localfunction.LineScanIntensity.size() > 0) {
+				
+			
+				
+			if(totalscan.size() == 0) {
+				
+			
+				totalscan = localfunction.LineScanIntensity;
+			
+			}
+			else {
+				for (int indexx = 0; indexx< totalscan.size(); ++indexx) {
+					for (int index = 0; index< localfunction.LineScanIntensity.size(); ++index) {
+						
+					
+					if(totalscan.get(indexx).count == localfunction.LineScanIntensity.get(index).count) {
+						
+						LineProfileCircle currentscan = new LineProfileCircle(totalscan.get(indexx).count, totalscan.get(indexx).intensity + localfunction.LineScanIntensity.get(index).intensity , 
+								
+								totalscan.get(indexx).secintensity + localfunction.LineScanIntensity.get(index).secintensity );
+						
+						totalscan.set(indexx, currentscan);
+						
+					}
+					
+					}
+					
+				}
+				
+			}
+			
+			}
+			perimeter += localfunction.regfunc.Curvaturepoints.get(0)[periindex];
+			totalfunctions.add(localfunction.regfunc);
+			totalinterpolatedCurvature.addAll(localfunction.AllCurvaturepoints);
+			double Curvature = localfunction.AllCurvaturepoints.get(0)[curveindex];
+			double IntensityA = localfunction.AllCurvaturepoints.get(0)[intensityAindex];
+			double IntensityB = localfunction.AllCurvaturepoints.get(0)[intensityBindex];
+			ArrayList<double[]> curvelist = new ArrayList<double[]>();
+
+			curvelist.add(new double[] { centerpoint.getDoublePosition(xindex), centerpoint.getDoublePosition(yindex),
+					Curvature, IntensityA, IntensityB });
+		
+		}
+
+		for (int indexx = 0; indexx < totalinterpolatedCurvature.size(); ++indexx) {
+
+			Curvatureobject currentobject = new Curvatureobject(totalinterpolatedCurvature.get(indexx)[curveindex],
+					perimeter, totalinterpolatedCurvature.get(indexx)[intensityAindex],
+					totalinterpolatedCurvature.get(indexx)[intensityBindex], Label,
+					new double[] { totalinterpolatedCurvature.get(indexx)[xindex],
+							totalinterpolatedCurvature.get(indexx)[yindex] },
+					z, t);
+
+			curveobject.add(currentobject);
+
+		}
+
+		// All nodes are returned
+
+		RegressionCurveSegment returnSeg = null;
+		if(totalscan.size() == 0)
+			returnSeg =  new RegressionCurveSegment(totalfunctions, curveobject);
+		else
+		returnSeg = new RegressionCurveSegment(totalfunctions, curveobject, totalscan);
+		return returnSeg;
+
+	}
+	
 	public Pair<Intersectionobject, Intersectionobject> GetAverage(InteractiveSimpleEllipseFit parent,
 			RealLocalizable centerpoint, HashMap<Integer, RegressionCurveSegment> Bestdelta, int count) {
 
@@ -289,7 +390,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		// Make intersection object here
 
 		Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor.CurvaturetoIntersection(parent,
-				parent.localCurvature, parent.functions, centerpoint, parent.smoothing);
+				parent.localCurvature, parent.functions, resultpair.LineScanIntensity, centerpoint, parent.smoothing);
 		Intersectionobject densecurrentobject = currentobjectpair.getA();
 		Intersectionobject sparsecurrentobject = currentobjectpair.getB();
 
@@ -377,7 +478,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		// Make intersection object here
 
 		Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor.CurvaturetoIntersection(parent,
-				parent.localCurvature, parent.functions, centerpoint, parent.smoothing);
+				parent.localCurvature, parent.functions, resultpair.LineScanIntensity, centerpoint, parent.smoothing);
 		Intersectionobject densecurrentobject = currentobjectpair.getA();
 		Intersectionobject sparsecurrentobject = currentobjectpair.getB();
 

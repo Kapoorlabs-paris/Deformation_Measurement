@@ -39,7 +39,6 @@ public class TrackingFunctions {
 		parent.ALLIntersections = hashMapSorter.SortTimeorZ.sortByIntegerInter(parent.ALLIntersections);
 		for (Map.Entry<String, ArrayList<Intersectionobject>> entry : parent.ALLIntersections.entrySet()) {
 
-			System.out.println(entry.getKey() + "Strings");
 			ArrayList<Intersectionobject> bloblist = entry.getValue();
 			if(bloblist.size() > 0)
 			colllist.add(bloblist);

@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.poi.poifs.property.Parent;
 
+import curvatureFinder.LineProfileCircle;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import ij.gui.EllipseRoi;
@@ -34,7 +35,7 @@ public class PointExtractor {
 	 * @return
 	 */
 	public static Pair<Intersectionobject, Intersectionobject> CurvaturetoIntersection(final InteractiveSimpleEllipseFit parent, final ArrayList<Curvatureobject> localCurvature,
-			final ArrayList<RegressionFunction> functions, final RealLocalizable centerpoint, double smoothing) {
+			final ArrayList<RegressionFunction> functions, final ArrayList<LineProfileCircle> LineScanIntensity, final RealLocalizable centerpoint, double smoothing) {
 
 		ArrayList<Line> resultlineroi = new ArrayList<Line>();
 		ArrayList<double[]> Sparselinelist = new ArrayList<double[]>();
@@ -135,9 +136,9 @@ public class PointExtractor {
 		// Compute the geometric mean of the object, which we would need for tracking
 		double[] mean = new double[] { centerpoint.getDoublePosition(0), centerpoint.getDoublePosition(1) };
 
-		Intersectionobject currentIntersection = new Intersectionobject(mean,linelist, perimeter, celllabel, t, z);
+		Intersectionobject currentIntersection = new Intersectionobject(mean,LineScanIntensity,linelist, perimeter, celllabel, t, z);
 		
-		Intersectionobject SparsecurrentIntersection = new Intersectionobject(mean,Sparselinelist,  perimeter, celllabel, t, z);
+		Intersectionobject SparsecurrentIntersection = new Intersectionobject(mean,LineScanIntensity,Sparselinelist,  perimeter, celllabel, t, z);
 		
 		
 		return new ValuePair<Intersectionobject, Intersectionobject> (currentIntersection , SparsecurrentIntersection);
