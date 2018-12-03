@@ -35,6 +35,7 @@ import com.google.common.math.Quantiles.Scale;
 
 import batchMode.BatchKymoSave;
 import costMatrix.PixelratiowDistCostFunction;
+import curvatureFinder.LineProfileCircle;
 import curvatureUtils.DisplaySelected;
 import drawUtils.DrawFunction;
 import ellipsoidDetector.Distance;
@@ -134,6 +135,79 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	}
 
+	
+public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size, String TrackID) {
+		
+		RandomAccessibleInterval<FloatType> IntensityAKymo = new ArrayImgFactory<FloatType>().create(size,
+				new FloatType());
+		RandomAccessibleInterval<FloatType> IntensityBKymo = new ArrayImgFactory<FloatType>().create(size,
+				new FloatType());
+		
+
+		RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
+
+		RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
+		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
+		
+		
+		while (itZ.hasNext()) {
+
+			Map.Entry<String, Integer> entry = itZ.next();
+
+			int time = entry.getValue();
+			String timeID = entry.getKey();
+
+			ArrayList<Intersectionobject> currentlist = sortedMappair.get(TrackID + timeID);
+
+			ranacimageA.setPosition(time - 1, 0);
+			ranacimageB.setPosition(time - 1, 0);
+			if (currentlist != null) {
+				for (Intersectionobject currentobject : currentlist) {
+
+					int count = 0;
+
+					//System.out.println(currentobject.LineScanIntensity.size() + " Final size" + time);
+				ArrayList<LineProfileCircle> currentprofile =   currentobject.LineScanIntensity;
+				
+				for (int i = 0; i < currentprofile.size(); ++i) {
+					
+					ranacimageA.setPosition(count, 1);
+					ranacimageA.get().set((float) currentprofile.get(i).intensity);
+					
+					
+					ranacimageB.setPosition(count, 1);
+					ranacimageB.get().set((float) currentprofile.get(i).secintensity);
+					
+					
+					count++;
+				}
+				
+				}
+			
+				
+			}
+			
+		}
+		
+		double[] calibration = new double[] { parent.timecal, parent.calibration };
+		Calibration cal = new Calibration();
+		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, "s um");
+
+		ImagePlus IntensityAimp = ImageJFunctions.show(IntensityAKymo);
+		IntensityAimp.setTitle("Intensity ChA Kymo for TrackID: " + TrackID);
+		IntensityAimp.setCalibration(cal);
+
+		if (parent.twochannel) {
+			ImagePlus IntensityBimp = ImageJFunctions.show(IntensityBKymo);
+			IntensityBimp.setTitle("Intensity ChB for TrackID: " + TrackID);
+			IntensityBimp.setCalibration(cal);
+			IntensityBimp.updateAndRepaintWindow();
+		}
+		IntensityAimp.updateAndRepaintWindow();
+		
+		
+	}
+	
 	public void MakeKymo(HashMap<String, ArrayList<Segmentobject>> sortedMappair, long[] size, String TrackID) {
 
 		RandomAccessibleInterval<FloatType> CurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
