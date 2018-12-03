@@ -134,7 +134,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			List<RealLocalizable> sublist = entry.getValue();
 			/***
 			 * 
-			 * Main method that fitst on segments a function to get the curvature
+			 * Main method that fits on segments a function to get the curvature
 			 * 
 			 */
 			Pair<RegressionFunction, ArrayList<double[]>> localfunction = FitonList(parent, centerpoint, sublist);
@@ -389,7 +389,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		else {
 			int size = truths.size();
 
-			int remainder = size % numSeg;
 			
 			
 			int maxpoints = size / numSeg;

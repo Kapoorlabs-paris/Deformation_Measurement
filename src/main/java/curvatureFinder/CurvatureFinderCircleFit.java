@@ -8,6 +8,7 @@ import javax.swing.JProgressBar;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import mpicbg.models.Point;
+import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
@@ -181,6 +182,11 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 		return finalfunctionandList;
 	}
 	
+	
+	
+	
+	
+	
 	/**
 	 * 
 	 * Fit an ellipse to a bunch of points
@@ -195,6 +201,9 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		final RansacFunctionEllipsoid ellipsesegment = FitLocalEllipsoid.findLocalEllipsoid(pointlist, ndims);
 
+		
+		
+		
 		double Kappa = 0;
 		double perimeter = 0;
 		ArrayList<double[]> Curvaturepoints = new ArrayList<double[]>();
@@ -245,6 +254,22 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 			Pair<Double, Double> Intensity = getIntensity(parent, intpoint, centpos);
 
+			LinefunctionCircle NormalLine = new LinefunctionCircle(ellipsesegment.function, intpoint);
+			
+			double[] NormalSlopeIntercept = NormalLine.NormalatPoint();
+			
+			double startNormalX = centerpoint.getDoublePosition(0) - parent.linescan / (Math.sqrt(1 + NormalSlopeIntercept[0] * NormalSlopeIntercept[0]));
+			double startNormalY = NormalSlopeIntercept[0] * startNormalX + NormalSlopeIntercept[1];
+			
+			double endNormalX = centerpoint.getDoublePosition(0) + parent.linescan / (Math.sqrt(1 + NormalSlopeIntercept[0] * NormalSlopeIntercept[0]));
+			double endNormalY = NormalSlopeIntercept[0] * endNormalX + NormalSlopeIntercept[1];
+			
+			long[] startNormal = { (long)startNormalX, (long)startNormalY };
+			
+			long[] midNormal = {(long)intpoint.getDoublePosition(0), (long)intpoint.getDoublePosition(1)};
+			
+			long[] endNormal = { (long)endNormalX, (long)endNormalY};
+			
 			// Average the intensity.
 			meanIntensity += Intensity.getA();
 			meanSecIntensity += Intensity.getB();
@@ -260,6 +285,57 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 		RegressionFunction finalfunctionransac = new RegressionFunction(ellipsesegment.function, Curvaturepoints);
 
 		return new ValuePair<RegressionFunction, ArrayList<double[]>>(finalfunctionransac, AllCurvaturepoints);
+	}
+	
+	
+	public ArrayList<LineProfileCircle> getLineScanIntensity(final InteractiveSimpleEllipseFit parent, final long[] startNormal, final long[] mindNormal, final long[] endNormal, final double slope, final double intercept){
+		
+		int count = 0;
+		
+		ArrayList<LineProfileCircle> LineScanIntensity = new ArrayList<LineProfileCircle>();
+		
+		
+		RandomAccess<FloatType> ranac = parent.CurrentViewOrig.randomAccess();
+
+		double Intensity = 0;
+		double IntensitySec = 0;
+		RandomAccess<FloatType> ranacsec;
+		if (parent.CurrentViewSecOrig != null)
+			ranacsec = parent.CurrentViewSecOrig.randomAccess();
+		else
+			ranacsec = ranac;
+
+		ranac.setPosition(startNormal);
+		ranacsec.setPosition(ranac);
+		
+		Intensity = ranac.get().get();
+		IntensitySec = ranacsec.get().get();
+		
+		LineProfileCircle linescan = new LineProfileCircle(count, Intensity, IntensitySec);
+		LineScanIntensity.add(linescan);
+		
+		
+		while(true) {
+			
+			count++;
+			long nextX = (long) (startNormal[0] + parent.linescan/ Math.sqrt(1 + slope * slope));
+			long nextY = (long) (slope * nextX + intercept);
+			
+			ranac.setPosition(new long[] {nextX, nextY});
+			ranacsec.setPosition(ranac);
+			
+			Intensity = ranac.get().get();
+			IntensitySec = ranacsec.get().get();
+			
+			linescan = new LineProfileCircle(count, Intensity, IntensitySec);
+			LineScanIntensity.add(linescan);
+			
+			if (nextX > endNormal[0] || nextY > endNormal[1])
+				break;
+		}
+		
+		return LineScanIntensity;
+		
 	}
 
 }

@@ -166,6 +166,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public final int scrollbarSize = 1000;
 	public double maxError = 3;
 	public int degree = 3;
+	public int linescan = 10; 
 	public String inputstring;
 	public int secdegree = 2;
 	public double minellipsepoints = 9;
