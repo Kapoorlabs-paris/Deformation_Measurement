@@ -312,7 +312,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public MouseListener ovalml;
 	public double calibration;
 	public double timecal;
-	public double insidedistance = 10;
+	public double insidedistance = 20;
 	public double outsidedistance = 0;
 	public int[] boundarypoint;
 	public int[] midpoint;
