@@ -10,6 +10,7 @@ import curvatureUtils.PointExtractor;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import ij.IJ;
+import ij.gui.Line;
 import kalmanForSegments.Segmentobject;
 import mpicbg.models.Point;
 import net.imglib2.Localizable;
@@ -730,10 +731,10 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		
 		double[] NormalSlopeIntercept = NormalLine.NormalatPoint();
 		
-		double startNormalX = intpoint.getDoublePosition(0) - parent.insidedistance ;
+		double startNormalX = intpoint.getDoublePosition(0) - parent.insidedistance/Math.sqrt(1 + NormalSlopeIntercept[0]*NormalSlopeIntercept[0]) ;
 		double startNormalY = NormalSlopeIntercept[0] * startNormalX + NormalSlopeIntercept[1];
 		
-		double endNormalX = intpoint.getDoublePosition(0) + parent.insidedistance;
+		double endNormalX = intpoint.getDoublePosition(0) + parent.insidedistance/Math.sqrt(1 + NormalSlopeIntercept[0]*NormalSlopeIntercept[0]) ;
 		double endNormalY = NormalSlopeIntercept[0] * endNormalX + NormalSlopeIntercept[1];
 		
 		long[] startNormal = { (long)startNormalX, (long)startNormalY };
@@ -741,6 +742,11 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		long[] midNormal = {(long)intpoint.getDoublePosition(0), (long)intpoint.getDoublePosition(1)};
 		
 		long[] endNormal = { (long)endNormalX, (long)endNormalY};
+		
+		
+		Line line = new Line((int) startNormal[0], (int) startNormal[1], (int) endNormal[0], (int) endNormal[1], parent.imp);
+		parent.overlay.add(line);
+		parent.imp.updateAndDraw();
 		
 		LineScanIntensity = getLineScanIntensity(parent, centerloc, startNormal, midNormal, endNormal, NormalSlopeIntercept[0], NormalSlopeIntercept[1]);
 
@@ -810,7 +816,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		while(true) {
 			
 			count++;
-			double nextX =  (minX + 1*sign);
+			double nextX =  (minX + 1*sign/Math.sqrt(1 + slope * slope ));
 			double nextY =  (slope * nextX + intercept);
 			if(nextX > minXdim && nextX < maxXdim && nextY > minYdim && nextY < maxYdim) {
 			
