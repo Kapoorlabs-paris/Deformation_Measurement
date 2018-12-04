@@ -48,6 +48,28 @@ public class Distance {
 	}
 	
 	/**
+	 * Retruns the squared distance between two long[]'S
+	 * 
+	 * @param pointA
+	 * @param pointB
+	 * @return
+	 */
+
+	public static double DistanceSq(final long[] pointA, final long[] pointB) {
+
+		double distance = 0;
+		int numDim = pointA.length;
+
+		for (int d = 0; d < numDim; ++d) {
+
+			distance += (pointA[d] - pointB[d])
+					* (pointA[d] - pointB[d]);
+
+		}
+		return distance;
+	}
+	
+	/**
 	 * Returns the square root of the distance between two RealLocalizables
 	 * 
 	 * @param pointA

@@ -22,6 +22,13 @@ public interface CurvatureFinders<T extends RealType<T> & NativeType<T>>
 	public RegressionLineProfile getLocalcurvature(ArrayList<double[]> Cordlist,
 			RealLocalizable centerpoint, int strideindex);
 
+	
+
+	public RegressionLineProfile getCircleLocalcurvature(ArrayList<double[]> Cordlist,
+			RealLocalizable centerpoint, int strideindex);
+	
+	
+	
 	public void OverSliderLoop(InteractiveSimpleEllipseFit parent, List<RealLocalizable> Ordered,
 			RealLocalizable centerpoint, List<RealLocalizable> truths,
 			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Intersectionobject> AlldenseCurveintersection,

@@ -13,9 +13,12 @@ import ellipsoidDetector.Intersectionobject;
 import ij.IJ;
 import kalmanForSegments.Segmentobject;
 import mpicbg.models.Point;
+import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
+import net.imglib2.algorithm.ransac.RansacModels.FitLocalEllipsoid;
+import net.imglib2.algorithm.ransac.RansacModels.RansacFunctionEllipsoid;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -126,7 +129,38 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 
 		return Curvaturedistancelist;
 	}
+	@Override
+	public RegressionLineProfile getCircleLocalcurvature(ArrayList<double[]> Cordlist,
+			RealLocalizable centerpoint, int strideindex) {
+		double[] x = new double[Cordlist.size()];
+		double[] y = new double[Cordlist.size()];
 
+		ArrayList<Point> pointlist = new ArrayList<Point>();
+		ArrayList<RealLocalizable> list = new ArrayList<RealLocalizable>();
+		
+		for (int index = 0; index < Cordlist.size() - 1; ++index) {
+			
+			x[index] = Cordlist.get(index)[0];
+			y[index] = Cordlist.get(index)[1];
+
+			RealPoint point = new RealPoint(new double[] { x[index], y[index] });
+			list.add(point);
+			pointlist.add(new Point(new double[] { x[index], y[index] }));
+
+		}
+
+		// Here you choose which method is used to detect curvature
+
+		RegressionLineProfile finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, centerpoint.numDimensions(), strideindex);
+
+		
+		return finalfunctionandList;
+	}
+	
+	
+
+	
+	
 	public RegressionLineProfile DistanceCurvatureBlock(
 			final ArrayList<RealLocalizable> pointlist, RealLocalizable centerpoint, int strideindex) {
 
@@ -204,20 +238,24 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 
 		if (parent.minNumInliers > truths.size())
 			parent.minNumInliers = truths.size();
-
 		int i = parent.increment;
-
+		RegressionCurveSegment oldresultpair = CommonLoop(parent, Ordered, centerpoint, ndims, celllabel, t, z);
+        
+		ArrayList<LineProfileCircle> zeroline = oldresultpair.LineScanIntensity;
+		
 		// Get the sparse list of points
-
 		List<RealLocalizable> allorderedtruths = Listordereing.getList(Ordered, i);
 		RegressionCurveSegment resultpair = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t, 0);
 
+		
+		RegressionCurveSegment newresultpair = new RegressionCurveSegment(resultpair.functionlist, resultpair.Curvelist, zeroline);
+		
 		// Here counter the segments where the number of inliers was too low
-		Bestdelta.put(0, resultpair);
+		Bestdelta.put(0, newresultpair);
 
-		parent.localCurvature = resultpair.Curvelist;
+		parent.localCurvature = newresultpair.Curvelist;
 
-		parent.functions = resultpair.functionlist;
+		parent.functions = newresultpair.functionlist;
 		// Get the sparse list of points, skips parent.resolution pixel points
 
 		Pair<Intersectionobject, Intersectionobject> sparseanddensepair = GetSingle(parent, centerpoint, Bestdelta);
