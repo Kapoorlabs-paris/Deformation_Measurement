@@ -127,9 +127,13 @@ public class CurvatureTableDisplay {
 	
 
 			long[] size = new long[] { TimedimensionKymo, Xkymodimension + 1 };
+			
+			long[] linesize = new long[] {TimedimensionKymo, (long) Math.ceil(parent.insidedistance * 2 + 2)};
+			
+			
 			ComputeCurvature.SaveInterKymo(parent, densesortedMappair.sortedmap, size, ID);
 
-
+			ComputeCurvature.SaveLineScanKymo(parent, densesortedMappair.sortedmap, linesize, ID);
 
 	}
 	

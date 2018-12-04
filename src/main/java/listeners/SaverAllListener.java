@@ -85,11 +85,12 @@ public class SaverAllListener implements ActionListener {
 				
 				
 				KymoSaveobject Kymos = parent.KymoFileobject.get(ID);
-				if(Kymos==null) {
+				KymoSaveobject LineKymo = parent.KymoLineobject.get(ID);
+				if(Kymos==null || LineKymo == null) {
 					
 					CurvatureTableDisplay.saveclicked(parent, tablepos);
 					Kymos = parent.KymoFileobject.get(ID);
-					
+					LineKymo = parent.KymoLineobject.get(ID);
 				}
 				else
 					CurvatureTableDisplay.saveclicked(parent, tablepos);

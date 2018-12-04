@@ -401,6 +401,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public HashMap<Integer, Double> HashresultSegIntensityB;
 	public HashMap<Integer, Double> HashresultSegPerimeter;
 	public HashMap<String, KymoSaveobject> KymoFileobject;
+	public HashMap<String, KymoSaveobject> KymoLineobject;
 	public Set<Integer> pixellist;
 	ColorProcessor cp = null;
 
@@ -832,6 +833,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		redoing = false;
 		KymoFileobject = new HashMap<String, KymoSaveobject>();
+		KymoLineobject = new HashMap<String, KymoSaveobject>();
 		localCurvature = new ArrayList<Curvatureobject>();
 		localSegment = new ArrayList<Segmentobject>();
 		functions = new ArrayList<RegressionFunction>();
