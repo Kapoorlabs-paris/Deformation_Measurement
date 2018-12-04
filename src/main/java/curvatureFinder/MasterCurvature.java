@@ -816,7 +816,8 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		while(true) {
 			
 			count++;
-			double nextX =  (minX + 1*sign/Math.sqrt(1 + slope * slope ));
+			System.out.println(slope + " " + minX + " " + maxX);
+			double nextX =  (minX + 1*sign);
 			double nextY =  (slope * nextX + intercept);
 			if(nextX > minXdim && nextX < maxXdim && nextY > minYdim && nextY < maxYdim) {
 			
@@ -827,6 +828,8 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			IntensitySec = ranacsec.get().get();
 			
 			}
+			else
+				break;
 			
 			minX = nextX;
 			
