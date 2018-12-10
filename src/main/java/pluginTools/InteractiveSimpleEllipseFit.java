@@ -1604,7 +1604,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		curvesupermode = true;
 		
-		compute.execute();
+		try {
+			compute.doInBackground();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
