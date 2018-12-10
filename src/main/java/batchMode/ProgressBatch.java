@@ -35,7 +35,7 @@ public class ProgressBatch extends SwingWorker<Void, Void> {
 	@Override
 	protected void done() {
 		try {
-			parent.jpb.setIndeterminate(false);
+		//	parent.jpb.setIndeterminate(false);
 			get();
 			
 		

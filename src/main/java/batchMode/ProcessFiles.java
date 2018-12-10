@@ -25,7 +25,7 @@ public class ProcessFiles {
 
 	public static void process(File[] directoryCh1, File[] directoryCh2, File[] directoryChSeg, String Ch1, String Ch2,
 			String ChSeg, boolean twochannel, ExecutorService taskexecutor) throws InterruptedException {
-
+		 List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
 		for (int fileindex = 0; fileindex < directoryCh1.length; ++fileindex) {
 
 			Pair<File, File> Chfiles = StringMatching(directoryCh1[fileindex], directoryChSeg, directoryCh2, Ch1, Ch2,
@@ -33,28 +33,41 @@ public class ProcessFiles {
 
 			ExecuteBatch parent = new ExecuteBatch(directoryCh1, directoryCh2, directoryChSeg, Ch1, Ch2, ChSeg,
 					new InteractiveSimpleEllipseFit(), directoryCh1[0], twochannel);
-			parent.run(null);
+		
 
 			if (Chfiles != null)
-				taskexecutor.execute(new Split(parent, Chfiles.getA(), Chfiles.getB(), directoryChSeg[fileindex],
-						fileindex, parent.twochannel));
-
+           tasks.add(Executors.callable(new Split(parent, Chfiles.getA(), Chfiles.getB(), directoryChSeg[fileindex], fileindex, parent.twochannel)));
+	
+			
+			
+			
+			
+			
+		}
+		try {
+			taskexecutor.invokeAll(tasks);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
 		}
 
 	}
 
 	public static void processSingle(File[] directoryCh1, File[] directoryChSeg, String Ch1, String ChSeg,
 			boolean twochannel, ExecutorService taskexecutor) throws InterruptedException {
-
+		List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
 		for (int fileindex = 0; fileindex < directoryCh1.length; ++fileindex) {
 
 			File Segfile = SingleStringMatching(directoryCh1[fileindex], directoryChSeg, Ch1, ChSeg);
 
 			ExecuteBatch parent = new ExecuteBatch(directoryCh1, directoryChSeg, Ch1, ChSeg,
 					new InteractiveSimpleEllipseFit(), directoryCh1[0], twochannel);
-			parent.run(null);
-			taskexecutor.execute(new Split(parent, directoryCh1[fileindex], Segfile, fileindex, parent.twochannel));
+			 tasks.add(Executors.callable(new Split(parent, directoryCh1[fileindex], directoryCh1[fileindex], Segfile, fileindex, parent.twochannel)));
 
+		}
+		try {
+			taskexecutor.invokeAll(tasks);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
 		}
 
 	}
@@ -97,12 +110,12 @@ public class ProcessFiles {
 
 		for (int fileindex = 0; fileindex < dirSeg.length; ++fileindex) {
 
+			
 			String Name = dirSeg[fileindex].getName().replaceAll(ChSeg, Ch1);
+			
 
-			System.out.println(Name + " " + imageA.getName());
 			if (imageA.getName().matches("(.*)" + Name + "(.*)")) {
 				CHSegpair = dirSeg[fileindex];
-				System.out.println(CHSegpair.getName());
 				break;
 			}
 

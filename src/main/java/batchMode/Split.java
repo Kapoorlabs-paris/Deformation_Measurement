@@ -24,10 +24,12 @@ import ellipsoidDetector.Intersectionobject;
 import ellipsoidDetector.KymoSaveobject;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.gui.Line;
 import ij.gui.Roi;
 import ij.io.Opener;
 import ij.measure.ResultsTable;
+import ij.plugin.frame.RoiManager;
 import io.scif.config.SCIFIOConfig;
 import io.scif.config.SCIFIOConfig.ImgMode;
 import io.scif.img.ImgIOException;
@@ -36,7 +38,9 @@ import kalmanForSegments.Segmentobject;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
+import net.imglib2.algorithm.gauss3.Gauss3;
 import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
+import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.Type;
@@ -84,8 +88,7 @@ public class Split implements Runnable {
 
 	}
 
-	ExecutorService checkTasksExecutorService = new ThreadPoolExecutor(1, 10, 100000, TimeUnit.MILLISECONDS,
-			new SynchronousQueue<Runnable>());
+
 	ImgOpener imgOpener = new ImgOpener();
 	SCIFIOConfig config = new SCIFIOConfig();
 	
@@ -93,25 +96,27 @@ public class Split implements Runnable {
 	public void run() {
 		config.imgOpenerSetImgModes(ImgMode.CELL);
 	//	org.apache.log4j.BasicConfigurator.configure();
-		JProgressBar fileprogress = new JProgressBar();
-		fileprogress.setIndeterminate(false);
+	//	JProgressBar fileprogress = new JProgressBar();
+	//	fileprogress.setIndeterminate(false);
 
-		fileprogress.setMaximum(parent.C1_AllImages.length);
+		//fileprogress.setMaximum(parent.C1_AllImages.length);
 
-		parent.label = new JLabel("Progress..");
-		parent.frame = new JFrame();
-		parent.panel = new JPanel();
-		parent.frame.add(parent.panel);
-		parent.frame.pack();
-		parent.frame.setSize(500, 200);
-		parent.frame.setVisible(true);
+	//	parent.label = new JLabel("Progress..");
+	//	parent.frame = new JFrame();
+	//	parent.panel = new JPanel();
+	//	parent.frame.add(parent.panel);
+	//	parent.frame.pack();
+	//	parent.frame.setSize(500, 200);
+	//	parent.frame.setVisible(true);
 
-		parent.panel.add(fileprogress);
+		//parent.panel.add(fileprogress);
 		
 		
 		
 		
 		try {
+			
+			System.out.println("Pattern matching: " + ChA.getAbsolutePath() + " " + ChSeg.getAbsolutePath() );
 			parent.parent.originalimgbefore = imgOpener
 					.openImgs(ChA.getAbsolutePath(), new FloatType()).get(0);
             parent.parent.originalimg = parent.parent.originalimgbefore;
@@ -127,10 +132,10 @@ public class Split implements Runnable {
 
 			File Savefolder = new File(parent.batchfolder + "/Results");
 
-			double percent = Math.round(100 * (fileindex + 1) / (parent.C1_AllImages.length));
+		//	double percent = Math.round(100 * (fileindex + 1) / (parent.C1_AllImages.length));
 
-			utility.ProgressBar.SetProgressBarTime(fileprogress, percent, (fileindex + 1), (parent.C1_AllImages.length),
-					"Processing Files (please wait)");
+		//	utility.ProgressBar.SetProgressBarTime(fileprogress, percent, (fileindex + 1), (parent.C1_AllImages.length),
+		//			"Processing Files (please wait)");
 
 			if (!parent.twochannel)
 				parent.parent.runBatch(Savefolder);
@@ -148,17 +153,11 @@ public class Split implements Runnable {
 			e.printStackTrace();
 		}
 
-		checkTasksExecutorService.shutdown();
-
-		while (!checkTasksExecutorService.isTerminated()) {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+	
 
 	}
+	
+
+	
 
 }

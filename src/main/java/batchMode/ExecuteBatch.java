@@ -147,7 +147,7 @@ public class ExecuteBatch implements PlugIn, Runnable {
 		LocalPrefs.load(C1_AllImages[0].getParent(), IJ.getApplet());
 		
 		
-		
+		System.out.println("Starting batch mode");
 		
 		ProgressBatch startbatch = new ProgressBatch(this);
 		startbatch.execute();

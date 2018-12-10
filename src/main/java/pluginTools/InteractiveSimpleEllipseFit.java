@@ -281,7 +281,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public RandomAccessibleInterval<FloatType> originalimgbefore;
 
 	public ArrayList<Intersectionobject> AllCurveintersection = new ArrayList<Intersectionobject>();
-	ResultsTable rtAll;
+	public ResultsTable rtAll;
 	public File inputfile;
 	public String inputdirectory;
 	public int radiusInt = 2;
@@ -1150,7 +1150,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		emptysmooth = new ArrayImgFactory<BitType>().create(originalimg, new BitType());
 		emptyWater = new ArrayImgFactory<IntType>().create(originalimg, new IntType());
 
-		if (!automode && !supermode && !curveautomode && !curvesupermode) {
+		if (!automode || !supermode || !curveautomode || !curvesupermode) {
 			roimanager = RoiManager.getInstance();
 
 			if (roimanager == null) {
@@ -1181,7 +1181,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		CleanMe();
 		StartCurvatureComputingCurrent();
 		
-		System.out.println("Box size inside is" +  this.boxsize);
 		StartCurvatureComputing(true, savefile);
         
 	
