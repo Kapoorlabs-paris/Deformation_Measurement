@@ -4,17 +4,20 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.JFrame;
 
 import curvatureUtils.CurvatureTableDisplay;
+import ellipsoidDetector.Intersectionobject;
 import ellipsoidDetector.KymoSaveobject;
 import ij.IJ;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.Pair;
 import net.imglib2.view.Views;
 import pluginTools.InteractiveSimpleEllipseFit;
 
@@ -24,11 +27,60 @@ public class BatchKymoSave {
 
 	public static void KymoSave(InteractiveSimpleEllipseFit parent, File savefile, JFrame frame) {
 		
+		int XcordLabel = 0;
+		int YcordLabel = 1;
+		int CurvatureLabel = 2;
+		int IntensityALabel = 3;
+		int IntensityBLabel = 4;
+		int perimeterLabel = 5;
+
+		for(int tablepos = 0; tablepos< parent.table.getRowCount(); ++tablepos) {
+			
+			String ID = (String) parent.table.getValueAt(tablepos, 0);
+			parent.saveFile = savefile;
+			try {
+				File fichier = new File(
+						savefile  + "//" + "Co-ordinates" + parent.addToName +  parent.inputstring.replaceFirst("[.][^.]+$", "") +  "CellID" +ID + ".txt");
+
+				FileWriter fw = new FileWriter(fichier);
+				BufferedWriter bw = new BufferedWriter(fw);
+				bw.write("\tTrackID" + "\t" + "\t" + ID+ "\n");
+				bw.write("\tX-coordinates\tY-coordinates\tTime\t\tCurvature\t\t Perimeter\t \t Intensity \t \t IntensitySec\n");
+				for (Pair<String, Intersectionobject> currentangle : parent.denseTracklist) {
+					
+					String currentID = currentangle.getA();
+					if(currentID.equals(ID)) {
+						ArrayList<double[]> linelist = currentangle.getB().linelist;
+						for (int index =0; index < linelist.size(); ++index) {
+						
+						bw.write("\t"+ parent.nf.format(linelist.get(index)[XcordLabel]) +  "\t" + "\t" + parent.nf.format(linelist.get(index)[YcordLabel])
+								+ "\t" + "\t" +
+								 currentangle.getB().z
+	                              + "\t" + "\t" +
+								parent.nf.format(linelist.get(index)[CurvatureLabel]) + "\t"  + "\t"+  "\t" + "\t" + parent.nf.format(linelist.get(index)[perimeterLabel]) + "\t" + "\t"  
+								+ parent.nf.format(linelist.get(index)[IntensityALabel]) +
+								
+								"\t" + "\t"  + parent.nf.format(linelist.get(index)[IntensityBLabel]) + 
+								"\n");
+						
+						
+					}
+					}
+				
+			}
+			
+			
+	    bw.close();
+		fw.close();
+		}
+		catch (IOException te) {
+		}
+			
+		}
 		
 	for(int tablepos = 0; tablepos< parent.table.getRowCount(); ++tablepos) {
 			
 			String ID = (String) parent.table.getValueAt(tablepos, 0);
-			System.out.println(ID);
 			parent.saveFile = savefile;
 			try {
 				File fichier = new File(

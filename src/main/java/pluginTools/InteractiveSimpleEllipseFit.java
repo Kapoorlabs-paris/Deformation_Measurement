@@ -1151,13 +1151,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		emptysmooth = new ArrayImgFactory<BitType>().create(originalimg, new BitType());
 		emptyWater = new ArrayImgFactory<IntType>().create(originalimg, new IntType());
 
-		if (!automode || !supermode || !curveautomode || !curvesupermode) {
-			roimanager = RoiManager.getInstance();
-
-			if (roimanager == null) {
-				roimanager = new RoiManager();
-			}
-		}
+	
 		updatePreview(ValueChange.ALL);
 		if (automode || supermode || curveautomode || curvesupermode) {
 

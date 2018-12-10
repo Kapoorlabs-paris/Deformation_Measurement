@@ -95,6 +95,7 @@ public class Split implements Runnable {
 	@Override
 	public void run() {
 		config.imgOpenerSetImgModes(ImgMode.CELL);
+		parent.parent.curvesupermode = true;
 	//	org.apache.log4j.BasicConfigurator.configure();
 	//	JProgressBar fileprogress = new JProgressBar();
 	//	fileprogress.setIndeterminate(false);

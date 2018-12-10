@@ -38,7 +38,7 @@ public class ProcessFiles {
 			if (Chfiles != null)
            tasks.add(Executors.callable(new Split(parent, Chfiles.getA(), Chfiles.getB(), directoryChSeg[fileindex], fileindex, parent.twochannel)));
 	
-			
+		
 			
 			
 			
