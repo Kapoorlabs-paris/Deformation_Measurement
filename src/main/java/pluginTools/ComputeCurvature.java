@@ -750,8 +750,10 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		} catch (ExecutionException e) {
 
 		}
-		if(batchmode)
+		if(batchmode) {
 			BatchKymoSave.KymoSave(parent, savefile, parent.Cardframe);
+		    parent.imp.close();	
+		}
 	}
 
 	public static void CurvedLineage(InteractiveSimpleEllipseFit parent) {
