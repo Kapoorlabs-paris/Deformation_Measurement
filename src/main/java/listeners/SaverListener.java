@@ -64,6 +64,7 @@ public class SaverListener implements ActionListener {
 		else {
 		  KymoSave();
 		  DenseSave(); 
+		  System.out.println("saving");
 		}	
 				
 				

@@ -215,9 +215,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	public boolean polynomialfits = false;
 	public boolean circlefits = false;
-	public boolean distancemethod = false;
+	public boolean distancemethod = true;
 	public boolean celltrackcirclefits = false;
-	public boolean pixelcelltrackcirclefits = true;
+	public boolean pixelcelltrackcirclefits = false;
 
 	public RealLocalizable globalMaxcord;
 
@@ -1021,6 +1021,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		redoing = false;
 		KymoFileobject = new HashMap<String, KymoSaveobject>();
+		KymoLineobject = new HashMap<String, KymoSaveobject>();
 		localCurvature = new ArrayList<Curvatureobject>();
 		localSegment = new ArrayList<Segmentobject>();
 		functions = new ArrayList<RegressionFunction>();
@@ -1607,6 +1608,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		ComputeCurvature compute = new ComputeCurvature(this, jpb, batchmode, savefile );
 
+		curvesupermode = true;
+		
 		compute.execute();
 
 	}
