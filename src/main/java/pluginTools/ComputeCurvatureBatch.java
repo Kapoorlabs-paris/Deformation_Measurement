@@ -81,13 +81,13 @@ import utility.NNFlagsearchKDtree;
 import utility.Roiobject;
 import utility.ThreeDRoiobject;
 
-public class ComputeCurvature extends SwingWorker<Void, Void> {
+public class ComputeCurvatureBatch {
 
 	final InteractiveSimpleEllipseFit parent;
 	final JProgressBar jpb;
     final boolean batchmode;
     final File savefile;
-	public ComputeCurvature(final InteractiveSimpleEllipseFit parent, final JProgressBar jpb, final boolean batchmode, final File savefile) {
+	public ComputeCurvatureBatch(final InteractiveSimpleEllipseFit parent, final JProgressBar jpb, final boolean batchmode, final File savefile) {
 
 		this.parent = parent;
 
@@ -98,8 +98,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		this.savefile = savefile;
 	}
 
-	@Override
-	protected Void doInBackground() throws Exception {
+	
+	protected void doInBackground() {
 
 		HashMap<String, Integer> map = SortTimeorZ.sortByValues(parent.Accountedframes);
 		parent.Accountedframes = map;
@@ -131,7 +131,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		
 		
-		return null;
+	done();
 
 	}
 
@@ -673,7 +673,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		}
 	}
 
-	@Override
+	
 	protected void done() {
 
 		
@@ -743,13 +743,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 
 		}
 
-		try {
-			get();
-		} catch (InterruptedException e) {
-
-		} catch (ExecutionException e) {
-
-		}
+		
 		if(batchmode) {
 			BatchKymoSave.KymoSave(parent, savefile, parent.Cardframe);
 		    parent.imp.close();	

@@ -45,7 +45,7 @@ public class BatchKymoSave {
 				FileWriter fw = new FileWriter(fichier);
 				BufferedWriter bw = new BufferedWriter(fw);
 				bw.write("\tTrackID: " + "\t"  + ID+ "\n");
-				bw.write("\tX-coordinates\tY-coordinates\tTime\tCurvature\tPerimeter\tIntensity\tIntensitySec\n");
+				bw.write("\tX-coordinates\tY-coordinates\tTime\tDeformation\tPerimeter\tIntensity\tIntensitySec\n");
 				for (Pair<String, Intersectionobject> currentangle : parent.denseTracklist) {
 					
 					String currentID = currentangle.getA();
@@ -92,7 +92,7 @@ public class BatchKymoSave {
 				IJ.log("Choosen Track saved in: " + savefile.getAbsolutePath());
 				bw.write("\tTrackID: " + "\t" + ID+ "\n");
 				
-				bw.write("\tArbritaryUnit\tTime\tCurvature\tIntensity\tIntensitySec\n");
+				bw.write("\tArbritaryUnit\tTime\tDeformation\tIntensity\tIntensitySec\n");
 				
 				
 				KymoSaveobject Kymos = parent.KymoFileobject.get(ID);

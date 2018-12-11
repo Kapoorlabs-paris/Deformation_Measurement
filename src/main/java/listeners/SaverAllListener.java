@@ -81,7 +81,7 @@ public class SaverAllListener implements ActionListener {
 				BufferedWriter bw = new BufferedWriter(fw);
 				bw.write("\tTrackID: " + "\t"  + ID+ "\n");
 				
-				bw.write("\tArbritaryUnit\tTime\tCurvature\tIntensity\tIntensitySec\n");
+				bw.write("\tArbritaryUnit\tTime\tDeformation\tIntensity\tIntensitySec\n");
 				
 				
 				KymoSaveobject Kymos = parent.KymoFileobject.get(ID);
@@ -166,7 +166,7 @@ public class SaverAllListener implements ActionListener {
 				FileWriter fw = new FileWriter(fichier);
 				BufferedWriter bw = new BufferedWriter(fw);
 				bw.write("\tTrackID: " + "\t"  + ID+ "\n");
-				bw.write("\tX-coordinates\tY-coordinates\tTime\tCurvature\tPerimeter\tIntensity\tIntensitySec\n");
+				bw.write("\tX-coordinates\tY-coordinates\tTime\tDeformation\tPerimeter\tIntensity\tIntensitySec\n");
 				for (Pair<String, Intersectionobject> currentangle : parent.denseTracklist) {
 					
 					String currentID = currentangle.getA();
@@ -256,7 +256,7 @@ public class SaverAllListener implements ActionListener {
 					FileWriter fw = new FileWriter(fichier);
 					BufferedWriter bw = new BufferedWriter(fw);
 					bw.write("\tTrackID:" + "\t"  + ID+ "\n");
-					bw.write("\tX-coordinates\tY-coordinates\tTime\tCurvature\t Perimeter\tIntensity\tIntensitySec\n");
+					bw.write("\tX-coordinates\tY-coordinates\tTime\tDeformation\t Perimeter\tIntensity\tIntensitySec\n");
 					for (Pair<String, Intersectionobject> currentangle : parent.Tracklist) {
 						
 						String currentID = currentangle.getA();
@@ -315,7 +315,7 @@ public class SaverAllListener implements ActionListener {
 				FileWriter fw = new FileWriter(fichier);
 				BufferedWriter bw = new BufferedWriter(fw);
 				bw.write("\tTrackID:" + "\t" + ID+ "\n");
-				bw.write("\tX-coordinates\tY-coordinates\tTime\tCurvature\tPerimeter\tIntensity\tIntensitySec\n");
+				bw.write("\tX-coordinates\tY-coordinates\tTime\tDeformation\tPerimeter\tIntensity\tIntensitySec\n");
 				for (Pair<String, Segmentobject> currentangle : parent.SegmentTracklist) {
 					
 					String currentID = currentangle.getA();

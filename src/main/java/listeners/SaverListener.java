@@ -128,7 +128,7 @@ public class SaverListener implements ActionListener {
 				FileWriter fw = new FileWriter(fichier);
 				BufferedWriter bw = new BufferedWriter(fw);
 				bw.write("\tTrackID" + "\t" + "\t" + ID + "\n");
-				bw.write("\tX-coordinates\tY-coordinates\tTime\tCurvature\t Perimeter\t \t Intensity \t \t IntensitySec\n");
+				bw.write("\tX-coordinates\tY-coordinates\tTime\tDeformation\t Perimeter\t \t Intensity \t \t IntensitySec\n");
 				for (Pair<String, Segmentobject> currentangle : parent.SegmentTracklist) {
 					
 					String currentID = currentangle.getA();
@@ -173,7 +173,7 @@ public class SaverListener implements ActionListener {
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write("\tTrackID" + "\t" + "\t" + ID+ "\n");
 			
-			bw.write("\tArbritaryUnit\tTime\t\tCurvature\t \t Intensity \t \t IntensitySec\n");
+			bw.write("\tArbritaryUnit\tTime\t\tDeformation\t \t Intensity \t \t IntensitySec\n");
 			
 			
 			KymoSaveobject Kymos = parent.KymoFileobject.get(ID);
@@ -254,7 +254,7 @@ public class SaverListener implements ActionListener {
 			FileWriter fw = new FileWriter(fichier);
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write("\tTrackID" + "\t" + ID+ "\n");
-			bw.write("\tX-coordinates\tY-coordinates\tTime\tCurvature\tPerimeter\tIntensity\tIntensitySec\n");
+			bw.write("\tX-coordinates\tY-coordinates\tTime\tDeformation\tPerimeter\tIntensity\tIntensitySec\n");
 		
 			for (Pair<String, Intersectionobject> currentangle : parent.denseTracklist) {
 				
@@ -342,7 +342,7 @@ public class SaverListener implements ActionListener {
 					FileWriter fw = new FileWriter(fichier);
 					BufferedWriter bw = new BufferedWriter(fw);
 					bw.write("\tTrackID" + "\t" + "\t" + ID+ "\n");
-					bw.write("\tX-coordinates\tY-coordinates\tTime\tCurvature\t Perimeter\t \t Intensity \t \t IntensitySec\n");
+					bw.write("\tX-coordinates\tY-coordinates\tTime\tDeformation\t Perimeter\t \t Intensity \t \t IntensitySec\n");
 					for (Pair<String, Intersectionobject> currentangle : parent.Tracklist) {
 						
 						String currentID = currentangle.getA();

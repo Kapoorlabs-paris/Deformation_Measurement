@@ -1599,17 +1599,30 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	}
 
 	public void StartCurvatureComputing(boolean batchmode, File savefile) {
-
+		if(!batchmode) {
 		ComputeCurvature compute = new ComputeCurvature(this, jpb, batchmode, savefile );
 
 		curvesupermode = true;
 		
-		try {
-			compute.doInBackground();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		compute.execute();
+		
 		}
+		
+		else {
+			
+			ComputeCurvatureBatch compute = new ComputeCurvatureBatch(this, jpb, batchmode, savefile );
+
+			curvesupermode = true;
+			try {
+				
+				compute.doInBackground();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		
 
 	}
 
@@ -2315,7 +2328,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			}
 
-			if (circlefits || pixelcelltrackcirclefits || celltrackcirclefits) {
+			if (circlefits || pixelcelltrackcirclefits || celltrackcirclefits || distancemethod) {
 
 				SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider, minInlierField,
 						minInlierText, scrollbarSize, minNumInliers, minNumInliersmax);
