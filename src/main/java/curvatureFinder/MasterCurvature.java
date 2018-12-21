@@ -812,16 +812,21 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		
 		
 		minX = outsidepoint[0];
+		double minY = slope * minX + intercept;
 		maxX = insidepoint[0];
 		double maxY = insidepoint[1];
 		
 		double step = (maxX - minX) / (2*parent.insidedistance);
+		ranac.setPosition(new long[] {Math.round(maxX), Math.round(maxY)});
+		ranacsec.setPosition(ranac);
 		
+		Intensity = ranac.get().get();
+		IntensitySec = ranacsec.get().get();
 		while(true) {
 			
 			count++;
 	
-			double nextX =  minX + step*sign;
+			double nextX =  maxX - step*sign;
 			double nextY = slope * nextX + intercept;
 			if(nextX > minXdim && nextX < maxXdim && nextY > minYdim && nextY < maxYdim) {
 			
@@ -835,14 +840,14 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			else
 				break;
 			
-			minX = nextX;
+			maxX = nextX;
 			
 			
 			
 			linescan = new LineProfileCircle(count, Intensity, IntensitySec);
 			LineScanIntensity.add(linescan);
 			
-			if (nextX > maxX || nextY > maxY)
+			if (nextX < minX || nextY < minY)
 				break;
 		}
 		return LineScanIntensity;
