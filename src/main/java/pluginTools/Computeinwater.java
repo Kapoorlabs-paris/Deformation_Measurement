@@ -11,9 +11,12 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
+
+import com.esotericsoftware.kryo.util.IdentityMap.Entry;
 
 import batchMode.LocalPrefs;
 import curvatureUtils.PointExtractor;
@@ -169,7 +172,8 @@ public class Computeinwater {
 		// set up executor service
 		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
 		List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
-
+		List<Future<HashMap<Integer, Intersectionobject>>> list = new ArrayList<Future<HashMap<Integer, Intersectionobject>>>();
+		
 		ArrayList<Line> resultlineroi = new ArrayList<Line>();
 		ArrayList<OvalRoi> resultcurvelineroi = new ArrayList<OvalRoi>();
 		ArrayList<OvalRoi> resultallcurvelineroi = new ArrayList<OvalRoi>();
@@ -180,7 +184,6 @@ public class Computeinwater {
 		Iterator<Integer> setiter = parent.pixellist.iterator();
 		parent.superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>>();
 		ArrayList<Intersectionobject> AllCurveintersection = new ArrayList<Intersectionobject>();
-		ArrayList<Intersectionobject> AlldenseCurveintersection = new ArrayList<Intersectionobject>();
 		
 		 
 		while (setiter.hasNext()) {
@@ -196,23 +199,52 @@ public class Computeinwater {
 					utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
 
 
-			
 			    List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
 		
-				tasks.add(Executors.callable( new LabelCurvature(parent, current.source, truths, resultlineroi, resultcurvelineroi,resultallcurvelineroi,ellipselineroi, Segmentrect,  AllCurveintersection, AlldenseCurveintersection, 
-					 t, z,
-					parent.jpb, percent, label)));
+			    LabelCurvature getLabel = new LabelCurvature(parent, current.source, truths, resultlineroi, resultcurvelineroi,resultallcurvelineroi,ellipselineroi, Segmentrect,  AllCurveintersection, 
+						 t, z,
+							parent.jpb, percent, label);
+			  
+			    
+			    Future<HashMap<Integer, Intersectionobject>> future = taskExecutor.submit(getLabel);
+			    list.add(future);
+			    
+			
 				
 				
 				
 			}
 		}
+		
+		ArrayList<Intersectionobject> AlldenseCurveintersection = new ArrayList<Intersectionobject>();
+		
+		for(Future<HashMap<Integer, Intersectionobject>> fut : list){
+            try {
+               
+            	
+            	HashMap<Integer, Intersectionobject> LabelMap = 	fut.get();
+            	for(Map.Entry<Integer, Intersectionobject> entry: LabelMap.entrySet())
+            		AlldenseCurveintersection.add(entry.getValue());
+            	
+            	
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        //shut down the executor service now
+		taskExecutor.shutdown();
+		
+		
+		
 				try {
 					
 					
 					taskExecutor.invokeAll(tasks);
 					
+					for(int i = 0; i < AlldenseCurveintersection.size(); ++i)
+						System.out.println(AlldenseCurveintersection.get(i).celllabel + " Cell label  ");
 					String uniqueID = Integer.toString(z) + Integer.toString(t);
+					System.out.println(uniqueID + " Current id");
 					parent.ALLIntersections.put(uniqueID, AllCurveintersection);
 					parent.ALLdenseIntersections.put(uniqueID, AlldenseCurveintersection);
 					
@@ -228,53 +260,6 @@ public class Computeinwater {
 	}
 	
 	
-	public HashMap<String, ArrayList<Intersectionobject>> DualParallelRansacCurve() {
-
-
-		ArrayList<Line> resultlineroi = new ArrayList<Line>();
-		ArrayList<OvalRoi> resultcurvelineroi = new ArrayList<OvalRoi>();
-		ArrayList<OvalRoi> resultallcurvelineroi = new ArrayList<OvalRoi>();
-		ArrayList<EllipseRoi> ellipselineroi = new ArrayList<EllipseRoi>();
-		ArrayList<Roi>Segmentrect = new ArrayList<Roi>();
-		// Obtain the points of intersections
-
-		Iterator<Integer> setiter = parent.pixellist.iterator();
-		parent.superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>>();
-		ArrayList<Intersectionobject> AllCurveintersection = new ArrayList<Intersectionobject>();
-		ArrayList<Intersectionobject> AlldenseCurveintersection = new ArrayList<Intersectionobject>();
-		HashMap<String, ArrayList<Intersectionobject>> densemap = new HashMap<String, ArrayList<Intersectionobject>>();
-		 
-		while (setiter.hasNext()) {
-
-			percent++;
-
-			int label = setiter.next();
-			if(label!=parent.background) {
-			// Creating a binary image in the integer image region from the boundary
-			// probability map
-			Watershedobject current =
-
-					utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
-
-
-			
-			    List<RealLocalizable> truths = new ArrayList<RealLocalizable>();
-			    new LabelCurvature(parent, current.source, truths, resultlineroi, resultcurvelineroi,resultallcurvelineroi,ellipselineroi, Segmentrect,  AllCurveintersection, AlldenseCurveintersection, 
-						 t, z,
-						parent.jpb, percent, label).run();
-				
-				
-				
-			}
-		}
-					String uniqueID = Integer.toString(z) + Integer.toString(t);
-					densemap.put(uniqueID, AlldenseCurveintersection);
-
-				
-			
-		return densemap;
-
-	}
 	
 	public <T extends Comparable<T> & Type<T>> void computeMinMax(final Iterable<T> input, final T min, final T max) {
 		// create a cursor for the image (the order does not matter)

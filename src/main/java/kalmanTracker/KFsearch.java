@@ -85,10 +85,9 @@ public class KFsearch implements IntersectionTracker {
 
 	    Collection<Intersectionobject> Firstorphan = Allblobs.get(0);
 		
-		String uniqueID = Integer.toString(Allblobs.get(0).get(0).z) + Integer.toString(Allblobs.get(0).get(0).t); 
 
 		Collection<Intersectionobject> Secondorphan = Allblobs.get(1);
-		String uniqueIDnext  = Integer.toString(Allblobs.get(1).get(0).z) + Integer.toString(Allblobs.get(1).get(0).t); 
+		String uniqueIDnext  = Integer.toString(Allblobs.get(1).get(0).z) + Integer.toString(Allblobs.get(1).get(0).t) + Integer.toString(Allblobs.get(1).get(0).celllabel ); 
 		// Max KF search cost.
 		final double maxCost = maxsearchRadius * maxsearchRadius;
 
@@ -115,8 +114,13 @@ public class KFsearch implements IntersectionTracker {
 		// KalmanFilterMap
 		for (int i = 1; i < Allblobs.size();++i) {
 
+		
+			
 			if(Allblobs.get(i).size() > 0) {
-			uniqueIDnext =  Integer.toString(Allblobs.get(i).get(0).z) + Integer.toString(Allblobs.get(i).get(0).t);
+			uniqueIDnext =  Integer.toString(Allblobs.get(i).get(0).z) + Integer.toString(Allblobs.get(i).get(0).t) + Integer.toString(Allblobs.get(i).get(0).celllabel );
+			
+			
+			
 			List<Intersectionobject> measurements = Allblobs.get(i);
 			// Make the preditiction map
 			final Map<ComparableRealPoint, CVMKalmanFilter> predictionMap = new HashMap<ComparableRealPoint, CVMKalmanFilter>(
@@ -162,7 +166,7 @@ public class KFsearch implements IntersectionTracker {
 					// Create links for found match.
 					final Intersectionobject source = kalmanFiltersMap.get(kf);
 					final Intersectionobject target = agnts.get(cm);
-
+					
 					graph.addVertex(source);
 					graph.addVertex(target);
 					final DefaultWeightedEdge edge = graph.addEdge(source, target);
@@ -224,6 +228,7 @@ public class KFsearch implements IntersectionTracker {
 						// Add edge to the graph.
 						graph.addVertex(source);
 						graph.addVertex(target);
+						
 						if(source.hashCode()!=target.hashCode()) {
 						final DefaultWeightedEdge edge = graph.addEdge(source, target);
 						final double cost = assignmentCosts.get(source);

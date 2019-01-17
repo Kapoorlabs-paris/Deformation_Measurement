@@ -35,14 +35,14 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 	public final int percent;
 	public final int celllabel;
 	public final ArrayList<Intersectionobject> AllCurveintersection;
-	public final ArrayList<Intersectionobject> AlldenseCurveintersection;
+	public final HashMap<Integer, Intersectionobject> AlldenseCurveintersection;
 	HashMap<Integer, RegressionCurveSegment> Bestdelta = new HashMap<Integer, RegressionCurveSegment>();
 	public final RandomAccessibleInterval<FloatType> ActualRoiimg;
 	private final String BASE_ERROR_MSG = "[CircleFit-]";
 	protected String errorMessage;
 
 	public CurvatureFinderCircleFit(final InteractiveSimpleEllipseFit parent,
-			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Intersectionobject> AlldenseCurveintersection,
+			ArrayList<Intersectionobject> AllCurveintersection,HashMap<Integer, Intersectionobject> AlldenseCurveintersection,
 			final RandomAccessibleInterval<FloatType> ActualRoiimg, final JProgressBar jpb, final int percent,
 			final int celllabel, final int thirdDimension, final int fourthDimension) {
 
@@ -57,6 +57,12 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 		this.percent = percent;
 	}
 
+	
+	public HashMap<Integer, Intersectionobject> getMap() {
+
+		return AlldenseCurveintersection;
+	}
+	
 	@Override
 	public HashMap<Integer, RegressionCurveSegment> getResult() {
 
@@ -106,7 +112,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 	
 	public void OverSliderLoop(InteractiveSimpleEllipseFit parent, List<RealLocalizable> Ordered,
 			RealLocalizable centerpoint, List<RealLocalizable> truths,
-			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Intersectionobject> AlldenseCurveintersection,
+			ArrayList<Intersectionobject> AllCurveintersection, HashMap<Integer, Intersectionobject> AlldenseCurveintersection,
 			int ndims, int celllabel, int t, int z) {
 
 		// Get the sparse list of points
@@ -149,7 +155,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 		Pair<Intersectionobject, Intersectionobject> sparseanddensepair = GetAverage(parent, centerpoint, Bestdelta,count);
 		
 		AllCurveintersection.add(sparseanddensepair.getA());
-		AlldenseCurveintersection.add(sparseanddensepair.getB());
+		AlldenseCurveintersection.put(celllabel, sparseanddensepair.getB());
 		
 		
 		parent.AlllocalCurvature.add(parent.localCurvature);
@@ -222,7 +228,10 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 		
 		return finalfunctionandList;
 	}
-	
+
+
+
+
 	
 	
 	

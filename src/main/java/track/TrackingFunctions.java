@@ -66,6 +66,8 @@ public class TrackingFunctions {
 		for (Map.Entry<String, ArrayList<Intersectionobject>> entry : parent.ALLdenseIntersections.entrySet()) {
 			
 			ArrayList<Intersectionobject> bloblist = entry.getValue();
+			for(int i = 0; i < bloblist.size(); ++i)
+			System.out.println("This went in: " + bloblist.get(i).celllabel);
 			if(bloblist.size() > 0) {
 			colllist.add(bloblist);
 

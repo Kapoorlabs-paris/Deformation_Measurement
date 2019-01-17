@@ -31,7 +31,7 @@ public interface CurvatureFinders<T extends RealType<T> & NativeType<T>>
 	
 	public void OverSliderLoop(InteractiveSimpleEllipseFit parent, List<RealLocalizable> Ordered,
 			RealLocalizable centerpoint, List<RealLocalizable> truths,
-			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Intersectionobject> AlldenseCurveintersection,
+			ArrayList<Intersectionobject> AllCurveintersection, HashMap<Integer, Intersectionobject> AlldenseCurveintersection,
 			int ndims, int celllabel, int t, int z);
 
 }

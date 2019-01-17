@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.Map.Entry;
 import java.util.Random;
 
@@ -46,7 +47,7 @@ import pluginTools.RegressionCurveSegment;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import ransacPoly.RegressionFunction;
 
-public class LabelCurvature implements Runnable {
+public class LabelCurvature implements Callable< HashMap<Integer,Intersectionobject>> {
 
 	final InteractiveSimpleEllipseFit parent;
 	final RandomAccessibleInterval<FloatType> ActualRoiimg;
@@ -62,14 +63,14 @@ public class LabelCurvature implements Runnable {
 	final ArrayList<Roi> segmentrect;
 	final JProgressBar jpb;
 	ArrayList<Intersectionobject> AllCurveintersection;
-	ArrayList<Intersectionobject> AlldenseCurveintersection;
+
 	ArrayList<Segmentobject> AllCurveSegments;
 
 	public LabelCurvature(final InteractiveSimpleEllipseFit parent,
 			final RandomAccessibleInterval<FloatType> ActualRoiimg, List<RealLocalizable> truths,
 			ArrayList<Line> resultlineroi, ArrayList<OvalRoi> resultcurvelineroi,
 			ArrayList<OvalRoi> resultallcurvelineroi, ArrayList<EllipseRoi> ellipselineroi, ArrayList<Roi> segmentrect,
-			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Intersectionobject> AlldenseCurveintersection,
+			ArrayList<Intersectionobject> AllCurveintersection,  
 			final int t, final int z, final int celllabel) {
 
 		this.parent = parent;
@@ -78,7 +79,7 @@ public class LabelCurvature implements Runnable {
 		this.t = t;
 		this.z = z;
 		this.AllCurveintersection = AllCurveintersection;
-		this.AlldenseCurveintersection = AlldenseCurveintersection;
+
 		this.jpb = null;
 		this.percent = 0;
 		this.resultlineroi = resultlineroi;
@@ -93,7 +94,7 @@ public class LabelCurvature implements Runnable {
 			final RandomAccessibleInterval<FloatType> ActualRoiimg, List<RealLocalizable> truths,
 			ArrayList<Line> resultlineroi, ArrayList<OvalRoi> resultcurvelineroi,
 			ArrayList<OvalRoi> resultallcurvelineroi, ArrayList<EllipseRoi> ellipselineroi, ArrayList<Roi> segmentrect,
-			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Intersectionobject> AlldenseCurveintersection,
+			ArrayList<Intersectionobject> AllCurveintersection,
 		    final int t, final int z, final JProgressBar jpb,
 			final int percent, final int celllabel) {
 
@@ -109,15 +110,15 @@ public class LabelCurvature implements Runnable {
 		this.jpb = jpb;
 		this.percent = percent;
 		this.AllCurveintersection = AllCurveintersection;
-		this.AlldenseCurveintersection = AlldenseCurveintersection;
+		
 		this.celllabel = celllabel;
 		this.segmentrect = segmentrect;
 	}
 	
 	
-	private void CurvatureFinderChoice() {
+	private HashMap<Integer,Intersectionobject> CurvatureFinderChoice() {
 		
-	
+		 HashMap<Integer,Intersectionobject>  AlldenseCurveintersection = new HashMap<Integer,Intersectionobject>();
 		
 	
 		
@@ -127,6 +128,7 @@ public class LabelCurvature implements Runnable {
 		
 		curvecircle.process();
 		
+		AlldenseCurveintersection = curvecircle.getMap();
 		
 		}
 		
@@ -136,13 +138,16 @@ public class LabelCurvature implements Runnable {
 		
 		curvedistance.process();
 		
-	
+		AlldenseCurveintersection = curvedistance.getMap();
 		
 	     }
+		
+		return AlldenseCurveintersection;
 	}
 
 
-	public void run() {
+	@Override
+	public  HashMap<Integer,Intersectionobject> call() throws Exception {
 		parent.Allnodes.clear();
 		parent.Nodemap.clear();
 		parent.Listmap.clear();
@@ -160,7 +165,14 @@ public class LabelCurvature implements Runnable {
 		}
 
 		
-		CurvatureFinderChoice();
+		HashMap<Integer,Intersectionobject> AlldenseCurveintersection = 	CurvatureFinderChoice();
+		
+		
+		
+		return  AlldenseCurveintersection;
 	}
+
+
+	
 
 }

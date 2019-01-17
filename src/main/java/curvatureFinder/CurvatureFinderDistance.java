@@ -40,14 +40,14 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 	public final int percent;
 	public final int celllabel;
 	public final ArrayList<Intersectionobject> AllCurveintersection;
-	public final ArrayList<Intersectionobject> AlldenseCurveintersection;
+	public final HashMap<Integer,Intersectionobject> AlldenseCurveintersection;
 	HashMap<Integer, RegressionCurveSegment> Bestdelta = new HashMap<Integer, RegressionCurveSegment>();
 	public final RandomAccessibleInterval<FloatType> ActualRoiimg;
 	private final String BASE_ERROR_MSG = "[DistanceMeasure-]";
 	protected String errorMessage;
 
 	public CurvatureFinderDistance(final InteractiveSimpleEllipseFit parent,
-			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Intersectionobject> AlldenseCurveintersection,
+			ArrayList<Intersectionobject> AllCurveintersection,  HashMap<Integer,Intersectionobject> AlldenseCurveintersection,
 			final RandomAccessibleInterval<FloatType> ActualRoiimg, final JProgressBar jpb, final int percent,
 			final int celllabel, final int thirdDimension, final int fourthDimension) {
 
@@ -62,6 +62,12 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 		this.percent = percent;
 	}
 
+	
+	public HashMap<Integer, Intersectionobject> getMap() {
+
+		return AlldenseCurveintersection;
+	}
+	
 	@Override
 	public HashMap<Integer, RegressionCurveSegment> getResult() {
 
@@ -81,6 +87,7 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 	@Override
 	public boolean process() {
 
+		
 		int ndims = ActualRoiimg.numDimensions();
 
 		String uniqueID = Integer.toString(thirdDimension) + Integer.toString(fourthDimension);
@@ -233,7 +240,7 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 	@Override
 	public void OverSliderLoop(InteractiveSimpleEllipseFit parent, List<RealLocalizable> Ordered,
 			RealLocalizable centerpoint, List<RealLocalizable> truths,
-			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Intersectionobject> AlldenseCurveintersection,
+			ArrayList<Intersectionobject> AllCurveintersection,  HashMap<Integer,Intersectionobject> AlldenseCurveintersection,
 			int ndims, int celllabel, int t, int z) {
 
 		if (parent.minNumInliers > truths.size())
@@ -261,7 +268,7 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 		Pair<Intersectionobject, Intersectionobject> sparseanddensepair = GetSingle(parent, centerpoint, Bestdelta);
 
 		AllCurveintersection.add(sparseanddensepair.getA());
-		AlldenseCurveintersection.add(sparseanddensepair.getB());
+		AlldenseCurveintersection.put(celllabel, sparseanddensepair.getB());
 		parent.AlllocalCurvature.add(parent.localCurvature);
 
 	}

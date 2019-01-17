@@ -49,6 +49,7 @@ public class CurvatureFinderEllipseFit<T extends RealType<T> & NativeType<T>> im
 	}
 	
 	
+
 	@Override
 	public HashMap<Integer, RegressionCurveSegment> getResult() {
 
@@ -89,7 +90,7 @@ public class CurvatureFinderEllipseFit<T extends RealType<T> & NativeType<T>> im
 	@Override
 	public void OverSliderLoop(InteractiveSimpleEllipseFit parent, List<RealLocalizable> Ordered,
 			RealLocalizable centerpoint, List<RealLocalizable> truths,
-			ArrayList<Intersectionobject> AllCurveintersection, ArrayList<Intersectionobject> AlldenseCurveintersection,
+			ArrayList<Intersectionobject> AllCurveintersection,  HashMap<Integer,Intersectionobject>  AlldenseCurveintersection,
 			int ndims, int celllabel, int t, int z) {
 		// TODO Auto-generated method stub
 		
