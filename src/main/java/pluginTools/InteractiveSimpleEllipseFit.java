@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -175,7 +176,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public double smoothing = 0;
 	public ArrayList<Node<RealLocalizable>> Allnodes = new ArrayList<Node<RealLocalizable>>();
 	public HashMap<String, Node<RealLocalizable>> Nodemap = new HashMap<String, Node<RealLocalizable>>();
-	public HashMap<Integer, List<RealLocalizable>> Listmap = new HashMap<Integer, List<RealLocalizable>>();
+	public ConcurrentHashMap<Integer, List<RealLocalizable>> Listmap = new ConcurrentHashMap<Integer, List<RealLocalizable>>();
 	public HashMap<Integer, Integer> CellLabelsizemap = new HashMap<Integer, Integer>();
 	public Overlay overlay;
 	public int numSeg = 1;

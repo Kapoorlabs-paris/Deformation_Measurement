@@ -240,11 +240,8 @@ public class Computeinwater {
 					
 					
 					taskExecutor.invokeAll(tasks);
-					
-					for(int i = 0; i < AlldenseCurveintersection.size(); ++i)
-						System.out.println(AlldenseCurveintersection.get(i).celllabel + " Cell label  ");
+
 					String uniqueID = Integer.toString(z) + Integer.toString(t);
-					System.out.println(uniqueID + " Current id");
 					parent.ALLIntersections.put(uniqueID, AllCurveintersection);
 					parent.ALLdenseIntersections.put(uniqueID, AlldenseCurveintersection);
 					
