@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import curvatureUtils.PointExtractor;
 import ellipsoidDetector.Distance;
@@ -61,6 +65,52 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	static int intensityAindex = 4;
 	static int intensityBindex = 5;
 
+	
+	public class ParallelCalls implements Callable<RegressionLineProfile>{
+
+		public final InteractiveSimpleEllipseFit parent;
+		
+		public final RealLocalizable centerpoint;
+		public final List<RealLocalizable> sublist;
+		public final int strideindex;
+		
+		
+		public ParallelCalls(InteractiveSimpleEllipseFit parent,
+				RealLocalizable centerpoint, List<RealLocalizable> sublist, int strideindex) {
+			
+			this.parent = parent;
+			
+			this.centerpoint = centerpoint;
+			
+			this.sublist = sublist;
+			
+			this.strideindex = strideindex;
+			
+			
+		}
+		
+		
+		
+		@Override
+		public RegressionLineProfile call() throws Exception {
+			
+			
+			RegressionLineProfile localfunction = FitCircleonList(parent, centerpoint, sublist, strideindex);
+			
+			
+			return localfunction;
+		}
+		
+		
+		
+		
+		
+		
+	}
+	
+	
+	
+	
 	public RegressionLineProfile FitonList(InteractiveSimpleEllipseFit parent,
 			RealLocalizable centerpoint, List<RealLocalizable> sublist, int strideindex) {
 
@@ -227,7 +277,12 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		double perimeter = 0;
 
 		MakeSegments(parent, truths, parent.minNumInliers, Label);
+		// Get the sparse list of points, skips parent.resolution pixel points
+		int nThreads = Runtime.getRuntime().availableProcessors();
+		// set up executor service
+		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
 		
+		List<Future<RegressionLineProfile>> list = new ArrayList<Future<RegressionLineProfile>>();
 		// Now do the fitting
 		for (Map.Entry<Integer, List<RealLocalizable>> entry : parent.Listmap.entrySet()) {
 
@@ -237,68 +292,96 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			 * Main method that fits on segments a function to get the curvature
 			 * 
 			 */
-			RegressionLineProfile localfunction = FitCircleonList(parent, centerpoint, sublist, 0);
+			
 
-			if (localfunction.LineScanIntensity.size() > 0) {
-				
 			
-				
-			if(totalscan.size() == 0) {
-				
+			ParallelCalls call = new ParallelCalls(parent, centerpoint, sublist, 0);
+			Future<RegressionLineProfile> Futureresultpair = taskExecutor.submit(call);
+			list.add(Futureresultpair);
 			
-				totalscan = localfunction.LineScanIntensity;
+		}
+		
+		
+		for(Future<RegressionLineProfile> fut : list){
 			
-			}
-			else {
-				for (int indexx = 0; indexx< totalscan.size(); ++indexx) {
-					for (int index = 0; index< localfunction.LineScanIntensity.size(); ++index) {
-						
+			
+			
+			
+			try {
+				
+				RegressionLineProfile localfunction = fut.get();
+				
+
+				if (localfunction.LineScanIntensity.size() > 0) {
 					
-					if(totalscan.get(indexx).count == localfunction.LineScanIntensity.get(index).count) {
-						
-						LineProfileCircle currentscan = new LineProfileCircle(totalscan.get(indexx).count, totalscan.get(indexx).intensity + localfunction.LineScanIntensity.get(index).intensity , 
-								
-								totalscan.get(indexx).secintensity + localfunction.LineScanIntensity.get(index).secintensity );
-						
-						totalscan.set(indexx, currentscan);
-						
-					}
+				
 					
+				if(totalscan.size() == 0) {
+					
+				
+					totalscan = localfunction.LineScanIntensity;
+				
+				}
+				else {
+					for (int indexx = 0; indexx< totalscan.size(); ++indexx) {
+						for (int index = 0; index< localfunction.LineScanIntensity.size(); ++index) {
+							
+						
+						if(totalscan.get(indexx).count == localfunction.LineScanIntensity.get(index).count) {
+							
+							LineProfileCircle currentscan = new LineProfileCircle(totalscan.get(indexx).count, totalscan.get(indexx).intensity + localfunction.LineScanIntensity.get(index).intensity , 
+									
+									totalscan.get(indexx).secintensity + localfunction.LineScanIntensity.get(index).secintensity );
+							
+							totalscan.set(indexx, currentscan);
+							
+						}
+						
+						}
+						
 					}
 					
 				}
 				
+				}
+				perimeter += localfunction.regfunc.Curvaturepoints.get(0)[periindex];
+				totalfunctions.add(localfunction.regfunc);
+				totalinterpolatedCurvature.addAll(localfunction.AllCurvaturepoints);
+				double Curvature = localfunction.AllCurvaturepoints.get(0)[curveindex];
+				double IntensityA = localfunction.AllCurvaturepoints.get(0)[intensityAindex];
+				double IntensityB = localfunction.AllCurvaturepoints.get(0)[intensityBindex];
+				ArrayList<double[]> curvelist = new ArrayList<double[]>();
+
+				curvelist.add(new double[] { centerpoint.getDoublePosition(xindex), centerpoint.getDoublePosition(yindex),
+						Curvature, IntensityA, IntensityB });
+			} catch (InterruptedException | ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+			}
+
 			
-			}
-			perimeter += localfunction.regfunc.Curvaturepoints.get(0)[periindex];
-			totalfunctions.add(localfunction.regfunc);
-			totalinterpolatedCurvature.addAll(localfunction.AllCurvaturepoints);
-			double Curvature = localfunction.AllCurvaturepoints.get(0)[curveindex];
-			double IntensityA = localfunction.AllCurvaturepoints.get(0)[intensityAindex];
-			double IntensityB = localfunction.AllCurvaturepoints.get(0)[intensityBindex];
-			ArrayList<double[]> curvelist = new ArrayList<double[]>();
-
-			curvelist.add(new double[] { centerpoint.getDoublePosition(xindex), centerpoint.getDoublePosition(yindex),
-					Curvature, IntensityA, IntensityB });
+			
 		
-		}
-
-		for (int indexx = 0; indexx < totalinterpolatedCurvature.size(); ++indexx) {
-
-			Curvatureobject currentobject = new Curvatureobject(totalinterpolatedCurvature.get(indexx)[curveindex],
-					perimeter, totalinterpolatedCurvature.get(indexx)[intensityAindex],
-					totalinterpolatedCurvature.get(indexx)[intensityBindex], Label,
-					new double[] { totalinterpolatedCurvature.get(indexx)[xindex],
-							totalinterpolatedCurvature.get(indexx)[yindex] },
-					z, t);
-
-			curveobject.add(currentobject);
-
-		}
-
+		
+	
+	
+		
 		// All nodes are returned
+	for (int indexx = 0; indexx < totalinterpolatedCurvature.size(); ++indexx) {
 
+		Curvatureobject currentobject = new Curvatureobject(totalinterpolatedCurvature.get(indexx)[curveindex],
+				perimeter, totalinterpolatedCurvature.get(indexx)[intensityAindex],
+				totalinterpolatedCurvature.get(indexx)[intensityBindex], Label,
+				new double[] { totalinterpolatedCurvature.get(indexx)[xindex],
+						totalinterpolatedCurvature.get(indexx)[yindex] },
+				z, t);
+
+		curveobject.add(currentobject);
+
+	}
+
+	
 		RegressionCurveSegment returnSeg = null;
 		if(totalscan.size() == 0)
 			returnSeg =  new RegressionCurveSegment(totalfunctions, curveobject);

@@ -189,7 +189,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 		
 		
 		// Get the sparse list of points, skips parent.resolution pixel points
-		int nThreads = Runtime.getRuntime().availableProcessors();
+		int nThreads = 1; //Runtime.getRuntime().availableProcessors();
 		// set up executor service
 		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
 		
