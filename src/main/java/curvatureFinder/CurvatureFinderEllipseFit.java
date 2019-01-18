@@ -3,6 +3,7 @@ package curvatureFinder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.JProgressBar;
 
@@ -30,7 +31,7 @@ public class CurvatureFinderEllipseFit<T extends RealType<T> & NativeType<T>> im
 	public final RealLocalizable centerpoint;
 	private static final String BASE_ERROR_MSG = "[EllipseFit-]";
 	protected String errorMessage;
-	HashMap<Integer, RegressionCurveSegment> BestDelta = new HashMap<Integer, RegressionCurveSegment>();;
+	ConcurrentHashMap<Integer, RegressionCurveSegment> BestDelta = new ConcurrentHashMap<Integer, RegressionCurveSegment>();;
 	public final RandomAccessibleInterval<FloatType> ActualRoiimg;
 	
 	public CurvatureFinderEllipseFit(final InteractiveSimpleEllipseFit parent, final List<RealLocalizable> Ordered,final RealLocalizable centerpoint, final RandomAccessibleInterval<FloatType> ActualRoiimg,
@@ -51,7 +52,7 @@ public class CurvatureFinderEllipseFit<T extends RealType<T> & NativeType<T>> im
 	
 
 	@Override
-	public HashMap<Integer, RegressionCurveSegment> getResult() {
+	public ConcurrentHashMap<Integer, RegressionCurveSegment> getResult() {
 
 		return BestDelta;
 	}

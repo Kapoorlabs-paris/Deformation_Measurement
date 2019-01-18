@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 
 import curvatureUtils.PointExtractor;
 import ellipsoidDetector.Distance;
@@ -307,9 +309,9 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	}
 	
 	public Pair<Intersectionobject, Intersectionobject> GetAverage(InteractiveSimpleEllipseFit parent,
-			RealLocalizable centerpoint, HashMap<Integer, RegressionCurveSegment> Bestdelta, int count) {
+			RealLocalizable centerpoint, ConcurrentHashMap<Integer, RegressionCurveSegment> bestdelta, int count) {
 
-		RegressionCurveSegment resultpair = Bestdelta.get(0);
+		RegressionCurveSegment resultpair = bestdelta.get(0);
 		ArrayList<Curvatureobject> RefinedCurvature = new ArrayList<Curvatureobject>();
 		ArrayList<Curvatureobject> localCurvature = resultpair.Curvelist;
 
@@ -337,7 +339,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 			for (int secindex = 1; secindex < count; ++secindex) {
 
-				RegressionCurveSegment testpair = Bestdelta.get(secindex);
+				RegressionCurveSegment testpair = bestdelta.get(secindex);
 
 				ArrayList<Curvatureobject> testlocalCurvature = testpair.Curvelist;
 
@@ -427,9 +429,9 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	}
 
 	public Pair<Intersectionobject, Intersectionobject> GetSingle(InteractiveSimpleEllipseFit parent,
-			RealLocalizable centerpoint, HashMap<Integer, RegressionCurveSegment> Bestdelta) {
+			RealLocalizable centerpoint, ConcurrentHashMap<Integer, RegressionCurveSegment> bestdelta) {
 
-		RegressionCurveSegment resultpair = Bestdelta.get(0);
+		RegressionCurveSegment resultpair = bestdelta.get(0);
 		ArrayList<Curvatureobject> RefinedCurvature = new ArrayList<Curvatureobject>();
 		ArrayList<Curvatureobject> localCurvature = resultpair.Curvelist;
 

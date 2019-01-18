@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.JProgressBar;
 
@@ -41,7 +42,7 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 	public final int celllabel;
 	public final ArrayList<Intersectionobject> AllCurveintersection;
 	public final HashMap<Integer,Intersectionobject> AlldenseCurveintersection;
-	HashMap<Integer, RegressionCurveSegment> Bestdelta = new HashMap<Integer, RegressionCurveSegment>();
+	ConcurrentHashMap<Integer, RegressionCurveSegment> Bestdelta = new ConcurrentHashMap<Integer, RegressionCurveSegment>();
 	public final RandomAccessibleInterval<FloatType> ActualRoiimg;
 	private final String BASE_ERROR_MSG = "[DistanceMeasure-]";
 	protected String errorMessage;
@@ -69,7 +70,7 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 	}
 	
 	@Override
-	public HashMap<Integer, RegressionCurveSegment> getResult() {
+	public ConcurrentHashMap<Integer, RegressionCurveSegment> getResult() {
 
 		return Bestdelta;
 	}

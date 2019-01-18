@@ -3,6 +3,13 @@ package curvatureFinder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 import javax.swing.JProgressBar;
 
 import ellipsoidDetector.Distance;
@@ -36,7 +43,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 	public final int celllabel;
 	public final ArrayList<Intersectionobject> AllCurveintersection;
 	public final HashMap<Integer, Intersectionobject> AlldenseCurveintersection;
-	HashMap<Integer, RegressionCurveSegment> Bestdelta = new HashMap<Integer, RegressionCurveSegment>();
+	ConcurrentHashMap<Integer, RegressionCurveSegment> Bestdelta = new ConcurrentHashMap<Integer, RegressionCurveSegment>();
 	public final RandomAccessibleInterval<FloatType> ActualRoiimg;
 	private final String BASE_ERROR_MSG = "[CircleFit-]";
 	protected String errorMessage;
@@ -57,14 +64,64 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 		this.percent = percent;
 	}
 
-	
+	public class ParallelCalls implements Callable< RegressionCurveSegment>{
+
+		
+		public final InteractiveSimpleEllipseFit parent;
+		public final List<RealLocalizable> allorderedtruths;
+		public final RealLocalizable centerpoint;
+		public final int ndims;
+		public final int celllabel;
+		public final int z;
+		public final int t;
+		public final int index;
+
+		
+		public ParallelCalls( InteractiveSimpleEllipseFit parent,
+		 List<RealLocalizable> allorderedtruths,
+		 RealLocalizable centerpoint,
+		 int ndims,
+		 int celllabel,
+		 int z,
+		 int t,
+		 int index) {
+			
+			
+			this.parent = parent;
+			this.allorderedtruths = allorderedtruths;
+			this.centerpoint = centerpoint;
+			this.ndims = ndims;
+			this.celllabel = celllabel;
+			this.z = z;
+			this.t= t;
+			this.index = index;
+			
+			
+			
+		}
+		
+		@Override
+		public RegressionCurveSegment call() throws Exception {
+			
+			RegressionCurveSegment  result = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t, index);
+			
+			
+			return result;
+			
+			
+			
+			
+			
+		}
+	}
+		
 	public HashMap<Integer, Intersectionobject> getMap() {
 
 		return AlldenseCurveintersection;
 	}
 	
 	@Override
-	public HashMap<Integer, RegressionCurveSegment> getResult() {
+	public ConcurrentHashMap<Integer, RegressionCurveSegment> getResult() {
 
 		return Bestdelta;
 	}
@@ -130,10 +187,14 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 		
 		int maxstride = parent.CellLabelsizemap.get(celllabel);
 		
-		System.out.println(maxstride + " " + celllabel + " CurvatureFinderCircleFit ");
 		
 		// Get the sparse list of points, skips parent.resolution pixel points
-
+		int nThreads = Runtime.getRuntime().availableProcessors();
+		// set up executor service
+		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
+		
+		List<Future<RegressionCurveSegment>> list = new ArrayList<Future<RegressionCurveSegment>>();
+		
 		for (int index = 0; index < maxstride; ++index) {
 			List<RealLocalizable> allorderedtruths = Listordereing.getList(Ordered, i + index);
 
@@ -143,16 +204,37 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 			parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension,
 					parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
 
-			resultpair = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t, index);
-
-			RegressionCurveSegment newresultpair = new RegressionCurveSegment(resultpair.functionlist, resultpair.Curvelist, zeroline);
 			
-			Bestdelta.put(count, newresultpair);
-			count++;
+			ParallelCalls call = new ParallelCalls(parent, allorderedtruths, centerpoint, ndims, celllabel, z, maxstride, index);
+			Future<RegressionCurveSegment> Futureresultpair = taskExecutor.submit(call);
+			list.add(Futureresultpair);
+		}
+		
+		
+		for(Future<RegressionCurveSegment> fut : list){
+			
+			
+			
+			
+			try {
+				
+				
+				resultpair = fut.get();
+				RegressionCurveSegment newresultpair = new RegressionCurveSegment(resultpair.functionlist, resultpair.Curvelist, zeroline);
+				
+				Bestdelta.put(count, newresultpair);
+				count++;
 
-			parent.localCurvature = newresultpair.Curvelist;
-			parent.functions = newresultpair.functionlist;
-
+				parent.localCurvature = newresultpair.Curvelist;
+				parent.functions = newresultpair.functionlist;
+				
+				
+			} catch (InterruptedException | ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		
 		}
 
 		Pair<Intersectionobject, Intersectionobject> sparseanddensepair = GetAverage(parent, centerpoint, Bestdelta,count);
@@ -230,6 +312,8 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		return finalfunctionandList;
 	}
+
+
 
 
 

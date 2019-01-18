@@ -3,6 +3,7 @@ package curvatureFinder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import ellipsoidDetector.Intersectionobject;
 import mpicbg.models.Point;
@@ -17,7 +18,7 @@ import pluginTools.RegressionCurveSegment;
 import ransacPoly.RegressionFunction;
 
 public interface CurvatureFinders<T extends RealType<T> & NativeType<T>>
-		extends OutputAlgorithm<HashMap<Integer, RegressionCurveSegment>> {
+		extends OutputAlgorithm<ConcurrentHashMap<Integer, RegressionCurveSegment>> {
 
 	public RegressionLineProfile getLocalcurvature(ArrayList<double[]> Cordlist,
 			RealLocalizable centerpoint, int strideindex);
