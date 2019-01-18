@@ -5,10 +5,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.swing.JProgressBar;
 
+import curvatureFinder.CurvatureFinderCircleFit.ParallelCalls;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import ij.IJ;
@@ -63,7 +69,57 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 		this.percent = percent;
 	}
 
-	
+
+	public class ParallelCalls implements Callable< RegressionCurveSegment>{
+
+		
+		public final InteractiveSimpleEllipseFit parent;
+		public final List<RealLocalizable> allorderedtruths;
+		public final RealLocalizable centerpoint;
+		public final int ndims;
+		public final int celllabel;
+		public final int z;
+		public final int t;
+		public final int index;
+
+		
+		public ParallelCalls( InteractiveSimpleEllipseFit parent,
+		 List<RealLocalizable> allorderedtruths,
+		 RealLocalizable centerpoint,
+		 int ndims,
+		 int celllabel,
+		 int z,
+		 int t,
+		 int index) {
+			
+			
+			this.parent = parent;
+			this.allorderedtruths = allorderedtruths;
+			this.centerpoint = centerpoint;
+			this.ndims = ndims;
+			this.celllabel = celllabel;
+			this.z = z;
+			this.t= t;
+			this.index = index;
+			
+			
+			
+		}
+		
+		@Override
+		public RegressionCurveSegment call() throws Exception {
+			
+			RegressionCurveSegment  result = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t, index);
+			
+			
+			return result;
+			
+			
+			
+			
+			
+		}
+	}
 	public HashMap<Integer, Intersectionobject> getMap() {
 
 		return AlldenseCurveintersection;
@@ -247,23 +303,48 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 		if (parent.minNumInliers > truths.size())
 			parent.minNumInliers = truths.size();
 		int i = parent.increment;
+		
+		// Get the sparse list of points, skips parent.resolution pixel points
+		int nThreads = Runtime.getRuntime().availableProcessors();
+		// set up executor service
+		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
+		
+		List<Future<RegressionCurveSegment>> list = new ArrayList<Future<RegressionCurveSegment>>();
 		RegressionCurveSegment oldresultpair = CommonLoop(parent, Ordered, centerpoint, ndims, celllabel, t, z);
         
 		ArrayList<LineProfileCircle> zeroline = oldresultpair.LineScanIntensity;
 		
 		// Get the sparse list of points
 		List<RealLocalizable> allorderedtruths = Listordereing.getList(Ordered, i);
-		RegressionCurveSegment resultpair = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t, 0);
 
+		ParallelCalls call = new ParallelCalls(parent, allorderedtruths, centerpoint, ndims, celllabel, z, 1, 0);
+		Future<RegressionCurveSegment> Futureresultpair = taskExecutor.submit(call);
+		list.add(Futureresultpair);
 		
-		RegressionCurveSegment newresultpair = new RegressionCurveSegment(resultpair.functionlist, resultpair.Curvelist, zeroline);
-		
-		// Here counter the segments where the number of inliers was too low
-		Bestdelta.put(0, newresultpair);
 
-		parent.localCurvature = newresultpair.Curvelist;
+		for(Future<RegressionCurveSegment> fut : list){
+			
+			
+			
+			
+			try {
+				
+				
+				oldresultpair = fut.get();
+				RegressionCurveSegment newresultpair = new RegressionCurveSegment(oldresultpair.functionlist, oldresultpair.Curvelist, zeroline);
+				
+				Bestdelta.put(0, newresultpair);
+			
 
-		parent.functions = newresultpair.functionlist;
+				parent.localCurvature = newresultpair.Curvelist;
+				parent.functions = newresultpair.functionlist;
+				
+				
+			} catch (InterruptedException | ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		// Get the sparse list of points, skips parent.resolution pixel points
 
 		Pair<Intersectionobject, Intersectionobject> sparseanddensepair = GetSingle(parent, centerpoint, Bestdelta);

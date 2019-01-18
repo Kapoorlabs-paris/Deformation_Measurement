@@ -208,8 +208,7 @@ public class Computeinwater {
 	        	HashMap<Integer, Intersectionobject> LabelMap = 	getLabel.call();
             	for(Map.Entry<Integer, Intersectionobject> entry: LabelMap.entrySet())
             		AlldenseCurveintersection.add(entry.getValue());
-			 //  Future<HashMap<Integer, Intersectionobject>> future = taskExecutor.submit(getLabel);
-			   // list.add(future);
+	
 			    
 			
 				
@@ -220,26 +219,7 @@ public class Computeinwater {
 		
 		
 			
-	/*	
-		
-		for(Future<HashMap<Integer, Intersectionobject>> fut : list){
-            try {
-               
-            	HashMap<Integer, Intersectionobject> LabelMap = 	fut.get();
-        
-            	
-            	for(Map.Entry<Integer, Intersectionobject> entry: LabelMap.entrySet())
-            		AlldenseCurveintersection.add(entry.getValue());
-            	
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-            
-        }
-        //shut down the executor service now
-		taskExecutor.shutdown();
-		
-		*/
+
 		
 			
 

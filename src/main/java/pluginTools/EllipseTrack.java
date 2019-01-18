@@ -450,7 +450,6 @@ public class EllipseTrack {
 						parent.thirdDimension = z;
 						parent.fourthDimension = t;
 						
-					//	tasksStart.add(Executors.callable(new ParallelBlockRepeatCurve(parent, Alldensemap, jpb, z, t, percent)));
 						BlockRepeatCurve(percent, z, t);
 						
 						
