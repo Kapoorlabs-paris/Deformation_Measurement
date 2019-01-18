@@ -166,7 +166,7 @@ public class Computeinwater {
 
 	}
 
-	public void ParallelRansacCurve() {
+	public void ParallelRansacCurve() throws Exception {
 
 		int nThreads = Runtime.getRuntime().availableProcessors();
 		// set up executor service
@@ -185,7 +185,7 @@ public class Computeinwater {
 		parent.superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>>();
 		ArrayList<Intersectionobject> AllCurveintersection = new ArrayList<Intersectionobject>();
 		
-		 
+		ArrayList<Intersectionobject> AlldenseCurveintersection = new ArrayList<Intersectionobject>();
 		while (setiter.hasNext()) {
 
 			percent++;
@@ -204,10 +204,12 @@ public class Computeinwater {
 			    LabelCurvature getLabel = new LabelCurvature(parent, current.source, truths, resultlineroi, resultcurvelineroi,resultallcurvelineroi,ellipselineroi, Segmentrect,  AllCurveintersection, 
 						 t, z,
 							parent.jpb, percent, label);
-			  
-			    
-			    Future<HashMap<Integer, Intersectionobject>> future = taskExecutor.submit(getLabel);
-			    list.add(future);
+			
+	        	HashMap<Integer, Intersectionobject> LabelMap = 	getLabel.call();
+            	for(Map.Entry<Integer, Intersectionobject> entry: LabelMap.entrySet())
+            		AlldenseCurveintersection.add(entry.getValue());
+			 //  Future<HashMap<Integer, Intersectionobject>> future = taskExecutor.submit(getLabel);
+			   // list.add(future);
 			    
 			
 				
@@ -216,41 +218,37 @@ public class Computeinwater {
 			}
 		}
 		
-		ArrayList<Intersectionobject> AlldenseCurveintersection = new ArrayList<Intersectionobject>();
+		
+			
+	/*	
 		
 		for(Future<HashMap<Integer, Intersectionobject>> fut : list){
             try {
                
-            	
             	HashMap<Integer, Intersectionobject> LabelMap = 	fut.get();
+        
+            	
             	for(Map.Entry<Integer, Intersectionobject> entry: LabelMap.entrySet())
             		AlldenseCurveintersection.add(entry.getValue());
-            	
             	
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
+            
         }
         //shut down the executor service now
 		taskExecutor.shutdown();
 		
+		*/
 		
-		
-				try {
-					
-					
-					taskExecutor.invokeAll(tasks);
+			
 
 					String uniqueID = Integer.toString(z) + Integer.toString(t);
 					parent.ALLIntersections.put(uniqueID, AllCurveintersection);
 					parent.ALLdenseIntersections.put(uniqueID, AlldenseCurveintersection);
 					
 
-				} catch (InterruptedException e)  {
-
-					System.out.println(e + " Task not executed");
-					
-				}
+				
 			
 		
 

@@ -569,6 +569,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 				parent.CellLabelsizemap.put(celllabel, biggestsize);
 				segmentLabel++;
 
+				
 				startindex = endindex;
 				endindex = startindex + maxpoints;
 
@@ -641,7 +642,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	 */
 
 	public RegressionLineProfile RansacEllipseBlock(final InteractiveSimpleEllipseFit parent, final ArrayList<RealLocalizable> pointlist,
-			RealLocalizable centerpoint, int ndims, int strideindex) {
+			RealLocalizable centerpoint, int ndims, int strideindex, boolean linescan) {
 
 		final RansacFunctionEllipsoid ellipsesegment = FitLocalEllipsoid.findLocalEllipsoid(pointlist, ndims);
 
@@ -726,7 +727,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 				longpointB[d] = (long) pointB[d];
 			net.imglib2.Point intpoint = new net.imglib2.Point(longpointB);
 			
-			
+		if(linescan) {	
 		LinefunctionCircle NormalLine = new LinefunctionCircle(ellipsesegment.function, intpoint);
 		
 		double[] NormalSlopeIntercept = NormalLine.NormalatPoint();
@@ -747,13 +748,12 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		Line line = new Line((int) startNormal[0], (int) startNormal[1], (int) endNormal[0], (int) endNormal[1], parent.imp);
 		parent.overlay.add(line);
 		parent.imp.updateAndDraw();
-		
 		LineScanIntensity = getLineScanIntensity(parent, centerloc, startNormal, midNormal, endNormal, NormalSlopeIntercept[0], NormalSlopeIntercept[1]);
 
 			}
 	
-	
-		
+			
+			}
 		
 		
 		
@@ -763,6 +763,8 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		RegressionLineProfile currentprofile = new RegressionLineProfile(finalfunctionransac, LineScanIntensity, AllCurvaturepoints);
 		
 		return currentprofile;
+		
+			
 	}
 	
 	

@@ -129,6 +129,9 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 		
 		
 		int maxstride = parent.CellLabelsizemap.get(celllabel);
+		
+		System.out.println(maxstride + " " + celllabel + " CurvatureFinderCircleFit ");
+		
 		// Get the sparse list of points, skips parent.resolution pixel points
 
 		for (int index = 0; index < maxstride; ++index) {
@@ -195,7 +198,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		// Here you choose which method is used to detect curvature
 
-		RegressionLineProfile finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, centerpoint.numDimensions(), strideindex);
+		RegressionLineProfile finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, centerpoint.numDimensions(), strideindex, false);
 
 		
 		return finalfunctionandList;
@@ -223,9 +226,8 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		// Here you choose which method is used to detect curvature
 
-		RegressionLineProfile finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, centerpoint.numDimensions(), strideindex);
+		RegressionLineProfile finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, centerpoint.numDimensions(), strideindex, true);
 
-		
 		return finalfunctionandList;
 	}
 

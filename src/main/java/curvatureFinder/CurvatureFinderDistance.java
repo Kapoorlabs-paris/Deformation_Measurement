@@ -158,7 +158,7 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 
 		// Here you choose which method is used to detect curvature
 
-		RegressionLineProfile finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, centerpoint.numDimensions(), strideindex);
+		RegressionLineProfile finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, centerpoint.numDimensions(), strideindex, true);
 
 		
 		return finalfunctionandList;

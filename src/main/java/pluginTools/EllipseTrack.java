@@ -95,7 +95,7 @@ public class EllipseTrack {
 		compute.ParallelRansac();
 	}
 	
-	public void BlockRepeatCurve(double percent, int z, int t) {
+	public void BlockRepeatCurve(double percent, int z, int t) throws Exception {
 
 		
 		
@@ -185,7 +185,7 @@ public class EllipseTrack {
 	}
 	
 	
-	public void BlockRepeatAutoCurve(double percent, int z, int t) {
+	public void BlockRepeatAutoCurve(double percent, int z, int t) throws Exception {
 
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
 
@@ -425,7 +425,7 @@ public class EllipseTrack {
 
 	}
 
-	public void ComputeCurvature() {
+	public void ComputeCurvature() throws Exception {
 
 		// Main method for computing intersections and tangents and angles between
 		// tangents
@@ -473,7 +473,6 @@ public class EllipseTrack {
 					parent.ZID = Integer.toString(z);
 					parent.AccountedZ.put(parent.ZID, z);
 				
-				//	tasksStart.add(Executors.callable(new ParallelBlockRepeatCurve(parent, Alldensemap, jpb, z, 1, percent)));
 					BlockRepeatCurve(percent, z, 1);
 					if(IJ.escapePressed()) {
 						IJ.resetEscape();
@@ -485,50 +484,13 @@ public class EllipseTrack {
 			} else {
 				int z = parent.thirdDimension;
 				int t = parent.fourthDimension;
-			//	tasksStart.add(Executors.callable(new ParallelBlockRepeatCurve(parent, Alldensemap, jpb, z, t, percent)));
 				
 				BlockRepeatCurve(percent, z, t);
 				
 			}
 
 		
-		/*	
-				
-				try {
-					
-				
-					taskExecutorStart.invokeAll(tasksStart);
-					
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
 		
-		Iterator<HashMap<String, ArrayList<Intersectionobject>>> mapiter = Alldensemap.iterator();
-		
-		while(mapiter.hasNext()) {
-			
-			HashMap<String, ArrayList<Intersectionobject>> currentmap = mapiter.next();
-			
-			for (Map.Entry<String, ArrayList<Intersectionobject>> entry : currentmap.entrySet()) {
-				
-				
-				ArrayList<Intersectionobject> bloblist = entry.getValue();
-				String ID = entry.getKey();
-				
-				parent.ALLdenseIntersections.put(ID, bloblist);
-				System.out.println(ID + " " + bloblist.size() + " I am puting");
-			}
-			
-			
-			
-		}
-		
-		ParallelBlockRepeatCurve.done(parent);
-
-		*/
-
 	}
 
 	
@@ -823,7 +785,7 @@ public class EllipseTrack {
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
 
 	}
-	public void ComputeCurvatureCurrent() {
+	public void ComputeCurvatureCurrent() throws Exception {
 
 		double percent = 0;
 

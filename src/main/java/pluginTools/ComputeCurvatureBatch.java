@@ -99,7 +99,7 @@ public class ComputeCurvatureBatch {
 	}
 
 	
-	protected void doInBackground() {
+	protected void doInBackground() throws Exception {
 
 		HashMap<String, Integer> map = SortTimeorZ.sortByValues(parent.Accountedframes);
 		parent.Accountedframes = map;
