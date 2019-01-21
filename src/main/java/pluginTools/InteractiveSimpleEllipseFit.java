@@ -115,6 +115,7 @@ import listeners.MinsizeListener;
 import listeners.OutsideCutoffListener;
 import listeners.RListener;
 import listeners.RedoListener;
+import listeners.RegionInteriorListener;
 import listeners.ResolutionListener;
 import listeners.RimLineSelectionListener;
 import listeners.RoiListener;
@@ -314,6 +315,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public double calibration;
 	public double timecal;
 	public double insidedistance = 40;
+	public double regiondistance = 10;
 	public double outsidedistance = 0;
 	public int[] boundarypoint;
 	public int[] midpoint;
@@ -1864,7 +1866,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			cutoffField, minInlierField, SpecialminInlierField, degreeField, secdegreeField, resolutionField;
 
 	public TextField inputFieldZ, startT, endT, maxSizeField, minSizeField;
-	public TextField inputFieldmaxtry, interiorfield, exteriorfield;
+	public TextField inputFieldmaxtry, interiorfield, exteriorfield, regioninteriorfield;
 	public TextField inputFieldminpercent;
 	public TextField inputFieldmaxellipse, backField;
 
@@ -1909,7 +1911,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Label insideText = new Label("Cutoff distance  = " + insideCutoff, Label.CENTER);
 	public Label degreeText = new Label("Choose degree of polynomial");
 	public Label resolutionText = new Label("Measurement Resolution (px)");
-	public Label indistText = new Label("Intensity region (px)");
+	public Label indistText = new Label("LineScan length (px)");
+	public Label regionText = new Label("Intensity region (px)");
 	public Label outdistText = new Label("Intensity Exterior region (px)");
 
 	public Label secdegreeText = new Label("Choose degree of second polynomial");
@@ -2101,6 +2104,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		interiorfield = new TextField(textwidth);
 		interiorfield.setText(Double.toString(insidedistance));
+		
+		regioninteriorfield = new TextField(textwidth);
+		regioninteriorfield.setText(Double.toString(regiondistance));
 
 		exteriorfield = new TextField(textwidth);
 		exteriorfield.setText(Double.toString(outsidedistance));
@@ -2365,6 +2371,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				Angleselect.add(interiorfield, new GridBagConstraints(0, 7, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
+				Angleselect.add(regionText, new GridBagConstraints(3, 6, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+				Angleselect.add(regioninteriorfield, new GridBagConstraints(3, 7, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
 				Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 8, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				
@@ -2585,6 +2597,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		lostframe.addTextListener(new LostFrameListener(this));
 		interiorfield.addTextListener(new InteriorDistListener(this));
 		exteriorfield.addTextListener(new ExteriorDistListener(this));
+		
+		regioninteriorfield.addTextListener(new RegionInteriorListener(this));
 
 		Batchbutton.addActionListener(new SaveBatchListener(this));
 		ClearDisplay.addActionListener(new ClearDisplayListener(this));

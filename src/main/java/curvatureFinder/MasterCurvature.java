@@ -689,7 +689,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		double[] currentPosition = new double[point.numDimensions()];
 
 		HyperSphere<FloatType> hyperSphere = new HyperSphere<FloatType>(parent.CurrentViewOrig, ranac,
-				(int) parent.insidedistance);
+				(int) parent.regiondistance);
 		HyperSphereCursor<FloatType> localcursor = hyperSphere.localizingCursor();
 		int Area = 1;
 		while (localcursor.hasNext()) {
@@ -700,10 +700,10 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 			ranacsec.localize(currentPosition);
 
-			if(currentPosition[0] > parent.CurrentViewOrig.min(0) + parent.insidedistance  && currentPosition[1] > parent.CurrentViewOrig.min(1) + parent.insidedistance
-					&& currentPosition[0] < parent.CurrentViewOrig.max(0) - parent.insidedistance && currentPosition[1] < parent.CurrentViewOrig.max(1) - parent.insidedistance ) {
+			if(currentPosition[0] > parent.CurrentViewOrig.min(0) + parent.regiondistance  && currentPosition[1] > parent.CurrentViewOrig.min(1) + parent.regiondistance
+					&& currentPosition[0] < parent.CurrentViewOrig.max(0) - parent.regiondistance && currentPosition[1] < parent.CurrentViewOrig.max(1) - parent.regiondistance ) {
 			double currentdistance = getDistance(localcursor, centerpoint);
-			if ((currentdistance - mindistance) <= parent.insidedistance) {
+			if ((currentdistance - mindistance) <= parent.regiondistance) {
 				Intensity += localcursor.get().getRealDouble();
 				IntensitySec += ranacsec.get().getRealDouble();
 				Area++;

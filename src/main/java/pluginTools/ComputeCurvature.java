@@ -113,7 +113,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		parent.SaveAllbutton.setEnabled(false);
 		parent.ChooseDirectory.setEnabled(false);
 		
-		
+	    parent.regioninteriorfield.setEnabled(false);	
 		parent.CurrentCurvaturebutton.setEnabled(false);
 		parent.Curvaturebutton.setEnabled(false);
         parent.timeslider.setEnabled(false);
