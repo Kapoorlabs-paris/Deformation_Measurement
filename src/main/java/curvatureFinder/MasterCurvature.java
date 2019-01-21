@@ -700,12 +700,15 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 			ranacsec.localize(currentPosition);
 
+			if(currentPosition[0] > parent.CurrentViewOrig.min(0) + parent.insidedistance  && currentPosition[1] > parent.CurrentViewOrig.min(1) + parent.insidedistance
+					&& currentPosition[0] < parent.CurrentViewOrig.max(0) - parent.insidedistance && currentPosition[1] < parent.CurrentViewOrig.max(1) - parent.insidedistance ) {
 			double currentdistance = getDistance(localcursor, centerpoint);
 			if ((currentdistance - mindistance) <= parent.insidedistance) {
 				Intensity += localcursor.get().getRealDouble();
 				IntensitySec += ranacsec.get().getRealDouble();
 				Area++;
 			}
+		}
 		}
 
 		return new ValuePair<Double, Double>(Intensity / Area, IntensitySec / Area);

@@ -19,9 +19,8 @@ public class ProgressBatch extends SwingWorker<Void, Void> {
 	@Override
 	protected Void doInBackground() throws Exception {
 
-		int nThreads = Runtime.getRuntime().availableProcessors();
 		// set up executor service
-		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
+		final ExecutorService taskExecutor = Executors.newCachedThreadPool();
 		
 		if(parent.twochannel)
 		ProcessFiles.process(parent.C1_AllImages, parent.C2_AllImages, parent.SegmentationImages, parent.channelA, parent.channelB, parent.channelSeg, parent.twochannel, taskExecutor);
