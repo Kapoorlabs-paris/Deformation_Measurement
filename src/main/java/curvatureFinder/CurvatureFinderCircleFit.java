@@ -181,7 +181,10 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		int i = parent.increment;
 		RegressionCurveSegment resultpair = CommonLoop(parent, Ordered, centerpoint, ndims, celllabel, t, z);
-        
+		
+		Bestdelta.put(count, resultpair);
+		count++;
+		
 		ArrayList<LineProfileCircle> zeroline = resultpair.LineScanIntensity;
 		
 		
@@ -189,9 +192,8 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 		
 		
 		// Get the sparse list of points, skips parent.resolution pixel points
-		int nThreads = Runtime.getRuntime().availableProcessors();
 		// set up executor service
-		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
+		final ExecutorService taskExecutor = Executors.newCachedThreadPool();
 		
 		List<Future<RegressionCurveSegment>> list = new ArrayList<Future<RegressionCurveSegment>>();
 		

@@ -278,9 +278,8 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 		MakeSegments(parent, truths, parent.minNumInliers, Label);
 		// Get the sparse list of points, skips parent.resolution pixel points
-		int nThreads = Runtime.getRuntime().availableProcessors();
 		// set up executor service
-		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
+		final ExecutorService taskExecutor = Executors.newCachedThreadPool();
 		
 		List<Future<RegressionLineProfile>> list = new ArrayList<Future<RegressionLineProfile>>();
 		// Now do the fitting
@@ -477,8 +476,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 			}
 
-			intensitydelta /= CurveI.size();
-
+			
 			Iterator<Double> ISeciter = CurveISec.iterator();
 			while (ISeciter.hasNext()) {
 
@@ -488,7 +486,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 			}
 
-			intensitySecdelta /= CurveISec.size();
+			
 
 			Curvatureobject newobject = new Curvatureobject((float) frequdelta, frequdeltaperi, intensitydelta,
 					intensitySecdelta, localCurvature.get(index).Label, localCurvature.get(index).cord,
@@ -565,7 +563,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 			}
 
-			intensitydelta /= CurveI.size();
 
 			Iterator<Double> ISeciter = CurveISec.iterator();
 			while (ISeciter.hasNext()) {
@@ -576,7 +573,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 			}
 
-			intensitySecdelta /= CurveISec.size();
 
 			Curvatureobject newobject = new Curvatureobject((float) frequdelta, frequdeltaperi, intensitydelta,
 					intensitySecdelta, localCurvature.get(index).Label, localCurvature.get(index).cord,
@@ -786,8 +782,10 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			net.imglib2.Point intpoint = new net.imglib2.Point(longnewpos);
 
 			
-
-			Pair<Double, Double> Intensity = getIntensity(parent, intpoint, centpos);
+			Pair<Double, Double> Intensity = new ValuePair<Double, Double>(0.0,0.0);
+		
+			if(linescan)
+			Intensity = getIntensity(parent, intpoint, centpos);
 
 			
 				
