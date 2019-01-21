@@ -690,7 +690,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
         parent.Displaybutton.setEnabled(true);
         parent.minInlierslider.setEnabled(true);
         parent.minInlierField.setEnabled(true);
-		
+        parent.regioninteriorfield.setEnabled(true);	
 		
 		parent.jpb.setIndeterminate(false);
 		parent.Cardframe.validate();
