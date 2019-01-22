@@ -328,9 +328,9 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 						
 						if(totalscan.get(indexx).count == localfunction.LineScanIntensity.get(index).count) {
 							
-							LineProfileCircle currentscan = new LineProfileCircle(totalscan.get(indexx).count, totalscan.get(indexx).intensity + localfunction.LineScanIntensity.get(index).intensity , 
+							LineProfileCircle currentscan = new LineProfileCircle(totalscan.get(indexx).count, (totalscan.get(indexx).intensity + localfunction.LineScanIntensity.get(index).intensity) / 2 , 
 									
-									totalscan.get(indexx).secintensity + localfunction.LineScanIntensity.get(index).secintensity );
+									(totalscan.get(indexx).secintensity + localfunction.LineScanIntensity.get(index).secintensity) / 2 );
 							
 							totalscan.set(indexx, currentscan);
 							
