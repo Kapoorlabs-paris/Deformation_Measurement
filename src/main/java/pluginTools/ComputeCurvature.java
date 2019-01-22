@@ -193,6 +193,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		Calibration cal = new Calibration();
 		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, "s um");
 
+		if(parent.insidedistance > 0) {
 		ImagePlus IntensityAimp = ImageJFunctions.show(IntensityAKymo);
 		IntensityAimp.setTitle("Intensity ChA Kymo for TrackID: " + TrackID);
 		IntensityAimp.setCalibration(cal);
@@ -206,7 +207,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		IntensityAimp.updateAndRepaintWindow();
 		KymoSaveobject Kymos = new KymoSaveobject(IntensityAKymo, IntensityBKymo);
 		parent.KymoLineobject.put(TrackID, Kymos);
-		
+		}
 	}
 	
 	public void MakeKymo(HashMap<String, ArrayList<Segmentobject>> sortedMappair, long[] size, String TrackID) {
@@ -461,6 +462,9 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 			
 			IntensityBKymo = parent.KymoLineobject.get(TrackID).LineScanBKymo;
 			
+			
+
+			
 		}
 		
 
@@ -517,7 +521,8 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		Calibration cal = new Calibration();
 		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, "s um");
 		
-		
+		KymoSaveobject Kymos = new KymoSaveobject(IntensityAKymo, IntensityBKymo);
+		parent.KymoLineobject.put(TrackID, Kymos);
 		
 
 		ImagePlus IntensityAimp = ImageJFunctions.wrapFloat(IntensityAKymo,
@@ -536,6 +541,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 			fsBB.saveAsTiff(parent.saveFile + "//" + "LineScan_"   +  parent.inputstring.replaceFirst("[.][^.]+$", "") + "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
 		}
+		
 		
 	}
 	
