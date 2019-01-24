@@ -105,7 +105,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 	  public Checkbox Godouble = new Checkbox("Load a second channel", twochannel);
 	  
 	  public Checkbox GodoubleBatch = new Checkbox("Load second channel directory", twochannel);
-	  public Checkbox Gocurvesuper = new Checkbox("Curvature Measurement with Multicut Trained segmentation", curvesuper, runmode);
+	  public Checkbox Gocurvesuper = new Checkbox("Curvature Measurement with Superpixel segmentation", curvesuper, runmode);
 	  public Checkbox Gocurvesimple = new Checkbox("Curvature Measurement with Pixel only", curvesimple, runmode);
 	  
 	  
@@ -161,8 +161,8 @@ public class IlastikEllipseFileChooser extends JPanel {
 			calibration = Float.parseFloat(inputFieldcalX.getText());
 			Wavesize = Float.parseFloat(Fieldwavesize.getText());
 			
-			Panelrun.add(Gosuper, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		//	Panelrun.add(Gosuper, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		//			GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		//	Panelrun.add(Gosimple, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 		//			GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 			Panelrun.add(Gocurvesuper, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
