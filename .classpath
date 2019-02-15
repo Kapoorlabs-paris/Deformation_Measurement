@@ -25,11 +25,6 @@
 	<classpathentry exported="true" kind="src" path="/imglib2-algorithm"/>
 	<classpathentry exported="true" kind="src" path="/Preprocessing"/>
 	<classpathentry exported="true" kind="src" path="/scifio"/>
-	<classpathentry exported="true" kind="lib" path="/Applications/Fiji.app/jars/macosx/ffmpeg-2.6.1-0.11-macosx-x86_64.jar"/>
-	<classpathentry exported="true" kind="lib" path="/Applications/Fiji.app/jars/macosx/gluegen-rt-2.3.2-natives-macosx-universal.jar"/>
-	<classpathentry exported="true" kind="lib" path="/Applications/Fiji.app/jars/macosx/joal-2.3.2-natives-macosx-universal.jar"/>
-	<classpathentry exported="true" kind="lib" path="/Applications/Fiji.app/jars/macosx/jocl-2.3.2-natives-macosx-universal.jar"/>
-	<classpathentry exported="true" kind="lib" path="/Applications/Fiji.app/jars/macosx/jogl-all-2.3.2-natives-macosx-universal.jar"/>
 	<classpathentry exported="true" kind="lib" path="/Users/aimachine/Downloads/java3d-1_5_1-macosx/jzy3d/jzy3d-api-0.9.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="/Users/aimachine/Downloads/java3d-1_5_1-macosx/jzy3d/jzy3d-jdt-core-0.9.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="/Users/aimachine/Downloads/java3d-1_5_1-macosx/jzy3d/jzy3d-swt-0.9.1.jar"/>
