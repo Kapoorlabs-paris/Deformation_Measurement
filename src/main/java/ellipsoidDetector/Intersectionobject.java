@@ -13,9 +13,9 @@ import ij.gui.OvalRoi;
 import ij.gui.Roi;
 import net.imglib2.AbstractEuclideanSpace;
 import net.imglib2.RealLocalizable;
-import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
 import net.imglib2.util.Pair;
 import utility.ThreeDRoiobject;
+import varun_algorithm_ransac_Ransac.Ellipsoid;
 
 public class Intersectionobject extends AbstractEuclideanSpace implements RealLocalizable, Comparable<Intersectionobject> {
 

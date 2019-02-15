@@ -79,7 +79,6 @@ public class SortedSegmentDepthFirstIterator< V, E > extends AbstractGraphIterat
 
 	private final Deque< Object > stack = new ArrayDeque< Object >();
 
-	private transient TypeUtil< V > vertexTypeDecl = null;
 
 	private final ConnectedComponentTraversalEvent ccFinishedEvent =
 			new ConnectedComponentTraversalEvent(
@@ -91,9 +90,7 @@ public class SortedSegmentDepthFirstIterator< V, E > extends AbstractGraphIterat
 					this,
 					ConnectedComponentTraversalEvent.CONNECTED_COMPONENT_STARTED );
 
-	private final FlyweightEdgeEvent< V, E > reusableEdgeEvent;
 
-	private final FlyweightVertexEvent< V > reusableVertexEvent;
 
 	private Iterator< V > vertexIterator = null;
 
@@ -133,7 +130,7 @@ public class SortedSegmentDepthFirstIterator< V, E > extends AbstractGraphIterat
 	 */
 	public SortedSegmentDepthFirstIterator( final Graph< V, E > g, final V startVertex, final Comparator< V > comparator )
 	{
-		super();
+		super(g);
 		this.comparator = comparator;
 		this.graph = g;
 
@@ -141,8 +138,6 @@ public class SortedSegmentDepthFirstIterator< V, E > extends AbstractGraphIterat
 		vertexIterator = g.vertexSet().iterator();
 		setCrossComponentTraversal( startVertex == null );
 
-		reusableEdgeEvent = new FlyweightEdgeEvent< V, E >( this, null );
-		reusableVertexEvent = new FlyweightVertexEvent< V >( this, null );
 
 		if ( startVertex == null )
 		{
@@ -332,33 +327,7 @@ public class SortedSegmentDepthFirstIterator< V, E > extends AbstractGraphIterat
 		}
 	}
 
-	protected EdgeTraversalEvent< V, E > createEdgeTraversalEvent( final E edge )
-	{
-		if ( isReuseEvents() )
-		{
-			reusableEdgeEvent.setEdge( edge );
-
-			return reusableEdgeEvent;
-		}
-		else
-		{
-			return new EdgeTraversalEvent< V, E >( this, edge );
-		}
-	}
-
-	private VertexTraversalEvent< V > createVertexTraversalEvent( final V vertex )
-	{
-		if ( isReuseEvents() )
-		{
-			reusableVertexEvent.setVertex( vertex );
-
-			return reusableVertexEvent;
-		}
-		else
-		{
-			return new VertexTraversalEvent< V >( this, vertex );
-		}
-	}
+	
 
 	private void encounterStartVertex()
 	{
@@ -447,7 +416,7 @@ public class SortedSegmentDepthFirstIterator< V, E > extends AbstractGraphIterat
 			else
 			{
 				// Got a real vertex to start working on
-				v = TypeUtil.uncheckedCast( o, vertexTypeDecl );
+				v = TypeUtil.uncheckedCast( o );
 				break;
 			}
 		}
@@ -462,7 +431,7 @@ public class SortedSegmentDepthFirstIterator< V, E > extends AbstractGraphIterat
 
 	private void recordFinish()
 	{
-		final V v = TypeUtil.uncheckedCast( stack.removeLast(), vertexTypeDecl );
+		final V v = TypeUtil.uncheckedCast( stack.removeLast() );
 		seen.put( v, VisitColor.BLACK );
 		finishVertex( v );
 	}
@@ -491,35 +460,7 @@ public class SortedSegmentDepthFirstIterator< V, E > extends AbstractGraphIterat
 		public abstract Set< ? extends EE > edgesOf( VV vertex );
 	}
 
-	/**
-	 * A reusable edge event.
-	 *
-	 * @author Barak Naveh
-	 * @since Aug 11, 2003
-	 */
-	private static class FlyweightEdgeEvent< VV, localE > extends EdgeTraversalEvent< VV, localE >
-	{
-		private static final long serialVersionUID = 4051327833765000755L;
 
-		/**
-		 * @see EdgeTraversalEvent#EdgeTraversalEvent(Object, Object)
-		 */
-		public FlyweightEdgeEvent( final Object eventSource, final localE edge )
-		{
-			super( eventSource, edge );
-		}
-
-		/**
-		 * Sets the edge of this event.
-		 *
-		 * @param edge
-		 *            the edge to be set.
-		 */
-		protected void setEdge( final localE edge )
-		{
-			this.edge = edge;
-		}
-	}
 
 	/**
 	 * A reusable vertex event.

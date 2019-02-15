@@ -18,7 +18,7 @@ import ij.gui.OvalRoi;
 import ij.gui.Roi;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
-import net.imglib2.algorithm.ransac.RansacModels.*;
+
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
@@ -26,6 +26,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
+import varun_algorithm_ransac_Ransac.*;
 
 public class LabelRansac implements Runnable {
 

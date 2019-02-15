@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>17.1.1</version>
+		<version>25.0.0</version>
 		<relativePath />
 	</parent>
 
@@ -79,8 +79,9 @@
 		<license.licenseName>gpl_v3</license.licenseName>
 		<license.copyrightOwners>Bubbelator developers.</license.copyrightOwners>
 
-		<commons-io.version>2.5</commons-io.version>
-		<poi.version>3.12</poi.version>
+		
+
+		<jfreesvg.version>3.3</jfreesvg.version>
 
 		<!-- NB: Deploy releases to the ImageJ Maven repository. -->
 		<releaseProfiles>deploy-to-imagej</releaseProfiles>
@@ -91,22 +92,43 @@
 			<id>imagej.public</id>
 			<url>http://maven.imagej.net/content/groups/public</url>
 		</repository>
-		
-     
 	</repositories>
 
 	<dependencies>
 		<!-- ImgLib2 dependencies -->
-		
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-ij</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-roi</artifactId>
+		</dependency>
 
 		<!-- ImageJ dependencies -->
-	
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>ij</artifactId>
+		</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-svggen -->
+<!-- https://mvnrepository.com/artifact/org.jfree/jfreesvg -->
+
 
 		<!-- Fiji dependencies -->
-		<!-- https://mvnrepository.com/artifact/net.imagej/ij -->
-
-
-		
+		<dependency>
+			<!-- NB: dependency:analyze erroneously flags this, but it's required -->
+			<groupId>sc.fiji</groupId>
+			<artifactId>Fiji_Plugins</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>fiji-lib</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>legacy-imglib1</artifactId>
@@ -117,30 +139,36 @@
 			<!-- NB: dependency:analyze erroneously flags this, but it's required -->
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>${commons-io.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>gov.nist.math</groupId>
 			<artifactId>jama</artifactId>
 		</dependency>
-	
 		<dependency>
-			<groupId>net.sf.jgrapht</groupId>
-			<artifactId>jgrapht</artifactId>
+			<groupId>mpicbg</groupId>
+			<artifactId>mpicbg</artifactId>
+		</dependency>
+	
+	<dependency>
+			<groupId>org.jgrapht</groupId>
+			<artifactId>jgrapht-core</artifactId>
+			<version>${jgrapht.version}</version>
 		</dependency>
 		<dependency>
 			<!-- NB: dependency:analyze erroneously flags this, but it's required -->
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>${poi.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jfree</groupId>
-			<artifactId>jcommon</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
 		</dependency>
+		<dependency>
+			<!-- NB: dependency:analyze erroneously flags this, but it's required -->
+			<groupId>org.jfree</groupId>
+			<artifactId>jfreesvg</artifactId>
+			<version>${jfreesvg.version}</version>
+		</dependency>
 	</dependencies>
+
 </project>

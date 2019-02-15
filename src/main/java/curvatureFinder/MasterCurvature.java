@@ -23,10 +23,6 @@ import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
-import net.imglib2.algorithm.ransac.RansacModels.FitLocalEllipsoid;
-import net.imglib2.algorithm.ransac.RansacModels.RansacFunctionEllipsoid;
-import net.imglib2.algorithm.region.hypersphere.HyperSphere;
-import net.imglib2.algorithm.region.hypersphere.HyperSphereCursor;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -38,6 +34,10 @@ import ransacPoly.RegressionFunction;
 import utility.Curvatureobject;
 import utility.Listordereing;
 import utility.Roiobject;
+import varun_algorithm_ransac_Ransac.FitLocalEllipsoid;
+import varun_algorithm_ransac_Ransac.RansacFunctionEllipsoid;
+import varun_algorithm_region.hypersphere.HyperSphere;
+import varun_algorithm_region.hypersphere.HyperSphereCursor;
 
 public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> implements CurvatureFinders<T> {
 

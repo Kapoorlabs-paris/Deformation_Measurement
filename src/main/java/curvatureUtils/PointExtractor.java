@@ -15,7 +15,6 @@ import ij.gui.Line;
 import ij.gui.OvalRoi;
 import ij.gui.Roi;
 import net.imglib2.RealLocalizable;
-import net.imglib2.algorithm.ransac.RansacModels.DisplayasROI;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
@@ -23,6 +22,7 @@ import ransacPoly.QuadraticFunction;
 import ransacPoly.RegressionFunction;
 import utility.Curvatureobject;
 import utility.DisplayAuto;
+import varun_algorithm_ransac_Ransac.DisplayasROI;
 
 public class PointExtractor {
 

@@ -137,8 +137,6 @@ import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
-import net.imglib2.algorithm.gauss3.Gauss3;
-import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
@@ -155,6 +153,8 @@ import utility.DisplayAuto;
 import utility.Roiobject;
 import utility.ShowResultView;
 import utility.Slicer;
+import varun_algorithm_gauss3.Gauss3;
+import varun_algorithm_ransac_Ransac.Ellipsoid;
 
 public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 

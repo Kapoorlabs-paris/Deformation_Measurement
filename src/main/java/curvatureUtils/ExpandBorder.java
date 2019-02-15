@@ -6,21 +6,18 @@ import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.algorithm.neighborhood.Neighborhood;
-import net.imglib2.algorithm.neighborhood.RectangleShape;
-import net.imglib2.algorithm.region.hypersphere.HyperSphere;
-import net.imglib2.img.Img;
-import net.imglib2.img.ImgFactory;
+
 import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.util.Intervals;
 import net.imglib2.view.Views;
 import pluginTools.InteractiveSimpleEllipseFit;
-
+import varun_algorithm.*;
+import varun_algorithm_neighborhood.Neighborhood;
+import varun_algorithm_neighborhood.RectangleShape;
+import varun_algorithm_region.hypersphere.HyperSphere;
 public class ExpandBorder {
 
 	/**

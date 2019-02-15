@@ -3,8 +3,8 @@ package ellipsoidDetector;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
 import net.imglib2.util.Pair;
+import varun_algorithm_ransac_Ransac.Ellipsoid;
 
 public class Tangentobject {
 

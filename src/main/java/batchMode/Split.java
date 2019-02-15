@@ -38,8 +38,6 @@ import kalmanForSegments.Segmentobject;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
-import net.imglib2.algorithm.gauss3.Gauss3;
-import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
@@ -55,6 +53,8 @@ import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import ransacPoly.RegressionFunction;
 import utility.Curvatureobject;
 import utility.Roiobject;
+import varun_algorithm_gauss3.Gauss3;
+import varun_algorithm_ransac_Ransac.Ellipsoid;
 
 public class Split implements Runnable {
 

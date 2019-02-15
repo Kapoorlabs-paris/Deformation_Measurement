@@ -2,9 +2,7 @@ package curvatureFinder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -14,27 +12,19 @@ import java.util.concurrent.Future;
 
 import javax.swing.JProgressBar;
 
-import curvatureFinder.CurvatureFinderCircleFit.ParallelCalls;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
-import ij.IJ;
-import kalmanForSegments.Segmentobject;
 import mpicbg.models.Point;
-import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
-import net.imglib2.algorithm.ransac.RansacModels.FitLocalEllipsoid;
-import net.imglib2.algorithm.ransac.RansacModels.RansacFunctionEllipsoid;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
-import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.RegressionCurveSegment;
 import ransacPoly.RegressionFunction;
-import utility.Curvatureobject;
 import utility.Listordereing;
 
 public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> extends MasterCurvature<T>

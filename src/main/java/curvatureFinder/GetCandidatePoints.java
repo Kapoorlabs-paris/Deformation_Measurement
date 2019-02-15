@@ -8,9 +8,9 @@ import batchMode.LocalPrefs;
 import ij.IJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
-import net.imglib2.algorithm.ransac.RansacModels.ConnectedComponentCoordinates;
 import net.imglib2.type.numeric.real.FloatType;
 import pluginTools.InteractiveSimpleEllipseFit;
+import varun_algorithm_ransac_Ransac.ConnectedComponentCoordinates;
 
 public class GetCandidatePoints {
 	

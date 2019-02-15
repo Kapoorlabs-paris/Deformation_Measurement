@@ -1,7 +1,7 @@
 package curvatureFinder;
 
 import net.imglib2.RealLocalizable;
-import net.imglib2.algorithm.ransac.RansacModels.Circle;
+import varun_algorithm_ransac_Ransac.Circle;
 
 public class LinefunctionCircle {
 

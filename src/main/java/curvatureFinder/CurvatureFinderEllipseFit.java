@@ -13,10 +13,8 @@ import net.imglib2.RealLocalizable;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.Pair;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.RegressionCurveSegment;
-import ransacPoly.RegressionFunction;
 
 public class CurvatureFinderEllipseFit<T extends RealType<T> & NativeType<T>> implements CurvatureFinders<T> {
 

@@ -4,7 +4,6 @@ import net.imglib2.Cursor;
 import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.algorithm.stats.Normalize;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
@@ -17,6 +16,7 @@ import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import preProcessing.GenericFilters;
 import preProcessing.Kernels;
+import varun_algorithm_stats.Normalize;
 
 public class Watershedobject {
 

@@ -6,16 +6,12 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import ellipsoidDetector.Intersectionobject;
-import mpicbg.models.Point;
 import net.imglib2.RealLocalizable;
-import net.imglib2.RealPoint;
-import net.imglib2.algorithm.OutputAlgorithm;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.util.Pair;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.RegressionCurveSegment;
-import ransacPoly.RegressionFunction;
+import varun_algorithm.OutputAlgorithm;
 
 public interface CurvatureFinders<T extends RealType<T> & NativeType<T>>
 		extends OutputAlgorithm<ConcurrentHashMap<Integer, RegressionCurveSegment>> {

@@ -13,11 +13,6 @@ import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
-import net.imglib2.algorithm.neighborhood.RectangleShape;
-import net.imglib2.algorithm.ransac.RansacModels.FitLocalEllipsoid;
-import net.imglib2.algorithm.ransac.RansacModels.RansacFunctionEllipsoid;
-import net.imglib2.algorithm.region.hypersphere.HyperSphere;
-import net.imglib2.algorithm.region.hypersphere.HyperSphereCursor;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -32,6 +27,11 @@ import ransacPoly.MixedPolynomialFunction;
 import ransacPoly.RansacFunction;
 import ransacPoly.RegressionFunction;
 import ransacPoly.Threepointfit;
+import varun_algorithm_neighborhood.RectangleShape;
+import varun_algorithm_ransac_Ransac.FitLocalEllipsoid;
+import varun_algorithm_ransac_Ransac.RansacFunctionEllipsoid;
+import varun_algorithm_region.hypersphere.HyperSphere;
+import varun_algorithm_region.hypersphere.HyperSphereCursor;
 
 public class CurvatureFunction {
 

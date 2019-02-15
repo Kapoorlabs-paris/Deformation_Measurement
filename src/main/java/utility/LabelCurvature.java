@@ -35,7 +35,6 @@ import ij.gui.Roi;
 import kalmanForSegments.Segmentobject;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
-import net.imglib2.algorithm.ransac.RansacModels.*;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
@@ -46,6 +45,7 @@ import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.RegressionCurveSegment;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import ransacPoly.RegressionFunction;
+import varun_algorithm_ransac_Ransac.*;
 
 public class LabelCurvature implements Callable< HashMap<Integer,Intersectionobject>> {
 

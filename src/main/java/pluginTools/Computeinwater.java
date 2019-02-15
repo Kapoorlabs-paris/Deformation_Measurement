@@ -32,7 +32,6 @@ import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
-import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.Type;
@@ -52,6 +51,7 @@ import utility.NormalIntersection;
 import utility.Roiobject;
 import utility.SuperIntersection;
 import utility.Watershedobject;
+import varun_algorithm_ransac_Ransac.Ellipsoid;
 
 public class Computeinwater {
 

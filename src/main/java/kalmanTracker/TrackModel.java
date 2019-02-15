@@ -26,6 +26,7 @@ import org.jgrapht.event.TraversalListener;
 import org.jgrapht.event.TraversalListenerAdapter;
 import org.jgrapht.event.VertexTraversalEvent;
 import org.jgrapht.graph.AsUnweightedGraph;
+import org.jgrapht.graph.DefaultListenableGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.ListenableUndirectedGraph;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
@@ -58,7 +59,7 @@ public class TrackModel
 	 * {@link #removeEdge(DefaultWeightedEdge)}, {@link #removeEdge(Intersectionobject, Intersectionobject)}
 	 * .
 	 */
-	private ListenableUndirectedGraph< Intersectionobject, DefaultWeightedEdge > graph;
+	private DefaultListenableGraph< Intersectionobject, DefaultWeightedEdge > graph;
 
 	private final MyGraphListener mgl;
 
@@ -162,7 +163,7 @@ public class TrackModel
 		{
 			this.graph.removeGraphListener( mgl );
 		}
-		this.graph = new ListenableUndirectedGraph< Intersectionobject, DefaultWeightedEdge >( graph );
+		this.graph = new DefaultListenableGraph< Intersectionobject, DefaultWeightedEdge >( graph );
 		this.graph.addGraphListener( mgl );
 		init( graph );
 	}
@@ -206,7 +207,7 @@ public class TrackModel
 		{
 			this.graph.removeGraphListener( mgl );
 		}
-		this.graph = new ListenableUndirectedGraph< Intersectionobject, DefaultWeightedEdge >( graph );
+		this.graph = new DefaultListenableGraph< Intersectionobject, DefaultWeightedEdge >( graph );
 		this.graph.addGraphListener( mgl );
 
 		edgesAdded.clear();
@@ -687,10 +688,10 @@ public class TrackModel
 	 * Generates initial connected sets in bulk, from a graph. All sets are
 	 * created visible, and are give a default name.
 	 * 
-	 * @param graph
+	 * @param graph2
 	 *            the graph to read edges and vertices from.
 	 */
-	private void init( final UndirectedGraph< Intersectionobject, DefaultWeightedEdge > graph )
+	private void init( final SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> graph2 )
 	{
 		vertexToID = new HashMap< Intersectionobject, Integer >();
 		edgeToID = new HashMap< DefaultWeightedEdge, Integer >();
@@ -705,10 +706,10 @@ public class TrackModel
 		edgesRemoved.clear();
 		tracksUpdated.clear();
 
-		final Set< Intersectionobject > vertexSet = graph.vertexSet();
+		final Set< Intersectionobject > vertexSet = graph2.vertexSet();
 		if ( vertexSet.size() > 0 )
 		{
-			final BreadthFirstIterator< Intersectionobject, DefaultWeightedEdge > i = new BreadthFirstIterator< Intersectionobject, DefaultWeightedEdge >( graph, null );
+			final BreadthFirstIterator< Intersectionobject, DefaultWeightedEdge > i = new BreadthFirstIterator< Intersectionobject, DefaultWeightedEdge >( graph2 );
 			i.addTraversalListener( new MyTraversalListener() );
 
 			while ( i.hasNext() )
@@ -915,7 +916,7 @@ public class TrackModel
 		}
 
 		@Override
-		public void edgeTraversed( final EdgeTraversalEvent< Intersectionobject, DefaultWeightedEdge > event )
+		public void edgeTraversed( final EdgeTraversalEvent< DefaultWeightedEdge > event )
 		{
 			final DefaultWeightedEdge e = event.getEdge();
 			currentConnectedEdgeSet.add( e );

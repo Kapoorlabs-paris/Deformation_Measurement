@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" output="target/classes" path="src/main/java">
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
+	<classpathentry kind="src" output="target/classes" path="src/main/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
@@ -22,14 +22,10 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="src" path="/imglib2-algorithm"/>
 	<classpathentry exported="true" kind="src" path="/Preprocessing"/>
 	<classpathentry exported="true" kind="src" path="/scifio"/>
-	<classpathentry exported="true" kind="lib" path="/Users/aimachine/Downloads/java3d-1_5_1-macosx/jzy3d/jzy3d-api-0.9.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="/Users/aimachine/Downloads/java3d-1_5_1-macosx/jzy3d/jzy3d-jdt-core-0.9.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="/Users/aimachine/Downloads/java3d-1_5_1-macosx/jzy3d/jzy3d-swt-0.9.1.jar"/>
 	<classpathentry exported="true" kind="src" path="/PolynomialRansac"/>
 	<classpathentry exported="true" kind="src" path="/MasterPanels"/>
-	<classpathentry kind="src" path="/imglib2-roi"/>
+	<classpathentry exported="true" kind="src" path="/imglib2-roi"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

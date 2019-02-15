@@ -10,14 +10,14 @@ import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
 import net.imglib2.RealLocalizable;
-import net.imglib2.algorithm.ransac.RansacModels.Angleobject;
-import net.imglib2.algorithm.ransac.RansacModels.Ellipsoid;
-import net.imglib2.algorithm.ransac.RansacModels.Intersections;
-import net.imglib2.algorithm.ransac.RansacModels.Tangent2D;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
+import varun_algorithm_ransac_Ransac.Angleobject;
+import varun_algorithm_ransac_Ransac.Ellipsoid;
+import varun_algorithm_ransac_Ransac.Intersections;
+import varun_algorithm_ransac_Ransac.Tangent2D;
 
 public class NormalIntersection {
 

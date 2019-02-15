@@ -21,11 +21,11 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.algorithm.region.BresenhamLine;
-import net.imglib2.algorithm.region.hypersphere.HyperSphere;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Intervals;
 import net.imglib2.view.Views;
 import ransacPoly.RegressionFunction;
+import varun_algorithm_region.hypersphere.HyperSphere;
 import net.imglib2.roi.geom.GeomMasks;
 import net.imglib2.roi.geom.GeomMaths;
 import net.imglib2.roi.geom.real.Line;
@@ -139,6 +139,7 @@ public class DrawFunction {
 	 * @param endpoint
 	 * @param Intensity
 	 */
+	/*
 	public static <T extends RealType<T>> void DrawGeomLines(final RandomAccessibleInterval<T> originalimg,
 			final long[] startpoint, final long[] endpoint, final double Intensity) {
 
@@ -171,6 +172,7 @@ public class DrawFunction {
 		
 
 	}
+	*/
 	
 	/**
 	 * 

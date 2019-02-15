@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.algorithm.gauss3.Gauss3;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.integer.IntType;
@@ -13,6 +12,7 @@ import net.imglib2.view.Views;
 import pluginTools.EllipseTrack;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
+import varun_algorithm_gauss3.Gauss3;
 
 public class DoSmoothingListener implements ActionListener {
 	

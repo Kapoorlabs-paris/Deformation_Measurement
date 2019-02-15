@@ -12,24 +12,18 @@ import java.util.concurrent.Future;
 
 import javax.swing.JProgressBar;
 
-import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import mpicbg.models.Point;
-import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
-import net.imglib2.algorithm.ransac.RansacModels.FitLocalEllipsoid;
-import net.imglib2.algorithm.ransac.RansacModels.RansacFunctionEllipsoid;
+
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
-import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.RegressionCurveSegment;
-import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
-import ransacPoly.RegressionFunction;
 import utility.Listordereing;
 
 public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> extends MasterCurvature<T>

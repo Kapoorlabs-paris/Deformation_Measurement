@@ -26,6 +26,7 @@ import org.jgrapht.event.TraversalListener;
 import org.jgrapht.event.TraversalListenerAdapter;
 import org.jgrapht.event.VertexTraversalEvent;
 import org.jgrapht.graph.AsUnweightedGraph;
+import org.jgrapht.graph.DefaultListenableGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.ListenableUndirectedGraph;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
@@ -58,7 +59,7 @@ public class TrackSegmentModel
 	 * {@link #removeEdge(DefaultWeightedEdge)}, {@link #removeEdge(Segmentobject, Segmentobject)}
 	 * .
 	 */
-	private ListenableUndirectedGraph< Segmentobject, DefaultWeightedEdge > graph;
+	private DefaultListenableGraph< Segmentobject, DefaultWeightedEdge > graph;
 
 	private final MyGraphListener mgl;
 
@@ -162,7 +163,7 @@ public class TrackSegmentModel
 		{
 			this.graph.removeGraphListener( mgl );
 		}
-		this.graph = new ListenableUndirectedGraph< Segmentobject, DefaultWeightedEdge >( graph );
+		this.graph = new DefaultListenableGraph< >( graph );
 		this.graph.addGraphListener( mgl );
 		init( graph );
 	}
@@ -206,7 +207,7 @@ public class TrackSegmentModel
 		{
 			this.graph.removeGraphListener( mgl );
 		}
-		this.graph = new ListenableUndirectedGraph< Segmentobject, DefaultWeightedEdge >( graph );
+		this.graph = new DefaultListenableGraph< >( graph );
 		this.graph.addGraphListener( mgl );
 
 		edgesAdded.clear();
@@ -686,10 +687,10 @@ public class TrackSegmentModel
 	 * Generates initial connected sets in bulk, from a graph. All sets are
 	 * created visible, and are give a default name.
 	 * 
-	 * @param graph
+	 * @param graph2
 	 *            the graph to read edges and vertices from.
 	 */
-	private void init( final UndirectedGraph< Segmentobject, DefaultWeightedEdge > graph )
+	private void init( final SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge> graph2 )
 	{
 		vertexToID = new HashMap< Segmentobject, Integer >();
 		edgeToID = new HashMap< DefaultWeightedEdge, Integer >();
@@ -704,10 +705,10 @@ public class TrackSegmentModel
 		edgesRemoved.clear();
 		tracksUpdated.clear();
 
-		final Set< Segmentobject > vertexSet = graph.vertexSet();
+		final Set< Segmentobject > vertexSet = graph2.vertexSet();
 		if ( vertexSet.size() > 0 )
 		{
-			final BreadthFirstIterator< Segmentobject, DefaultWeightedEdge > i = new BreadthFirstIterator< Segmentobject, DefaultWeightedEdge >( graph, null );
+			final BreadthFirstIterator< Segmentobject, DefaultWeightedEdge > i = new BreadthFirstIterator< Segmentobject, DefaultWeightedEdge >( graph2 );
 			i.addTraversalListener( new MyTraversalListener() );
 
 			while ( i.hasNext() )
@@ -914,7 +915,7 @@ public class TrackSegmentModel
 		}
 
 		@Override
-		public void edgeTraversed( final EdgeTraversalEvent< Segmentobject, DefaultWeightedEdge > event )
+		public void edgeTraversed( final EdgeTraversalEvent< DefaultWeightedEdge > event )
 		{
 			final DefaultWeightedEdge e = event.getEdge();
 			currentConnectedEdgeSet.add( e );

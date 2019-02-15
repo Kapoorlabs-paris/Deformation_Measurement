@@ -17,9 +17,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.omg.SendingContext.RunTime;
 
-import net.imglib2.algorithm.MultiThreaded;
 import utility.FeatureFilter;
 import utility.ThreeDRoiobject;
+import varun_algorithm.MultiThreaded;
 
 
 public class SegmentobjectCollection implements MultiThreaded
