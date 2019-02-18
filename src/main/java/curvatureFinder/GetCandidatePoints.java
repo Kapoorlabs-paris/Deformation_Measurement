@@ -14,7 +14,7 @@ import varun_algorithm_ransac_Ransac.ConnectedComponentCoordinates;
 
 public class GetCandidatePoints {
 	
-	
+	static double fcteps = 1.0E-10;
 	
 	public static List<RealLocalizable> ListofPoints(final InteractiveSimpleEllipseFit parent, final RandomAccessibleInterval<FloatType> ActualRoiimg ,final JProgressBar jpb, int percent, int t, int z) {
 		
@@ -23,22 +23,22 @@ public class GetCandidatePoints {
 		parent.Listmap.clear();
 
 		if (parent.fourthDimensionSize != 0 && parent.Accountedframes.size() != 0 && parent.Accountedframes != null)
-			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.pixellist.size()), "Computing Curvature = "
+			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.pixellist.size() + fcteps), "Computing Curvature = "
 					+ t + "/" + parent.fourthDimensionSize + " Z = " + z + "/" + parent.thirdDimensionSize);
 		else if (parent.thirdDimensionSize != 0 && parent.AccountedZ.size() != 0 && parent.AccountedZ != null)
-			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.pixellist.size()),
+			utility.ProgressBar.SetProgressBar(jpb, 100 * percent / (parent.pixellist.size()+ fcteps),
 					"Computing Curvature T/Z = " + z + "/" + parent.thirdDimensionSize);
 		else {
 
-			utility.ProgressBar.SetProgressBar(jpb, 100 * (percent) / (parent.pixellist.size()),
+			utility.ProgressBar.SetProgressBar(jpb, 100 * (percent) / (parent.pixellist.size()+ fcteps),
 					"Computing Curvature ");
 		}
 		
 		
 		List<RealLocalizable> truths = ConnectedComponentCoordinates.GetCoordinatesBit(ActualRoiimg);
-		parent.boxsize = LocalPrefs.getInt(".Box.int", (int) ((truths.size() / parent.minNumInliers ) * parent.calibration));
+		parent.boxsize = LocalPrefs.getInt(".Box.int", (int) ((truths.size() / (parent.minNumInliers +  fcteps )) * parent.calibration));
 		
-		parent.minNumInliers = (int)(( truths.size()  * parent.calibration ) / parent.boxsize);
+	
 		parent.SpecialminInlierField.setText("Box Size = " + " " + Double.toString(parent.boxsize) + " " + "um");
 		parent.SpecialminInlierField.repaint();
 		parent.SpecialminInlierField.validate();
