@@ -77,16 +77,7 @@ public class Split implements Runnable {
 
 	}
 
-	public Split(final ExecuteBatch parent, final File ChA, final File ChSeg, int fileindex, boolean twochannel) {
 
-		this.parent = parent;
-		this.ChA = ChA;
-		this.ChB = null;
-		this.ChSeg = ChSeg;
-		this.twochannel = twochannel;
-		this.fileindex = fileindex;
-
-	}
 
 
 	ImgOpener imgOpener = new ImgOpener();
@@ -113,11 +104,12 @@ public class Split implements Runnable {
 		//parent.panel.add(fileprogress);
 		
 		
-		
-		
 		try {
 			
-			System.out.println("Pattern matching: " + ChA.getAbsolutePath() + " " + ChSeg.getAbsolutePath() );
+			System.out.println("Pattern matching: " + ChA.getAbsolutePath() + " " + ChSeg.getAbsolutePath()  );
+			if(ChB!=null) {
+				System.out.println("Pattern matching second channel: " + ChB.getAbsolutePath() );
+			}
 			parent.parent.originalimgbefore = imgOpener
 					.openImgs(ChA.getAbsolutePath(), new FloatType()).get(0);
             parent.parent.originalimg = parent.parent.originalimgbefore;

@@ -306,7 +306,6 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 		// Get the sparse list of points
 		List<RealLocalizable> allorderedtruths = Listordereing.getList(Ordered, i);
 
-		if(!parent.batchmode) {
 		ParallelCalls call = new ParallelCalls(parent, allorderedtruths, centerpoint, ndims, celllabel, z, 1, 0);
 		Future<RegressionCurveSegment> Futureresultpair = taskExecutor.submit(call);
 		list.add(Futureresultpair);
@@ -335,31 +334,12 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 				e.printStackTrace();
 			}
 		}
-		}
-		
-		else {
-			
-			RegressionCurveSegment resultpair = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t, 0);
-
-			// Here counter the segments where the number of inliers was too low
-			Bestdelta.put(0, resultpair);
-
-			parent.localCurvature = resultpair.Curvelist;
-
-			parent.functions = resultpair.functionlist;
-			// Get the sparse list of points, skips parent.resolution pixel points
-
-	
-			
-		}
 		// Get the sparse list of points, skips parent.resolution pixel points
 
 		Pair<Intersectionobject, Intersectionobject> sparseanddensepair = GetSingle(parent, centerpoint, Bestdelta);
 
 		AllCurveintersection.add(sparseanddensepair.getA());
 		AlldenseCurveintersection.put(celllabel, sparseanddensepair.getB());
-		
-		
 		parent.AlllocalCurvature.add(parent.localCurvature);
 
 	}
