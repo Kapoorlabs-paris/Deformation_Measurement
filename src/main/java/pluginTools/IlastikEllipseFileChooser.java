@@ -578,8 +578,8 @@ public class IlastikEllipseFileChooser extends JPanel {
 			    String s = tc.getText();
 			   
 			    if (s.length() > 0)
-				calibration = Float.parseFloat(s);
-				
+				calibration = Double.parseDouble(s);
+				System.out.println(calibration);
 			}
 			
 	  }
