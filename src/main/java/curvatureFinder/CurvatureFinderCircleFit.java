@@ -200,13 +200,23 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 			parent.zslider.setValue(utility.Slicer.computeScrollbarPositionFromValue(parent.thirdDimension,
 					parent.thirdDimensionsliderInit, parent.thirdDimensionSize, parent.scrollbarSize));
 
-			
+			if(!parent.batchmode) {
 			ParallelCalls call = new ParallelCalls(parent, allorderedtruths, centerpoint, ndims, celllabel, z, maxstride, index);
 			Future<RegressionCurveSegment> Futureresultpair = taskExecutor.submit(call);
 			list.add(Futureresultpair);
+			}
+			
+			
+			resultpair = getCurvature(parent, allorderedtruths, centerpoint, ndims, celllabel, z, t, index);
+
+			Bestdelta.put(count, resultpair);
+			count++;
+
+			parent.localCurvature = resultpair.Curvelist;
+			parent.functions = resultpair.functionlist;
 		}
 		
-		
+		if(!parent.batchmode) {
 		for(Future<RegressionCurveSegment> fut : list){
 			
 			
@@ -229,7 +239,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+		}
 		
 		}
 

@@ -30,7 +30,7 @@ public class CurvatureListener implements ActionListener {
 		ClearStuff();
 
 		
-			parent.StartCurvatureComputing(false, null);
+			parent.StartCurvatureComputing(null);
 
 	}
 	

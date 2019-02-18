@@ -433,13 +433,7 @@ public class EllipseTrack {
 
 	
 
-		int nThreads = Runtime.getRuntime().availableProcessors();
-		// set up executor service
-		final ExecutorService taskExecutorStart = Executors.newFixedThreadPool(nThreads);
-		 List<Callable<Object>> tasksStart = new ArrayList<Callable<Object>>();
-		 ArrayList<HashMap<String, ArrayList<Intersectionobject>>> Alldensemap = new ArrayList<HashMap<String, ArrayList<Intersectionobject>>>();
-			
-			
+	
 			if (parent.originalimg.numDimensions() > 3) {
 
 				for (int t = parent.AutostartTime; t <= parent.AutoendTime; ++t) {

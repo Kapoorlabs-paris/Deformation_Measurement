@@ -275,7 +275,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JFreeChart chartIntensityA;
 	public JFreeChart chartIntensityB;
 	public JFreeChart chartPerimeter;
-
+	public boolean batchmode = false;
 	public JFreeChart contchart;
 	public RandomAccessibleInterval<FloatType> originalimg;
 	public RandomAccessibleInterval<FloatType> originalSecimg;
@@ -1187,8 +1187,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		
 		CleanMe();
 		StartCurvatureComputingCurrent();
-		
-		StartCurvatureComputing(true, savefile);
+		batchmode = true;
+		StartCurvatureComputing( savefile);
         
 	
 	}
@@ -1610,7 +1610,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	}
 
-	public void StartCurvatureComputing(boolean batchmode, File savefile) {
+	public void StartCurvatureComputing(File savefile) {
 		if(!batchmode) {
 		ComputeCurvature compute = new ComputeCurvature(this, jpb, batchmode, savefile );
 
