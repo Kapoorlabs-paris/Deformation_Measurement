@@ -530,7 +530,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 
 		FileSaver fsB = new FileSaver(IntensityAimp);
 
-		fsB.saveAsTiff(  parent.saveFile+ "//" + "Ch1LineScan_" +   "TrackID" + Integer.parseInt(TrackID) + ".tif");
+		fsB.saveAsTiff(  parent.saveFile+ "//" + "Ch1LineScan_" + parent.inputstring.replaceFirst("[.][^.]+$", "")   +   "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
 		if (parent.twochannel) {
 			ImagePlus IntensityBimp = ImageJFunctions.wrapFloat(IntensityBKymo,
@@ -538,7 +538,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 
 			FileSaver fsBB = new FileSaver(IntensityBimp);
 
-			fsBB.saveAsTiff(parent.saveFile + "//" + "Ch2LineScan_"   + "TrackID" + Integer.parseInt(TrackID) + ".tif");
+			fsBB.saveAsTiff(parent.saveFile + "//" + "Ch2LineScan_"   + parent.inputstring.replaceFirst("[.][^.]+$", "")   +  "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
 		}
 		
@@ -628,14 +628,14 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 
 		FileSaver fsC = new FileSaver(Curveimp);
 
-		fsC.saveAsTiff(parent.saveFile + "//" + "Curvature_"     + "TrackID" + Integer.parseInt(TrackID) + ".tif");
+		fsC.saveAsTiff(parent.saveFile + "//" + "Curvature_"    + parent.inputstring.replaceFirst("[.][^.]+$", "")   +  "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
 		ImagePlus IntensityAimp = ImageJFunctions.wrapFloat(IntensityAKymo,
 				"Intensity ChA Kymo for TrackID: " + TrackID);
 
 		FileSaver fsB = new FileSaver(IntensityAimp);
 
-		fsB.saveAsTiff(  parent.saveFile+ "//" + "Ch1Intensity_"    +  "TrackID" + Integer.parseInt(TrackID) + ".tif");
+		fsB.saveAsTiff(  parent.saveFile+ "//" + "Ch1Intensity_"   + parent.inputstring.replaceFirst("[.][^.]+$", "")   +  "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
 		if (parent.twochannel) {
 			ImagePlus IntensityBimp = ImageJFunctions.wrapFloat(IntensityBKymo,

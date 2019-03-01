@@ -296,7 +296,8 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 		
 		// Get the sparse list of points, skips parent.resolution pixel points
 		// set up executor service
-		final ExecutorService taskExecutor = Executors.newCachedThreadPool();
+		int nThreads = Runtime.getRuntime().availableProcessors();
+		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
 		
 		List<Future<RegressionCurveSegment>> list = new ArrayList<Future<RegressionCurveSegment>>();
 		RegressionCurveSegment oldresultpair = CommonLoop(parent, Ordered, centerpoint, ndims, celllabel, t, z);
