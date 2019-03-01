@@ -51,6 +51,7 @@ public class ProcessFiles {
 		}
 		try {
 			taskexecutor.invokeAll(tasks);
+			taskexecutor.shutdown();
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
 		}
@@ -71,6 +72,7 @@ public class ProcessFiles {
 		}
 		try {
 			taskexecutor.invokeAll(tasks);
+			taskexecutor.shutdown();
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
 		}

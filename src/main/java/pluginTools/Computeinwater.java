@@ -168,12 +168,7 @@ public class Computeinwater {
 
 	public void ParallelRansacCurve() throws Exception {
 
-		int nThreads = Runtime.getRuntime().availableProcessors();
-		// set up executor service
-		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
-		List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
-		List<Future<HashMap<Integer, Intersectionobject>>> list = new ArrayList<Future<HashMap<Integer, Intersectionobject>>>();
-		
+
 		ArrayList<Line> resultlineroi = new ArrayList<Line>();
 		ArrayList<OvalRoi> resultcurvelineroi = new ArrayList<OvalRoi>();
 		ArrayList<OvalRoi> resultallcurvelineroi = new ArrayList<OvalRoi>();

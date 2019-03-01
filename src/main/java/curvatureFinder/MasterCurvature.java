@@ -279,7 +279,8 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		MakeSegments(parent, truths, parent.minNumInliers, Label);
 		// Get the sparse list of points, skips parent.resolution pixel points
 		// set up executor service
-		final ExecutorService taskExecutor = Executors.newCachedThreadPool();
+		int nThreads = Runtime.getRuntime().availableProcessors();
+		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
 		
 		List<Future<RegressionLineProfile>> list = new ArrayList<Future<RegressionLineProfile>>();
 		// Now do the fitting
@@ -299,7 +300,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			list.add(Futureresultpair);
 			
 		}
-		
+		taskExecutor.shutdown();
 		
 		for(Future<RegressionLineProfile> fut : list){
 			

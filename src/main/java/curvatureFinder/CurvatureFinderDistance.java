@@ -310,7 +310,7 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 		ParallelCalls call = new ParallelCalls(parent, allorderedtruths, centerpoint, ndims, celllabel, z, 1, 0);
 		Future<RegressionCurveSegment> Futureresultpair = taskExecutor.submit(call);
 		list.add(Futureresultpair);
-		
+		taskExecutor.shutdown();
 
 		for(Future<RegressionCurveSegment> fut : list){
 			
@@ -335,6 +335,7 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 				e.printStackTrace();
 			}
 		}
+		
 		// Get the sparse list of points, skips parent.resolution pixel points
 
 		Pair<Intersectionobject, Intersectionobject> sparseanddensepair = GetSingle(parent, centerpoint, Bestdelta);

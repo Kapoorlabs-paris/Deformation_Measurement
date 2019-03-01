@@ -207,7 +207,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 			list.add(Futureresultpair);
 		}
 		
-		
+		taskExecutor.shutdown();
 		for(Future<RegressionCurveSegment> fut : list){
 			
 			
@@ -233,6 +233,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 			
 		
 		}
+		
 
 		Pair<Intersectionobject, Intersectionobject> sparseanddensepair = GetAverage(parent, centerpoint, Bestdelta,count);
 		
