@@ -917,26 +917,12 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		
 		double[] currentPosition = new double[ndims];
 		
-		Intensity = ranac.get().get();
-		IntensitySec = ranacsec.get().get();
-		while (localcursorOne.hasNext()) {
 
-			localcursorOne.fwd();
-
-			ranacsec.setPosition(localcursorOne);
-
-			ranacsec.localize(currentPosition);
-
-			if(currentPosition[0] > parent.CurrentViewOrig.min(0) + parent.regiondistance  && currentPosition[1] > parent.CurrentViewOrig.min(1) + parent.regiondistance
-					&& currentPosition[0] < parent.CurrentViewOrig.max(0) - parent.regiondistance && currentPosition[1] < parent.CurrentViewOrig.max(1) - parent.regiondistance ) {
-				Intensity += localcursorOne.get().getRealDouble();
-				IntensitySec += ranacsec.get().getRealDouble();
-		}
-		}
+	
 		
 	
 		
-		LineProfileCircle linescan = new LineProfileCircle(count, Intensity, IntensitySec);
+		LineProfileCircle linescan = new LineProfileCircle(count, 0, 0);
 		LineScanIntensity.add(linescan);
 		
 		double minX = (startNormal[0] < endNormal[0])? startNormal[0]:endNormal[0];
@@ -966,8 +952,36 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			ranac.setPosition(new long[] {Math.round(nextX), Math.round(nextY)});
 			ranacsec.setPosition(ranac);
 			
+			
+		 hyperSphereOne = new HyperSphere<FloatType>(parent.CurrentViewOrig, ranac,
+					(int) thickness);
+		
+			localcursorOne = hyperSphereOne.localizingCursor();
+			
+			
+			 currentPosition = new double[ndims];
+			
 			Intensity = ranac.get().get();
 			IntensitySec = ranacsec.get().get();
+			while (localcursorOne.hasNext()) {
+
+				localcursorOne.fwd();
+
+				ranacsec.setPosition(localcursorOne);
+
+				ranacsec.localize(currentPosition);
+
+				if(currentPosition[0] > parent.CurrentViewOrig.min(0) + parent.regiondistance  && currentPosition[1] > parent.CurrentViewOrig.min(1) + parent.regiondistance
+						&& currentPosition[0] < parent.CurrentViewOrig.max(0) - parent.regiondistance && currentPosition[1] < parent.CurrentViewOrig.max(1) - parent.regiondistance ) {
+					Intensity += localcursorOne.get().getRealDouble();
+					IntensitySec += ranacsec.get().getRealDouble();
+			}
+			}
+			
+			
+			
+			
+			
 			
 			}
 			else
