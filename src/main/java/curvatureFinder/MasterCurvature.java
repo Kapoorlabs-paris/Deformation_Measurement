@@ -810,32 +810,13 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		ArrayList<LineProfileCircle> LineScanIntensity = new ArrayList<LineProfileCircle>();
 	
 			if (strideindex == 0) {
-			for (int d = 0; d < newpos.length; ++d)
-				longpointB[d] = (long) pointB[d];
-			net.imglib2.Point intpoint = new net.imglib2.Point(longpointB);
+
 			
 		if(linescan) {	
-		LinefunctionCircle NormalLine = new LinefunctionCircle(ellipsesegment.function, intpoint);
+
 		
-		double[] NormalSlopeIntercept = NormalLine.NormalatPoint();
-		
-		double startNormalX = intpoint.getDoublePosition(0) - parent.insidedistance/Math.sqrt(1 + NormalSlopeIntercept[0]*NormalSlopeIntercept[0]) ;
-		double startNormalY = NormalSlopeIntercept[0] * startNormalX + NormalSlopeIntercept[1];
-		
-		double endNormalX = intpoint.getDoublePosition(0) + parent.insidedistance/Math.sqrt(1 + NormalSlopeIntercept[0]*NormalSlopeIntercept[0]) ;
-		double endNormalY = NormalSlopeIntercept[0] * endNormalX + NormalSlopeIntercept[1];
-		
-		long[] startNormal = { (long)startNormalX, (long)startNormalY };
-		
-		long[] midNormal = {(long)intpoint.getDoublePosition(0), (long)intpoint.getDoublePosition(1)};
-		
-		long[] endNormal = { (long)endNormalX, (long)endNormalY};
-		
-		
-		Line line = new Line((int) startNormal[0], (int) startNormal[1], (int) endNormal[0], (int) endNormal[1], parent.imp);
-		parent.overlay.add(line);
-		parent.imp.updateAndDraw();
-		LineScanIntensity = getLineScanIntensity(parent, centerloc, startNormal, midNormal, endNormal, NormalSlopeIntercept[0], NormalSlopeIntercept[1]);
+
+		LineScanIntensity = getLineScanIntensity(parent,centerloc, ellipsesegment, pointB, ndims);
 
 			}
 	
@@ -855,25 +836,67 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	}
 	
 	
-	public ArrayList<LineProfileCircle> getLineScanIntensity(final InteractiveSimpleEllipseFit parent, final long[] centerpoint,
-			final long[] startNormal, final long[] mindNormal, final long[] endNormal, final double slope, final double intercept){
+	public ArrayList<LineProfileCircle> getLineScanIntensity(final InteractiveSimpleEllipseFit parent, final long[] centerpos, RansacFunctionEllipsoid ellipsesegment, final double[] pointB, 
+			final int ndims){
 		
+		
+
 		int count = 0;
+      
+		ArrayList<ArrayList<LineProfileCircle>> AllLineScanIntensity = new ArrayList<ArrayList<LineProfileCircle>>();
+		ArrayList<LineProfileCircle> AddedLineScanIntensity = new ArrayList<LineProfileCircle>();
+	
 		
-		ArrayList<LineProfileCircle> LineScanIntensity = new ArrayList<LineProfileCircle>();
+		
+		int thickness = 10;
 		
 		
-		RandomAccess<FloatType> ranac = parent.CurrentViewOrig.randomAccess();
+
+			ArrayList<LineProfileCircle> LineScanIntensity = new ArrayList<LineProfileCircle>();
+			long[] longnewpos = new long[ndims];
+			
 
 		
+			for (int d = 0; d < pointB.length; ++d)
+				longnewpos[d] = (long) pointB[d];
+			net.imglib2.Point intpoint = new net.imglib2.Point(longnewpos);
+
+			
+			
+		RandomAccess<FloatType> ranac = parent.CurrentViewOrig.randomAccess();
+		
+		
+		
+		
+		LinefunctionCircle NormalLine = new LinefunctionCircle(ellipsesegment.function, intpoint);
+		
+		double[] NormalSlopeIntercept = NormalLine.NormalatPoint();
+		
+		double startNormalX = intpoint.getDoublePosition(0) - parent.insidedistance/Math.sqrt(1 + NormalSlopeIntercept[0]*NormalSlopeIntercept[0])  ;
+		double startNormalY = NormalSlopeIntercept[0] * startNormalX+ NormalSlopeIntercept[1];
+		
+		double endNormalX = intpoint.getDoublePosition(0) + parent.insidedistance/Math.sqrt(1 + NormalSlopeIntercept[0]*NormalSlopeIntercept[0])  ;
+		double endNormalY = NormalSlopeIntercept[0] * endNormalX + NormalSlopeIntercept[1];
+		
+		long[] startNormal = { (long)startNormalX, (long)startNormalY };
+		
+		long[] midNormal = {(long)intpoint.getDoublePosition(0), (long)intpoint.getDoublePosition(1)};
+		
+		long[] endNormal = { (long)endNormalX, (long)endNormalY};
+		
+	
+		Line line = new Line((int) startNormal[0], (int) startNormal[1], (int) endNormal[0], (int) endNormal[1], parent.imp);
+		parent.overlay.add(line);
+		parent.imp.updateAndDraw();
+	
 		long minXdim = parent.CurrentViewOrig.min(0);
 		long minYdim = parent.CurrentViewOrig.min(1);
 		
 		long maxXdim = parent.CurrentViewOrig.max(0);
 		long maxYdim = parent.CurrentViewOrig.max(1);
 		
-		long[] outsidepoint = (Distance.DistanceSq(centerpoint, startNormal) < Distance.DistanceSq(centerpoint, endNormal))? endNormal:startNormal;
-		long[] insidepoint = (Distance.DistanceSq(centerpoint, startNormal) > Distance.DistanceSq(centerpoint, endNormal))? endNormal:startNormal;
+		long[] outsidepoint = (Distance.DistanceSq(centerpos, startNormal) < Distance.DistanceSq(centerpos, endNormal))? endNormal:startNormal;
+		long[] insidepoint = (Distance.DistanceSq(centerpos, startNormal) > Distance.DistanceSq(centerpos, endNormal))? endNormal:startNormal;
 		
 		
 		double Intensity = 0;
@@ -886,9 +909,32 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 		ranac.setPosition(startNormal);
 		ranacsec.setPosition(ranac);
+		HyperSphere<FloatType> hyperSphereOne = new HyperSphere<FloatType>(parent.CurrentViewOrig, ranac,
+				(int) thickness);
+	
+		HyperSphereCursor<FloatType> localcursorOne = hyperSphereOne.localizingCursor();
+		
+		
+		double[] currentPosition = new double[ndims];
 		
 		Intensity = ranac.get().get();
 		IntensitySec = ranacsec.get().get();
+		while (localcursorOne.hasNext()) {
+
+			localcursorOne.fwd();
+
+			ranacsec.setPosition(localcursorOne);
+
+			ranacsec.localize(currentPosition);
+
+			if(currentPosition[0] > parent.CurrentViewOrig.min(0) + parent.regiondistance  && currentPosition[1] > parent.CurrentViewOrig.min(1) + parent.regiondistance
+					&& currentPosition[0] < parent.CurrentViewOrig.max(0) - parent.regiondistance && currentPosition[1] < parent.CurrentViewOrig.max(1) - parent.regiondistance ) {
+				Intensity += localcursorOne.get().getRealDouble();
+				IntensitySec += ranacsec.get().getRealDouble();
+		}
+		}
+		
+	
 		
 		LineProfileCircle linescan = new LineProfileCircle(count, Intensity, IntensitySec);
 		LineScanIntensity.add(linescan);
@@ -901,22 +947,20 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		
 		
 		minX = outsidepoint[0];
-		double minY = slope * minX + intercept;
+		double minY = NormalSlopeIntercept[0] * minX + NormalSlopeIntercept[1];
 		maxX = insidepoint[0];
 		double maxY = insidepoint[1];
 		
 		double step = (maxX - minX) / (2*parent.insidedistance);
 		ranac.setPosition(new long[] {Math.round(maxX), Math.round(maxY)});
 		ranacsec.setPosition(ranac);
-		
-		Intensity = ranac.get().get();
-		IntensitySec = ranacsec.get().get();
+	
 		while(true) {
 			
 			count++;
 	
 			double nextX =  maxX - step*sign;
-			double nextY = slope * nextX + intercept;
+			double nextY = NormalSlopeIntercept[0] * nextX + NormalSlopeIntercept[1];
 			if(nextX > minXdim && nextX < maxXdim && nextY > minYdim && nextY < maxYdim) {
 			
 			ranac.setPosition(new long[] {Math.round(nextX), Math.round(nextY)});
@@ -939,10 +983,15 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			if (nextX < minX || nextY < minY)
 				break;
 		}
-		return LineScanIntensity;
 		
+
+		
+		return LineScanIntensity;
+   
 	}
 
+	
+	
 	
 	public double getDistance(Localizable point, Localizable centerpoint) {
 
