@@ -919,10 +919,28 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		
 
 	
-		
+		int avcount = 1;
+		while (localcursorOne.hasNext()) {
+
+			localcursorOne.fwd();
+
+			
+			ranacsec.setPosition(localcursorOne);
+
+			ranacsec.localize(currentPosition);
+
+			if(currentPosition[0] > parent.CurrentViewOrig.min(0) + parent.regiondistance  && currentPosition[1] > parent.CurrentViewOrig.min(1) + parent.regiondistance
+					&& currentPosition[0] < parent.CurrentViewOrig.max(0) - parent.regiondistance && currentPosition[1] < parent.CurrentViewOrig.max(1) - parent.regiondistance ) {
+				Intensity += localcursorOne.get().getRealDouble();
+				IntensitySec += ranacsec.get().getRealDouble();
+				avcount++;
+		}
+		}
+		Intensity = Intensity/avcount;
+		IntensitySec = IntensitySec/avcount;
 	
 		
-		LineProfileCircle linescan = new LineProfileCircle(count, 0, 0);
+		LineProfileCircle linescan = new LineProfileCircle(count, Intensity, IntensitySec);
 		LineScanIntensity.add(linescan);
 		
 		double minX = (startNormal[0] < endNormal[0])? startNormal[0]:endNormal[0];
@@ -940,7 +958,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		double step = (maxX - minX) / (2*parent.insidedistance);
 		ranac.setPosition(new long[] {Math.round(maxX), Math.round(maxY)});
 		ranacsec.setPosition(ranac);
-	
+		
 		while(true) {
 			
 			count++;
@@ -961,12 +979,13 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			
 			 currentPosition = new double[ndims];
 			
-			Intensity = ranac.get().get();
-			IntensitySec = ranacsec.get().get();
+		
+			avcount = 1;
 			while (localcursorOne.hasNext()) {
 
 				localcursorOne.fwd();
 
+				
 				ranacsec.setPosition(localcursorOne);
 
 				ranacsec.localize(currentPosition);
@@ -975,10 +994,13 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 						&& currentPosition[0] < parent.CurrentViewOrig.max(0) - parent.regiondistance && currentPosition[1] < parent.CurrentViewOrig.max(1) - parent.regiondistance ) {
 					Intensity += localcursorOne.get().getRealDouble();
 					IntensitySec += ranacsec.get().getRealDouble();
+					
+					avcount++;
 			}
 			}
 			
-			
+			Intensity = Intensity/avcount;
+			IntensitySec = IntensitySec/avcount;
 			
 			
 			
