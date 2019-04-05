@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.poi.poifs.property.Parent;
 
@@ -35,7 +36,7 @@ public class PointExtractor {
 	 * @return
 	 */
 	public static Pair<Intersectionobject, Intersectionobject> CurvaturetoIntersection(final InteractiveSimpleEllipseFit parent, final ArrayList<Curvatureobject> localCurvature,
-			final ArrayList<RegressionFunction> functions, final ArrayList<LineProfileCircle> LineScanIntensity, final RealLocalizable centerpoint, double smoothing) {
+			final ArrayList<RegressionFunction> functions, final ConcurrentHashMap<Integer, ArrayList<LineProfileCircle>> LineScanIntensity, final RealLocalizable centerpoint, double smoothing) {
 
 		ArrayList<Line> resultlineroi = new ArrayList<Line>();
 		ArrayList<double[]> Sparselinelist = new ArrayList<double[]>();

@@ -302,8 +302,7 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 		List<Future<RegressionCurveSegment>> list = new ArrayList<Future<RegressionCurveSegment>>();
 		RegressionCurveSegment oldresultpair = CommonLoop(parent, Ordered, centerpoint, ndims, celllabel, t, z);
         
-		ArrayList<LineProfileCircle> zeroline = oldresultpair.LineScanIntensity;
-		
+		ConcurrentHashMap<Integer, ArrayList<LineProfileCircle>> zeroline = oldresultpair.LineScanIntensity;
 		// Get the sparse list of points
 		List<RealLocalizable> allorderedtruths = Listordereing.getList(Ordered, i);
 
@@ -338,8 +337,8 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 		
 		// Get the sparse list of points, skips parent.resolution pixel points
 
+		
 		Pair<Intersectionobject, Intersectionobject> sparseanddensepair = GetSingle(parent, centerpoint, Bestdelta);
-
 		AllCurveintersection.add(sparseanddensepair.getA());
 		AlldenseCurveintersection.put(celllabel, sparseanddensepair.getB());
 		parent.AlllocalCurvature.add(parent.localCurvature);

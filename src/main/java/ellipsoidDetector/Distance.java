@@ -47,6 +47,42 @@ public class Distance {
 		return distance;
 	}
 	
+	
+	/**
+	 * Retruns the squared distance between two double[]'S
+	 * 
+	 * @param pointA
+	 * @param pointB
+	 * @return
+	 */
+
+	public static double DistanceSq(final double[] pointA, final long[] pointB) {
+
+		double distance = 0;
+		int numDim = pointA.length;
+
+		for (int d = 0; d < numDim; ++d) {
+
+			distance += (pointA[d] - pointB[d])
+					* (pointA[d] - pointB[d]);
+
+		}
+		return distance;
+	}
+	public static double DistanceSq(final long[] pointA, final double[] pointB) {
+
+		double distance = 0;
+		int numDim = pointA.length;
+
+		for (int d = 0; d < numDim; ++d) {
+
+			distance += (pointA[d] - pointB[d])
+					* (pointA[d] - pointB[d]);
+
+		}
+		return distance;
+	}
+	
 	/**
 	 * Retruns the squared distance between two long[]'S
 	 * 

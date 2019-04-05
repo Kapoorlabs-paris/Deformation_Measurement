@@ -34,7 +34,7 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 	public final ArrayList<OvalRoi> curvealllinerois;
 	public final ArrayList<EllipseRoi> ellipselinerois;
 	public final ArrayList<Roi> segmentrect;
-	public final ArrayList<LineProfileCircle> LineScanIntensity;
+	public final ConcurrentHashMap<Integer, ArrayList<LineProfileCircle>> LineScanIntensity;
 	private String name;
 	private final int ID;
 	private final ConcurrentHashMap< String, Double > features = new ConcurrentHashMap< String, Double >();
@@ -76,7 +76,7 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 	 * @param z
 	 * 
 	 */
-	public Intersectionobject(final double[] Intersectionpoint, ArrayList<LineProfileCircle> LineScanIntensity, ArrayList<double[]> linelist, final ArrayList<Line> linerois, final ArrayList<OvalRoi> curvelinerois,
+	public Intersectionobject(final double[] Intersectionpoint, ConcurrentHashMap<Integer, ArrayList<LineProfileCircle>> LineScanIntensity, ArrayList<double[]> linelist, final ArrayList<Line> linerois, final ArrayList<OvalRoi> curvelinerois,
 			final ArrayList<OvalRoi> curvealllinerois, final ArrayList<EllipseRoi> ellipselinerois,final ArrayList<Roi> segmentrect, final double perimeter,  final int celllabel, final int z, final int t) {
 		super(3);
 		this.Intersectionpoint = Intersectionpoint;
@@ -101,7 +101,7 @@ public class Intersectionobject extends AbstractEuclideanSpace implements RealLo
 		putFeature(YPOSITION, Intersectionpoint[1]);
 	}
 	
-	public Intersectionobject(final double[] Intersectionpoint,ArrayList<LineProfileCircle> LineScanIntensity, ArrayList<double[]> linelist,  final double perimeter,  final int celllabel,
+	public Intersectionobject(final double[] Intersectionpoint,ConcurrentHashMap<Integer, ArrayList<LineProfileCircle>> LineScanIntensity, ArrayList<double[]> linelist,  final double perimeter,  final int celllabel,
 			final int z, final int t) {
 		super(3);
 		this.Intersectionpoint = Intersectionpoint;

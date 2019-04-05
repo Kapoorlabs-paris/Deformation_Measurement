@@ -179,7 +179,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 		Bestdelta.put(count, resultpair);
 		count++;
 		
-		ArrayList<LineProfileCircle> zeroline = resultpair.LineScanIntensity;
+		ConcurrentHashMap<Integer, ArrayList<LineProfileCircle>> zeroline = resultpair.LineScanIntensity;
 		
 		
 		int maxstride = parent.CellLabelsizemap.get(celllabel);

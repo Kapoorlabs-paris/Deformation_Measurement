@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.JProgressBar;
@@ -166,21 +167,35 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 
 					int count = 0;
 
-					//System.out.println(currentobject.LineScanIntensity.size() + " Final size" + time);
-				ArrayList<LineProfileCircle> currentprofile =   currentobject.LineScanIntensity;
+				ConcurrentHashMap<Integer, ArrayList<LineProfileCircle>> currentprofile =   currentobject.LineScanIntensity;
 				
-				for (int i = 0; i < currentprofile.size(); ++i) {
-					
-					ranacimageA.setPosition(count, 1);
-					ranacimageA.get().set((float) currentprofile.get(i).intensity);
+				for (Map.Entry<Integer, ArrayList<LineProfileCircle>> currentsegmentprofile : currentprofile
+						.entrySet()) {
 					
 					
-					ranacimageB.setPosition(count, 1);
-					ranacimageB.get().set((float) currentprofile.get(i).secintensity);
+					int key = currentsegmentprofile.getKey();
+					
+					ArrayList<LineProfileCircle> lineprofile = currentsegmentprofile.getValue();
 					
 					
-					count++;
+					for (int i = 0; i < lineprofile.size(); ++i) {
+						
+						ranacimageA.setPosition(count, 1);
+						ranacimageA.get().set((float) lineprofile.get(i).intensity);
+						
+						
+						ranacimageB.setPosition(count, 1);
+						ranacimageB.get().set((float) lineprofile.get(i).secintensity);
+						
+						
+						count++;
+					}
+					
+					
 				}
+				
+				
+			
 				
 				}
 			
@@ -494,23 +509,37 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 					int count = 0;
 
 					//System.out.println(currentobject.LineScanIntensity.size() + " Final size" + time);
-				ArrayList<LineProfileCircle> currentprofile =   currentobject.LineScanIntensity;
+				ConcurrentHashMap<Integer, ArrayList<LineProfileCircle>> currentprofile =   currentobject.LineScanIntensity;
 				
-				for (int i = 0; i < currentprofile.size(); ++i) {
-					
-					ranacimageA.setPosition(count, 1);
-					ranacimageA.get().set((float) currentprofile.get(i).intensity);
+				for (Map.Entry<Integer, ArrayList<LineProfileCircle>> currentsegmentprofile : currentprofile
+						.entrySet()) {
 					
 					
-					ranacimageB.setPosition(count, 1);
-					ranacimageB.get().set((float) currentprofile.get(i).secintensity);
+					int key = currentsegmentprofile.getKey();
+					
+					ArrayList<LineProfileCircle> lineprofile = currentsegmentprofile.getValue();
 					
 					
-					count++;
+					for (int i = 0; i < lineprofile.size(); ++i) {
+						
+						ranacimageA.setPosition(count, 1);
+						ranacimageA.get().set((float) lineprofile.get(i).intensity);
+						
+						
+						ranacimageB.setPosition(count, 1);
+						ranacimageB.get().set((float) lineprofile.get(i).secintensity);
+						
+						
+						count++;
+					}
+					
+					
 				}
 				
-				}
+				
 			
+				
+				}
 				
 			}
 			

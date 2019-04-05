@@ -19,10 +19,12 @@ import ij.IJ;
 import ij.gui.Line;
 import kalmanForSegments.Segmentobject;
 import mpicbg.models.Point;
+import net.imglib2.Cursor;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
+import net.imglib2.algorithm.region.BresenhamLine;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -274,8 +276,11 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 		ArrayList<LineProfileCircle> totalscan = new ArrayList<LineProfileCircle>();
 		
+		ConcurrentHashMap<Integer, ArrayList<LineProfileCircle>> Hashtotalscan = new ConcurrentHashMap<Integer, ArrayList<LineProfileCircle>>();
+		
 		double perimeter = 0;
 
+		int segmentlabel = 1;
 		MakeSegments(parent, truths, parent.minNumInliers, Label);
 		// Get the sparse list of points, skips parent.resolution pixel points
 		// set up executor service
@@ -315,6 +320,9 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 				if (localfunction.LineScanIntensity.size() > 0) {
 					
 				
+					Hashtotalscan.put(segmentlabel, localfunction.LineScanIntensity);
+					segmentlabel++;
+					/*
 					
 				if(totalscan.size() == 0) {
 					
@@ -342,6 +350,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 					}
 					
 				}
+				*/
 				
 				}
 				perimeter += localfunction.regfunc.Curvaturepoints.get(0)[periindex];
@@ -383,10 +392,10 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 	
 		RegressionCurveSegment returnSeg = null;
-		if(totalscan.size() == 0)
+		if(Hashtotalscan.size() == 0)
 			returnSeg =  new RegressionCurveSegment(totalfunctions, curveobject);
 		else
-		returnSeg = new RegressionCurveSegment(totalfunctions, curveobject, totalscan);
+		returnSeg = new RegressionCurveSegment(totalfunctions, curveobject, Hashtotalscan);
 		return returnSeg;
 
 	}
@@ -502,6 +511,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		parent.functions.addAll(Refinedresultpair.getA());
 		// Make intersection object here
 
+
 		Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor.CurvaturetoIntersection(parent,
 				parent.localCurvature, parent.functions, resultpair.LineScanIntensity, centerpoint, parent.smoothing);
 		Intersectionobject densecurrentobject = currentobjectpair.getA();
@@ -522,7 +532,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		double[] Z = new double[localCurvature.size()];
 		double[] I = new double[localCurvature.size()];
 		double[] ISec = new double[localCurvature.size()];
-
 		for (int index = 0; index < localCurvature.size(); ++index) {
 
 			ArrayList<Double> CurveXY = new ArrayList<Double>();
@@ -586,8 +595,8 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 				resultpair.functionlist, RefinedCurvature);
 		parent.localCurvature = Refinedresultpair.getB();
 		parent.functions.addAll(Refinedresultpair.getA());
-		// Make intersection object here
-
+		// 	 intersection object here
+		
 		Pair<Intersectionobject, Intersectionobject> currentobjectpair = PointExtractor.CurvaturetoIntersection(parent,
 				parent.localCurvature, parent.functions, resultpair.LineScanIntensity, centerpoint, parent.smoothing);
 		Intersectionobject densecurrentobject = currentobjectpair.getA();
@@ -754,7 +763,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		final double[] pointA = new double[ndims];
 		final double[] pointB = new double[ndims];
 		final double[] pointC = new double[ndims];
-		long[] longpointB = new long[ndims];
 		
 		double meanIntensity = 0;
 		double meanSecIntensity = 0;
@@ -827,7 +835,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		
 		
 		
-		
 		RegressionLineProfile currentprofile = new RegressionLineProfile(finalfunctionransac, LineScanIntensity, AllCurvaturepoints);
 		
 		return currentprofile;
@@ -843,11 +850,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 		int count = 0;
       
-		ArrayList<ArrayList<LineProfileCircle>> AllLineScanIntensity = new ArrayList<ArrayList<LineProfileCircle>>();
-		ArrayList<LineProfileCircle> AddedLineScanIntensity = new ArrayList<LineProfileCircle>();
-	
-		
-		
+
 		int thickness = 10;
 		
 		
@@ -878,25 +881,28 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		double endNormalX = intpoint.getDoublePosition(0) + parent.insidedistance/Math.sqrt(1 + NormalSlopeIntercept[0]*NormalSlopeIntercept[0])  ;
 		double endNormalY = NormalSlopeIntercept[0] * endNormalX + NormalSlopeIntercept[1];
 		
-		long[] startNormal = { (long)startNormalX, (long)startNormalY };
+		double[] startNormal = { (long)startNormalX, (long)startNormalY };
 		
-		long[] midNormal = {(long)intpoint.getDoublePosition(0), (long)intpoint.getDoublePosition(1)};
 		
-		long[] endNormal = { (long)endNormalX, (long)endNormalY};
+		double[] endNormal = { (long)endNormalX, (long)endNormalY};
 		
 	
 		Line line = new Line((int) startNormal[0], (int) startNormal[1], (int) endNormal[0], (int) endNormal[1], parent.imp);
 		parent.overlay.add(line);
 		parent.imp.updateAndDraw();
 	
-		long minXdim = parent.CurrentViewOrig.min(0);
-		long minYdim = parent.CurrentViewOrig.min(1);
+	
 		
-		long maxXdim = parent.CurrentViewOrig.max(0);
-		long maxYdim = parent.CurrentViewOrig.max(1);
+		double[] outsidepoint = (Distance.DistanceSq(centerpos, startNormal) < Distance.DistanceSq(centerpos, endNormal))? endNormal:startNormal;
+		double[] insidepoint = (Distance.DistanceSq(centerpos, startNormal) > Distance.DistanceSq(centerpos, endNormal))? endNormal:startNormal;
 		
-		long[] outsidepoint = (Distance.DistanceSq(centerpos, startNormal) < Distance.DistanceSq(centerpos, endNormal))? endNormal:startNormal;
-		long[] insidepoint = (Distance.DistanceSq(centerpos, startNormal) > Distance.DistanceSq(centerpos, endNormal))? endNormal:startNormal;
+		
+		net.imglib2.Point pointOut = new net.imglib2.Point(new long[] {(long)outsidepoint[0], (long)outsidepoint[1]});
+		net.imglib2.Point pointIn = new net.imglib2.Point(new long[] {(long)insidepoint[0], (long)insidepoint[1]});
+		
+		
+
+		
 		
 		
 		double Intensity = 0;
@@ -907,80 +913,30 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		else
 			ranacsec = ranac;
 
-		ranac.setPosition(startNormal);
-		ranacsec.setPosition(ranac);
-		HyperSphere<FloatType> hyperSphereOne = new HyperSphere<FloatType>(parent.CurrentViewOrig, ranac,
-				(int) thickness);
-	
-		HyperSphereCursor<FloatType> localcursorOne = hyperSphereOne.localizingCursor();
 		
+		BresenhamLine<FloatType> newline = new BresenhamLine<>(ranac, pointOut, pointIn);
 		
-		double[] currentPosition = new double[ndims];
+		Cursor<FloatType> linecursor = newline.copyCursor();
 		
-
-	
-		int avcount = 1;
-		while (localcursorOne.hasNext()) {
-
-			localcursorOne.fwd();
-
+		while(linecursor.hasNext()) {
 			
-			ranacsec.setPosition(localcursorOne);
-
-			ranacsec.localize(currentPosition);
-
-			if(currentPosition[0] > parent.CurrentViewOrig.min(0) + parent.regiondistance  && currentPosition[1] > parent.CurrentViewOrig.min(1) + parent.regiondistance
-					&& currentPosition[0] < parent.CurrentViewOrig.max(0) - parent.regiondistance && currentPosition[1] < parent.CurrentViewOrig.max(1) - parent.regiondistance ) {
-				Intensity += localcursorOne.get().getRealDouble();
-				IntensitySec += ranacsec.get().getRealDouble();
-				avcount++;
-		}
-		}
-		Intensity = Intensity/avcount;
-		IntensitySec = IntensitySec/avcount;
-	
-		
-		LineProfileCircle linescan = new LineProfileCircle(count, Intensity, IntensitySec);
-		LineScanIntensity.add(linescan);
-		
-		double minX = (startNormal[0] < endNormal[0])? startNormal[0]:endNormal[0];
-		double maxX = (startNormal[0] > endNormal[0])? startNormal[0]:endNormal[0];
-		
-		
-		int sign = (minX == outsidepoint[0])?1:-1;
-		
-		
-		minX = outsidepoint[0];
-		double minY = NormalSlopeIntercept[0] * minX + NormalSlopeIntercept[1];
-		maxX = insidepoint[0];
-		double maxY = insidepoint[1];
-		
-		double step = (maxX - minX) / (2*parent.insidedistance);
-		ranac.setPosition(new long[] {Math.round(maxX), Math.round(maxY)});
-		ranacsec.setPosition(ranac);
-		
-		while(true) {
 			
-			count++;
-	
-			double nextX =  maxX - step*sign;
-			double nextY = NormalSlopeIntercept[0] * nextX + NormalSlopeIntercept[1];
-			if(nextX > minXdim && nextX < maxXdim && nextY > minYdim && nextY < maxYdim) {
+			linecursor.fwd();
 			
-			ranac.setPosition(new long[] {Math.round(nextX), Math.round(nextY)});
+			ranac.setPosition(linecursor);
 			ranacsec.setPosition(ranac);
 			
-			
-		 hyperSphereOne = new HyperSphere<FloatType>(parent.CurrentViewOrig, ranac,
+			HyperSphere<FloatType> hyperSphereOne = new HyperSphere<FloatType>(parent.CurrentViewOrig, ranac,
 					(int) thickness);
 		
-			localcursorOne = hyperSphereOne.localizingCursor();
+			HyperSphereCursor<FloatType> localcursorOne = hyperSphereOne.localizingCursor();
 			
 			
-			 currentPosition = new double[ndims];
+			double[] currentPosition = new double[ndims];
 			
+
 		
-			avcount = 1;
+			int avcount = 1;
 			while (localcursorOne.hasNext()) {
 
 				localcursorOne.fwd();
@@ -994,31 +950,21 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 						&& currentPosition[0] < parent.CurrentViewOrig.max(0) - parent.regiondistance && currentPosition[1] < parent.CurrentViewOrig.max(1) - parent.regiondistance ) {
 					Intensity += localcursorOne.get().getRealDouble();
 					IntensitySec += ranacsec.get().getRealDouble();
-					
 					avcount++;
 			}
 			}
-			
 			Intensity = Intensity/avcount;
 			IntensitySec = IntensitySec/avcount;
+		
 			
-			
-			
-			
-			}
-			else
-				break;
-			
-			maxX = nextX;
-			
-			
-			
-			linescan = new LineProfileCircle(count, Intensity, IntensitySec);
+			LineProfileCircle linescan = new LineProfileCircle(count, Intensity, IntensitySec);
 			LineScanIntensity.add(linescan);
 			
-			if (nextX < minX || nextY < minY)
-				break;
+			
 		}
+		
+		
+		
 		
 
 		
