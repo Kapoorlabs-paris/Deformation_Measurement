@@ -169,38 +169,47 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 
 					int count = 0;
 
+			
 				ConcurrentHashMap<Integer, ArrayList<LineProfileCircle>> currentprofile =   currentobject.LineScanIntensity;
 				
 				for (Map.Entry<Integer, ArrayList<LineProfileCircle>> currentsegmentprofile : currentprofile
 						.entrySet()) {
 					
 					
+
+					
 					int key = currentsegmentprofile.getKey();
 					
 					ArrayList<LineProfileCircle> lineprofile = currentsegmentprofile.getValue();
+					System.out.println(lineprofile.size());
 					
+					for (int i = 0; i < lineprofile.size() + 50; ++i) {
+						
+						
 					
-					for (int i = 0; i < lineprofile.size() + 10; ++i) {
 						
 						ranacimageA.setPosition(count, 1);
 						ranacimageB.setPosition(count, 1);
 						
 						if(i<lineprofile.size()) {
-						ranacimageA.get().set((float) lineprofile.get(i).intensity);
+						ranacimageA.get().set((float) lineprofile.get(i).intensity);	
 						ranacimageB.get().set((float) lineprofile.get(i).secintensity);
 						
 						}
+						/*
 						else {
 							ranacimageA.get().set((float) lineprofile.get(lineprofile.size()  - 1).intensity);
 							ranacimageB.get().set((float) lineprofile.get(lineprofile.size()  - 1).secintensity);
 							
 						}
-						
+						*/
 						
 						
 						
 						count++;
 					}
+				
+				
 					
 					
 				}

@@ -833,7 +833,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		
 		
 
-			ArrayList<LineProfileCircle> LineScanIntensity = new ArrayList<LineProfileCircle>();
+			ArrayList<LineProfileCircle> LineScanIntensity = new ArrayList<LineProfileCircle>((int) (2 * parent.insidedistance));
 			long[] longnewpos = new long[ndims];
 			
 
@@ -858,11 +858,12 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		
 		double endNormalX = intpoint.getDoublePosition(0) + parent.insidedistance/Math.sqrt(1 + NormalSlopeIntercept[0]*NormalSlopeIntercept[0])  ;
 		double endNormalY = NormalSlopeIntercept[0] * endNormalX + NormalSlopeIntercept[1];
+
 		
-		double[] startNormal = { (long)startNormalX, (long)startNormalY };
+		double[] startNormal = { startNormalX, startNormalY };
 		
 		
-		double[] endNormal = { (long)endNormalX, (long)endNormalY};
+		double[] endNormal = { endNormalX, endNormalY};
 		
 	
 		Line line = new Line((int) startNormal[0], (int) startNormal[1], (int) endNormal[0], (int) endNormal[1], parent.imp);
@@ -884,19 +885,18 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	    parent.clockimp.setOverlay(parent.clockoverlay);
 	    parent.clockimp.updateAndDraw();
 	  
-	    parent.clockimp.hide();
 	    }
 		
 		double[] outsidepoint = (Distance.DistanceSq(centerpos, startNormal) < Distance.DistanceSq(centerpos, endNormal))? endNormal:startNormal;
 		double[] insidepoint = (Distance.DistanceSq(centerpos, startNormal) > Distance.DistanceSq(centerpos, endNormal))? endNormal:startNormal;
 		
 		
-		net.imglib2.Point pointOut = new net.imglib2.Point(new long[] {(long)outsidepoint[0], (long)outsidepoint[1]});
-		net.imglib2.Point pointIn = new net.imglib2.Point(new long[] {(long)insidepoint[0], (long)insidepoint[1]});
+		net.imglib2.Point pointOut = new net.imglib2.Point(new long[] {Math.round(outsidepoint[0]), Math.round(outsidepoint[1])});
+		net.imglib2.Point pointIn = new net.imglib2.Point(new long[] {Math.round(insidepoint[0]), Math.round(insidepoint[1])});
 		
 		
 
-		
+		//System.out.println(Distance.DistanceSq(insidepoint, outsidepoint));
 		
 		
 		double Intensity = 0;
@@ -908,7 +908,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			ranacsec = ranac;
 
 		
-		BresenhamLine<FloatType> newline = new BresenhamLine<>(ranac, pointOut, pointIn);
+		BresenhamLine<FloatType> newline = new BresenhamLine<FloatType>(ranac, pointOut, pointIn);
 		
 		Cursor<FloatType> linecursor = newline.copyCursor();
 		
@@ -940,16 +940,15 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 				ranacsec.localize(currentPosition);
 
-				if(currentPosition[0] > parent.CurrentViewOrig.min(0) + parent.regiondistance  && currentPosition[1] > parent.CurrentViewOrig.min(1) + parent.regiondistance
-						&& currentPosition[0] < parent.CurrentViewOrig.max(0) - parent.regiondistance && currentPosition[1] < parent.CurrentViewOrig.max(1) - parent.regiondistance ) {
+				if(currentPosition[0] > parent.CurrentViewOrig.min(0) + thickness  && currentPosition[1] > parent.CurrentViewOrig.min(1) + thickness
+						&& currentPosition[0] < parent.CurrentViewOrig.max(0) - thickness && currentPosition[1] < parent.CurrentViewOrig.max(1) - thickness ) {
 					Intensity += localcursorOne.get().getRealDouble();
 					IntensitySec += ranacsec.get().getRealDouble();
 					avcount++;
 			}
 			}
-			Intensity = Intensity/avcount;
-			IntensitySec = IntensitySec/avcount;
 		
+		      count++;
 			
 			LineProfileCircle linescan = new LineProfileCircle(count, Intensity, IntensitySec);
 			LineScanIntensity.add(linescan);
@@ -957,6 +956,13 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			
 		}
 		
+		do {
+			
+			LineProfileCircle linescan = new LineProfileCircle(count, 0, 0);
+			LineScanIntensity.add(linescan);
+			count++;
+			
+		}while(count<(int)parent.insidedistance * 2);
 		
 		
 		
