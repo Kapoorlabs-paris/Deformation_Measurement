@@ -884,7 +884,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	    	
 	    parent.clockimp.setOverlay(parent.clockoverlay);
 	    parent.clockimp.updateAndDraw();
-	  
+	    parent.clockimp.hide();
 	    }
 		
 		double[] outsidepoint = (Distance.DistanceSq(centerpos, startNormal) < Distance.DistanceSq(centerpos, endNormal))? endNormal:startNormal;
@@ -949,7 +949,8 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			}
 		
 		      count++;
-			
+		      Intensity/=avcount;
+		      IntensitySec/=avcount;
 			LineProfileCircle linescan = new LineProfileCircle(count, Intensity, IntensitySec);
 			LineScanIntensity.add(linescan);
 			

@@ -181,7 +181,6 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 					int key = currentsegmentprofile.getKey();
 					
 					ArrayList<LineProfileCircle> lineprofile = currentsegmentprofile.getValue();
-					System.out.println(lineprofile.size());
 					
 					for (int i = 0; i < lineprofile.size() + 50; ++i) {
 						
@@ -196,13 +195,13 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 						ranacimageB.get().set((float) lineprofile.get(i).secintensity);
 						
 						}
-						/*
+						
 						else {
 							ranacimageA.get().set((float) lineprofile.get(lineprofile.size()  - 1).intensity);
 							ranacimageB.get().set((float) lineprofile.get(lineprofile.size()  - 1).secintensity);
 							
 						}
-						*/
+						
 						
 						
 						
