@@ -22,7 +22,7 @@ public interface CurvatureFinders<T extends RealType<T> & NativeType<T>>
 	
 
 	public RegressionLineProfile getCircleLocalcurvature(ArrayList<double[]> Cordlist,
-			RealLocalizable centerpoint, int strideindex);
+			RealLocalizable centerpoint, int strideindex, String name);
 	
 	
 	

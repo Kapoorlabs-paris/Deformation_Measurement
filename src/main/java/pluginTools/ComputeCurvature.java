@@ -145,6 +145,8 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 				new FloatType());
 		
 
+		parent.clockimp.updateAndDraw();
+		
 		RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
 
 		RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
@@ -178,14 +180,23 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 					ArrayList<LineProfileCircle> lineprofile = currentsegmentprofile.getValue();
 					
 					
-					for (int i = 0; i < lineprofile.size(); ++i) {
+					for (int i = 0; i < lineprofile.size() + 10; ++i) {
 						
 						ranacimageA.setPosition(count, 1);
-						ranacimageA.get().set((float) lineprofile.get(i).intensity);
-						
-						
 						ranacimageB.setPosition(count, 1);
+						
+						if(i<lineprofile.size()) {
+						ranacimageA.get().set((float) lineprofile.get(i).intensity);
 						ranacimageB.get().set((float) lineprofile.get(i).secintensity);
+						
+						}
+						else {
+							ranacimageA.get().set((float) lineprofile.get(lineprofile.size()  - 1).intensity);
+							ranacimageB.get().set((float) lineprofile.get(lineprofile.size()  - 1).secintensity);
+							
+						}
+						
+						
 						
 						
 						count++;
@@ -520,14 +531,18 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 					ArrayList<LineProfileCircle> lineprofile = currentsegmentprofile.getValue();
 					
 					
-					for (int i = 0; i < lineprofile.size(); ++i) {
+	                     for (int i = 0; i < lineprofile.size() + 10; ++i) {
 						
 						ranacimageA.setPosition(count, 1);
-						ranacimageA.get().set((float) lineprofile.get(i).intensity);
-						
-						
 						ranacimageB.setPosition(count, 1);
+						
+						if(i<lineprofile.size()) {
+						ranacimageA.get().set((float) lineprofile.get(i).intensity);
 						ranacimageB.get().set((float) lineprofile.get(i).secintensity);
+						
+						}
+						
+						
 						
 						
 						count++;
@@ -558,6 +573,9 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 				"LineScanCHA Kymo for TrackID: " + TrackID);
 
 		FileSaver fsB = new FileSaver(IntensityAimp);
+
+		FileSaver fsLine = new FileSaver(parent.clockimp);
+		fsLine.saveAsTiff(  parent.saveFile+ "//" + "ClockLineScan_" + parent.inputstring.replaceFirst("[.][^.]+$", "")   +   "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
 		fsB.saveAsTiff(  parent.saveFile+ "//" + "Ch1LineScan_" + parent.inputstring.replaceFirst("[.][^.]+$", "")   +   "TrackID" + Integer.parseInt(TrackID) + ".tif");
 

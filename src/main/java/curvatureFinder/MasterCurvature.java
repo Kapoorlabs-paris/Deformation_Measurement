@@ -1,5 +1,7 @@
 package curvatureFinder;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,6 +19,8 @@ import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import ij.IJ;
 import ij.gui.Line;
+import ij.gui.Overlay;
+import ij.gui.TextRoi;
 import kalmanForSegments.Segmentobject;
 import mpicbg.models.Point;
 import net.imglib2.Cursor;
@@ -75,10 +79,10 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		public final RealLocalizable centerpoint;
 		public final List<RealLocalizable> sublist;
 		public final int strideindex;
-		
+		public final String name;
 		
 		public ParallelCalls(InteractiveSimpleEllipseFit parent,
-				RealLocalizable centerpoint, List<RealLocalizable> sublist, int strideindex) {
+				RealLocalizable centerpoint, List<RealLocalizable> sublist, int strideindex, String name) {
 			
 			this.parent = parent;
 			
@@ -88,6 +92,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			
 			this.strideindex = strideindex;
 			
+			this.name = name;
 			
 		}
 		
@@ -97,7 +102,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		public RegressionLineProfile call() throws Exception {
 			
 			
-			RegressionLineProfile localfunction = FitCircleonList(parent, centerpoint, sublist, strideindex);
+			RegressionLineProfile localfunction = FitCircleonList(parent, centerpoint, sublist, strideindex, name);
 			
 			
 			return localfunction;
@@ -134,7 +139,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	}
 	
 	public RegressionLineProfile FitCircleonList(InteractiveSimpleEllipseFit parent,
-			RealLocalizable centerpoint, List<RealLocalizable> sublist, int strideindex) {
+			RealLocalizable centerpoint, List<RealLocalizable> sublist, int strideindex, String name) {
 
 		ArrayList<double[]> Cordlist = new ArrayList<double[]>();
 
@@ -144,7 +149,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 					sublist.get(i).getDoublePosition(yindex) });
 		}
 
-		RegressionLineProfile resultcurvature = getCircleLocalcurvature(Cordlist, centerpoint, strideindex);
+		RegressionLineProfile resultcurvature = getCircleLocalcurvature(Cordlist, centerpoint, strideindex, name);
 
 		// Draw the function
 
@@ -281,6 +286,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		double perimeter = 0;
 
 		int segmentlabel = 1;
+		int fakesegmentlabel = 1;
 		MakeSegments(parent, truths, parent.minNumInliers, Label);
 		// Get the sparse list of points, skips parent.resolution pixel points
 		// set up executor service
@@ -300,10 +306,10 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			
 
 			
-			ParallelCalls call = new ParallelCalls(parent, centerpoint, sublist, 0);
+			ParallelCalls call = new ParallelCalls(parent, centerpoint, sublist, 0, Integer.toString(fakesegmentlabel));
 			Future<RegressionLineProfile> Futureresultpair = taskExecutor.submit(call);
 			list.add(Futureresultpair);
-			
+			fakesegmentlabel++;
 		}
 		taskExecutor.shutdown();
 		
@@ -322,35 +328,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 				
 					Hashtotalscan.put(segmentlabel, localfunction.LineScanIntensity);
 					segmentlabel++;
-					/*
 					
-				if(totalscan.size() == 0) {
-					
-				
-					totalscan = localfunction.LineScanIntensity;
-				
-				}
-				else {
-					for (int indexx = 0; indexx< totalscan.size(); ++indexx) {
-						for (int index = 0; index< localfunction.LineScanIntensity.size(); ++index) {
-							
-						
-						if(totalscan.get(indexx).count == localfunction.LineScanIntensity.get(index).count) {
-							
-							LineProfileCircle currentscan = new LineProfileCircle(totalscan.get(indexx).count, (totalscan.get(indexx).intensity + localfunction.LineScanIntensity.get(index).intensity) / 2 , 
-									
-									(totalscan.get(indexx).secintensity + localfunction.LineScanIntensity.get(index).secintensity) / 2 );
-							
-							totalscan.set(indexx, currentscan);
-							
-						}
-						
-						}
-						
-					}
-					
-				}
-				*/
 				
 				}
 				perimeter += localfunction.regfunc.Curvaturepoints.get(0)[periindex];
@@ -736,7 +714,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	 */
 
 	public RegressionLineProfile RansacEllipseBlock(final InteractiveSimpleEllipseFit parent, final ArrayList<RealLocalizable> pointlist,
-			RealLocalizable centerpoint, int ndims, int strideindex, boolean linescan) {
+			RealLocalizable centerpoint, int ndims, int strideindex, boolean linescan, final String name) {
 
 		final RansacFunctionEllipsoid ellipsesegment = FitLocalEllipsoid.findLocalEllipsoid(pointlist, ndims);
 
@@ -824,7 +802,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 		
 
-		LineScanIntensity = getLineScanIntensity(parent,centerloc, ellipsesegment, pointB, ndims);
+		LineScanIntensity = getLineScanIntensity(parent,centerloc, ellipsesegment, pointB, ndims, name);
 
 			}
 	
@@ -835,7 +813,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		
 		
 		
-		RegressionLineProfile currentprofile = new RegressionLineProfile(finalfunctionransac, LineScanIntensity, AllCurvaturepoints);
+		RegressionLineProfile currentprofile = new RegressionLineProfile(finalfunctionransac, LineScanIntensity, AllCurvaturepoints, name);
 		
 		return currentprofile;
 		
@@ -844,7 +822,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	
 	
 	public ArrayList<LineProfileCircle> getLineScanIntensity(final InteractiveSimpleEllipseFit parent, final long[] centerpos, RansacFunctionEllipsoid ellipsesegment, final double[] pointB, 
-			final int ndims){
+			final int ndims, final String name){
 		
 		
 
@@ -889,9 +867,25 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	
 		Line line = new Line((int) startNormal[0], (int) startNormal[1], (int) endNormal[0], (int) endNormal[1], parent.imp);
 		parent.overlay.add(line);
-		parent.imp.updateAndDraw();
-	
-	
+		TextRoi newellipse = new TextRoi(startNormal[0], startNormal[1], "" + name );
+
+	    line.setStrokeWidth(1);
+	    line.setStrokeColor(Color.WHITE);
+	    parent.overlay.add(newellipse);
+	    
+	    parent.overlay.drawLabels(true);
+	    parent.overlay.drawNames(true);
+	    parent.imp.updateAndDraw();
+	    if(parent.thirdDimension == 1) {
+
+	    	parent.clockoverlay.add(newellipse);
+	    	parent.clockoverlay.add(line);
+	    	
+	    parent.clockimp.setOverlay(parent.clockoverlay);
+	    parent.clockimp.updateAndDraw();
+	  
+	    parent.clockimp.hide();
+	    }
 		
 		double[] outsidepoint = (Distance.DistanceSq(centerpos, startNormal) < Distance.DistanceSq(centerpos, endNormal))? endNormal:startNormal;
 		double[] insidepoint = (Distance.DistanceSq(centerpos, startNormal) > Distance.DistanceSq(centerpos, endNormal))? endNormal:startNormal;

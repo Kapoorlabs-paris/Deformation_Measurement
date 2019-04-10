@@ -278,7 +278,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		// Here you choose which method is used to detect curvature
 
-		RegressionLineProfile finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, centerpoint.numDimensions(), strideindex, false);
+		RegressionLineProfile finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, centerpoint.numDimensions(), strideindex, false, "");
 
 		
 		return finalfunctionandList;
@@ -286,7 +286,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 	
 	@Override
 	public RegressionLineProfile getCircleLocalcurvature(ArrayList<double[]> Cordlist,
-			RealLocalizable centerpoint, int strideindex) {
+			RealLocalizable centerpoint, int strideindex, String name) {
 		double[] x = new double[Cordlist.size()];
 		double[] y = new double[Cordlist.size()];
 
@@ -306,7 +306,7 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		// Here you choose which method is used to detect curvature
 
-		RegressionLineProfile finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, centerpoint.numDimensions(), strideindex, true);
+		RegressionLineProfile finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, centerpoint.numDimensions(), strideindex, true, name);
 
 		return finalfunctionandList;
 	}

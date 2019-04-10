@@ -98,7 +98,7 @@ public class CurvatureFinderEllipseFit<T extends RealType<T> & NativeType<T>> im
 
 	@Override
 	public RegressionLineProfile getCircleLocalcurvature(ArrayList<double[]> Cordlist, RealLocalizable centerpoint,
-			int strideindex) {
+			int strideindex, String name) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -179,7 +179,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public HashMap<String, Node<RealLocalizable>> Nodemap = new HashMap<String, Node<RealLocalizable>>();
 	public ConcurrentHashMap<Integer, List<RealLocalizable>> Listmap = new ConcurrentHashMap<Integer, List<RealLocalizable>>();
 	public HashMap<Integer, Integer> CellLabelsizemap = new HashMap<Integer, Integer>();
-	public Overlay overlay;
+	public Overlay overlay, clockoverlay;
 	public int numSeg = 1;
 	public Overlay emptyoverlay;
 	public int thirdDimensionslider = 1;
@@ -215,6 +215,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float lowprobmin = 0f;
 	public float highprobmin = 0f;
 
+	public ImagePlus clockimp;
 	public boolean polynomialfits = false;
 	public boolean circlefits = false;
 	public boolean distancemethod = true;
@@ -940,6 +941,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		setZ(thirdDimension);
 		CurrentView = utility.Slicer.getCurrentView(originalimg, thirdDimension, thirdDimensionSize, fourthDimension,
 				fourthDimensionSize);
+		
 		if (automode || curveautomode)
 			CurrentViewSmooth = utility.Slicer.getCurrentView(originalimgsmooth, thirdDimension, thirdDimensionSize,
 					fourthDimension, fourthDimensionSize);
@@ -970,6 +972,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		imp = ImageJFunctions.show(CurrentViewOrig);
 
+		clockimp = ImageJFunctions.show(CurrentViewOrig);
+		
 		imp.setTitle("Active Image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 		// Create empty Hyperstack
 
@@ -1264,13 +1268,19 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		TID = Integer.toString(fourthDimension);
 		tmpID = Float.toString(thirdDimension) + Float.toString(fourthDimension);
 		overlay = imp.getOverlay();
-
+        clockoverlay = clockimp.getOverlay();
 		if (overlay == null) {
 
 			overlay = new Overlay();
 			imp.setOverlay(overlay);
+			
 		}
+		if (clockoverlay == null) {
 
+			clockoverlay = new Overlay();
+			clockimp.setOverlay(clockoverlay);
+			
+		}
 		if (change == ValueChange.INSIDE || change == ValueChange.OUTSIDE) {
 
 			if (automode) {

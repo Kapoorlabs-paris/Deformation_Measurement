@@ -12,9 +12,10 @@ public class RegressionLineProfile {
 	
 	public final ArrayList<double[]> AllCurvaturepoints;
 	
+	public final String name;
 	
 	
-	public RegressionLineProfile(final RegressionFunction regfunc, final ArrayList<LineProfileCircle> LineScanIntensity, final ArrayList<double[]> AllCurvaturepoints ) {
+	public RegressionLineProfile(final RegressionFunction regfunc, final ArrayList<LineProfileCircle> LineScanIntensity, final ArrayList<double[]> AllCurvaturepoints, final String name ) {
 		
 		
 		this.regfunc = regfunc;
@@ -23,12 +24,12 @@ public class RegressionLineProfile {
 		
 		this.AllCurvaturepoints = AllCurvaturepoints;
 		
-		
+		this.name = name;
 		
 	}
 	
 	
-	public RegressionLineProfile(final RegressionFunction regfunc, final ArrayList<double[]> AllCurvaturepoints ) {
+	public RegressionLineProfile(final RegressionFunction regfunc, final ArrayList<double[]> AllCurvaturepoints, final String name ) {
 		
 		
 		this.regfunc = regfunc;
@@ -37,6 +38,7 @@ public class RegressionLineProfile {
 		
 		this.AllCurvaturepoints = AllCurvaturepoints;
 		
+		this.name  = name;
 		
 		
 	}
