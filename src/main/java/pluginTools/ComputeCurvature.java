@@ -185,7 +185,8 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 					for (int i = 0; i < lineprofile.size() + 50; ++i) {
 						
 						
-					
+					if(count >= size[1])
+						break;
 						
 						ranacimageA.setPosition(count, 1);
 						ranacimageB.setPosition(count, 1);

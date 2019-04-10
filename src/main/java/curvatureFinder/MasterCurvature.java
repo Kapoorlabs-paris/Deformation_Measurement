@@ -884,6 +884,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	    	
 	    parent.clockimp.setOverlay(parent.clockoverlay);
 	    parent.clockimp.updateAndDraw();
+	    if(parent.clockimp!=null)
 	    parent.clockimp.hide();
 	    }
 		
@@ -896,7 +897,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		
 		
 
-		//System.out.println(Distance.DistanceSq(insidepoint, outsidepoint));
 		
 		
 		double Intensity = 0;
