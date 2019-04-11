@@ -88,6 +88,9 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 	final JProgressBar jpb;
     final boolean batchmode;
     final File savefile;
+    
+    static int extradimension = 50;
+    
 	public ComputeCurvature(final InteractiveSimpleEllipseFit parent, final JProgressBar jpb, final boolean batchmode, final File savefile) {
 
 		this.parent = parent;
@@ -182,7 +185,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 					
 					ArrayList<LineProfileCircle> lineprofile = currentsegmentprofile.getValue();
 					
-					for (int i = 0; i < lineprofile.size() + 50; ++i) {
+					for (int i = 0; i < lineprofile.size() + extradimension; ++i) {
 						
 						
 					if(count >= size[1])
@@ -226,7 +229,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		
 		double[] calibration = new double[] { parent.timecal, parent.calibration };
 		Calibration cal = new Calibration();
-		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, "s um");
+		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, " ");
 
 		if(parent.insidedistance > 0) {
 		ImagePlus IntensityAimp = ImageJFunctions.show(IntensityAKymo);
@@ -296,7 +299,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 
 		double[] calibration = new double[] { parent.timecal, parent.calibration };
 		Calibration cal = new Calibration();
-		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, "s um");
+		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, " ");
 		ImagePlus Curveimp = ImageJFunctions.show(CurvatureKymo);
 		Curveimp.setTitle("Curvature Kymo for TrackID: " + TrackID);
 		Curveimp.setCalibration(cal);
@@ -427,7 +430,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		}
 		double[] calibration = new double[] { parent.timecal, parent.calibration };
 		Calibration cal = new Calibration();
-		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, "s um");
+		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, " ");
 		ImagePlus Curveimp = ImageJFunctions.show(CurvatureKymo);
 		Curveimp.setTitle("Curvature Kymo for TrackID: " + TrackID);
 		Curveimp.setCalibration(cal);
@@ -539,23 +542,32 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 					
 					ArrayList<LineProfileCircle> lineprofile = currentsegmentprofile.getValue();
 					
-					
-	                     for (int i = 0; i < lineprofile.size() + 10; ++i) {
+					for (int i = 0; i < lineprofile.size() + extradimension; ++i) {
 						
-						ranacimageA.setPosition(count, 1);
-						ranacimageB.setPosition(count, 1);
 						
-						if(i<lineprofile.size()) {
-						ranacimageA.get().set((float) lineprofile.get(i).intensity);
-						ranacimageB.get().set((float) lineprofile.get(i).secintensity);
-						
+						if(count >= size[1])
+							break;
+							
+							ranacimageA.setPosition(count, 1);
+							ranacimageB.setPosition(count, 1);
+							
+							if(i<lineprofile.size()) {
+							ranacimageA.get().set((float) lineprofile.get(i).intensity);	
+							ranacimageB.get().set((float) lineprofile.get(i).secintensity);
+							
+							}
+							
+							else {
+								ranacimageA.get().set((float) lineprofile.get(lineprofile.size()  - 1).intensity);
+								ranacimageB.get().set((float) lineprofile.get(lineprofile.size()  - 1).secintensity);
+								
+							}
+							
+							
+							
+							
+							count++;
 						}
-						
-						
-						
-						
-						count++;
-					}
 					
 					
 				}
@@ -572,7 +584,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		
 		double[] calibration = new double[] { parent.timecal, parent.calibration };
 		Calibration cal = new Calibration();
-		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, "s um");
+		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, " ");
 		
 		KymoSaveobject Kymos = new KymoSaveobject(IntensityAKymo, IntensityBKymo);
 		parent.KymoLineobject.put(TrackID, Kymos);
@@ -677,7 +689,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		}
 		double[] calibration = new double[] { parent.timecal, parent.calibration };
 		Calibration cal = new Calibration();
-		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, "s um");
+		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, " ");
 		
 		
 		ImagePlus Curveimp = ImageJFunctions.wrapFloat(CurvatureKymo, "Curvature ChA Kymo for TrackID: " + TrackID);

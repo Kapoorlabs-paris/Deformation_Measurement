@@ -884,10 +884,11 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	    	
 	    parent.clockimp.setOverlay(parent.clockoverlay);
 	    parent.clockimp.updateAndDraw();
-	    if(parent.clockimp!=null)
-	    parent.clockimp.hide();
+	   //if(parent.clockimp!=null)
+	    //parent.clockimp.hide();
 	    }
-		
+	   if(parent.clockimp!=null)
+	    parent.clockimp.hide();
 		double[] outsidepoint = (Distance.DistanceSq(centerpos, startNormal) < Distance.DistanceSq(centerpos, endNormal))? endNormal:startNormal;
 		double[] insidepoint = (Distance.DistanceSq(centerpos, startNormal) > Distance.DistanceSq(centerpos, endNormal))? endNormal:startNormal;
 		
