@@ -492,7 +492,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 				new FloatType());
 		RandomAccessibleInterval<FloatType> IntensityBKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
-		
+		if(parent.insidedistance > 0) {
 		if(parent.KymoLineobject.get(TrackID)!=null) {
 			
 			
@@ -609,7 +609,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 			fsBB.saveAsTiff(parent.saveFile + "//" + "Ch2LineScan_"   + parent.inputstring.replaceFirst("[.][^.]+$", "")   +  "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
 		}
-		
+		}
 		
 	}
 	

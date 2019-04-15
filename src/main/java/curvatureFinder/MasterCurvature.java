@@ -960,7 +960,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		
 		do {
 			
-			LineProfileCircle linescan = new LineProfileCircle(count, 0, 0);
+			LineProfileCircle linescan = new LineProfileCircle(count, Intensity, IntensitySec);
 			LineScanIntensity.add(linescan);
 			count++;
 			
