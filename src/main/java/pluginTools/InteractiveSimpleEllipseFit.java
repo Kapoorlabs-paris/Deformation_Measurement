@@ -101,6 +101,7 @@ import listeners.IlastikListener;
 import listeners.InsideCutoffListener;
 import listeners.InsideLocListener;
 import listeners.InteriorDistListener;
+import listeners.LinescanradiusListener;
 import listeners.LostFrameListener;
 import listeners.LowProbListener;
 import listeners.ManualInterventionListener;
@@ -167,7 +168,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public String usefolder = IJ.getDirectory("imagej");
 	public String addToName = "ETrack_";
 	public final int scrollbarSize = 1000;
-	public double maxError = 3;
+	public int maxError = 3;
 	public int degree = 3;
 	public String inputstring;
 	public int secdegree = 2;
@@ -315,13 +316,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public MouseListener ovalml;
 	public double calibration;
 	public double timecal;
-	public double insidedistance = 20;
-	public double regiondistance = 10;
-	public double outsidedistance = 0;
+	public int insidedistance = 20;
+	public int regiondistance = 10;
+	public int outsidedistance = 0;
 	public int[] boundarypoint;
 	public int[] midpoint;
-	public float maxSearchradius = 100;
-	public float maxSearchradiusS = 10;
+	public int maxSearchradius = 100;
+	public int maxSearchradiusS = 10;
 	public int missedframes = 200;
 
 	public final boolean twochannel;
@@ -333,6 +334,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float betaMax = 1;
 	public int increment = 0;
 	public int resolution = 1;
+	public int linescanradius = 3;
 	public int maxSearchradiusInit = (int) maxSearchradius;
 	public float maxSearchradiusMin = 1;
 	public float maxSearchradiusMax = maxSearchradius;
@@ -418,7 +420,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public RandomAccessibleInterval<BitType> empty;
 	public RandomAccessibleInterval<BitType> emptysmooth;
 	public RandomAccessibleInterval<FloatType> originalimgsmooth;
-	public double gaussradius = 2;
+	public int gaussradius = 2;
 	public RandomAccessibleInterval<IntType> emptyWater;
 	public boolean automode;
 	public boolean supermode;
@@ -426,7 +428,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public boolean curvesupermode;
 	public RealLocalizable Refcord;
 	public HashMap<String, RealLocalizable> AllRefcords;
-	public double mindistance = 200;
+	public int mindistance = 200;
 	public int alphaInit = 1;
 	public int maxperi = Integer.MIN_VALUE;
 	public int betaInit = 0;
@@ -435,7 +437,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public HashMap<String, ArrayList<Intersectionobject>> sortedMappair = new HashMap<String, ArrayList<Intersectionobject>>();
 	public int maxSearchInit = 1000;
 	public int maxframegap = 10;
-	public float borderpixel = 0;
+	public int borderpixel = 0;
 
 	public static enum ValueChange {
 		ROI, ALL, THIRDDIMmouse, FOURTHDIMmouse, DISPLAYROI, RADIUS, INSIDE, OUTSIDE, RESULT, RectRoi, SEG, Watershow, CURVERESULT
@@ -492,7 +494,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	}
 
-	public void setInitialmaxsearchradius(final float value) {
+	public void setInitialmaxsearchradius(final int value) {
 		maxSearchradius = value;
 		maxSearchradiusInit = computeScrollbarPositionFromValue(maxSearchradius, maxSearchradiusMin, maxSearchradiusMax,
 				scrollbarSize);
@@ -1873,7 +1875,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JCheckBox IlastikAuto = new JCheckBox("Show Watershed Image", showWater);
 
 	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField, gaussfield, numsegField,
-			cutoffField, minInlierField, SpecialminInlierField, degreeField, secdegreeField, resolutionField;
+			cutoffField, minInlierField, SpecialminInlierField, degreeField, secdegreeField, resolutionField, radiusField;
 
 	public TextField inputFieldZ, startT, endT, maxSizeField, minSizeField;
 	public TextField inputFieldmaxtry, interiorfield, exteriorfield, regioninteriorfield;
@@ -1921,6 +1923,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Label insideText = new Label("Cutoff distance  = " + insideCutoff, Label.CENTER);
 	public Label degreeText = new Label("Choose degree of polynomial");
 	public Label resolutionText = new Label("Measurement Resolution (px)");
+	public Label radiusText = new Label("LineScan radius (px)");
 	public Label indistText = new Label("LineScan length (px)");
 	public Label regionText = new Label("Intensity region (px)");
 	public Label outdistText = new Label("Intensity Exterior region (px)");
@@ -2104,22 +2107,25 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		maxperimeterField.setText(Integer.toString(maxperimeter));
 
 		gaussfield = new TextField(textwidth);
-		gaussfield.setText(Double.toString(gaussradius));
+		gaussfield.setText(Integer.toString(gaussradius));
 
 		degreeField = new TextField(textwidth);
 		degreeField.setText(Integer.toString(degree));
 
 		resolutionField = new TextField(textwidth);
 		resolutionField.setText(Integer.toString(resolution));
+		
+		radiusField = new TextField(textwidth);
+		radiusField.setText(Integer.toString(linescanradius));
 
 		interiorfield = new TextField(textwidth);
-		interiorfield.setText(Double.toString(insidedistance));
+		interiorfield.setText(Integer.toString(insidedistance));
 		
 		regioninteriorfield = new TextField(textwidth);
-		regioninteriorfield.setText(Double.toString(regiondistance));
+		regioninteriorfield.setText(Integer.toString(regiondistance));
 
 		exteriorfield = new TextField(textwidth);
-		exteriorfield.setText(Double.toString(outsidedistance));
+		exteriorfield.setText(Integer.toString(outsidedistance));
 
 		secdegreeField = new TextField(textwidth);
 		secdegreeField.setText(Integer.toString(secdegree));
@@ -2133,7 +2139,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		final JScrollBar alphaS = new JScrollBar(Scrollbar.HORIZONTAL, alphaInit, 10, 0, 10 + scrollbarSize);
 		final JScrollBar betaS = new JScrollBar(Scrollbar.HORIZONTAL, betaInit, 10, 0, 10 + scrollbarSize);
 
-		maxSearchradius = utility.ETrackScrollbarUtils.computeValueFromScrollbarPosition(maxSearchS.getValue(),
+		maxSearchradius = (int) utility.ETrackScrollbarUtils.computeValueFromScrollbarPosition(maxSearchS.getValue(),
 				maxSearchradiusMin, maxSearchradiusMax, scrollbarSize);
 
 		alpha = utility.ETrackScrollbarUtils.computeValueFromScrollbarPosition(alphaS.getValue(), alphaMin, alphaMax,
@@ -2374,6 +2380,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 				Angleselect.add(resolutionField, new GridBagConstraints(0, 5, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
+				Angleselect.add(radiusText, new GridBagConstraints(3, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+				Angleselect.add(radiusField, new GridBagConstraints(3, 5, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
+				
 
 				Angleselect.add(indistText, new GridBagConstraints(0, 6, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
@@ -2605,16 +2619,18 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		gaussfield.addTextListener(new GaussRadiusListener(this));
 		bordercorrection.addTextListener(new BlackBorderListener(this));
 		lostframe.addTextListener(new LostFrameListener(this));
-		interiorfield.addTextListener(new InteriorDistListener(this));
+		interiorfield.addTextListener(new InteriorDistListener(this, false));
 		exteriorfield.addTextListener(new ExteriorDistListener(this));
 		
-		regioninteriorfield.addTextListener(new RegionInteriorListener(this));
+		regioninteriorfield.addTextListener(new RegionInteriorListener(this, false));
 
 		Batchbutton.addActionListener(new SaveBatchListener(this));
 		ClearDisplay.addActionListener(new ClearDisplayListener(this));
 		SelectRim.addActionListener(new RimLineSelectionListener(this));
 		degreeField.addTextListener(new DegreeListener(this, false));
 		resolutionField.addTextListener(new ResolutionListener(this, false));
+		
+		radiusField.addTextListener(new LinescanradiusListener(this, false));
 		secdegreeField.addTextListener(new SecDegreeListener(this, false));
 		Smoothbutton.addActionListener(new DoSmoothingListener(this));
 		displayCircle.addItemListener(new DisplayListener(this));

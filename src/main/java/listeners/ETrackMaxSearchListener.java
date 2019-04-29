@@ -37,7 +37,7 @@ public class ETrackMaxSearchListener implements AdjustmentListener {
 	
 	@Override
 	public void adjustmentValueChanged(final AdjustmentEvent event) {
-		    parent.maxSearchradiusS = utility.ETrackScrollbarUtils.computeValueFromScrollbarPosition(event.getValue(), min, max, scrollbarSize);
+		    parent.maxSearchradiusS = (int) utility.ETrackScrollbarUtils.computeValueFromScrollbarPosition(event.getValue(), min, max, scrollbarSize);
 
 		    parent.maxSearchradius = parent.maxSearchradiusS;
 		

@@ -829,7 +829,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		int count = 0;
       
 
-		int thickness = 2;
+		int thickness = parent.linescanradius;
 		
 		
 

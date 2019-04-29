@@ -35,7 +35,7 @@ public class BlackBorderListener implements TextListener {
 		
 			    
 						if (s.length() > 0)
-							parent.borderpixel = Float.parseFloat(s);
+							parent.borderpixel = (int) Float.parseFloat(s);
 						
 						parent.borderpixel = neg * parent.borderpixel;
 		
