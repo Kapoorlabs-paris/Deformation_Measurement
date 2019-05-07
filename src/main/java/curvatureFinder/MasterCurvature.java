@@ -306,7 +306,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			
 
 			
-			ParallelCalls call = new ParallelCalls(parent, centerpoint, sublist, 0, Integer.toString(fakesegmentlabel));
+			ParallelCalls call = new ParallelCalls(parent, centerpoint, sublist, 0, Integer.toString(fakesegmentlabel)  );
 			Future<RegressionLineProfile> Futureresultpair = taskExecutor.submit(call);
 			list.add(Futureresultpair);
 			fakesegmentlabel++;
@@ -887,8 +887,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	   //if(parent.clockimp!=null)
 	    //parent.clockimp.hide();
 	    }
-	   if(parent.clockimp!=null)
-	    parent.clockimp.hide();
+	
 		double[] outsidepoint = (Distance.DistanceSq(centerpos, startNormal) < Distance.DistanceSq(centerpos, endNormal))? endNormal:startNormal;
 		double[] insidepoint = (Distance.DistanceSq(centerpos, startNormal) > Distance.DistanceSq(centerpos, endNormal))? endNormal:startNormal;
 		
