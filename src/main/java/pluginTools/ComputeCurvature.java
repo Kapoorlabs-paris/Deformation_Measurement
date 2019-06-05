@@ -594,10 +594,10 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 				"LineScanCHA Kymo for TrackID: " + TrackID);
 
 		FileSaver fsB = new FileSaver(IntensityAimp);
-
+        if(parent.clockimp.isVisible()) {
 		FileSaver fsLine = new FileSaver(parent.clockimp);
 		fsLine.saveAsTiff(  parent.saveFile+ "//" + "ClockLineScan_" + parent.inputstring.replaceFirst("[.][^.]+$", "")   +   "TrackID" + Integer.parseInt(TrackID) + ".tif");
-
+        }
 		fsB.saveAsTiff(  parent.saveFile+ "//" + "Ch1LineScan_" + parent.inputstring.replaceFirst("[.][^.]+$", "")   +   "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
 		if (parent.twochannel) {
