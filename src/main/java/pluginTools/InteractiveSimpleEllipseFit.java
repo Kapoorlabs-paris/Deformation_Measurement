@@ -1277,8 +1277,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			imp.setOverlay(overlay);
 			
 		}
+		
+		if(clockoverlay!=null)
+			clockoverlay.clear();
 		if (clockoverlay == null) {
-
+			
 			clockoverlay = new Overlay();
 			clockimp.setOverlay(clockoverlay);
 			

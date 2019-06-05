@@ -794,7 +794,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		RegressionFunction finalfunctionransac = new RegressionFunction(ellipsesegment.function, Curvaturepoints);
 
 		ArrayList<LineProfileCircle> LineScanIntensity = new ArrayList<LineProfileCircle>();
-	
 			if (strideindex == 0) {
 
 			
@@ -879,6 +878,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	    parent.imp.updateAndDraw();
 	    if(parent.thirdDimension == 1) {
 
+	    	
 	    	parent.clockoverlay.add(newellipse);
 	    	parent.clockoverlay.add(line);
 	    	

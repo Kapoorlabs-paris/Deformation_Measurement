@@ -129,7 +129,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
         parent.Displaybutton.setEnabled(false);
         parent.minInlierslider.setEnabled(false);
         parent.minInlierField.setEnabled(false);
-		
+       
 		EllipseTrack newtrack = new EllipseTrack(parent, jpb);
 		newtrack.ComputeCurvature();
 
