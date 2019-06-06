@@ -156,6 +156,8 @@ import utility.ShowResultView;
 import utility.Slicer;
 import varun_algorithm_gauss3.Gauss3;
 import varun_algorithm_ransac_Ransac.Ellipsoid;
+import varun_algorithm_region.hypersphere.HyperSphere;
+import varun_algorithm_region.hypersphere.HyperSphereCursor;
 
 public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
@@ -1506,6 +1508,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					RandomAccessibleInterval<FloatType> StripImage = new ArrayImgFactory<FloatType>()
 							.create(CurrentViewOrig, new FloatType());
 					RandomAccess<FloatType> ranacStrip = StripImage.randomAccess();
+					
+					
 					for (final Integer id : model.trackIDs(true)) {
 						String targetid = id + entryZ.getKey();
 						
@@ -1529,7 +1533,22 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 										if(sortedlinelist.size() > i) {
 										ranacStrip.setPosition(new long[] { (long) sortedlinelist.get(i)[0],
 												(long) sortedlinelist.get(i)[1] });
-										ranacStrip.get().setReal(singleitem.getB());
+										
+										HyperSphere<FloatType> hyperSphere = new HyperSphere<FloatType>(StripImage, ranacStrip,
+												3);
+										HyperSphereCursor<FloatType> localcursor = hyperSphere.localizingCursor();
+										
+										while(localcursor.hasNext()) {
+											
+											localcursor.fwd();
+											
+											ranacStrip.setPosition(localcursor);
+											
+											ranacStrip.get().setReal(ranacStrip.get().get() + singleitem.getB());
+										}
+										
+										
+										
 										}
 									}
 
