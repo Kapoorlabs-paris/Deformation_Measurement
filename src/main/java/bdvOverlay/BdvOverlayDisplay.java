@@ -39,25 +39,24 @@ public class BdvOverlayDisplay {
 
 				AffineTransform2D transform = new AffineTransform2D();
 				this.getCurrentTransform2D(transform);
-				for(int i =0; i < masterclock.size(); ++i) {
-					
+				for (int i = 0; i < masterclock.size(); ++i) {
+
 					Pair<double[], double[]> startend = masterclock.get(i).startendline;
-			    
- 
+
 					String name = masterclock.get(i).name;
-					
+
 					int ndims = startend.getA().length;
 					double[] transformstart = new double[ndims];
 					double[] transformend = new double[ndims];
 					transform.apply(startend.getA(), transformstart);
 					transform.apply(startend.getB(), transformend);
 
-					
 					g.drawString(name, (long) transformstart[0], (long) transformstart[1]);
-
+					g.drawLine((int) transformstart[0], (int) transformstart[1], (int) transformend[0],
+							(int) transformend[1]);
+					
 
 				}
-			//	bdv.getBdvHandle().getViewerPanel().drawOverlays(g);
 			}
 
 		};
