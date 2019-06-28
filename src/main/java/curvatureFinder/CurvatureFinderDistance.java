@@ -12,6 +12,7 @@ import java.util.concurrent.Future;
 
 import javax.swing.JProgressBar;
 
+import bdv.util.Bdv;
 import bdvOverlay.BdvOverlayDisplay;
 import curvatureUtils.ClockDisplayer;
 import ellipsoidDetector.Distance;
@@ -211,10 +212,9 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 		}
 
 		// Here you choose which method is used to detect curvature
-		ArrayList<ClockDisplayer> Masterclock = new ArrayList<ClockDisplayer>();
 		Pair<RegressionLineProfile, ClockDisplayer> finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, centerpoint.numDimensions(), strideindex, true, name);
-         Masterclock.add(finalfunctionandList.getB());
 
+       
 		
 		return finalfunctionandList;
 	}

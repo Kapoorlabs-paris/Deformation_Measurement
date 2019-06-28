@@ -306,10 +306,11 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		}
 
+		
 		// Here you choose which method is used to detect curvature
 		Pair<RegressionLineProfile, ClockDisplayer> finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, centerpoint.numDimensions(), strideindex, true, name);
 
-		
+       
 		  
 		
 		return finalfunctionandList;

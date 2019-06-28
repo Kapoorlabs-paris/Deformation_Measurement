@@ -292,17 +292,15 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		}
 		taskExecutor.shutdown();
 		
-		ArrayList<Pair<double[], double[]>> startendline = new ArrayList<Pair<double[], double[]>>();
-		ArrayList<String> name = new ArrayList<String>();
 		
+		ArrayList<ClockDisplayer> Masterclock = new ArrayList<ClockDisplayer>();
 		for (Future<Pair<RegressionLineProfile, ClockDisplayer>> fut : list) {
 
 			try {
 				
 				Pair<RegressionLineProfile, ClockDisplayer> localfunction = fut.get();
 				
-				name.add(localfunction.getB().name);
-			    startendline.add(localfunction.getB().startendline);
+				Masterclock.add(localfunction.getB());
 						
 				if (localfunction.getA().LineScanIntensity.size() > 0) {
 
@@ -325,6 +323,14 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 				e.printStackTrace();
 			}
 		}
+		
+		  if(parent.thirdDimension==1) {
+	        	 
+	        	 BdvOverlayDisplay bdvdisplay =new BdvOverlayDisplay(parent, Masterclock, parent.bdv);
+	        	 bdvdisplay.GetDisplay();
+	         }
+		
+		
 		
 			
 		// All nodes are returned
