@@ -5,10 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import curvatureUtils.ClockDisplayer;
 import ellipsoidDetector.Intersectionobject;
 import net.imglib2.RealLocalizable;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.util.Pair;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.RegressionCurveSegment;
 import varun_algorithm.OutputAlgorithm;
@@ -21,7 +23,7 @@ public interface CurvatureFinders<T extends RealType<T> & NativeType<T>>
 
 	
 
-	public RegressionLineProfile getCircleLocalcurvature(ArrayList<double[]> Cordlist,
+	public Pair<RegressionLineProfile,  ClockDisplayer> getCircleLocalcurvature(ArrayList<double[]> Cordlist,
 			RealLocalizable centerpoint, int strideindex, String name);
 	
 	

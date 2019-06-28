@@ -12,6 +12,8 @@ import java.util.concurrent.Future;
 
 import javax.swing.JProgressBar;
 
+import bdvOverlay.BdvOverlayDisplay;
+import curvatureUtils.ClockDisplayer;
 import ellipsoidDetector.Intersectionobject;
 import mpicbg.models.Point;
 import net.imglib2.RandomAccessibleInterval;
@@ -278,14 +280,14 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 
 		// Here you choose which method is used to detect curvature
 
-		RegressionLineProfile finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, centerpoint.numDimensions(), strideindex, false, "");
+		RegressionLineProfile finalfunctionandList = NoClockRansacEllipseBlock(parent, list, centerpoint, centerpoint.numDimensions(), strideindex, false, "");
 
 		
 		return finalfunctionandList;
 	}
 	
 	@Override
-	public RegressionLineProfile getCircleLocalcurvature(ArrayList<double[]> Cordlist,
+	public Pair<RegressionLineProfile, ClockDisplayer>  getCircleLocalcurvature(ArrayList<double[]> Cordlist,
 			RealLocalizable centerpoint, int strideindex, String name) {
 		double[] x = new double[Cordlist.size()];
 		double[] y = new double[Cordlist.size()];
@@ -305,9 +307,11 @@ public class CurvatureFinderCircleFit<T extends RealType<T> & NativeType<T>> ext
 		}
 
 		// Here you choose which method is used to detect curvature
+		Pair<RegressionLineProfile, ClockDisplayer> finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, centerpoint.numDimensions(), strideindex, true, name);
 
-		RegressionLineProfile finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, centerpoint.numDimensions(), strideindex, true, name);
-
+		
+		  
+		
 		return finalfunctionandList;
 	}
 

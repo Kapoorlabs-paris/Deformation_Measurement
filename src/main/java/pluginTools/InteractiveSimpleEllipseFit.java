@@ -55,6 +55,10 @@ import org.scijava.ui.UIService;
 
 import batchMode.BatchKymoSave;
 import batchMode.SaveBatchListener;
+import bdv.util.Bdv;
+import bdv.util.BdvFunctions;
+import bdv.util.BdvOverlay;
+import bdv.util.BdvSource;
 import comboSliderTextbox.SliderBoxGUI;
 import costMatrix.CostFunction;
 import curvatureFinder.LineProfileCircle;
@@ -403,7 +407,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public HashMap<String, ArrayList<Segmentobject>> ALLSegments;
 	public HashMap<Integer, ArrayList<double[]>> HashresultCurvature;
 	public HashMap<Integer, List<RealLocalizable>> SubHashresultCurvature;
-
+	public BdvSource source;
+	public Bdv bdv;
+	public BdvOverlay bdvoverlay;
 	public HashMap<Integer, Double> HashresultSegCurvature;
 	public HashMap<Integer, Double> HashresultSegIntensityA;
 	public HashMap<Integer, Double> HashresultSegIntensityB;
@@ -938,7 +944,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			System.out.println("Image has wrong dimensionality, upload an XYT/XYZ/XY image");
 			return;
 		}
-
+		
 		if (originalimgbefore == null)
 			originalimgbefore = originalimg;
 		setTime(fourthDimension);
@@ -973,9 +979,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			background = currentLabel;
 
 		}
-
-		imp = ImageJFunctions.show(CurrentViewOrig);
-
+		
+		imp = ImageJFunctions.show(CurrentViewOrig,"Original Image");
+		
+		bdv = BdvFunctions.show( CurrentViewOrig, "Cell", Bdv.options().is2D() );
 		clockimp = ImageJFunctions.show(CurrentViewOrig);
 		
 		imp.setTitle("Active Image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
@@ -1192,7 +1199,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	
 
 		Card(true);
-		
+	
 		CleanMe();
 		StartCurvatureComputingCurrent();
 		batchmode = true;

@@ -12,6 +12,8 @@ import java.util.concurrent.Future;
 
 import javax.swing.JProgressBar;
 
+import bdvOverlay.BdvOverlayDisplay;
+import curvatureUtils.ClockDisplayer;
 import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import mpicbg.models.Point;
@@ -22,6 +24,7 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
+import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.RegressionCurveSegment;
 import ransacPoly.RegressionFunction;
@@ -89,7 +92,7 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 			this.ndims = ndims;
 			this.celllabel = celllabel;
 			this.z = z;
-			this.t= t;
+			this.t = t;
 			this.index = index;
 			
 			
@@ -178,13 +181,17 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 		}
 
 		// Here you choose which method is used to detect curvature
+		ArrayList<Pair<double[], double[]>> linescanpoints = new ArrayList<Pair<double[], double[]>>();
+		
+		RegressionLineProfile Curvaturedistancelist = DistanceCurvatureBlock(list, centerpoint, 0, linescanpoints);
 
-		RegressionLineProfile Curvaturedistancelist = DistanceCurvatureBlock(list, centerpoint, 0);
-
+		
+		
+		
 		return Curvaturedistancelist;
 	}
 	@Override
-	public RegressionLineProfile getCircleLocalcurvature(ArrayList<double[]> Cordlist,
+	public Pair<RegressionLineProfile, ClockDisplayer> getCircleLocalcurvature(ArrayList<double[]> Cordlist,
 			RealLocalizable centerpoint, int strideindex, final String name) {
 		double[] x = new double[Cordlist.size()];
 		double[] y = new double[Cordlist.size()];
@@ -204,8 +211,9 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 		}
 
 		// Here you choose which method is used to detect curvature
-
-		RegressionLineProfile finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, centerpoint.numDimensions(), strideindex, true, name);
+		ArrayList<ClockDisplayer> Masterclock = new ArrayList<ClockDisplayer>();
+		Pair<RegressionLineProfile, ClockDisplayer> finalfunctionandList = RansacEllipseBlock(parent, list, centerpoint, centerpoint.numDimensions(), strideindex, true, name);
+         Masterclock.add(finalfunctionandList.getB());
 
 		
 		return finalfunctionandList;
@@ -216,7 +224,7 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 	
 	
 	public RegressionLineProfile DistanceCurvatureBlock(
-			final ArrayList<RealLocalizable> pointlist, RealLocalizable centerpoint, int strideindex) {
+			final ArrayList<RealLocalizable> pointlist, RealLocalizable centerpoint, int strideindex,ArrayList<Pair<double[], double[]>> linescanpoints) {
 
 		double Kappa = 0;
 		double perimeter = 0;
@@ -276,10 +284,8 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 				new double[] { pointB[0], pointB[1], Math.max(0, Kappa), perimeter, meanIntensity, meanSecIntensity });
 
 		RegressionFunction finalfunctionransac = new RegressionFunction(Curvaturepoints);
-
 		
 		RegressionLineProfile currentprofile = new RegressionLineProfile(finalfunctionransac, AllCurvaturepoints, "");
-		
 		return currentprofile;
 
 	}
