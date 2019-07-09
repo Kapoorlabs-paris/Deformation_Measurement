@@ -125,6 +125,7 @@ import listeners.ResolutionListener;
 import listeners.RimLineSelectionListener;
 import listeners.RoiListener;
 import listeners.RunCelltrackCirclemodeListener;
+import listeners.RunCombomodeListener;
 import listeners.RunPolymodeListener;
 import listeners.RunpixelCelltrackCirclemodeListener;
 import listeners.SaverAllListener;
@@ -225,7 +226,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public ImagePlus clockimp;
 	public boolean polynomialfits = false;
 	public boolean circlefits = false;
-	public boolean distancemethod = true;
+	public boolean distancemethod = false;
+	public boolean combomethod  = true;
 	public boolean celltrackcirclefits = false;
 	public boolean pixelcelltrackcirclefits = false;
 
@@ -2026,6 +2028,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public final Checkbox distancemode = new Checkbox("Use Distance Method", curvaturemode, distancemethod);
 	public final Checkbox Pixelcelltrackcirclemode = new Checkbox("Use Circle Fits", curvaturemode,
 			pixelcelltrackcirclefits);
+	public final Checkbox Combomode = new Checkbox("Use Combo Circle-Distance Method", curvaturemode,
+			combomethod);
+	
 
 	public boolean displayIntermediate = true;
 	public boolean displayIntermediateBox = true;
@@ -2389,7 +2394,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			}
 
-			if (circlefits || pixelcelltrackcirclefits || celltrackcirclefits || distancemethod) {
+			if (circlefits || pixelcelltrackcirclefits || celltrackcirclefits || distancemethod || combomethod) {
 
 				SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider, minInlierField,
 						minInlierText, scrollbarSize, minNumInliers, minNumInliersmax);
@@ -2399,6 +2404,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				Angleselect.add(distancemode, new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0,
 						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				Angleselect.add(Pixelcelltrackcirclemode, new GridBagConstraints(2, 0, 2, 1, 0.0, 0.0,
+						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				
+				Angleselect.add(Combomode, new GridBagConstraints(2, 2, 2, 1, 0.0, 0.0,
 						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				
 				Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 3, 2, 1, 0.0, 0.0,
@@ -2642,7 +2650,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		distancemode.addItemListener(new RunCelltrackCirclemodeListener(this));
 		Pixelcelltrackcirclemode.addItemListener(new RunpixelCelltrackCirclemodeListener(this));
-
+		Combomode.addItemListener(new RunCombomodeListener(this));
 		polymode.addItemListener(new RunPolymodeListener(this));
 
 		gaussfield.addTextListener(new GaussRadiusListener(this));

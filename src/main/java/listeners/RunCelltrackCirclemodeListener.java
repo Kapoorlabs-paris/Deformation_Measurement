@@ -21,15 +21,16 @@ public class RunCelltrackCirclemodeListener implements ItemListener {
 
 		if (arg0.getStateChange() == ItemEvent.DESELECTED) {
 
-			parent.pixelcelltrackcirclefits = true;
+			parent.pixelcelltrackcirclefits = false;
 			parent.distancemethod = false;
-			
+			parent.combomethod = true;
 
 		}
 
 		else if (arg0.getStateChange() == ItemEvent.SELECTED) {
 
 			parent.pixelcelltrackcirclefits = false;
+			parent.combomethod = false;
 			parent.distancemethod = true;
 			parent.resolution = Integer.parseInt(parent.resolutionField.getText());
 		}
