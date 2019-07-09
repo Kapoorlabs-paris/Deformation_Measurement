@@ -19,6 +19,7 @@ import javax.swing.JProgressBar;
 import com.google.common.eventbus.AllowConcurrentEvents;
 
 import curvatureFinder.CurvatureFinderCircleFit;
+import curvatureFinder.CurvatureFinderComboMethod;
 import curvatureFinder.CurvatureFinderDistance;
 import curvatureUtils.DisplaySelected;
 import curvatureUtils.PointExtractor;
@@ -141,6 +142,17 @@ public class LabelCurvature implements Callable< HashMap<Integer,Intersectionobj
 		AlldenseCurveintersection = curvedistance.getMap();
 		
 	     }
+		
+		if(parent.combomethod) {
+			
+			CurvatureFinderComboMethod<FloatType> curvedistance = new CurvatureFinderComboMethod<FloatType>(parent, AllCurveintersection, AlldenseCurveintersection, ActualRoiimg, jpb, percent, celllabel, z, t);
+			
+			curvedistance.process();
+			
+			AlldenseCurveintersection = curvedistance.getMap();
+			
+			
+		}
 		
 		return AlldenseCurveintersection;
 	}
