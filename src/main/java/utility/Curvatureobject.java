@@ -29,6 +29,7 @@ public class Curvatureobject extends AbstractEuclideanSpace implements RealLocal
 	
 	
 	public final double radiusCurvature;
+	public final double distCurvature;
 	public final double perimeter;
 	public final int t;
 	public final int z;
@@ -38,9 +39,10 @@ public class Curvatureobject extends AbstractEuclideanSpace implements RealLocal
 	public final double Intensity;
 	public final double SecIntensity;
 	
-	public Curvatureobject(final double radiusCurvature, final double perimeter, final double Intensity, final double SecIntensity, final int Label, final double[] cord, final int t, final int z) {
+	public Curvatureobject(final double radiusCurvature, final double distCurvature, final double perimeter, final double Intensity, final double SecIntensity, final int Label, final double[] cord, final int t, final int z) {
 		super(3);
 		this.radiusCurvature = radiusCurvature;
+		this.distCurvature = distCurvature;
 		this.perimeter = perimeter;
 		this.SecIntensity = SecIntensity;
 		this.cord = cord;

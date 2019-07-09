@@ -73,6 +73,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	static int periindex = 3;
 	static int intensityAindex = 4;
 	static int intensityBindex = 5;
+	static int distcurveindex = 6;
 
 	public class ParallelCalls implements Callable<Pair<RegressionLineProfile, ClockDisplayer>> {
 
@@ -219,19 +220,20 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			totalfunctions.add(localfunction.regfunc);
 			totalinterpolatedCurvature.addAll(localfunction.AllCurvaturepoints);
 			double Curvature = localfunction.AllCurvaturepoints.get(0)[curveindex];
+			double distCurvature = localfunction.AllCurvaturepoints.get(0)[distcurveindex];
 			double IntensityA = localfunction.AllCurvaturepoints.get(0)[intensityAindex];
 			double IntensityB = localfunction.AllCurvaturepoints.get(0)[intensityBindex];
 			ArrayList<double[]> curvelist = new ArrayList<double[]>();
 
 			curvelist.add(new double[] { centerpoint.getDoublePosition(xindex), centerpoint.getDoublePosition(yindex),
-					Curvature, IntensityA, IntensityB });
+					Curvature, IntensityA, IntensityB, distCurvature });
 			
 
 		}
 
 		for (int indexx = 0; indexx < totalinterpolatedCurvature.size(); ++indexx) {
 
-			Curvatureobject currentobject = new Curvatureobject(totalinterpolatedCurvature.get(indexx)[curveindex],
+			Curvatureobject currentobject = new Curvatureobject(totalinterpolatedCurvature.get(indexx)[curveindex], totalinterpolatedCurvature.get(indexx)[distcurveindex],
 					perimeter, totalinterpolatedCurvature.get(indexx)[intensityAindex],
 					totalinterpolatedCurvature.get(indexx)[intensityBindex], Label,
 					new double[] { totalinterpolatedCurvature.get(indexx)[xindex],
@@ -336,7 +338,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		// All nodes are returned
 		for (int indexx = 0; indexx < totalinterpolatedCurvature.size(); ++indexx) {
 
-			Curvatureobject currentobject = new Curvatureobject(totalinterpolatedCurvature.get(indexx)[curveindex],
+			Curvatureobject currentobject = new Curvatureobject(totalinterpolatedCurvature.get(indexx)[curveindex], totalinterpolatedCurvature.get(indexx)[distcurveindex],
 					perimeter, totalinterpolatedCurvature.get(indexx)[intensityAindex],
 					totalinterpolatedCurvature.get(indexx)[intensityBindex], Label,
 					new double[] { totalinterpolatedCurvature.get(indexx)[xindex],
@@ -366,25 +368,41 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		double[] X = new double[localCurvature.size()];
 		double[] Y = new double[localCurvature.size()];
 		double[] Z = new double[localCurvature.size()];
+		double[] Zdist = new double[localCurvature.size()];
 		double[] I = new double[localCurvature.size()];
 		double[] ISec = new double[localCurvature.size()];
 
 		for (int index = 0; index < localCurvature.size(); ++index) {
 
 			ArrayList<Double> CurveXY = new ArrayList<Double>();
+			ArrayList<Double> CurveXYdist = new ArrayList<Double>();
 			ArrayList<Double> CurveI = new ArrayList<Double>();
 			ArrayList<Double> CurveISec = new ArrayList<Double>();
 
 			X[index] = localCurvature.get(index).cord[0];
 			Y[index] = localCurvature.get(index).cord[1];
 			Z[index] = localCurvature.get(index).radiusCurvature;
+			Zdist[index] = localCurvature.get(index).distCurvature;
 			I[index] = localCurvature.get(index).Intensity;
 			ISec[index] = localCurvature.get(index).SecIntensity;
 
 			CurveXY.add(Z[index]);
 			CurveI.add(I[index]);
 			CurveISec.add(ISec[index]);
+			CurveXYdist.add(Zdist[index]);
+			Iterator<Double> setiterdist = CurveXYdist.iterator();
+			double frequdeltadist = Zdist[index];
+			while (setiterdist.hasNext()) {
 
+				Double s = setiterdist.next();
+
+				frequdeltadist += s;
+
+			}
+
+			frequdeltadist /= CurveXYdist.size();
+			
+			
 			for (int secindex = 1; secindex < count; ++secindex) {
 
 				RegressionCurveSegment testpair = bestdelta.get(secindex);
@@ -451,7 +469,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 			}
 
-			Curvatureobject newobject = new Curvatureobject((float) frequdelta, frequdeltaperi, intensitydelta,
+			Curvatureobject newobject = new Curvatureobject((float) frequdelta, (float) frequdeltadist, frequdeltaperi, intensitydelta,
 					intensitySecdelta, localCurvature.get(index).Label, localCurvature.get(index).cord,
 					localCurvature.get(index).t, localCurvature.get(index).z);
 
@@ -534,7 +552,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 			}
 
-			Curvatureobject newobject = new Curvatureobject((float) frequdelta, frequdeltaperi, intensitydelta,
+			Curvatureobject newobject = new Curvatureobject((float) frequdelta, (float) frequdelta, frequdeltaperi, intensitydelta,
 					intensitySecdelta, localCurvature.get(index).Label, localCurvature.get(index).cord,
 					localCurvature.get(index).t, localCurvature.get(index).z);
 
@@ -789,6 +807,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		final RansacFunctionEllipsoid ellipsesegment = FitLocalEllipsoid.findLocalEllipsoid(pointlist, ndims);
 
 		double Kappa = 0;
+		double Kappadistance = 0;
 		double perimeter = 0;
 		ArrayList<double[]> Curvaturepoints = new ArrayList<double[]>();
 
@@ -833,6 +852,10 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			point.localize(newpos);
 
 			Kappa = 1.0 / (radii * parent.calibration);
+			
+			if(parent.combomethod)
+			Kappadistance = getDistance(point, centerpoint);
+			
 			for (int d = 0; d < newpos.length; ++d)
 				longnewpos[d] = (long) newpos[d];
 			net.imglib2.Point intpoint = new net.imglib2.Point(longnewpos);
@@ -847,12 +870,12 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			meanSecIntensity += Intensity.getB();
 
 			AllCurvaturepoints.add(new double[] { newpos[0], newpos[1], Math.max(0, Kappa), perimeter, Intensity.getA(),
-					Intensity.getB() });
+					Intensity.getB(), Math.max(0, Kappadistance) });
 		}
 		meanIntensity /= size;
 		meanSecIntensity /= size;
 		Curvaturepoints.add(
-				new double[] { pointB[0], pointB[1], Math.max(0, Kappa), perimeter, meanIntensity, meanSecIntensity });
+				new double[] { pointB[0], pointB[1], Math.max(0, Kappa), perimeter, meanIntensity, meanSecIntensity, Kappadistance });
 
 		RegressionFunction finalfunctionransac = new RegressionFunction(ellipsesegment.function, Curvaturepoints);
 
