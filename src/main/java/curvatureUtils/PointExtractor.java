@@ -44,6 +44,7 @@ public class PointExtractor {
 		double[] X = new double[localCurvature.size()];
 		double[] Y = new double[localCurvature.size()];
 		double[] Z = new double[localCurvature.size()];
+		double[] Zdist = new double[localCurvature.size()];
 		double[] I = new double[localCurvature.size()];
 		double[] Isec = new double[localCurvature.size()];
 		int celllabel, t, z;
@@ -108,9 +109,9 @@ public class PointExtractor {
 				Z[index] = regression.Curvaturepoints.get(index)[2];
 				I[index] = regression.Curvaturepoints.get(index)[4];
 				Isec[index] = regression.Curvaturepoints.get(index)[5];
-				
+				Zdist[index] = regression.Curvaturepoints.get(index)[6];
 				// Make the line list for making intersection object
-				Sparselinelist.add(new double[] { X[index], Y[index], Z[index], I[index], Isec[index], perimeter });
+				Sparselinelist.add(new double[] { X[index], Y[index], Z[index], I[index], Isec[index], perimeter, Zdist[index] });
 				
 				
 					
@@ -127,10 +128,11 @@ public class PointExtractor {
 			X[index] = localCurvature.get(index).cord[0];
 			Y[index] = localCurvature.get(index).cord[1];
 			Z[index] = localCurvature.get(index).radiusCurvature;
+			Zdist[index] = localCurvature.get(index).distCurvature;
 			I[index] = localCurvature.get(index).Intensity;
 			Isec[index] = localCurvature.get(index).SecIntensity;
 			// Make the line list for making intersection object
-			linelist.add(new double[] { X[index], Y[index], Z[index], I[index], Isec[index], perimeter });
+			linelist.add(new double[] { X[index], Y[index], Z[index], I[index], Isec[index], perimeter, Zdist[index] });
 
 		}
 

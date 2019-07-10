@@ -129,7 +129,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
         parent.Displaybutton.setEnabled(false);
         parent.minInlierslider.setEnabled(false);
         parent.minInlierField.setEnabled(false);
-       
+        parent.radiusField.setEnabled(false);
 		EllipseTrack newtrack = new EllipseTrack(parent, jpb);
 		newtrack.ComputeCurvature();
 
@@ -248,76 +248,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		}
 	}
 	
-	public void MakeKymo(HashMap<String, ArrayList<Segmentobject>> sortedMappair, long[] size, String TrackID) {
-
-		RandomAccessibleInterval<FloatType> CurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
-				new FloatType());
-		RandomAccessibleInterval<FloatType> IntensityAKymo = new ArrayImgFactory<FloatType>().create(size,
-				new FloatType());
-		RandomAccessibleInterval<FloatType> IntensityBKymo = new ArrayImgFactory<FloatType>().create(size,
-				new FloatType());
-
-		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
-
-		RandomAccess<FloatType> ranac = CurvatureKymo.randomAccess();
-
-		RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
-
-		RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
-
-		while (itZ.hasNext()) {
-
-			Map.Entry<String, Integer> entry = itZ.next();
-
-			int time = entry.getValue();
-
-			String timeID = entry.getKey();
-
-			ArrayList<Segmentobject> currentlist = sortedMappair.get(TrackID + timeID);
-
-			ranac.setPosition(time, 0);
-			ranacimageA.setPosition(time, 0);
-			ranacimageB.setPosition(time, 0);
-			int count = 1;
-			if (currentlist != null) {
-				for (Segmentobject currentobject : currentlist) {
-
-					ranac.setPosition(count, 1);
-					ranac.get().setReal(currentobject.Curvature);
-
-					ranacimageA.setPosition(count, 1);
-					ranacimageA.get().setReal(currentobject.IntensityA);
-
-					ranacimageB.setPosition(count, 1);
-					ranacimageB.get().setReal(currentobject.IntensityB);
-
-					count++;
-
-				}
-			}
-		}
-
-		double[] calibration = new double[] { parent.timecal, parent.calibration };
-		Calibration cal = new Calibration();
-		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, " ");
-		ImagePlus Curveimp = ImageJFunctions.show(CurvatureKymo);
-		Curveimp.setTitle("Curvature Kymo for TrackID: " + TrackID);
-		Curveimp.setCalibration(cal);
-
-		ImagePlus IntensityAimp = ImageJFunctions.show(IntensityAKymo);
-		IntensityAimp.setTitle("Intensity ChA Kymo for TrackID: " + TrackID);
-		IntensityAimp.setCalibration(cal);
-
-		if (parent.twochannel) {
-			ImagePlus IntensityBimp = ImageJFunctions.show(IntensityBKymo);
-			IntensityBimp.setTitle("Intensity ChB for TrackID: " + TrackID);
-			IntensityBimp.setCalibration(cal);
-			IntensityBimp.updateAndRepaintWindow();
-		}
-		Curveimp.updateAndRepaintWindow();
-		IntensityAimp.updateAndRepaintWindow();
-
-	}
+	
 
 	public static void MakeDistanceFan(InteractiveSimpleEllipseFit parent,
 			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, String TrackID) {
@@ -343,13 +274,21 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 				for (Intersectionobject currentobject : currentlist) {
 
 					ArrayList<double[]> sortedlinelist = currentobject.linelist;
-					double maxdist = GetMaxdist(sortedlinelist, TrackID);
+					
+					
+					
+					double maxdist = GetMaxdist(sortedlinelist, TrackID, parent.combomethod);
 
+					
+					
 					for (int i = 0; i < sortedlinelist.size(); ++i) {
-
+						double distvalue = sortedlinelist.get(i)[2] / maxdist;
+						if(parent.combomethod)
+							distvalue = sortedlinelist.get(i)[6] / maxdist;
+							
 						DrawFunction.DrawGeomBresnLines(CurrentBlank, new double[] { centerpoint[0], centerpoint[1] },
 								new double[] { sortedlinelist.get(i)[0], sortedlinelist.get(i)[1] },
-								sortedlinelist.get(i)[2] / maxdist);
+								distvalue);
 
 					}
 
@@ -361,14 +300,17 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 
 	}
 
-	public static double GetMaxdist(ArrayList<double[]> linelist, String TrackID) {
+	public static double GetMaxdist(ArrayList<double[]> linelist, String TrackID, boolean combomethod) {
 
 		double maxdist = Double.MIN_VALUE;
 
 		for (int i = 0; i < linelist.size(); ++i) {
 
+			double distance = linelist.get(i)[2];
+			if (combomethod)
+				distance = linelist.get(i)[6];
 			if (linelist.get(i)[2] >= maxdist)
-				maxdist = linelist.get(i)[2];
+				maxdist = distance;
 
 		}
 		return maxdist;
@@ -383,12 +325,19 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 				new FloatType());
 		RandomAccessibleInterval<FloatType> IntensityBKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
+		
+		RandomAccessibleInterval<FloatType> DistCurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
+				new FloatType());
+		
 		RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
 
 		RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 
 		RandomAccess<FloatType> ranac = CurvatureKymo.randomAccess();
+		
+		RandomAccess<FloatType> Distranac = DistCurvatureKymo.randomAccess();
+		
 
 		while (itZ.hasNext()) {
 
@@ -400,6 +349,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 			ArrayList<Intersectionobject> currentlist = sortedMappair.get(TrackID + timeID);
 
 			ranac.setPosition(time - 1, 0);
+			Distranac.setPosition(time - 1, 0);
 			ranacimageA.setPosition(time - 1, 0);
 			ranacimageB.setPosition(time - 1, 0);
 			if (currentlist != null) {
@@ -413,6 +363,9 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 
 						ranac.setPosition(count, 1);
 						ranac.get().set((float) sortedlinelist.get(i)[2]);
+						
+						Distranac.setPosition(count, 1);
+						Distranac.get().set((float) sortedlinelist.get(i)[6]);
 
 						ranacimageA.setPosition(count, 1);
 						ranacimageA.get().setReal(sortedlinelist.get(i)[3]);
@@ -429,10 +382,23 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 
 		}
 		double[] calibration = new double[] { parent.timecal, parent.calibration };
+		
+		String CurvatureTitle = "Curvature Kymo for TrackID: ";
+		String DistCurvatureTitle = "" ;
 		Calibration cal = new Calibration();
 		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, " ");
+		if(parent.combomethod) {
+			CurvatureTitle = "Circle Fits Curvature Kymo for TrackID: ";
+			DistCurvatureTitle = "Distance Fits Curvature Kymo for TrackID: ";
+			ImagePlus DistCurveimp = ImageJFunctions.show(DistCurvatureKymo);
+			DistCurveimp.setTitle(DistCurvatureTitle + TrackID);
+			DistCurveimp.setCalibration(cal);
+			
+		}
+		
+		
 		ImagePlus Curveimp = ImageJFunctions.show(CurvatureKymo);
-		Curveimp.setTitle("Curvature Kymo for TrackID: " + TrackID);
+		Curveimp.setTitle(CurvatureTitle + TrackID);
 		Curveimp.setCalibration(cal);
 
 		ImagePlus IntensityAimp = ImageJFunctions.show(IntensityAKymo);
@@ -449,6 +415,8 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		IntensityAimp.updateAndRepaintWindow();
 
 		KymoSaveobject Kymos = new KymoSaveobject(CurvatureKymo, IntensityAKymo, IntensityBKymo);
+		if(parent.combomethod)
+			Kymos = new KymoSaveobject(CurvatureKymo, DistCurvatureKymo, IntensityAKymo, IntensityBKymo);
 		parent.KymoFileobject.put(TrackID, Kymos);
 
 		int hyperslicedimension = 1;
@@ -625,7 +593,8 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 				new FloatType());
 		RandomAccessibleInterval<FloatType> IntensityBKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
-		
+		RandomAccessibleInterval<FloatType> DistCurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
+				new FloatType());
 	
 		if(parent.KymoFileobject.get(TrackID)!=null) {
 			
@@ -635,6 +604,8 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		IntensityAKymo = parent.KymoFileobject.get(TrackID).IntensityAKymo;
 		
 		IntensityBKymo = parent.KymoFileobject.get(TrackID).IntensityBKymo;
+		
+		DistCurvatureKymo = parent.KymoFileobject.get(TrackID).DistCurvatureKymo;
 		
 			}
 		else {
@@ -646,6 +617,8 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 
 		RandomAccess<FloatType> ranac = CurvatureKymo.randomAccess();
+		
+		RandomAccess<FloatType> Distranac = DistCurvatureKymo.randomAccess();
 
 		while (itZ.hasNext()) {
 
@@ -657,6 +630,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 			ArrayList<Intersectionobject> currentlist = sortedMappair.get(TrackID + timeID);
 
 			ranac.setPosition(time - 1, 0);
+			Distranac.setPosition(time - 1, 0);
 			ranacimageA.setPosition(time - 1, 0);
 			ranacimageB.setPosition(time - 1, 0);
 			if (currentlist != null) {
@@ -671,6 +645,11 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 						ranac.setPosition(count, 1);
 						ranac.get().set((float) sortedlinelist.get(i)[2]);
 
+						
+						Distranac.setPosition(count, 1);
+						Distranac.get().set((float) sortedlinelist.get(i)[6]);
+						
+						
 						ranacimageA.setPosition(count, 1);
 						ranacimageA.get().setReal(sortedlinelist.get(i)[3]);
 
@@ -691,13 +670,37 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		Calibration cal = new Calibration();
 		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, " ");
 		
+		String SaveTitle = "Curvature_";
+		String CurvatureTitle = "Curvature ChA Kymo for TrackID: ";
+		String DistCurvatureTitle = "" ;
+		String DistSaveTitle = " ";
+		if(parent.combomethod) {
+			
+			CurvatureTitle = "Circle-Curvature ChA Kymo for TrackID: ";
+			DistCurvatureTitle = "Circle-Curvature ChA Kymo for TrackID: ";
+			SaveTitle = "Circle-Curvature_";
+			DistSaveTitle = "Distance-Curvature_";
+			ImagePlus DistCurveimp = ImageJFunctions.wrapFloat(DistCurvatureKymo, DistCurvatureTitle + TrackID);
+
+			FileSaver DistfsC = new FileSaver(DistCurveimp);
+
+			DistfsC.saveAsTiff(parent.saveFile + "//" + DistSaveTitle    + parent.inputstring.replaceFirst("[.][^.]+$", "")   +  "TrackID" + Integer.parseInt(TrackID) + ".tif");
+
+			
+			
+		}
+			
 		
-		ImagePlus Curveimp = ImageJFunctions.wrapFloat(CurvatureKymo, "Curvature ChA Kymo for TrackID: " + TrackID);
+		ImagePlus Curveimp = ImageJFunctions.wrapFloat(CurvatureKymo, CurvatureTitle + TrackID);
 
 		FileSaver fsC = new FileSaver(Curveimp);
 
-		fsC.saveAsTiff(parent.saveFile + "//" + "Curvature_"    + parent.inputstring.replaceFirst("[.][^.]+$", "")   +  "TrackID" + Integer.parseInt(TrackID) + ".tif");
+		fsC.saveAsTiff(parent.saveFile + "//" + SaveTitle    + parent.inputstring.replaceFirst("[.][^.]+$", "")   +  "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
+		
+		
+		
+		
 		ImagePlus IntensityAimp = ImageJFunctions.wrapFloat(IntensityAKymo,
 				"Intensity ChA Kymo for TrackID: " + TrackID);
 
@@ -716,6 +719,9 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		}
 		if(parent.KymoFileobject.get(TrackID)==null) {
 		KymoSaveobject Kymos = new KymoSaveobject(CurvatureKymo, IntensityAKymo, IntensityBKymo);
+		if(parent.combomethod)
+			Kymos = new KymoSaveobject(CurvatureKymo,DistCurvatureKymo, IntensityAKymo, IntensityBKymo);
+		
 		parent.KymoFileobject.put(TrackID, Kymos);
 
 		int hyperslicedimension = 1;
@@ -754,6 +760,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 	
 		
 		parent.CurrentCurvaturebutton.setEnabled(true);
+		parent.radiusField.setEnabled(true);
 		parent.Curvaturebutton.setEnabled(true);
         parent.timeslider.setEnabled(true);
         parent.inputFieldT.setEnabled(true);

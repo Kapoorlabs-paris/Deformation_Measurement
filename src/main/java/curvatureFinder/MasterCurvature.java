@@ -702,6 +702,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		final RansacFunctionEllipsoid ellipsesegment = FitLocalEllipsoid.findLocalEllipsoid(pointlist, ndims);
 
 		double Kappa = 0;
+		double Kappadistance = 0;
 		double perimeter = 0;
 		ArrayList<double[]> Curvaturepoints = new ArrayList<double[]>();
 
@@ -746,6 +747,8 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			point.localize(newpos);
 
 			Kappa = 1.0 / (radii * parent.calibration);
+			if(parent.combomethod)
+				Kappadistance = getDistance(point, centerpoint);
 			for (int d = 0; d < newpos.length; ++d)
 				longnewpos[d] = (long) newpos[d];
 			net.imglib2.Point intpoint = new net.imglib2.Point(longnewpos);
@@ -760,12 +763,12 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			meanSecIntensity += Intensity.getB();
 
 			AllCurvaturepoints.add(new double[] { newpos[0], newpos[1], Math.max(0, Kappa), perimeter, Intensity.getA(),
-					Intensity.getB() });
+					Intensity.getB(), Math.max(0, Kappadistance) });
 		}
 		meanIntensity /= size;
 		meanSecIntensity /= size;
 		Curvaturepoints.add(
-				new double[] { pointB[0], pointB[1], Math.max(0, Kappa), perimeter, meanIntensity, meanSecIntensity });
+				new double[] { pointB[0], pointB[1], Math.max(0, Kappa), perimeter, meanIntensity, meanSecIntensity, Math.max(0, Kappadistance) });
 
 		RegressionFunction finalfunctionransac = new RegressionFunction(ellipsesegment.function, Curvaturepoints);
 

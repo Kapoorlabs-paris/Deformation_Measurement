@@ -274,14 +274,14 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 			meanSecIntensity += Intensity.getB();
 
 			AllCurvaturepoints.add(new double[] { newpos[0], newpos[1], Math.max(0, Kappa), perimeter, Intensity.getA(),
-					Intensity.getB() });
+					Intensity.getB(), Math.max(0, Kappa) });
 
 		}
 
 		meanIntensity /= size;
 		meanSecIntensity /= size;
 		Curvaturepoints.add(
-				new double[] { pointB[0], pointB[1], Math.max(0, Kappa), perimeter, meanIntensity, meanSecIntensity });
+				new double[] { pointB[0], pointB[1], Math.max(0, Kappa), perimeter, meanIntensity, meanSecIntensity, Math.max(0, Kappa) });
 
 		RegressionFunction finalfunctionransac = new RegressionFunction(Curvaturepoints);
 		

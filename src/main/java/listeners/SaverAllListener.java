@@ -45,6 +45,7 @@ public class SaverAllListener implements ActionListener {
 	int IntensityALabel = 3;
 	int IntensityBLabel = 4;
 	int perimeterLabel = 5;
+	int DistCurvatureLabel = 6;
 	
 	public SaverAllListener(final InteractiveSimpleEllipseFit parent) {
 
@@ -80,8 +81,10 @@ public class SaverAllListener implements ActionListener {
 				FileWriter fw = new FileWriter(fichier);
 				BufferedWriter bw = new BufferedWriter(fw);
 				bw.write("\tTrackID: " + "\t"  + ID+ "\n");
-				
-				bw.write("\tArbritaryUnit\tTime\tDeformation\tIntensity\tIntensitySec\n");
+				if(parent.combomethod)
+					bw.write("\tArbritaryUnit\tTime\tDeformation\tIntensity\tIntensitySec\tDistance-Deformation\n");
+				else
+      				bw.write("\tArbritaryUnit\tTime\tDeformation\tIntensity\tIntensitySec\n");
 				
 				
 				KymoSaveobject Kymos = parent.KymoFileobject.get(ID);
@@ -97,6 +100,8 @@ public class SaverAllListener implements ActionListener {
 				
 				
 				RandomAccessibleInterval<FloatType> CurvatureKymo = Kymos.CurvatureKymo;
+				
+				RandomAccessibleInterval<FloatType> DistCurvatureKymo = Kymos.DistCurvatureKymo;
 				
 				RandomAccessibleInterval<FloatType> IntensityAKymo = Kymos.IntensityAKymo;
 				
@@ -115,6 +120,16 @@ public class SaverAllListener implements ActionListener {
 					
 					RandomAccessibleInterval< FloatType > IntensityBView =
 	                        Views.hyperSlice( IntensityBKymo, hyperslicedimension, pos );
+					RandomAccessibleInterval< FloatType > CurveDView = null;
+					
+					
+					RandomAccess<FloatType> Dranac = null;
+					if(DistCurvatureKymo!=null) {
+						CurveDView =
+                        Views.hyperSlice( DistCurvatureKymo, hyperslicedimension, pos );
+						Dranac = CurveDView.randomAccess();
+						
+					}
 					
 	 				RandomAccess<FloatType> Cranac = CurveView.randomAccess();
 					RandomAccess<FloatType> Aranac = IntensityAView.randomAccess();
@@ -131,12 +146,24 @@ public class SaverAllListener implements ActionListener {
 						Cranac.setPosition(time - 1, 0);
 						Aranac.setPosition(time - 1, 0);
 						Branac.setPosition(time - 1, 0);
+						if(Dranac!=null) { 
+							Dranac.setPosition(time - 1, 0);
 					bw.write("\t"+ pos +  "\t" + time
 					+ "\t" +
 					parent.nf.format(Cranac.get().get())
 	                  + "\t" +
-					parent.nf.format(Aranac.get().get()) + "\t" + parent.nf.format(Branac.get().get()) + 
+					parent.nf.format(Aranac.get().get()) + "\t" + parent.nf.format(Branac.get().get()) + "\t" + parent.nf.format(Dranac.get().get()) +
 					"\n");
+						}
+						else {
+							bw.write("\t"+ pos +  "\t" + time
+									+ "\t" +
+									parent.nf.format(Cranac.get().get())
+					                  + "\t" +
+									parent.nf.format(Aranac.get().get()) + "\t" + parent.nf.format(Branac.get().get()) + "\t" +
+									"\n");
+							
+						}
 			
 					}
 				}
@@ -166,7 +193,10 @@ public class SaverAllListener implements ActionListener {
 				FileWriter fw = new FileWriter(fichier);
 				BufferedWriter bw = new BufferedWriter(fw);
 				bw.write("\tTrackID: " + "\t"  + ID+ "\n");
-				bw.write("\tX-coordinates\tY-coordinates\tTime\tDeformation\tPerimeter\tIntensity\tIntensitySec\n");
+				if(parent.combomethod)
+					bw.write("\tX-coordinates\tY-coordinates\tTime\tDeformation\tPerimeter\tIntensity\tIntensitySec\tDistance-Deformation\n");
+				else
+      				bw.write("\tX-coordinates\tY-coordinates\tTime\tDeformation\tPerimeter\tIntensity\tIntensitySec\n");
 				for (Pair<String, Intersectionobject> currentangle : parent.denseTracklist) {
 					
 					String currentID = currentangle.getA();
@@ -174,6 +204,19 @@ public class SaverAllListener implements ActionListener {
 						ArrayList<double[]> linelist = currentangle.getB().linelist;
 						for (int index =0; index < linelist.size(); ++index) {
 						
+						if(parent.combomethod)
+							bw.write("\t"+ parent.nf.format(linelist.get(index)[XcordLabel]) +  "\t" +parent.nf.format(linelist.get(index)[YcordLabel])
+							+ "\t" +
+							 currentangle.getB().z
+                              + "\t" + 
+							parent.nf.format(linelist.get(index)[CurvatureLabel]) + "\t"  +  parent.nf.format(linelist.get(index)[perimeterLabel]) + "\t"   
+							+ parent.nf.format(linelist.get(index)[IntensityALabel]) +
+							
+							"\t" +parent.nf.format(linelist.get(index)[IntensityBLabel]) + "\t" + parent.nf.format(linelist.get(index)[DistCurvatureLabel]) + 
+							"\n");
+						else
+							
+							
 						bw.write("\t"+ parent.nf.format(linelist.get(index)[XcordLabel]) +  "\t" +parent.nf.format(linelist.get(index)[YcordLabel])
 								+ "\t" +
 								 currentangle.getB().z
@@ -256,7 +299,10 @@ public class SaverAllListener implements ActionListener {
 					FileWriter fw = new FileWriter(fichier);
 					BufferedWriter bw = new BufferedWriter(fw);
 					bw.write("\tTrackID:" + "\t"  + ID+ "\n");
-					bw.write("\tX-coordinates\tY-coordinates\tTime\tDeformation\t Perimeter\tIntensity\tIntensitySec\n");
+					if(parent.combomethod)
+						bw.write("\tX-coordinates\tY-coordinates\tTime\tDeformation\t Perimeter\tIntensity\tIntensitySec\tDistance-Deformation\n");
+					else
+     					bw.write("\tX-coordinates\tY-coordinates\tTime\tDeformation\t Perimeter\tIntensity\tIntensitySec\n");
 					for (Pair<String, Intersectionobject> currentangle : parent.Tracklist) {
 						
 						String currentID = currentangle.getA();
@@ -264,6 +310,22 @@ public class SaverAllListener implements ActionListener {
 							ArrayList<double[]> linelist = currentangle.getB().linelist;
 							for (int index =0; index < linelist.size(); ++index) {
 							
+							if(parent.combomethod)
+								
+								bw.write("\t"+ parent.nf.format(linelist.get(index)[XcordLabel]) +  "\t" + parent.nf.format(linelist.get(index)[YcordLabel])
+								+ "\t" + 
+								 currentangle.getB().z
+                                  + "\t" + 
+								parent.nf.format(linelist.get(index)[CurvatureLabel]) + "\t"  +  parent.nf.format(linelist.get(index)[perimeterLabel]) + "\t"   
+								+ parent.nf.format(linelist.get(index)[IntensityALabel]) +
+								
+								"\t" +  parent.nf.format(linelist.get(index)[IntensityBLabel]) + "\t" + parent.nf.format(linelist.get(index)[DistCurvatureLabel]) + 
+								"\n");
+								
+							else
+								
+								
+								
 							bw.write("\t"+ parent.nf.format(linelist.get(index)[XcordLabel]) +  "\t" + parent.nf.format(linelist.get(index)[YcordLabel])
 									+ "\t" + 
 									 currentangle.getB().z
