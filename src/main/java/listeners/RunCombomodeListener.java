@@ -19,7 +19,7 @@ public class RunCombomodeListener implements ItemListener {
 			if (arg0.getStateChange() == ItemEvent.DESELECTED) {
 
 				parent.pixelcelltrackcirclefits = false;
-				parent.distancemethod = true;
+				parent.distancemethod = false;
 				parent.combomethod = false;
 
 			}

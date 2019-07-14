@@ -46,7 +46,7 @@ public class SaverListener implements ActionListener {
 	int IntensityALabel = 3;
 	int IntensityBLabel = 4;
 	int perimeterLabel = 5;
-	
+	int DistCurvatureLabel = 6;
 
 	public SaverListener(final InteractiveSimpleEllipseFit parent) {
 
@@ -173,7 +173,10 @@ public class SaverListener implements ActionListener {
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write("\tTrackID" + "\t" + "\t" + ID+ "\n");
 			
-			bw.write("\tArbritaryUnit\tTime\t\tDeformation\t \t Intensity \t \t IntensitySec\n");
+			if(parent.combomethod)
+				bw.write("\tArbritaryUnit\tTime\tDeformation\tIntensity\tIntensitySec\tDistance-Deformation\n");
+			else
+  				bw.write("\tArbritaryUnit\tTime\tDeformation\tIntensity\tIntensitySec\n");
 			
 			
 			KymoSaveobject Kymos = parent.KymoFileobject.get(ID);
@@ -188,6 +191,8 @@ public class SaverListener implements ActionListener {
 			
 			
 			RandomAccessibleInterval<FloatType> CurvatureKymo = Kymos.CurvatureKymo;
+			
+			RandomAccessibleInterval<FloatType> DistCurvatureKymo = Kymos.DistCurvatureKymo;
 			
 			RandomAccessibleInterval<FloatType> IntensityAKymo = Kymos.IntensityAKymo;
 			
@@ -206,7 +211,16 @@ public class SaverListener implements ActionListener {
 				
 				RandomAccessibleInterval< FloatType > IntensityBView =
                         Views.hyperSlice( IntensityBKymo, hyperslicedimension, pos );
+				RandomAccessibleInterval< FloatType > CurveDView = null;
 				
+				
+				RandomAccess<FloatType> Dranac = null;
+				if(DistCurvatureKymo!=null) {
+					CurveDView =
+                    Views.hyperSlice( DistCurvatureKymo, hyperslicedimension, pos );
+					Dranac = CurveDView.randomAccess();
+					
+				}
  				RandomAccess<FloatType> Cranac = CurveView.randomAccess();
 				RandomAccess<FloatType> Aranac = IntensityAView.randomAccess();
 				RandomAccess<FloatType> Branac = IntensityBView.randomAccess();
@@ -222,12 +236,24 @@ public class SaverListener implements ActionListener {
 					Aranac.setPosition(time - 1, 0);
 					Branac.setPosition(time - 1, 0);
 					
+					if(Dranac!=null) { 
+						Dranac.setPosition(time - 1, 0);
 				bw.write("\t"+ pos +  "\t" + time
 				+ "\t" +
 				parent.nf.format(Cranac.get().get())
                   + "\t" +
-				parent.nf.format(Aranac.get().get()) +"\t" + parent.nf.format(Branac.get().get()) + 
+				parent.nf.format(Aranac.get().get()) + "\t" + parent.nf.format(Branac.get().get()) + "\t" + parent.nf.format(Dranac.get().get()) +
 				"\n");
+					}
+					else {
+						bw.write("\t"+ pos +  "\t" + time
+								+ "\t" +
+								parent.nf.format(Cranac.get().get())
+				                  + "\t" +
+								parent.nf.format(Aranac.get().get()) + "\t" + parent.nf.format(Branac.get().get()) + "\t" +
+								"\n");
+						
+					}
 		
 				}
 			}
@@ -263,15 +289,29 @@ public class SaverListener implements ActionListener {
 					ArrayList<double[]> linelist = currentangle.getB().linelist;
 					for (int index =0; index < linelist.size(); ++index) {
 					
-					bw.write("\t"+ parent.nf.format(linelist.get(index)[XcordLabel]) +  "\t" + parent.nf.format(linelist.get(index)[YcordLabel])
+						if(parent.combomethod)
+							bw.write("\t"+ parent.nf.format(linelist.get(index)[XcordLabel]) +  "\t" +parent.nf.format(linelist.get(index)[YcordLabel])
 							+ "\t" +
 							 currentangle.getB().z
-                              + "\t" +
-							parent.nf.format(linelist.get(index)[CurvatureLabel]) + "\t" + parent.nf.format(linelist.get(index)[perimeterLabel]) + "\t"   
+                              + "\t" + 
+							parent.nf.format(linelist.get(index)[CurvatureLabel]) + "\t"  +  parent.nf.format(linelist.get(index)[perimeterLabel]) + "\t"   
 							+ parent.nf.format(linelist.get(index)[IntensityALabel]) +
 							
-							"\t" + parent.nf.format(linelist.get(index)[IntensityBLabel]) + 
+							"\t" +parent.nf.format(linelist.get(index)[IntensityBLabel]) + "\t" + parent.nf.format(linelist.get(index)[DistCurvatureLabel]) + 
 							"\n");
+						else
+							
+							
+						bw.write("\t"+ parent.nf.format(linelist.get(index)[XcordLabel]) +  "\t" +parent.nf.format(linelist.get(index)[YcordLabel])
+								+ "\t" +
+								 currentangle.getB().z
+	                              + "\t" + 
+								parent.nf.format(linelist.get(index)[CurvatureLabel]) + "\t"  +  parent.nf.format(linelist.get(index)[perimeterLabel]) + "\t"   
+								+ parent.nf.format(linelist.get(index)[IntensityALabel]) +
+								
+								"\t" +parent.nf.format(linelist.get(index)[IntensityBLabel]) + 
+								"\n");
+						
 					
 					
 				}
@@ -350,15 +390,31 @@ public class SaverListener implements ActionListener {
 							ArrayList<double[]> linelist = currentangle.getB().linelist;
 							for (int index =0; index < linelist.size(); ++index) {
 							
-							bw.write("\t"+ parent.nf.format(linelist.get(index)[XcordLabel]) +  "\t" + "\t" + parent.nf.format(linelist.get(index)[YcordLabel])
-									+ "\t" + "\t" +
+								if(parent.combomethod)
+									
+									bw.write("\t"+ parent.nf.format(linelist.get(index)[XcordLabel]) +  "\t" + parent.nf.format(linelist.get(index)[YcordLabel])
+									+ "\t" + 
 									 currentangle.getB().z
-	                                  + "\t" + "\t" +
-									parent.nf.format(linelist.get(index)[CurvatureLabel]) + "\t"  + "\t" + parent.nf.format(linelist.get(index)[perimeterLabel]) + "\t" + "\t"  
+	                                  + "\t" + 
+									parent.nf.format(linelist.get(index)[CurvatureLabel]) + "\t"  +  parent.nf.format(linelist.get(index)[perimeterLabel]) + "\t"   
 									+ parent.nf.format(linelist.get(index)[IntensityALabel]) +
 									
-									"\t" + "\t"  + parent.nf.format(linelist.get(index)[IntensityBLabel]) + 
+									"\t" +  parent.nf.format(linelist.get(index)[IntensityBLabel]) + "\t" + parent.nf.format(linelist.get(index)[DistCurvatureLabel]) + 
 									"\n");
+									
+								else
+									
+									
+									
+								bw.write("\t"+ parent.nf.format(linelist.get(index)[XcordLabel]) +  "\t" + parent.nf.format(linelist.get(index)[YcordLabel])
+										+ "\t" + 
+										 currentangle.getB().z
+		                                  + "\t" + 
+										parent.nf.format(linelist.get(index)[CurvatureLabel]) + "\t"  +  parent.nf.format(linelist.get(index)[perimeterLabel]) + "\t"   
+										+ parent.nf.format(linelist.get(index)[IntensityALabel]) +
+										
+										"\t" +  parent.nf.format(linelist.get(index)[IntensityBLabel]) + 
+										"\n");
 							
 							
 						}

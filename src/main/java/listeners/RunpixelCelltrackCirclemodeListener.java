@@ -23,7 +23,8 @@ public class RunpixelCelltrackCirclemodeListener implements ItemListener {
 
 			parent.pixelcelltrackcirclefits = false;
 			
-			parent.distancemethod = true;
+			parent.distancemethod = false;
+			parent.combomethod = false;
 
 		}
 
@@ -31,6 +32,7 @@ public class RunpixelCelltrackCirclemodeListener implements ItemListener {
 
 			parent.pixelcelltrackcirclefits = true;
              parent.distancemethod = false;
+             parent.combomethod = false;
 			parent.resolution = Integer.parseInt(parent.resolutionField.getText());
 
 		

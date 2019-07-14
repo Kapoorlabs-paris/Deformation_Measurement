@@ -88,7 +88,8 @@ public class DisplaySelected {
 
 	public static void markAll(final InteractiveSimpleEllipseFit parent) {
 
-		
+		parent.rowchoice = 0;
+		parent.row =0;
 		if (parent.ml != null)
 			parent.imp.getCanvas().removeMouseMotionListener(parent.ml);
 		parent.imp.getCanvas().addMouseMotionListener(parent.ml = new MouseMotionListener() {
@@ -108,6 +109,8 @@ public class DisplaySelected {
 				double distmin = Double.MAX_VALUE;
 				if (parent.tablesize > 0 && parent.table.getRowCount() > 0) {
 					NumberFormat f = NumberFormat.getInstance();
+					
+					
 					for (int row = 0; row < parent.tablesize; ++row) {
 						String CordX = (String) parent.table.getValueAt(row, 1);
 						String CordY = (String) parent.table.getValueAt(row, 2);

@@ -116,7 +116,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		parent.Savebutton.setEnabled(false);
 		parent.SaveAllbutton.setEnabled(false);
 		parent.ChooseDirectory.setEnabled(false);
-		
+		parent.Combomode.setEnabled(false);
 	    parent.regioninteriorfield.setEnabled(false);	
 		parent.CurrentCurvaturebutton.setEnabled(false);
 		parent.Curvaturebutton.setEnabled(false);
@@ -296,7 +296,17 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 			}
 
 		}
-		AxisRendering.Reshape(Blank, "Fan display");
+		AxisRendering.Reshape(Blank, "Distance-Fan display");
+		
+		//String Title = "Distance-Fan displayfor TrackID: ";
+		//ImagePlus DistCurveimp = ImageJFunctions.wrapFloat(Blank, Title + TrackID);
+
+		//FileSaver DistfsC = new FileSaver(DistCurveimp);
+
+		//DistfsC.saveAsTiff(parent.saveFile + "//" + Title    + parent.inputstring.replaceFirst("[.][^.]+$", "")   +  "TrackID" + Integer.parseInt(TrackID) + ".tif");
+
+		
+		
 
 	}
 
@@ -387,6 +397,14 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		String DistCurvatureTitle = "" ;
 		Calibration cal = new Calibration();
 		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, " ");
+		if(parent.pixelcelltrackcirclefits) {
+			CurvatureTitle = "CircleFits"  + CurvatureTitle;
+		}
+		if(parent.distancemethod) {
+			CurvatureTitle = "DistanceMethod"  + CurvatureTitle;
+		}
+		
+		
 		if(parent.combomethod) {
 			CurvatureTitle = "Circle Fits Curvature Kymo for TrackID: ";
 			DistCurvatureTitle = "Distance Fits Curvature Kymo for TrackID: ";
@@ -672,12 +690,20 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		
 		String SaveTitle = "Curvature_";
 		String CurvatureTitle = "Curvature ChA Kymo for TrackID: ";
+		if(parent.pixelcelltrackcirclefits) {
+			SaveTitle = "CircleFits" + SaveTitle;
+			CurvatureTitle = "CircleFits"  + CurvatureTitle;
+		}
+		if(parent.distancemethod) {
+			SaveTitle = "DistanceMethod" + SaveTitle;
+			CurvatureTitle = "DistanceMethod"  + CurvatureTitle;
+		}
 		String DistCurvatureTitle = "" ;
 		String DistSaveTitle = " ";
 		if(parent.combomethod) {
 			
 			CurvatureTitle = "Circle-Curvature ChA Kymo for TrackID: ";
-			DistCurvatureTitle = "Circle-Curvature ChA Kymo for TrackID: ";
+			DistCurvatureTitle = "Dist-Curvature ChA Kymo for TrackID: ";
 			SaveTitle = "Circle-Curvature_";
 			DistSaveTitle = "Distance-Curvature_";
 			ImagePlus DistCurveimp = ImageJFunctions.wrapFloat(DistCurvatureKymo, DistCurvatureTitle + TrackID);
@@ -772,7 +798,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
         parent.minInlierslider.setEnabled(true);
         parent.minInlierField.setEnabled(true);
         parent.regioninteriorfield.setEnabled(true);	
-		
+        parent.Combomode.setEnabled(true);
 		parent.jpb.setIndeterminate(false);
 		parent.Cardframe.validate();
 
