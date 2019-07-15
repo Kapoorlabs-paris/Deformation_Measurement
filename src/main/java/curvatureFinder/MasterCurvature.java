@@ -392,6 +392,8 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			CurveXYdist.add(Zdist[index]);
 			Iterator<Double> setiterdist = CurveXYdist.iterator();
 			double frequdeltadist = Zdist[index];
+			double intensitydelta = I[index];
+			double intensitySecdelta = ISec[index];
 			while (setiterdist.hasNext()) {
 
 				Double s = setiterdist.next();
@@ -401,7 +403,25 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			}
 
 			frequdeltadist /= CurveXYdist.size();
+			Iterator<Double> Iiter = CurveI.iterator();
 			
+			
+			while (Iiter.hasNext()) {
+
+				Double s = Iiter.next();
+
+				intensitydelta += s;
+
+			}
+
+			Iterator<Double> ISeciter = CurveISec.iterator();
+			while (ISeciter.hasNext()) {
+
+				Double s = ISeciter.next();
+
+				intensitySecdelta += s;
+
+			}
 			
 			for (int secindex = 1; secindex < count; ++secindex) {
 
@@ -426,8 +446,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 					if (X[index] == Xtest[testindex] && Y[index] == Ytest[testindex]) {
 
 						CurveXY.add(Ztest[testindex]);
-						CurveI.add(Itest[testindex]);
-						CurveISec.add(ISectest[testindex]);
+						
 
 					}
 
@@ -437,8 +456,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 			double frequdeltaperi = localCurvature.get(0).perimeter;
 			double frequdelta = Z[index];
-			double intensitydelta = I[index];
-			double intensitySecdelta = ISec[index];
+			
 
 			Iterator<Double> setiter = CurveXY.iterator();
 			while (setiter.hasNext()) {
@@ -451,23 +469,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 			frequdelta /= CurveXY.size();
 
-			Iterator<Double> Iiter = CurveI.iterator();
-			while (Iiter.hasNext()) {
-
-				Double s = Iiter.next();
-
-				intensitydelta += s;
-
-			}
-
-			Iterator<Double> ISeciter = CurveISec.iterator();
-			while (ISeciter.hasNext()) {
-
-				Double s = ISeciter.next();
-
-				intensitySecdelta += s;
-
-			}
+			
 
 			Curvatureobject newobject = new Curvatureobject((float) frequdelta, (float) frequdeltadist, frequdeltaperi, intensitydelta,
 					intensitySecdelta, localCurvature.get(index).Label, localCurvature.get(index).cord,
@@ -755,7 +757,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 			Pair<Double, Double> Intensity = new ValuePair<Double, Double>(0.0, 0.0);
 
-			if (linescan)
 				Intensity = getIntensity(parent, intpoint, centpos);
 
 			// Average the intensity.

@@ -119,7 +119,7 @@ public class ParallelResultDisplay {
 		
 	}
 	
-	public void ResultDisplayCircleFit() {
+	public RandomAccessibleInterval<FloatType> ResultDisplayCircleFit() {
 
 		double minCurvature = Double.MAX_VALUE;
 		double maxCurvature = Double.MIN_VALUE;
@@ -164,6 +164,8 @@ public class ParallelResultDisplay {
 	    
 		AxisRendering.Reshape(probImg, "Curvature Color coded");
 		IJ.run("Fire");
+		
+		return probImg;
 
 	}
 	

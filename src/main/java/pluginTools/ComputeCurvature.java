@@ -59,6 +59,7 @@ import kalmanTracker.KFsearch;
 import kalmanTracker.NearestNeighbourSearch;
 import kalmanTracker.NearestNeighbourSearch2D;
 import kalmanTracker.TrackModel;
+import listeners.DisplayVisualListener;
 import net.imglib2.Cursor;
 import net.imglib2.KDTree;
 import net.imglib2.RandomAccess;
@@ -86,19 +87,20 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	final InteractiveSimpleEllipseFit parent;
 	final JProgressBar jpb;
-    final boolean batchmode;
-    final File savefile;
-    
-    static int extradimension = 50;
-    
-	public ComputeCurvature(final InteractiveSimpleEllipseFit parent, final JProgressBar jpb, final boolean batchmode, final File savefile) {
+	final boolean batchmode;
+	final File savefile;
+
+	static int extradimension = 50;
+
+	public ComputeCurvature(final InteractiveSimpleEllipseFit parent, final JProgressBar jpb, final boolean batchmode,
+			final File savefile) {
 
 		this.parent = parent;
 
 		this.jpb = jpb;
-		
+
 		this.batchmode = batchmode;
-		
+
 		this.savefile = savefile;
 	}
 
@@ -110,52 +112,48 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		HashMap<String, Integer> mapZ = SortTimeorZ.sortByValues(parent.AccountedZ);
 		parent.AccountedZ = mapZ;
-		
+
 		parent.inputField.setEnabled(false);
 		parent.inputtrackField.setEnabled(false);
 		parent.Savebutton.setEnabled(false);
 		parent.SaveAllbutton.setEnabled(false);
 		parent.ChooseDirectory.setEnabled(false);
 		parent.Combomode.setEnabled(false);
-	    parent.regioninteriorfield.setEnabled(false);	
+		parent.regioninteriorfield.setEnabled(false);
 		parent.CurrentCurvaturebutton.setEnabled(false);
 		parent.Curvaturebutton.setEnabled(false);
-        parent.timeslider.setEnabled(false);
-        parent.inputFieldT.setEnabled(false);
-        parent.distancemode.setEnabled(false);
-        parent.Pixelcelltrackcirclemode.setEnabled(false);
-        parent.resolutionField.setEnabled(false);
-        parent.interiorfield.setEnabled(false);
-        parent.Displaybutton.setEnabled(false);
-        parent.minInlierslider.setEnabled(false);
-        parent.minInlierField.setEnabled(false);
-        parent.radiusField.setEnabled(false);
+		parent.timeslider.setEnabled(false);
+		parent.inputFieldT.setEnabled(false);
+		parent.distancemode.setEnabled(false);
+		parent.Pixelcelltrackcirclemode.setEnabled(false);
+		parent.resolutionField.setEnabled(false);
+		parent.interiorfield.setEnabled(false);
+		parent.Displaybutton.setEnabled(false);
+		parent.minInlierslider.setEnabled(false);
+		parent.minInlierField.setEnabled(false);
+		parent.radiusField.setEnabled(false);
 		EllipseTrack newtrack = new EllipseTrack(parent, jpb);
 		newtrack.ComputeCurvature();
 
-		
-		
 		return null;
 
 	}
 
-	
-public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size, String TrackID) {
-		
+	public static void MakeLineKymo(InteractiveSimpleEllipseFit parent,
+			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size, String TrackID) {
+
 		RandomAccessibleInterval<FloatType> IntensityAKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
 		RandomAccessibleInterval<FloatType> IntensityBKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
-		
 
 		parent.clockimp.updateAndDraw();
-		
+
 		RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
 
 		RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
-		
-		
+
 		while (itZ.hasNext()) {
 
 			Map.Entry<String, Integer> entry = itZ.next();
@@ -172,85 +170,68 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 
 					int count = 0;
 
-			
-				ConcurrentHashMap<Integer, ArrayList<LineProfileCircle>> currentprofile =   currentobject.LineScanIntensity;
-				
-				for (Map.Entry<Integer, ArrayList<LineProfileCircle>> currentsegmentprofile : currentprofile
-						.entrySet()) {
-					
-					
+					ConcurrentHashMap<Integer, ArrayList<LineProfileCircle>> currentprofile = currentobject.LineScanIntensity;
 
-					
-					int key = currentsegmentprofile.getKey();
-					
-					ArrayList<LineProfileCircle> lineprofile = currentsegmentprofile.getValue();
-					
-					for (int i = 0; i < lineprofile.size() + extradimension; ++i) {
-						
-						
-					if(count >= size[1])
-						break;
-						
-						ranacimageA.setPosition(count, 1);
-						ranacimageB.setPosition(count, 1);
-						
-						if(i<lineprofile.size()) {
-						ranacimageA.get().set((float) lineprofile.get(i).intensity);	
-						ranacimageB.get().set((float) lineprofile.get(i).secintensity);
-						
+					for (Map.Entry<Integer, ArrayList<LineProfileCircle>> currentsegmentprofile : currentprofile
+							.entrySet()) {
+
+						int key = currentsegmentprofile.getKey();
+
+						ArrayList<LineProfileCircle> lineprofile = currentsegmentprofile.getValue();
+
+						for (int i = 0; i < lineprofile.size() + extradimension; ++i) {
+
+							if (count >= size[1])
+								break;
+
+							ranacimageA.setPosition(count, 1);
+							ranacimageB.setPosition(count, 1);
+
+							if (i < lineprofile.size()) {
+								ranacimageA.get().set((float) lineprofile.get(i).intensity);
+								ranacimageB.get().set((float) lineprofile.get(i).secintensity);
+
+							}
+
+							else {
+								ranacimageA.get().set((float) lineprofile.get(lineprofile.size() - 1).intensity);
+								ranacimageB.get().set((float) lineprofile.get(lineprofile.size() - 1).secintensity);
+
+							}
+
+							count++;
 						}
-						
-						else {
-							ranacimageA.get().set((float) lineprofile.get(lineprofile.size()  - 1).intensity);
-							ranacimageB.get().set((float) lineprofile.get(lineprofile.size()  - 1).secintensity);
-							
-						}
-						
-						
-						
-						
-						count++;
+
 					}
-				
-				
-					
-					
+
 				}
-				
-				
-			
-				
-				}
-			
-				
+
 			}
-			
+
 		}
-		
+
 		double[] calibration = new double[] { parent.timecal, parent.calibration };
 		Calibration cal = new Calibration();
 		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, " ");
 
-		if(parent.insidedistance > 0) {
-		ImagePlus IntensityAimp = ImageJFunctions.show(IntensityAKymo);
-		IntensityAimp.setTitle("Intensity ChA Kymo for TrackID: " + TrackID);
-		IntensityAimp.setCalibration(cal);
+		if (parent.insidedistance > 0) {
+			ImagePlus IntensityAimp = ImageJFunctions.show(IntensityAKymo);
+			IntensityAimp.setTitle("Intensity ChA Kymo for TrackID: " + TrackID);
+			IntensityAimp.setCalibration(cal);
 
-		if (parent.twochannel) {
-			ImagePlus IntensityBimp = ImageJFunctions.show(IntensityBKymo);
-			IntensityBimp.setTitle("Intensity ChB for TrackID: " + TrackID);
-			IntensityBimp.setCalibration(cal);
-			IntensityBimp.updateAndRepaintWindow();
-		}
-		IntensityAimp.updateAndRepaintWindow();
-		KymoSaveobject Kymos = new KymoSaveobject(IntensityAKymo, IntensityBKymo);
-		parent.KymoLineobject.put(TrackID, Kymos);
+			if (parent.twochannel) {
+				ImagePlus IntensityBimp = ImageJFunctions.show(IntensityBKymo);
+				IntensityBimp.setTitle("Intensity ChB for TrackID: " + TrackID);
+				IntensityBimp.setCalibration(cal);
+				IntensityBimp.updateAndRepaintWindow();
+			}
+			IntensityAimp.updateAndRepaintWindow();
+			KymoSaveobject Kymos = new KymoSaveobject(IntensityAKymo, IntensityBKymo);
+			parent.KymoLineobject.put(TrackID, Kymos);
 		}
 	}
-	
-	
 
-	public static void MakeDistanceFan(InteractiveSimpleEllipseFit parent,
+	public static RandomAccessibleInterval<FloatType> MakeDistanceFan(InteractiveSimpleEllipseFit parent,
 			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, String TrackID) {
 
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
@@ -274,21 +255,16 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 				for (Intersectionobject currentobject : currentlist) {
 
 					ArrayList<double[]> sortedlinelist = currentobject.linelist;
-					
-					
-					
+
 					double maxdist = GetMaxdist(sortedlinelist, TrackID, parent.combomethod);
 
-					
-					
 					for (int i = 0; i < sortedlinelist.size(); ++i) {
 						double distvalue = sortedlinelist.get(i)[2] / maxdist;
-						if(parent.combomethod)
+						if (parent.combomethod)
 							distvalue = sortedlinelist.get(i)[6] / maxdist;
-							
+
 						DrawFunction.DrawGeomBresnLines(CurrentBlank, new double[] { centerpoint[0], centerpoint[1] },
-								new double[] { sortedlinelist.get(i)[0], sortedlinelist.get(i)[1] },
-								distvalue);
+								new double[] { sortedlinelist.get(i)[0], sortedlinelist.get(i)[1] }, distvalue);
 
 					}
 
@@ -297,16 +273,8 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 
 		}
 		AxisRendering.Reshape(Blank, "Distance-Fan display");
-		
-		//String Title = "Distance-Fan displayfor TrackID: ";
-		//ImagePlus DistCurveimp = ImageJFunctions.wrapFloat(Blank, Title + TrackID);
 
-		//FileSaver DistfsC = new FileSaver(DistCurveimp);
-
-		//DistfsC.saveAsTiff(parent.saveFile + "//" + Title    + parent.inputstring.replaceFirst("[.][^.]+$", "")   +  "TrackID" + Integer.parseInt(TrackID) + ".tif");
-
-		
-		
+		return Blank;
 
 	}
 
@@ -335,19 +303,18 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 				new FloatType());
 		RandomAccessibleInterval<FloatType> IntensityBKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
-		
+
 		RandomAccessibleInterval<FloatType> DistCurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
-		
+
 		RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
 
 		RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 
 		RandomAccess<FloatType> ranac = CurvatureKymo.randomAccess();
-		
+
 		RandomAccess<FloatType> Distranac = DistCurvatureKymo.randomAccess();
-		
 
 		while (itZ.hasNext()) {
 
@@ -373,7 +340,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 
 						ranac.setPosition(count, 1);
 						ranac.get().set((float) sortedlinelist.get(i)[2]);
-						
+
 						Distranac.setPosition(count, 1);
 						Distranac.get().set((float) sortedlinelist.get(i)[6]);
 
@@ -392,29 +359,27 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 
 		}
 		double[] calibration = new double[] { parent.timecal, parent.calibration };
-		
+
 		String CurvatureTitle = "Curvature Kymo for TrackID: ";
-		String DistCurvatureTitle = "" ;
+		String DistCurvatureTitle = "";
 		Calibration cal = new Calibration();
 		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, " ");
-		if(parent.pixelcelltrackcirclefits) {
-			CurvatureTitle = "CircleFits"  + CurvatureTitle;
+		if (parent.pixelcelltrackcirclefits) {
+			CurvatureTitle = "CircleFits" + CurvatureTitle;
 		}
-		if(parent.distancemethod) {
-			CurvatureTitle = "DistanceMethod"  + CurvatureTitle;
+		if (parent.distancemethod) {
+			CurvatureTitle = "DistanceMethod" + CurvatureTitle;
 		}
-		
-		
-		if(parent.combomethod) {
+
+		if (parent.combomethod) {
 			CurvatureTitle = "Circle Fits Curvature Kymo for TrackID: ";
 			DistCurvatureTitle = "Distance Fits Curvature Kymo for TrackID: ";
 			ImagePlus DistCurveimp = ImageJFunctions.show(DistCurvatureKymo);
 			DistCurveimp.setTitle(DistCurvatureTitle + TrackID);
 			DistCurveimp.setCalibration(cal);
-			
+
 		}
-		
-		
+
 		ImagePlus Curveimp = ImageJFunctions.show(CurvatureKymo);
 		Curveimp.setTitle(CurvatureTitle + TrackID);
 		Curveimp.setCalibration(cal);
@@ -433,7 +398,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		IntensityAimp.updateAndRepaintWindow();
 
 		KymoSaveobject Kymos = new KymoSaveobject(CurvatureKymo, IntensityAKymo, IntensityBKymo);
-		if(parent.combomethod)
+		if (parent.combomethod)
 			Kymos = new KymoSaveobject(CurvatureKymo, DistCurvatureKymo, IntensityAKymo, IntensityBKymo);
 		parent.KymoFileobject.put(TrackID, Kymos);
 
@@ -448,18 +413,16 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 			Iterator<Map.Entry<String, Integer>> itZSec = parent.AccountedZ.entrySet().iterator();
 
 			double rms = 0;
-			int count  = 0;
+			int count = 0;
 			while (itZSec.hasNext()) {
 
 				Map.Entry<String, Integer> entry = itZSec.next();
 
 				int time = entry.getValue();
 
-				
-				count ++;
-				Cranac.setPosition(count , 0);
+				count++;
+				Cranac.setPosition(count, 0);
 
-				
 				rms += Cranac.get().get() * Cranac.get().get();
 
 			}
@@ -470,141 +433,156 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
 	}
 
-	
-	public static void SaveLineScanKymo(InteractiveSimpleEllipseFit parent, HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size, String TrackID) {
-		
-		
+	public static void SaveLineScanKymo(InteractiveSimpleEllipseFit parent,
+			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size, String TrackID) {
+
 		RandomAccessibleInterval<FloatType> IntensityAKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
 		RandomAccessibleInterval<FloatType> IntensityBKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
-		if(parent.insidedistance > 0) {
-		if(parent.KymoLineobject.get(TrackID)!=null) {
-			
-			
-			IntensityAKymo = parent.KymoLineobject.get(TrackID).LineScanAKymo;
-			
-			IntensityBKymo = parent.KymoLineobject.get(TrackID).LineScanBKymo;
-			
-			
+		if (parent.insidedistance > 0) {
+			if (parent.KymoLineobject.get(TrackID) != null) {
 
-			
-		}
-		
+				IntensityAKymo = parent.KymoLineobject.get(TrackID).LineScanAKymo;
 
-		else {
-			
-		
-		RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
+				IntensityBKymo = parent.KymoLineobject.get(TrackID).LineScanBKymo;
 
-		RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
-		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
-		
-		
-		while (itZ.hasNext()) {
-
-			Map.Entry<String, Integer> entry = itZ.next();
-
-			int time = entry.getValue();
-			String timeID = entry.getKey();
-
-			ArrayList<Intersectionobject> currentlist = sortedMappair.get(TrackID + timeID);
-
-			ranacimageA.setPosition(time - 1, 0);
-			ranacimageB.setPosition(time - 1, 0);
-			if (currentlist != null) {
-				for (Intersectionobject currentobject : currentlist) {
-
-					int count = 0;
-
-					//System.out.println(currentobject.LineScanIntensity.size() + " Final size" + time);
-				ConcurrentHashMap<Integer, ArrayList<LineProfileCircle>> currentprofile =   currentobject.LineScanIntensity;
-				
-				for (Map.Entry<Integer, ArrayList<LineProfileCircle>> currentsegmentprofile : currentprofile
-						.entrySet()) {
-					
-					
-					int key = currentsegmentprofile.getKey();
-					
-					ArrayList<LineProfileCircle> lineprofile = currentsegmentprofile.getValue();
-					
-					for (int i = 0; i < lineprofile.size() + extradimension; ++i) {
-						
-						
-						if(count >= size[1])
-							break;
-							
-							ranacimageA.setPosition(count, 1);
-							ranacimageB.setPosition(count, 1);
-							
-							if(i<lineprofile.size()) {
-							ranacimageA.get().set((float) lineprofile.get(i).intensity);	
-							ranacimageB.get().set((float) lineprofile.get(i).secintensity);
-							
-							}
-							
-							else {
-								ranacimageA.get().set((float) lineprofile.get(lineprofile.size()  - 1).intensity);
-								ranacimageB.get().set((float) lineprofile.get(lineprofile.size()  - 1).secintensity);
-								
-							}
-							
-							
-							
-							
-							count++;
-						}
-					
-					
-				}
-				
-				
-			
-				
-				}
-				
 			}
-			
+
+			else {
+
+				RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
+
+				RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
+				Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
+
+				while (itZ.hasNext()) {
+
+					Map.Entry<String, Integer> entry = itZ.next();
+
+					int time = entry.getValue();
+					String timeID = entry.getKey();
+
+					ArrayList<Intersectionobject> currentlist = sortedMappair.get(TrackID + timeID);
+
+					ranacimageA.setPosition(time - 1, 0);
+					ranacimageB.setPosition(time - 1, 0);
+					if (currentlist != null) {
+						for (Intersectionobject currentobject : currentlist) {
+
+							int count = 0;
+
+							// System.out.println(currentobject.LineScanIntensity.size() + " Final size" +
+							// time);
+							ConcurrentHashMap<Integer, ArrayList<LineProfileCircle>> currentprofile = currentobject.LineScanIntensity;
+
+							for (Map.Entry<Integer, ArrayList<LineProfileCircle>> currentsegmentprofile : currentprofile
+									.entrySet()) {
+
+								int key = currentsegmentprofile.getKey();
+
+								ArrayList<LineProfileCircle> lineprofile = currentsegmentprofile.getValue();
+
+								for (int i = 0; i < lineprofile.size() + extradimension; ++i) {
+
+									if (count >= size[1])
+										break;
+
+									ranacimageA.setPosition(count, 1);
+									ranacimageB.setPosition(count, 1);
+
+									if (i < lineprofile.size()) {
+										ranacimageA.get().set((float) lineprofile.get(i).intensity);
+										ranacimageB.get().set((float) lineprofile.get(i).secintensity);
+
+									}
+
+									else {
+										ranacimageA.get()
+												.set((float) lineprofile.get(lineprofile.size() - 1).intensity);
+										ranacimageB.get()
+												.set((float) lineprofile.get(lineprofile.size() - 1).secintensity);
+
+									}
+
+									count++;
+								}
+
+							}
+
+						}
+
+					}
+
+				}
+			}
+
+			double[] calibration = new double[] { parent.timecal, parent.calibration };
+			Calibration cal = new Calibration();
+			cal.setFunction(Calibration.STRAIGHT_LINE, calibration, " ");
+
+			KymoSaveobject Kymos = new KymoSaveobject(IntensityAKymo, IntensityBKymo);
+			parent.KymoLineobject.put(TrackID, Kymos);
+
+			ImagePlus IntensityAimp = ImageJFunctions.wrapFloat(IntensityAKymo,
+					"LineScanCHA Kymo for TrackID: " + TrackID);
+
+			FileSaver fsB = new FileSaver(IntensityAimp);
+			if (parent.clockimp.isVisible()) {
+				FileSaver fsLine = new FileSaver(parent.clockimp);
+				fsLine.saveAsTiff(
+						parent.saveFile + "//" + "ClockLineScan_" + parent.inputstring.replaceFirst("[.][^.]+$", "")
+								+ "TrackID" + Integer.parseInt(TrackID) + ".tif");
+			}
+			fsB.saveAsTiff(parent.saveFile + "//" + "Ch1LineScan_" + parent.inputstring.replaceFirst("[.][^.]+$", "")
+					+ "TrackID" + Integer.parseInt(TrackID) + ".tif");
+
+			if (parent.twochannel) {
+				ImagePlus IntensityBimp = ImageJFunctions.wrapFloat(IntensityBKymo,
+						"Intensity ChB Kymo for TrackID: " + TrackID);
+
+				FileSaver fsBB = new FileSaver(IntensityBimp);
+
+				fsBB.saveAsTiff(
+						parent.saveFile + "//" + "Ch2LineScan_" + parent.inputstring.replaceFirst("[.][^.]+$", "")
+								+ "TrackID" + Integer.parseInt(TrackID) + ".tif");
+
+			}
 		}
-		}
-		
-		double[] calibration = new double[] { parent.timecal, parent.calibration };
-		Calibration cal = new Calibration();
-		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, " ");
-		
-		KymoSaveobject Kymos = new KymoSaveobject(IntensityAKymo, IntensityBKymo);
-		parent.KymoLineobject.put(TrackID, Kymos);
-		
 
-		ImagePlus IntensityAimp = ImageJFunctions.wrapFloat(IntensityAKymo,
-				"LineScanCHA Kymo for TrackID: " + TrackID);
-
-		FileSaver fsB = new FileSaver(IntensityAimp);
-        if(parent.clockimp.isVisible()) {
-		FileSaver fsLine = new FileSaver(parent.clockimp);
-		fsLine.saveAsTiff(  parent.saveFile+ "//" + "ClockLineScan_" + parent.inputstring.replaceFirst("[.][^.]+$", "")   +   "TrackID" + Integer.parseInt(TrackID) + ".tif");
-        }
-		fsB.saveAsTiff(  parent.saveFile+ "//" + "Ch1LineScan_" + parent.inputstring.replaceFirst("[.][^.]+$", "")   +   "TrackID" + Integer.parseInt(TrackID) + ".tif");
-
-		if (parent.twochannel) {
-			ImagePlus IntensityBimp = ImageJFunctions.wrapFloat(IntensityBKymo,
-					"Intensity ChB Kymo for TrackID: " + TrackID);
-
-			FileSaver fsBB = new FileSaver(IntensityBimp);
-
-			fsBB.saveAsTiff(parent.saveFile + "//" + "Ch2LineScan_"   + parent.inputstring.replaceFirst("[.][^.]+$", "")   +  "TrackID" + Integer.parseInt(TrackID) + ".tif");
-
-		}
-		}
-		
 	}
-	
+
 	public static void SaveInterKymo(InteractiveSimpleEllipseFit parent,
 			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size, String TrackID) {
 
+		DisplayVisualListener display = new DisplayVisualListener(parent);
+		Pair<RandomAccessibleInterval<FloatType>, RandomAccessibleInterval<FloatType>> Blankprob = display.run();
+
+		String Title = "Distance-Fan displayfor TrackID: ";
+		ImagePlus DistFanimp = ImageJFunctions.wrapFloat(Blankprob.getA(), Title + TrackID);
+
+		FileSaver DistfsF = new FileSaver(DistFanimp);
+
+		DistfsF.saveAsTiff(parent.saveFile + "//" + Title + parent.inputstring.replaceFirst("[.][^.]+$", "") + "TrackID"
+				+ Integer.parseInt(TrackID) + ".tif");
+
+		String CurvTitle = "ColorCoded-Curvature displayfor TrackID: ";
+		
+		if (parent.pixelcelltrackcirclefits || parent.combomethod) {
+			CurvTitle = "CircleFits" + CurvTitle;
+		}
+		if (parent.distancemethod) {
+			CurvTitle = "DistanceMethod" + CurvTitle;
+		}
 		
 		
-		
+		ImagePlus ColorCodedCurv = ImageJFunctions.wrapFloat(Blankprob.getB(), Title + TrackID);
+
+		FileSaver DistfsColor = new FileSaver(ColorCodedCurv);
+
+		DistfsColor.saveAsTiff(parent.saveFile + "//" + CurvTitle + parent.inputstring.replaceFirst("[.][^.]+$", "")
+				+ "TrackID" + Integer.parseInt(TrackID) + ".tif");
+
 		RandomAccessibleInterval<FloatType> CurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
 		RandomAccessibleInterval<FloatType> IntensityAKymo = new ArrayImgFactory<FloatType>().create(size,
@@ -613,95 +591,90 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 				new FloatType());
 		RandomAccessibleInterval<FloatType> DistCurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
-	
-		if(parent.KymoFileobject.get(TrackID)!=null) {
-			
-			
-		CurvatureKymo = parent.KymoFileobject.get(TrackID).CurvatureKymo;
-		
-		IntensityAKymo = parent.KymoFileobject.get(TrackID).IntensityAKymo;
-		
-		IntensityBKymo = parent.KymoFileobject.get(TrackID).IntensityBKymo;
-		
-		DistCurvatureKymo = parent.KymoFileobject.get(TrackID).DistCurvatureKymo;
-		
-			}
-		else {
-		
-		
-		RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
 
-		RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
-		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
+		if (parent.KymoFileobject.get(TrackID) != null) {
 
-		RandomAccess<FloatType> ranac = CurvatureKymo.randomAccess();
-		
-		RandomAccess<FloatType> Distranac = DistCurvatureKymo.randomAccess();
+			CurvatureKymo = parent.KymoFileobject.get(TrackID).CurvatureKymo;
 
-		while (itZ.hasNext()) {
+			IntensityAKymo = parent.KymoFileobject.get(TrackID).IntensityAKymo;
 
-			Map.Entry<String, Integer> entry = itZ.next();
+			IntensityBKymo = parent.KymoFileobject.get(TrackID).IntensityBKymo;
 
-			int time = entry.getValue();
-			String timeID = entry.getKey();
+			DistCurvatureKymo = parent.KymoFileobject.get(TrackID).DistCurvatureKymo;
 
-			ArrayList<Intersectionobject> currentlist = sortedMappair.get(TrackID + timeID);
+		} else {
 
-			ranac.setPosition(time - 1, 0);
-			Distranac.setPosition(time - 1, 0);
-			ranacimageA.setPosition(time - 1, 0);
-			ranacimageB.setPosition(time - 1, 0);
-			if (currentlist != null) {
-				for (Intersectionobject currentobject : currentlist) {
+			RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
 
-					int count = 0;
+			RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
+			Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 
-					ArrayList<double[]> sortedlinelist = currentobject.linelist;
+			RandomAccess<FloatType> ranac = CurvatureKymo.randomAccess();
 
-					for (int i = 0; i < sortedlinelist.size(); ++i) {
+			RandomAccess<FloatType> Distranac = DistCurvatureKymo.randomAccess();
 
-						ranac.setPosition(count, 1);
-						ranac.get().set((float) sortedlinelist.get(i)[2]);
+			while (itZ.hasNext()) {
 
-						
-						Distranac.setPosition(count, 1);
-						Distranac.get().set((float) sortedlinelist.get(i)[6]);
-						
-						
-						ranacimageA.setPosition(count, 1);
-						ranacimageA.get().setReal(sortedlinelist.get(i)[3]);
+				Map.Entry<String, Integer> entry = itZ.next();
 
-						ranacimageB.setPosition(count, 1);
-						ranacimageB.get().setReal(sortedlinelist.get(i)[4]);
+				int time = entry.getValue();
+				String timeID = entry.getKey();
 
-						count++;
+				ArrayList<Intersectionobject> currentlist = sortedMappair.get(TrackID + timeID);
+
+				ranac.setPosition(time - 1, 0);
+				Distranac.setPosition(time - 1, 0);
+				ranacimageA.setPosition(time - 1, 0);
+				ranacimageB.setPosition(time - 1, 0);
+				if (currentlist != null) {
+					for (Intersectionobject currentobject : currentlist) {
+
+						int count = 0;
+
+						ArrayList<double[]> sortedlinelist = currentobject.linelist;
+
+						for (int i = 0; i < sortedlinelist.size(); ++i) {
+
+							ranac.setPosition(count, 1);
+							ranac.get().set((float) sortedlinelist.get(i)[2]);
+
+							Distranac.setPosition(count, 1);
+							Distranac.get().set((float) sortedlinelist.get(i)[6]);
+
+							ranacimageA.setPosition(count, 1);
+							ranacimageA.get().setReal(sortedlinelist.get(i)[3]);
+
+							ranacimageB.setPosition(count, 1);
+							ranacimageB.get().setReal(sortedlinelist.get(i)[4]);
+
+							count++;
+
+						}
 
 					}
-
 				}
+
 			}
 
-		}
-		
 		}
 		double[] calibration = new double[] { parent.timecal, parent.calibration };
 		Calibration cal = new Calibration();
 		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, " ");
-		
+
 		String SaveTitle = "Curvature_";
 		String CurvatureTitle = "Curvature ChA Kymo for TrackID: ";
-		if(parent.pixelcelltrackcirclefits) {
+		if (parent.pixelcelltrackcirclefits) {
 			SaveTitle = "CircleFits" + SaveTitle;
-			CurvatureTitle = "CircleFits"  + CurvatureTitle;
+			CurvatureTitle = "CircleFits" + CurvatureTitle;
 		}
-		if(parent.distancemethod) {
+		if (parent.distancemethod) {
 			SaveTitle = "DistanceMethod" + SaveTitle;
-			CurvatureTitle = "DistanceMethod"  + CurvatureTitle;
+			CurvatureTitle = "DistanceMethod" + CurvatureTitle;
 		}
-		String DistCurvatureTitle = "" ;
+		String DistCurvatureTitle = "";
 		String DistSaveTitle = " ";
-		if(parent.combomethod) {
-			
+		if (parent.combomethod) {
+
 			CurvatureTitle = "Circle-Curvature ChA Kymo for TrackID: ";
 			DistCurvatureTitle = "Dist-Curvature ChA Kymo for TrackID: ";
 			SaveTitle = "Circle-Curvature_";
@@ -710,29 +683,25 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 
 			FileSaver DistfsC = new FileSaver(DistCurveimp);
 
-			DistfsC.saveAsTiff(parent.saveFile + "//" + DistSaveTitle    + parent.inputstring.replaceFirst("[.][^.]+$", "")   +  "TrackID" + Integer.parseInt(TrackID) + ".tif");
+			DistfsC.saveAsTiff(parent.saveFile + "//" + DistSaveTitle + parent.inputstring.replaceFirst("[.][^.]+$", "")
+					+ "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
-			
-			
 		}
-			
-		
+
 		ImagePlus Curveimp = ImageJFunctions.wrapFloat(CurvatureKymo, CurvatureTitle + TrackID);
 
 		FileSaver fsC = new FileSaver(Curveimp);
 
-		fsC.saveAsTiff(parent.saveFile + "//" + SaveTitle    + parent.inputstring.replaceFirst("[.][^.]+$", "")   +  "TrackID" + Integer.parseInt(TrackID) + ".tif");
+		fsC.saveAsTiff(parent.saveFile + "//" + SaveTitle + parent.inputstring.replaceFirst("[.][^.]+$", "") + "TrackID"
+				+ Integer.parseInt(TrackID) + ".tif");
 
-		
-		
-		
-		
 		ImagePlus IntensityAimp = ImageJFunctions.wrapFloat(IntensityAKymo,
 				"Intensity ChA Kymo for TrackID: " + TrackID);
 
 		FileSaver fsB = new FileSaver(IntensityAimp);
 
-		fsB.saveAsTiff(  parent.saveFile+ "//" + "Ch1Intensity_"   + parent.inputstring.replaceFirst("[.][^.]+$", "")   +  "TrackID" + Integer.parseInt(TrackID) + ".tif");
+		fsB.saveAsTiff(parent.saveFile + "//" + "Ch1Intensity_" + parent.inputstring.replaceFirst("[.][^.]+$", "")
+				+ "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
 		if (parent.twochannel) {
 			ImagePlus IntensityBimp = ImageJFunctions.wrapFloat(IntensityBKymo,
@@ -740,65 +709,64 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 
 			FileSaver fsBB = new FileSaver(IntensityBimp);
 
-			fsBB.saveAsTiff(parent.saveFile + "//" + "Ch2Intensity_"   +  parent.inputstring.replaceFirst("[.][^.]+$", "") + "TrackID" + Integer.parseInt(TrackID) + ".tif");
+			fsBB.saveAsTiff(parent.saveFile + "//" + "Ch2Intensity_" + parent.inputstring.replaceFirst("[.][^.]+$", "")
+					+ "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
 		}
-		if(parent.KymoFileobject.get(TrackID)==null) {
-		KymoSaveobject Kymos = new KymoSaveobject(CurvatureKymo, IntensityAKymo, IntensityBKymo);
-		if(parent.combomethod)
-			Kymos = new KymoSaveobject(CurvatureKymo,DistCurvatureKymo, IntensityAKymo, IntensityBKymo);
-		
-		parent.KymoFileobject.put(TrackID, Kymos);
+		if (parent.KymoFileobject.get(TrackID) == null) {
+			KymoSaveobject Kymos = new KymoSaveobject(CurvatureKymo, IntensityAKymo, IntensityBKymo);
+			if (parent.combomethod)
+				Kymos = new KymoSaveobject(CurvatureKymo, DistCurvatureKymo, IntensityAKymo, IntensityBKymo);
 
-		int hyperslicedimension = 1;
-		ArrayList<Pair<Integer, Double>> poslist = new ArrayList<Pair<Integer, Double>>();
-		for (long pos = 0; pos < CurvatureKymo.dimension(hyperslicedimension) - 1; ++pos) {
+			parent.KymoFileobject.put(TrackID, Kymos);
 
-			RandomAccessibleInterval<FloatType> CurveView = Views.hyperSlice(CurvatureKymo, hyperslicedimension, pos);
+			int hyperslicedimension = 1;
+			ArrayList<Pair<Integer, Double>> poslist = new ArrayList<Pair<Integer, Double>>();
+			for (long pos = 0; pos < CurvatureKymo.dimension(hyperslicedimension) - 1; ++pos) {
 
-			RandomAccess<FloatType> Cranac = CurveView.randomAccess();
+				RandomAccessibleInterval<FloatType> CurveView = Views.hyperSlice(CurvatureKymo, hyperslicedimension,
+						pos);
 
-			Iterator<Map.Entry<String, Integer>> itZSec = parent.AccountedZ.entrySet().iterator();
+				RandomAccess<FloatType> Cranac = CurveView.randomAccess();
 
-			double rms = 0;
-			while (itZSec.hasNext()) {
+				Iterator<Map.Entry<String, Integer>> itZSec = parent.AccountedZ.entrySet().iterator();
 
-				Map.Entry<String, Integer> entry = itZSec.next();
+				double rms = 0;
+				while (itZSec.hasNext()) {
 
-				int time = entry.getValue();
+					Map.Entry<String, Integer> entry = itZSec.next();
 
-				Cranac.setPosition(time - 1, 0);
+					int time = entry.getValue();
 
-				rms += Cranac.get().get() * Cranac.get().get();
+					Cranac.setPosition(time - 1, 0);
+
+					rms += Cranac.get().get() * Cranac.get().get();
+
+				}
+				poslist.add(new ValuePair<Integer, Double>((int) pos, Math.sqrt(rms / parent.AccountedZ.size())));
 
 			}
-			poslist.add(new ValuePair<Integer, Double>((int) pos, Math.sqrt(rms / parent.AccountedZ.size())));
-
-		}
-		parent.StripList.put(TrackID, poslist);
+			parent.StripList.put(TrackID, poslist);
 		}
 	}
 
 	@Override
 	protected void done() {
 
-		
-	
-		
 		parent.CurrentCurvaturebutton.setEnabled(true);
 		parent.radiusField.setEnabled(true);
 		parent.Curvaturebutton.setEnabled(true);
-        parent.timeslider.setEnabled(true);
-        parent.inputFieldT.setEnabled(true);
-        parent.distancemode.setEnabled(true);
-        parent.Pixelcelltrackcirclemode.setEnabled(true);
-        parent.resolutionField.setEnabled(true);
-        parent.interiorfield.setEnabled(true);
-        parent.Displaybutton.setEnabled(true);
-        parent.minInlierslider.setEnabled(true);
-        parent.minInlierField.setEnabled(true);
-        parent.regioninteriorfield.setEnabled(true);	
-        parent.Combomode.setEnabled(true);
+		parent.timeslider.setEnabled(true);
+		parent.inputFieldT.setEnabled(true);
+		parent.distancemode.setEnabled(true);
+		parent.Pixelcelltrackcirclemode.setEnabled(true);
+		parent.resolutionField.setEnabled(true);
+		parent.interiorfield.setEnabled(true);
+		parent.Displaybutton.setEnabled(true);
+		parent.minInlierslider.setEnabled(true);
+		parent.minInlierField.setEnabled(true);
+		parent.regioninteriorfield.setEnabled(true);
+		parent.Combomode.setEnabled(true);
 		parent.jpb.setIndeterminate(false);
 		parent.Cardframe.validate();
 
@@ -812,9 +780,9 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		parent.SegmentTracklist.clear();
 		parent.table.removeAll();
 
-		IJ.log("\n " + "Calculation is Complete or was interupted "  + "\n "
-		        + "IF RUNNING IN BATCH MODE, Results are automatically saved in Results folder"
-		        + "IF IT WAS NOT A KEYBOARD INTERUPT: " + "\n "
+		IJ.log("\n " + "Calculation is Complete or was interupted " + "\n "
+				+ "IF RUNNING IN BATCH MODE, Results are automatically saved in Results folder"
+				+ "IF IT WAS NOT A KEYBOARD INTERUPT: " + "\n "
 				+ "do a Shift + Left click near the Cell of your choice to display " + "\n "
 				+ "Kymographs for Curvature, Intensity " + " \n"
 				+ "RMS value which moves with the time slider to fit on the current view of the cell " + " \n"
@@ -829,7 +797,6 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 
 				int z = itZ.next().getValue();
 
-			
 				SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
 
 				parent.parentgraphZ.put(Integer.toString(z), simplegraph);
@@ -857,9 +824,9 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		} catch (ExecutionException e) {
 
 		}
-		if(batchmode) {
+		if (batchmode) {
 			BatchKymoSave.KymoSave(parent, savefile, parent.Cardframe);
-		    parent.imp.close();	
+			parent.imp.close();
 		}
 	}
 
@@ -1021,8 +988,6 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 			}
 
 		}
-		
-	
 
 	}
 
