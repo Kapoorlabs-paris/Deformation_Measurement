@@ -2674,7 +2674,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		displaySegments.addItemListener(new DisplayBoxListener(this));
 		CurrentCurvaturebutton.addActionListener(new CurrentCurvatureListener(this));
 		Curvaturebutton.addActionListener(new CurvatureListener(this));
-		Displaybutton.addActionListener(new DisplayVisualListener(this));
+		Displaybutton.addActionListener(new DisplayVisualListener(this, true));
 		Anglebutton.addActionListener(new AngleListener(this));
 		startT.addTextListener(new AutoStartListener(this));
 		endT.addTextListener(new AutoEndListener(this));

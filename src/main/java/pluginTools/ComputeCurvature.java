@@ -232,7 +232,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 	}
 
 	public static RandomAccessibleInterval<FloatType> MakeDistanceFan(InteractiveSimpleEllipseFit parent,
-			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, String TrackID) {
+			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, String TrackID, boolean show) {
 
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 
@@ -272,6 +272,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			}
 
 		}
+		if(show)
 		AxisRendering.Reshape(Blank, "Distance-Fan display");
 
 		return Blank;
@@ -555,7 +556,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 	public static void SaveInterKymo(InteractiveSimpleEllipseFit parent,
 			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size, String TrackID) {
 
-		DisplayVisualListener display = new DisplayVisualListener(parent);
+		DisplayVisualListener display = new DisplayVisualListener(parent, false);
 		Pair<RandomAccessibleInterval<FloatType>, RandomAccessibleInterval<FloatType>> Blankprob = display.run();
 
 		String Title = "Distance-Fan displayfor TrackID: ";

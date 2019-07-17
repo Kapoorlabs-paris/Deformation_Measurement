@@ -19,10 +19,12 @@ public class DisplayVisualListener implements ActionListener {
 	
 	
 	final InteractiveSimpleEllipseFit parent;
+	final boolean show;
 	
-	public  DisplayVisualListener(InteractiveSimpleEllipseFit parent) {
+	public  DisplayVisualListener(InteractiveSimpleEllipseFit parent, boolean show) {
 	      
 		this.parent = parent;
+		this.show = show;
 
 	}
 	
@@ -43,7 +45,7 @@ public class DisplayVisualListener implements ActionListener {
 
 	
 		String ID = (String) parent.table.getValueAt(parent.row, 0);
-		RandomAccessibleInterval<FloatType> Blank = ComputeCurvature.MakeDistanceFan(parent, densesortedMappair.sortedmap, ID);
+		RandomAccessibleInterval<FloatType> Blank = ComputeCurvature.MakeDistanceFan(parent, densesortedMappair.sortedmap, ID, show);
 		ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>> currentresultCurv = new ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>>();
 
 		
@@ -56,7 +58,7 @@ public class DisplayVisualListener implements ActionListener {
 		}
 
 	}
-	ParallelResultDisplay display = new ParallelResultDisplay(parent, currentresultCurv);
+	ParallelResultDisplay display = new ParallelResultDisplay(parent, currentresultCurv, show);
 	RandomAccessibleInterval<FloatType> probImg = display.ResultDisplayCircleFit();
 	
 	return new ValuePair<RandomAccessibleInterval<FloatType>, RandomAccessibleInterval<FloatType>>(Blank, probImg);
