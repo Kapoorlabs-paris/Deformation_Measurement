@@ -14,11 +14,11 @@ public class InteractiveIlastikEllipseFit {
 		JFrame frame = new JFrame("");
 
 		ImagePlus impB = new Opener()
-				.openImage("/Users/aimachine/Documents/Ozga_curvature/Test/Binary/Binary_20180905_4x16_1_44um.tif");
+				.openImage("/Users/aimachine/Downloads/Something.tif");
 		impB.show();
 
 		ImagePlus impA = new Opener()
-				.openImage("/Users/aimachine/Documents/Ozga_curvature/Test/c1/C1-20180905_4x16_1_44um.tif");
+				.openImage("/Users/aimachine/Downloads/Something.tif");
 		impA.show();
 
 		IlastikEllipseFileChooser panel = new IlastikEllipseFileChooser();

@@ -559,7 +559,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		DisplayVisualListener display = new DisplayVisualListener(parent, false);
 		Pair<RandomAccessibleInterval<FloatType>, RandomAccessibleInterval<FloatType>> Blankprob = display.run();
 
-		String Title = "Distance-Fan displayfor TrackID: ";
+		String Title = "Distance-Fan display";
 		ImagePlus DistFanimp = ImageJFunctions.wrapFloat(Blankprob.getA(), Title + TrackID);
 
 		FileSaver DistfsF = new FileSaver(DistFanimp);
@@ -567,7 +567,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		DistfsF.saveAsTiff(parent.saveFile + "//" + Title + parent.inputstring.replaceFirst("[.][^.]+$", "") + "TrackID"
 				+ Integer.parseInt(TrackID) + ".tif");
 
-		String CurvTitle = "ColorCoded-Curvature displayfor TrackID: ";
+		String CurvTitle = "ColorCoded-Curvature display";
 		
 		if (parent.pixelcelltrackcirclefits || parent.combomethod) {
 			CurvTitle = "CircleFits" + CurvTitle;
@@ -663,7 +663,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, " ");
 
 		String SaveTitle = "Curvature_";
-		String CurvatureTitle = "Curvature ChA Kymo for TrackID: ";
+		String CurvatureTitle = "Curvature ChA Kymo ";
 		if (parent.pixelcelltrackcirclefits) {
 			SaveTitle = "CircleFits" + SaveTitle;
 			CurvatureTitle = "CircleFits" + CurvatureTitle;
@@ -676,10 +676,10 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		String DistSaveTitle = " ";
 		if (parent.combomethod) {
 
-			CurvatureTitle = "Circle-Curvature ChA Kymo for TrackID: ";
-			DistCurvatureTitle = "Dist-Curvature ChA Kymo for TrackID: ";
-			SaveTitle = "Circle-Curvature_";
-			DistSaveTitle = "Distance-Curvature_";
+			CurvatureTitle = "Curvature ChA Kymo";
+			DistCurvatureTitle = "Dist ChA Kymo";
+			SaveTitle = "Curvature_";
+			DistSaveTitle = "Distance_";
 			ImagePlus DistCurveimp = ImageJFunctions.wrapFloat(DistCurvatureKymo, DistCurvatureTitle + TrackID);
 
 			FileSaver DistfsC = new FileSaver(DistCurveimp);
