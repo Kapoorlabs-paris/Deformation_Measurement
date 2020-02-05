@@ -204,19 +204,9 @@ public class Computeinwater {
             	for(Map.Entry<Integer, Intersectionobject> entry: LabelMap.entrySet())
             		AlldenseCurveintersection.add(entry.getValue());
 	
-			    
-			
-				
-				
-				
 			}
 		}
 		
-		
-			
-
-		
-			
 
 					String uniqueID = Integer.toString(z) + Integer.toString(t);
 					parent.ALLIntersections.put(uniqueID, AllCurveintersection);

@@ -180,6 +180,8 @@ public class SaverListener implements ActionListener {
 			
 			
 			KymoSaveobject Kymos = parent.KymoFileobject.get(ID);
+			
+			/*
 			if(Kymos==null) {
 				
 				CurvatureTableDisplay.saveclicked(parent, parent.rowchoice);
@@ -188,7 +190,7 @@ public class SaverListener implements ActionListener {
 			}
 			else
 				CurvatureTableDisplay.saveclicked(parent, parent.rowchoice);
-			
+			*/
 			
 			RandomAccessibleInterval<FloatType> CurvatureKymo = Kymos.CurvatureKymo;
 			

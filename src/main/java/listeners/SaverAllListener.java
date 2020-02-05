@@ -89,15 +89,8 @@ public class SaverAllListener implements ActionListener {
 				
 				KymoSaveobject Kymos = parent.KymoFileobject.get(ID);
 				KymoSaveobject LineKymo = parent.KymoLineobject.get(ID);
-				if(Kymos==null || LineKymo == null) {
-					
-					CurvatureTableDisplay.saveclicked(parent, tablepos);
-					Kymos = parent.KymoFileobject.get(ID);
-					LineKymo = parent.KymoLineobject.get(ID);
-				}
-				else
-					CurvatureTableDisplay.saveclicked(parent, tablepos);
-				
+		
+		      
 				
 				RandomAccessibleInterval<FloatType> CurvatureKymo = Kymos.CurvatureKymo;
 				
@@ -170,10 +163,24 @@ public class SaverAllListener implements ActionListener {
 				
 			    bw.close();
 				fw.close();
+			/*	
+				 if(Kymos==null || LineKymo == null) {
+						
+						CurvatureTableDisplay.saveclicked(parent, tablepos);
+						Kymos = parent.KymoFileobject.get(ID);
+						LineKymo = parent.KymoLineobject.get(ID);
+					}
+					else
+						CurvatureTableDisplay.saveclicked(parent, tablepos);
+						
+						*/
 			}
+			
 			
 			catch (IOException te) {
 			}
+			
+			
 			
 		}
 		
