@@ -70,31 +70,21 @@ public class ComputeCurvatureCurrent extends SwingWorker<Void, Void> {
 
 		EllipseTrack newtrack = new EllipseTrack(parent, jpb);
 		newtrack.ComputeCurvatureCurrent();
+		
+		if (parent.pixellist.size() <= 2) {
+			
+			parent.Angleselect.remove(parent.IntegerSegment);
+			parent.panelFirst.repaint();
+			parent.panelFirst.validate();
+		}
+		
+		System.out.println(parent.pixellist.size());
 
 		return null;
 
 	}
 
-	private static HashMap<String, Integer> sortByValues(HashMap<String, Integer> map) {
-		List<Entry<String, Integer>> list = new LinkedList<Entry<String, Integer>>(map.entrySet());
-		// Defined Custom Comparator here
-		Collections.sort(list, new Comparator<Entry<String, Integer>>() {
 
-			@Override
-			public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {
-				return (o1.getValue()).compareTo(o2.getValue());
-			}
-		});
-
-		// Here I am copying the sorted list in HashMap
-		// using LinkedHashMap to preserve the insertion order
-		HashMap<String, Integer> sortedHashMap = new LinkedHashMap<String, Integer>();
-		for (Iterator<Entry<String, Integer>> it = list.iterator(); it.hasNext();) {
-			Map.Entry<String, Integer> entry = (Map.Entry<String, Integer>) it.next();
-			sortedHashMap.put(entry.getKey(), entry.getValue());
-		}
-		return sortedHashMap;
-	}
 
 	@Override
 	protected void done() {

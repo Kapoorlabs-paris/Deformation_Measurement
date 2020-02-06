@@ -163,7 +163,7 @@ public class SaverAllListener implements ActionListener {
 				
 			    bw.close();
 				fw.close();
-			/*	
+				
 				 if(Kymos==null || LineKymo == null) {
 						
 						CurvatureTableDisplay.saveclicked(parent, tablepos);
@@ -173,7 +173,7 @@ public class SaverAllListener implements ActionListener {
 					else
 						CurvatureTableDisplay.saveclicked(parent, tablepos);
 						
-						*/
+						
 			}
 			
 			

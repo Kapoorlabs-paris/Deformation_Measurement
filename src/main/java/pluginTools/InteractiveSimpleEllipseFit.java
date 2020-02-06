@@ -55,8 +55,6 @@ import org.scijava.ui.UIService;
 
 import batchMode.BatchKymoSave;
 import batchMode.SaveBatchListener;
-import bdv.util.Bdv;
-import bdv.util.BdvFunctions;
 import bdv.util.BdvOverlay;
 import bdv.util.BdvSource;
 import comboSliderTextbox.SliderBoxGUI;
@@ -169,8 +167,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	/**
 	 * 
 	 */
-	
-	
+
 	private static final long serialVersionUID = 1L;
 	public String usefolder = IJ.getDirectory("imagej");
 	public String addToName = "ETrack_";
@@ -227,7 +224,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public boolean polynomialfits = false;
 	public boolean circlefits = false;
 	public boolean distancemethod = false;
-	public boolean combomethod  = true;
+	public boolean combomethod = true;
 	public boolean celltrackcirclefits = false;
 	public boolean pixelcelltrackcirclefits = false;
 
@@ -386,7 +383,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public HashMap<String, ArrayList<Intersectionobject>> HashdenseTrackList;
 
 	public ArrayList<Pair<String, Segmentobject>> SegmentTracklist;
-    public HashMap<String, ArrayList<LineProfileCircle>> TimeLineScanIntensity;
+	public HashMap<String, ArrayList<LineProfileCircle>> TimeLineScanIntensity;
 	public HashMap<String, ArrayList<Segmentobject>> HashSegmentTrackList;
 	public ArrayList<Pair<String, double[]>> resultAngle;
 	public ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>> resultCurvature;
@@ -410,7 +407,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public HashMap<Integer, ArrayList<double[]>> HashresultCurvature;
 	public HashMap<Integer, List<RealLocalizable>> SubHashresultCurvature;
 	public BdvSource source;
-	public Bdv bdv;
 	public BdvOverlay bdvoverlay;
 	public HashMap<Integer, Double> HashresultSegCurvature;
 	public HashMap<Integer, Double> HashresultSegIntensityA;
@@ -885,7 +881,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		HashresultSegIntensityB = new HashMap<Integer, Double>();
 		HashresultSegPerimeter = new HashMap<Integer, Double>();
 
-		
 		TimeLineScanIntensity = new HashMap<String, ArrayList<LineProfileCircle>>();
 		HashSegmentTrackList = new HashMap<String, ArrayList<Segmentobject>>();
 		HashTrackList = new HashMap<String, ArrayList<Intersectionobject>>();
@@ -946,14 +941,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			System.out.println("Image has wrong dimensionality, upload an XYT/XYZ/XY image");
 			return;
 		}
-		
+
 		if (originalimgbefore == null)
 			originalimgbefore = originalimg;
 		setTime(fourthDimension);
 		setZ(thirdDimension);
 		CurrentView = utility.Slicer.getCurrentView(originalimg, thirdDimension, thirdDimensionSize, fourthDimension,
 				fourthDimensionSize);
-		
+
 		if (automode || curveautomode)
 			CurrentViewSmooth = utility.Slicer.getCurrentView(originalimgsmooth, thirdDimension, thirdDimensionSize,
 					fourthDimension, fourthDimensionSize);
@@ -981,12 +976,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			background = currentLabel;
 
 		}
-		
-		imp = ImageJFunctions.show(CurrentViewOrig,"Original Image");
-		
-		bdv = BdvFunctions.show( CurrentViewOrig, "Cell", Bdv.options().is2D() );
+
+		imp = ImageJFunctions.show(CurrentViewOrig, "Original Image");
+
+		// bdv = BdvFunctions.show( CurrentViewOrig, "Cell", Bdv.options().is2D() );
 		clockimp = ImageJFunctions.show(CurrentViewOrig);
-		
+
 		imp.setTitle("Active Image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
 		// Create empty Hyperstack
 
@@ -1028,12 +1023,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		saveFile = new java.io.File(".");
 
 	}
-	public  void runBatch(File savefile) {
 
-		
+	public void runBatch(File savefile) {
+
 		displaymin = 0;
 		displaymax = 1;
-	
 
 		if ((automode) || (curveautomode)) {
 
@@ -1090,7 +1084,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		resultDrawLine = new HashMap<String, ArrayList<Line>>();
 		Accountedframes = new HashMap<String, Integer>();
 		AccountedZ = new HashMap<String, Integer>();
-	
+
 		CellCurvature = new ArrayList<Curvatureobject>();
 		setlowprob(lowprob);
 		sethighprob(highprob);
@@ -1137,10 +1131,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			return;
 		}
 
-		
 		setTime(fourthDimension);
 		setZ(thirdDimension);
-		
+
 		CurrentView = utility.Slicer.getCurrentView(originalimg, thirdDimension, thirdDimensionSize, fourthDimension,
 				fourthDimensionSize);
 		if (automode || curveautomode)
@@ -1170,7 +1163,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			background = currentLabel;
 
 		}
-		
+
 		imp = ImageJFunctions.show(CurrentViewOrig);
 
 		imp.setTitle("Active Image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
@@ -1180,7 +1173,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		emptysmooth = new ArrayImgFactory<BitType>().create(originalimg, new BitType());
 		emptyWater = new ArrayImgFactory<IntType>().create(originalimg, new IntType());
 
-	
 		updatePreview(ValueChange.ALL);
 		if (automode || supermode || curveautomode || curvesupermode) {
 
@@ -1196,22 +1188,17 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		}
 
-	
-
-	
-
 		Card(true);
-	
+
 		CleanMe();
 		StartCurvatureComputingCurrent();
 		batchmode = true;
-		StartCurvatureComputing( savefile);
-        
-	
+		StartCurvatureComputing(savefile);
+
 	}
-	
+
 	public void CleanMe() {
-		
+
 		table.removeAll();
 		table.repaint();
 		localCurvature.clear();
@@ -1219,17 +1206,16 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		KymoFileobject.clear();
 		overlay.clear();
 		Tracklist.clear();
-		if(imp!=null && mvl!=null)
-		imp.getCanvas().removeMouseListener(mvl);
-		if(imp!=null && ml!=null)
-		imp.getCanvas().removeMouseMotionListener(ml);
+		if (imp != null && mvl != null)
+			imp.getCanvas().removeMouseListener(mvl);
+		if (imp != null && ml != null)
+			imp.getCanvas().removeMouseMotionListener(ml);
 
 		displayCircle.setState(false);
 		displaySegments.setState(false);
 		displayIntermediate = false;
 		displayIntermediateBox = false;
-		parentgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(
-				DefaultWeightedEdge.class);
+		parentgraph = new SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 		parentgraphZ = new HashMap<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>>();
 		empty = utility.Binarization.CreateBinaryBit(originalimg, lowprob, highprob);
 		parentgraphSegZ = new HashMap<String, SimpleWeightedGraph<Segmentobject, DefaultWeightedEdge>>();
@@ -1242,11 +1228,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		if (AutostartTime <= 0)
 			AutostartTime = 1;
 		AutoendTime = Integer.parseInt(endT.getText());
-		for(int z = AutostartTime; z <= AutoendTime; ++z)
+		for (int z = AutostartTime; z <= AutoendTime; ++z)
 			AccountedZ.put(Integer.toString(z), z);
-		
+
 	}
-	
+
 	public void repaintView(ImagePlus Activeimp, RandomAccessibleInterval<FloatType> Activeimage) {
 		if (Activeimp == null || !Activeimp.isVisible()) {
 			Activeimp = ImageJFunctions.show(Activeimage);
@@ -1281,21 +1267,21 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		TID = Integer.toString(fourthDimension);
 		tmpID = Float.toString(thirdDimension) + Float.toString(fourthDimension);
 		overlay = imp.getOverlay();
-        clockoverlay = clockimp.getOverlay();
+		clockoverlay = clockimp.getOverlay();
 		if (overlay == null) {
 
 			overlay = new Overlay();
 			imp.setOverlay(overlay);
-			
+
 		}
-		
-		if(clockoverlay!=null)
+
+		if (clockoverlay != null)
 			clockoverlay.clear();
 		if (clockoverlay == null) {
-			
+
 			clockoverlay = new Overlay();
 			clockimp.setOverlay(clockoverlay);
-			
+
 		}
 		if (change == ValueChange.INSIDE || change == ValueChange.OUTSIDE) {
 
@@ -1508,7 +1494,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				ComputeCurvature.CurvedLineage(this);
 
 			}
-		
+
 			if (StripList.size() > 0) {
 
 				for (Map.Entry<String, SimpleWeightedGraph<Intersectionobject, DefaultWeightedEdge>> entryZ : parentdensegraphZ
@@ -1517,13 +1503,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 					RandomAccessibleInterval<FloatType> StripImage = new ArrayImgFactory<FloatType>()
 							.create(CurrentViewOrig, new FloatType());
 					RandomAccess<FloatType> ranacStrip = StripImage.randomAccess();
-					
-					
+
 					for (final Integer id : model.trackIDs(true)) {
 						String targetid = id + entryZ.getKey();
-						
 
-						
 						for (Map.Entry<String, ArrayList<Pair<Integer, Double>>> item : StripList.entrySet()) {
 							String TrackID = item.getKey();
 							if (TrackID.equals(targetid)) {
@@ -1539,60 +1522,49 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 										int i = singleitem.getA();
 
-										if(sortedlinelist.size() > i) {
-										ranacStrip.setPosition(new long[] { (long) sortedlinelist.get(i)[0],
-												(long) sortedlinelist.get(i)[1] });
-										
-										HyperSphere<FloatType> hyperSphere = new HyperSphere<FloatType>(StripImage, ranacStrip,
-												3);
-										HyperSphereCursor<FloatType> localcursor = hyperSphere.localizingCursor();
-										
-										while(localcursor.hasNext()) {
-											
-											localcursor.fwd();
-											
-											ranacStrip.setPosition(localcursor);
-											
-											ranacStrip.get().setReal(ranacStrip.get().get() + singleitem.getB());
-										}
-										
-										
-										
+										if (sortedlinelist.size() > i) {
+											ranacStrip.setPosition(new long[] { (long) sortedlinelist.get(i)[0],
+													(long) sortedlinelist.get(i)[1] });
+
+											HyperSphere<FloatType> hyperSphere = new HyperSphere<FloatType>(StripImage,
+													ranacStrip, 3);
+											HyperSphereCursor<FloatType> localcursor = hyperSphere.localizingCursor();
+
+											while (localcursor.hasNext()) {
+
+												localcursor.fwd();
+
+												ranacStrip.setPosition(localcursor);
+
+												ranacStrip.get().setReal(ranacStrip.get().get() + singleitem.getB());
+											}
+
 										}
 									}
 
 								}
-								
-								
-								
-								
 
 							}
 						}
-						
-						
-					  if(RMStrackImages == null || !RMStrackImages.isVisible()) {
-						  
-						  RMStrackImages = ImageJFunctions.show(StripImage);
-						  
-					  }
-					  else {
-						  
-						  final float[] pixels = (float[]) RMStrackImages.getProcessor().getPixels();
+
+						if (RMStrackImages == null || !RMStrackImages.isVisible()) {
+
+							RMStrackImages = ImageJFunctions.show(StripImage);
+
+						} else {
+
+							final float[] pixels = (float[]) RMStrackImages.getProcessor().getPixels();
 							final Cursor<FloatType> c = Views.iterable(StripImage).cursor();
 
 							for (int i = 0; i < pixels.length; ++i)
 								pixels[i] = c.next().get();
 
 							RMStrackImages.updateAndDraw();
-						  
-						  
-					  }
-						
-						
 
-					  RMStrackImages.setTitle("Root Mean square of Curvature" + targetid);
-						
+						}
+
+						RMStrackImages.setTitle("Root Mean square of Curvature" + targetid);
+
 					}
 				}
 
@@ -1654,30 +1626,29 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	}
 
 	public void StartCurvatureComputing(File savefile) {
-		if(!batchmode) {
-		ComputeCurvature compute = new ComputeCurvature(this, jpb, batchmode, savefile );
+		if (!batchmode) {
+			ComputeCurvature compute = new ComputeCurvature(this, jpb, batchmode, savefile);
 
-		curvesupermode = true;
-		
-		compute.execute();
-		
+			curvesupermode = true;
+
+			compute.execute();
+
 		}
-		
+
 		else {
-			
-			ComputeCurvatureBatch compute = new ComputeCurvatureBatch(this, jpb, batchmode, savefile );
+
+			ComputeCurvatureBatch compute = new ComputeCurvatureBatch(this, jpb, batchmode, savefile);
 
 			curvesupermode = true;
 			try {
-				
+
 				compute.doInBackground();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}
-		
 
 	}
 
@@ -1906,7 +1877,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JCheckBox IlastikAuto = new JCheckBox("Show Watershed Image", showWater);
 
 	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField, gaussfield, numsegField,
-			cutoffField, minInlierField, SpecialminInlierField, degreeField, secdegreeField, resolutionField, radiusField;
+			cutoffField, minInlierField, SpecialminInlierField, degreeField, secdegreeField, resolutionField,
+			radiusField;
 
 	public TextField inputFieldZ, startT, endT, maxSizeField, minSizeField;
 	public TextField inputFieldmaxtry, interiorfield, exteriorfield, regioninteriorfield;
@@ -2026,11 +1998,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	final Checkbox circlemode = new Checkbox("Track Segment Circle Fits", curvaturemode, circlefits);
 	public final Checkbox distancemode = new Checkbox("Use Distance Method", curvaturemode, distancemethod);
+	public final Checkbox IntegerSegment = new Checkbox("Different Box Sizes");
+	
 	public final Checkbox Pixelcelltrackcirclemode = new Checkbox("Use Circle Fits", curvaturemode,
 			pixelcelltrackcirclefits);
-	public final Checkbox Combomode = new Checkbox("Use Combo Circle-Distance Method", curvaturemode,
-			combomethod);
-	
+	public final Checkbox Combomode = new Checkbox("Use Combo Circle-Distance Method", curvaturemode, combomethod);
 
 	public boolean displayIntermediate = true;
 	public boolean displayIntermediateBox = true;
@@ -2119,7 +2091,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		SpecialminInlierField = new TextField(textwidth);
 		SpecialminInlierField.setText(Integer.toString(minNumInliers));
-		
+
 		inputtrackField = new TextField(textwidth);
 
 		inputFieldIter = new TextField(textwidth);
@@ -2148,13 +2120,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		resolutionField = new TextField(textwidth);
 		resolutionField.setText(Integer.toString(resolution));
-		
+
 		radiusField = new TextField(textwidth);
 		radiusField.setText(Integer.toString(linescanradius));
 
 		interiorfield = new TextField(textwidth);
 		interiorfield.setText(Integer.toString(insidedistance));
-		
+
 		regioninteriorfield = new TextField(textwidth);
 		regioninteriorfield.setText(Integer.toString(regiondistance));
 
@@ -2399,16 +2371,17 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider, minInlierField,
 						minInlierText, scrollbarSize, minNumInliers, minNumInliersmax);
 
-				
-
-				Angleselect.add(distancemode, new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0,
-						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				Angleselect.add(distancemode, new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				Angleselect.add(Pixelcelltrackcirclemode, new GridBagConstraints(2, 0, 2, 1, 0.0, 0.0,
 						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				
-				Angleselect.add(Combomode, new GridBagConstraints(2, 2, 2, 1, 0.0, 0.0,
+
+				Angleselect.add(IntegerSegment, new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0,
 						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				
+				Angleselect.add(Combomode, new GridBagConstraints(2, 2, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
 				Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 3, 2, 1, 0.0, 0.0,
 						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
@@ -2417,14 +2390,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 				Angleselect.add(resolutionField, new GridBagConstraints(0, 5, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				
+
 				Angleselect.add(radiusText, new GridBagConstraints(3, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 				Angleselect.add(radiusField, new GridBagConstraints(3, 5, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				
-				
 
 				Angleselect.add(indistText, new GridBagConstraints(0, 6, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
@@ -2435,15 +2406,15 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				Angleselect.add(regionText, new GridBagConstraints(3, 6, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				Angleselect.add(regioninteriorfield, new GridBagConstraints(3, 7, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
-						GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				
+				Angleselect.add(regioninteriorfield, new GridBagConstraints(3, 7, 2, 1, 0.0, 0.0,
+						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
 				Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 8, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				
-				Angleselect.add(SpecialminInlierField, new GridBagConstraints(3, 3, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
-						GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				
+
+				Angleselect.add(SpecialminInlierField, new GridBagConstraints(3, 3, 2, 1, 0.0, 0.0,
+						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
 				Angleselect.add(Displaybutton, new GridBagConstraints(3, 8, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
@@ -2658,7 +2629,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		lostframe.addTextListener(new LostFrameListener(this));
 		interiorfield.addTextListener(new InteriorDistListener(this, false));
 		exteriorfield.addTextListener(new ExteriorDistListener(this));
-		
+
 		regioninteriorfield.addTextListener(new RegionInteriorListener(this, false));
 
 		Batchbutton.addActionListener(new SaveBatchListener(this));
@@ -2666,7 +2637,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		SelectRim.addActionListener(new RimLineSelectionListener(this));
 		degreeField.addTextListener(new DegreeListener(this, false));
 		resolutionField.addTextListener(new ResolutionListener(this, false));
-		
+
 		radiusField.addTextListener(new LinescanradiusListener(this, false));
 		secdegreeField.addTextListener(new SecDegreeListener(this, false));
 		Smoothbutton.addActionListener(new DoSmoothingListener(this));
@@ -2718,8 +2689,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		Cardframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		Cardframe.pack();
-		if(!hide)
-		Cardframe.setVisible(true);
+		if (!hide)
+			Cardframe.setVisible(true);
 
 	}
 
@@ -2753,7 +2724,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	public static void main(String[] args) {
 
-		//new ImageJ();
+		// new ImageJ();
 		JFrame frame = new JFrame("");
 		EllipseFileChooser panel = new EllipseFileChooser();
 

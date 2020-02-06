@@ -325,13 +325,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 				e.printStackTrace();
 			}
 		}
-		
-		  if(parent.thirdDimension==1) {
-	        	 
-	        	 BdvOverlayDisplay bdvdisplay =new BdvOverlayDisplay(parent, Masterclock, parent.bdv);
-	        	 bdvdisplay.GetDisplay();
-	         }
-		
+
 		
 		
 			
