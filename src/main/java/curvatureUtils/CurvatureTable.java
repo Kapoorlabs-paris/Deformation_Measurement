@@ -71,44 +71,7 @@ public class CurvatureTable {
 			parent.table.getModel().setValueAt(f.format(currentangle.perimeter), parent.row, 4);
 
 			parent.row++;
-			String StringID = entry.getKey();
-			int ID = Integer.parseInt(entry.getKey());
-			ArrayList<Pair<String, double[]>> currentresultPeri = new ArrayList<Pair<String, double[]>>();
 			
-
-			for (Pair<String, double[]> currentperi : parent.resultAngle) {
-
-				if (StringID.equals(currentperi.getA())) {
-
-					currentresultPeri.add(currentperi);
-
-				}
-
-			}
-
-		
-
-			if (parent.imp != null) {
-				parent.imp.setOverlay(parent.overlay);
-				parent.imp.updateAndDraw();
-			}
-			Binobject densesortedMappair = ComputeCurvature.GetZTdenseTrackList(parent);
-			parent.sortedMappair = densesortedMappair.sortedmap;
-			int TimedimensionKymo = parent.AccountedZ.size();
-
-		
-
-			// For dense plot
-			HashMap<String, Integer> denseidmap = densesortedMappair.maxid;
-
-			
-			int Xkymodimension = denseidmap.get(StringID);
-		
-
-				long[] size = new long[] { TimedimensionKymo, Xkymodimension + 1 };
-				
-				long[] linesize = new long[] {TimedimensionKymo, (long) Math.ceil(parent.minNumInliers * (parent.insidedistance * 2 + extradimension))};
-				ComputeCurvature.CreateInterKymo( parent,densesortedMappair.sortedmap, size, entry.getKey());
 			parent.tablesize = parent.row;
 		}
 
@@ -199,6 +162,50 @@ public class CurvatureTable {
 		parent.panelFirst.repaint();
 		parent.panelFirst.validate();
 		parent.Cardframe.pack();
+		
+		for (Map.Entry<String, Intersectionobject> entry : parent.Finalresult.entrySet()) {
+
+			String StringID = entry.getKey();
+			int ID = Integer.parseInt(entry.getKey());
+			ArrayList<Pair<String, double[]>> currentresultPeri = new ArrayList<Pair<String, double[]>>();
+			
+
+			for (Pair<String, double[]> currentperi : parent.resultAngle) {
+
+				if (StringID.equals(currentperi.getA())) {
+
+					currentresultPeri.add(currentperi);
+
+				}
+
+			}
+
+		
+
+			if (parent.imp != null) {
+				parent.imp.setOverlay(parent.overlay);
+				parent.imp.updateAndDraw();
+			}
+			Binobject densesortedMappair = ComputeCurvature.GetZTdenseTrackList(parent);
+			parent.sortedMappair = densesortedMappair.sortedmap;
+			int TimedimensionKymo = parent.AccountedZ.size();
+
+		
+
+			// For dense plot
+			HashMap<String, Integer> denseidmap = densesortedMappair.maxid;
+
+			
+			int Xkymodimension = denseidmap.get(StringID);
+		
+
+				long[] imsize = new long[] { TimedimensionKymo, Xkymodimension + 1 };
+				
+				long[] linesize = new long[] {TimedimensionKymo, (long) Math.ceil(parent.minNumInliers * (parent.insidedistance * 2 + extradimension))};
+				ComputeCurvature.CreateInterKymo( parent,densesortedMappair.sortedmap, imsize, entry.getKey());
+			parent.tablesize = parent.row;
+		}
+
 	
 
 	}
