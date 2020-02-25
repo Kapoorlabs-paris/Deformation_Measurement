@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,11 +19,13 @@ import kalmanForSegments.Segmentobject;
 import net.imglib2.RealLocalizable;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import pluginTools.Binobject;
+import pluginTools.ComputeCurvature;
 import pluginTools.InteractiveSimpleEllipseFit;
 import utility.Curvatureobject;
 
 public class CurvatureTable {
-
+	static int extradimension = 50;
 	public static void CreateTableTrackView(final InteractiveSimpleEllipseFit parent) {
 
 		parent.resultAngle = new ArrayList<Pair<String, double[]>>();
@@ -68,14 +71,51 @@ public class CurvatureTable {
 			parent.table.getModel().setValueAt(f.format(currentangle.perimeter), parent.row, 4);
 
 			parent.row++;
+			String StringID = entry.getKey();
+			int ID = Integer.parseInt(entry.getKey());
+			ArrayList<Pair<String, double[]>> currentresultPeri = new ArrayList<Pair<String, double[]>>();
+			
 
+			for (Pair<String, double[]> currentperi : parent.resultAngle) {
+
+				if (StringID.equals(currentperi.getA())) {
+
+					currentresultPeri.add(currentperi);
+
+				}
+
+			}
+
+		
+
+			if (parent.imp != null) {
+				parent.imp.setOverlay(parent.overlay);
+				parent.imp.updateAndDraw();
+			}
+			Binobject densesortedMappair = ComputeCurvature.GetZTdenseTrackList(parent);
+			parent.sortedMappair = densesortedMappair.sortedmap;
+			int TimedimensionKymo = parent.AccountedZ.size();
+
+		
+
+			// For dense plot
+			HashMap<String, Integer> denseidmap = densesortedMappair.maxid;
+
+			
+			int Xkymodimension = denseidmap.get(StringID);
+		
+
+				long[] size = new long[] { TimedimensionKymo, Xkymodimension + 1 };
+				
+				long[] linesize = new long[] {TimedimensionKymo, (long) Math.ceil(parent.minNumInliers * (parent.insidedistance * 2 + extradimension))};
+				ComputeCurvature.CreateInterKymo( parent,densesortedMappair.sortedmap, size, entry.getKey());
 			parent.tablesize = parent.row;
 		}
 
 		makeGUI(parent);
 	}
 
-	
+	//String
 
 	public static void CreateTableView(final InteractiveSimpleEllipseFit parent) {
 
@@ -101,6 +141,9 @@ public class CurvatureTable {
 			parent.row++;
 
 			parent.tablesize = parent.row;
+			
+			
+			
 		}
 
 		makeGUI(parent);

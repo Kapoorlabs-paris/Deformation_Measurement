@@ -750,6 +750,167 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			parent.StripList.put(TrackID, poslist);
 		}
 	}
+	
+	public static void CreateInterKymo(InteractiveSimpleEllipseFit parent,
+			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size, String TrackID) {
+
+		DisplayVisualListener display = new DisplayVisualListener(parent, false);
+		Pair<RandomAccessibleInterval<FloatType>, RandomAccessibleInterval<FloatType>> Blankprob = display.run();
+
+		String Title = "Distance-Fan display";
+
+	
+
+		String CurvTitle = "ColorCoded-Curvature display";
+		
+		if (parent.pixelcelltrackcirclefits || parent.combomethod) {
+			CurvTitle = "CircleFits" + CurvTitle;
+		}
+		if (parent.distancemethod) {
+			CurvTitle = "DistanceMethod" + CurvTitle;
+		}
+		
+		
+		ImagePlus ColorCodedCurv = ImageJFunctions.wrapFloat(Blankprob.getB(), Title + TrackID);
+
+		FileSaver DistfsColor = new FileSaver(ColorCodedCurv);
+
+		DistfsColor.saveAsTiff(parent.saveFile + "//" + CurvTitle + parent.inputstring.replaceFirst("[.][^.]+$", "")
+				+ "TrackID" + Integer.parseInt(TrackID) + ".tif");
+
+		RandomAccessibleInterval<FloatType> CurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
+				new FloatType());
+		RandomAccessibleInterval<FloatType> IntensityAKymo = new ArrayImgFactory<FloatType>().create(size,
+				new FloatType());
+		RandomAccessibleInterval<FloatType> IntensityBKymo = new ArrayImgFactory<FloatType>().create(size,
+				new FloatType());
+		RandomAccessibleInterval<FloatType> DistCurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
+				new FloatType());
+
+		if (parent.KymoFileobject.get(TrackID) != null) {
+
+			CurvatureKymo = parent.KymoFileobject.get(TrackID).CurvatureKymo;
+
+			IntensityAKymo = parent.KymoFileobject.get(TrackID).IntensityAKymo;
+
+			IntensityBKymo = parent.KymoFileobject.get(TrackID).IntensityBKymo;
+
+			DistCurvatureKymo = parent.KymoFileobject.get(TrackID).DistCurvatureKymo;
+
+		} else {
+
+			RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
+
+			RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
+			Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
+
+			RandomAccess<FloatType> ranac = CurvatureKymo.randomAccess();
+
+			RandomAccess<FloatType> Distranac = DistCurvatureKymo.randomAccess();
+
+			while (itZ.hasNext()) {
+
+				Map.Entry<String, Integer> entry = itZ.next();
+
+				int time = entry.getValue();
+				String timeID = entry.getKey();
+
+				ArrayList<Intersectionobject> currentlist = sortedMappair.get(TrackID + timeID);
+
+				ranac.setPosition(time - 1, 0);
+				Distranac.setPosition(time - 1, 0);
+				ranacimageA.setPosition(time - 1, 0);
+				ranacimageB.setPosition(time - 1, 0);
+				if (currentlist != null) {
+					for (Intersectionobject currentobject : currentlist) {
+
+						int count = 0;
+
+						ArrayList<double[]> sortedlinelist = currentobject.linelist;
+
+						for (int i = 0; i < sortedlinelist.size(); ++i) {
+
+							ranac.setPosition(count, 1);
+							ranac.get().set((float) sortedlinelist.get(i)[2]);
+
+							Distranac.setPosition(count, 1);
+							Distranac.get().set((float) sortedlinelist.get(i)[6]);
+
+							ranacimageA.setPosition(count, 1);
+							ranacimageA.get().setReal(sortedlinelist.get(i)[3]);
+
+							ranacimageB.setPosition(count, 1);
+							ranacimageB.get().setReal(sortedlinelist.get(i)[4]);
+
+							count++;
+
+						}
+
+					}
+				}
+
+			}
+
+		}
+		double[] calibration = new double[] { parent.timecal, parent.calibration };
+		Calibration cal = new Calibration();
+		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, " ");
+
+		String SaveTitle = "Curvature_";
+		String CurvatureTitle = "Curvature ChA Kymo ";
+		if (parent.pixelcelltrackcirclefits) {
+			SaveTitle = "CircleFits" + SaveTitle;
+			CurvatureTitle = "CircleFits" + CurvatureTitle;
+		}
+		if (parent.distancemethod) {
+			SaveTitle = "DistanceMethod" + SaveTitle;
+			CurvatureTitle = "DistanceMethod" + CurvatureTitle;
+		}
+		if (parent.combomethod) {
+
+			CurvatureTitle = "Curvature ChA Kymo";
+			SaveTitle = "Curvature_";
+			
+
+		}
+
+
+			KymoSaveobject Kymos = new KymoSaveobject(CurvatureKymo, IntensityAKymo, IntensityBKymo);
+			if (parent.combomethod)
+				Kymos = new KymoSaveobject(CurvatureKymo, DistCurvatureKymo, IntensityAKymo, IntensityBKymo);
+
+			parent.KymoFileobject.put(TrackID, Kymos);
+
+			int hyperslicedimension = 1;
+			ArrayList<Pair<Integer, Double>> poslist = new ArrayList<Pair<Integer, Double>>();
+			for (long pos = 0; pos < CurvatureKymo.dimension(hyperslicedimension) - 1; ++pos) {
+
+				RandomAccessibleInterval<FloatType> CurveView = Views.hyperSlice(CurvatureKymo, hyperslicedimension,
+						pos);
+
+				RandomAccess<FloatType> Cranac = CurveView.randomAccess();
+
+				Iterator<Map.Entry<String, Integer>> itZSec = parent.AccountedZ.entrySet().iterator();
+
+				double rms = 0;
+				while (itZSec.hasNext()) {
+
+					Map.Entry<String, Integer> entry = itZSec.next();
+
+					int time = entry.getValue();
+
+					Cranac.setPosition(time - 1, 0);
+
+					rms += Cranac.get().get() * Cranac.get().get();
+
+				}
+				poslist.add(new ValuePair<Integer, Double>((int) pos, Math.sqrt(rms / parent.AccountedZ.size())));
+
+			}
+			parent.StripList.put(TrackID, poslist);
+		
+	}
+	
 
 	@Override
 	protected void done() {
