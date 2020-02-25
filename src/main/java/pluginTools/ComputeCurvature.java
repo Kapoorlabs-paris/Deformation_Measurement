@@ -754,8 +754,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 	public static void CreateInterKymo(InteractiveSimpleEllipseFit parent,
 			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size, String TrackID) {
 
-		DisplayVisualListener display = new DisplayVisualListener(parent, false);
-		Pair<RandomAccessibleInterval<FloatType>, RandomAccessibleInterval<FloatType>> Blankprob = display.run();
+	
 
 		String Title = "Distance-Fan display";
 
@@ -771,12 +770,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		}
 		
 		
-		ImagePlus ColorCodedCurv = ImageJFunctions.wrapFloat(Blankprob.getB(), Title + TrackID);
 
-		FileSaver DistfsColor = new FileSaver(ColorCodedCurv);
-
-		DistfsColor.saveAsTiff(parent.saveFile + "//" + CurvTitle + parent.inputstring.replaceFirst("[.][^.]+$", "")
-				+ "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
 		RandomAccessibleInterval<FloatType> CurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());

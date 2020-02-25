@@ -162,11 +162,12 @@ public class CurvatureTable {
 		parent.panelFirst.repaint();
 		parent.panelFirst.validate();
 		parent.Cardframe.pack();
-		
-		for (Map.Entry<String, Intersectionobject> entry : parent.Finalresult.entrySet()) {
+		System.out.println(parent.table.getRowCount());
+              for(int tablepos = 0; tablepos< parent.table.getRowCount(); ++tablepos) {
+			
+			String StringID = (String) parent.table.getValueAt(tablepos, 0);
 
-			String StringID = entry.getKey();
-			int ID = Integer.parseInt(entry.getKey());
+			int ID = Integer.parseInt(StringID);
 			ArrayList<Pair<String, double[]>> currentresultPeri = new ArrayList<Pair<String, double[]>>();
 			
 
@@ -202,7 +203,7 @@ public class CurvatureTable {
 				long[] imsize = new long[] { TimedimensionKymo, Xkymodimension + 1 };
 				
 				long[] linesize = new long[] {TimedimensionKymo, (long) Math.ceil(parent.minNumInliers * (parent.insidedistance * 2 + extradimension))};
-				ComputeCurvature.CreateInterKymo( parent,densesortedMappair.sortedmap, imsize, entry.getKey());
+				ComputeCurvature.CreateInterKymo( parent,densesortedMappair.sortedmap, imsize, StringID);
 			parent.tablesize = parent.row;
 		}
 
