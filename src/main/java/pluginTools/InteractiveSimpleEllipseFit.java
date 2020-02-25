@@ -406,8 +406,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public HashMap<String, ArrayList<Segmentobject>> ALLSegments;
 	public HashMap<Integer, ArrayList<double[]>> HashresultCurvature;
 	public HashMap<Integer, List<RealLocalizable>> SubHashresultCurvature;
-	public BdvSource source;
-	public BdvOverlay bdvoverlay;
 	public HashMap<Integer, Double> HashresultSegCurvature;
 	public HashMap<Integer, Double> HashresultSegIntensityA;
 	public HashMap<Integer, Double> HashresultSegIntensityB;

@@ -44,6 +44,8 @@ public class ChooseOrigMap implements ActionListener {
 			if(parent.impOrig!=null) {
 			parent.calibration = parent.impOrig.getCalibration().pixelWidth;
 			parent.Wavesize = parent.impOrig.getCalibration().frameInterval;
+			if (parent.Wavesize == 0)
+				parent.Wavesize = 1;
 			DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.getDefault());
 			otherSymbols.setDecimalSeparator('.');
 			otherSymbols.setGroupingSeparator(','); 
