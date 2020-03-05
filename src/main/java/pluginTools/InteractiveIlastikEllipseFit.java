@@ -14,11 +14,11 @@ public class InteractiveIlastikEllipseFit {
 		JFrame frame = new JFrame("");
 
 		ImagePlus impB = new Opener()
-				.openImage("/Users/aimachine/Documents/Dureen/RAW.tif");
+				.openImage("/Users/aimachine/Documents/OzEtrack/Raw.tif");
 		impB.show();
 
 		ImagePlus impA = new Opener()
-				.openImage("/Users/aimachine/Documents/Dureen/MASK_EMBRYO.tif");
+				.openImage("/Users/aimachine/Documents/OzEtrack/Mask.tif");
 		impA.show();
 
 		IlastikEllipseFileChooser panel = new IlastikEllipseFileChooser();
