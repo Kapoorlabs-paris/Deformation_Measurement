@@ -559,7 +559,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size, String TrackID) {
 
 		DisplayVisualListener display = new DisplayVisualListener(parent, false);
-		Pair<RandomAccessibleInterval<UnsignedByteType>, RandomAccessibleInterval<FloatType>> Blankprob = display.run();
+		Pair<RandomAccessibleInterval<UnsignedByteType>, RandomAccessibleInterval<UnsignedByteType>> Blankprob = display.run();
 
 		String Title = "Distance-Fan display";
 		ImagePlus DistFanimp = ImageJFunctions.wrapFloat(Blankprob.getA(), Title + TrackID);
@@ -938,10 +938,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		parent.SegmentTracklist.clear();
 		parent.table.removeAll();
 
-		IJ.log("\n " 
-				+ "do a Shift + Left click near the Cell of your choice to display " + "\n "
-				+ "Kymographs for Curvature " + " \n"
-				+ "RMS value which moves with the time slider to fit on the current view of the cell ");
+	
 
 		TrackingFunctions track = new TrackingFunctions(parent);
 		if (parent.ndims > 3) {

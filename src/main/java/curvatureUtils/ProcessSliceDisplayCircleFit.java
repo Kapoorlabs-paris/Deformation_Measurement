@@ -5,21 +5,22 @@ import java.util.ArrayList;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 
 public class ProcessSliceDisplayCircleFit implements Runnable {
 
 	
-	final RandomAccessibleInterval<FloatType> OutputSlice;
+	final RandomAccessibleInterval<UnsignedByteType> OutputSlice;
     final double minIntensity;
     final double maxIntensity;
     final ArrayList<double[]> TimeCurveList;
 	
-	public ProcessSliceDisplayCircleFit(final RandomAccessibleInterval<FloatType> OutputSlice,  ArrayList<double[]> TimeCurveList, double minIntensity, double maxIntensity  ) {
+	public ProcessSliceDisplayCircleFit(final RandomAccessibleInterval<UnsignedByteType> currentViewprobImg,  ArrayList<double[]> TimeCurveList, double minIntensity, double maxIntensity  ) {
 		
 		
-		this.OutputSlice = OutputSlice;
+		this.OutputSlice = currentViewprobImg;
 		this.TimeCurveList = TimeCurveList;
 		this.minIntensity = minIntensity;
 		this.maxIntensity = maxIntensity;
@@ -44,7 +45,7 @@ public class ProcessSliceDisplayCircleFit implements Runnable {
 			Curvature[index] = TimeCurveList.get(index)[2];
 			Intensity[index] = TimeCurveList.get(index)[3];
 			IntensitySec[index] = TimeCurveList.get(index)[4];
-			final Cursor<FloatType> cursor = Views.iterable(OutputSlice).localizingCursor();
+			final Cursor<UnsignedByteType> cursor = Views.iterable(OutputSlice).localizingCursor();
 			while (cursor.hasNext()) {
 
 				cursor.fwd();

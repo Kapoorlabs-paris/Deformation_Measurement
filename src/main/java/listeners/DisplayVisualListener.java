@@ -39,7 +39,7 @@ public class DisplayVisualListener implements ActionListener {
 		
 	}
 	
-	public  Pair<RandomAccessibleInterval<UnsignedByteType>, RandomAccessibleInterval<FloatType>> run() {
+	public  Pair<RandomAccessibleInterval<UnsignedByteType>, RandomAccessibleInterval<UnsignedByteType>> run() {
 		
 		Binobject densesortedMappair = ComputeCurvature.GetZTdenseTrackList(parent);
 		parent.sortedMappair = densesortedMappair.sortedmap;
@@ -60,9 +60,9 @@ public class DisplayVisualListener implements ActionListener {
 
 	}
 	ParallelResultDisplay display = new ParallelResultDisplay(parent, currentresultCurv, show);
-	RandomAccessibleInterval<FloatType> probImg = display.ResultDisplayCircleFit();
+	RandomAccessibleInterval<UnsignedByteType> probImg = display.ResultDisplayCircleFit();
 	
-	return new ValuePair<RandomAccessibleInterval<UnsignedByteType>, RandomAccessibleInterval<FloatType>>(Blank, probImg);
+	return new ValuePair<RandomAccessibleInterval<UnsignedByteType>, RandomAccessibleInterval<UnsignedByteType>>(Blank, probImg);
 	
 	
 	}

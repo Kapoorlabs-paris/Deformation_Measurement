@@ -1923,8 +1923,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public String mininlierstring = "Box Size(um)";
 
 	public Label timeText = new Label("Current T = " + 1, Label.CENTER);
-	public Label zText = new Label("Current Z = " + 1, Label.CENTER);
-	public Label zgenText = new Label("Current Z / T = " + 1, Label.CENTER);
+	public Label zText = new Label("Current T = " + 1, Label.CENTER);
+	public Label zgenText = new Label("Current  T = " + 1, Label.CENTER);
 	public Label rText = new Label("Alt+Left Click selects a Roi");
 	public Label contText = new Label("After making all roi selections");
 	public Label insideText = new Label("Cutoff distance  = " + insideCutoff, Label.CENTER);
@@ -1941,6 +1941,10 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	final Label outsideText = new Label("Cutoff distance = " + outsideCutoff, Label.CENTER);
 
 	final Label minperiText = new Label("Minimum ellipse perimeter");
+	final Label CommentText = new Label("First Measure and Track");
+	final Label SecondCommentText = new Label("After tracking choose directory to save results");
+	final Label ThirdCommentText = new Label("Doing shift Left click near cell displays results");
+	
 	final Label maxperiText = new Label("Maximum ellipse perimeter");
 	public final Label maxsizeText = new Label("Maximum region size (px)");
 	public final Label minsizeText = new Label("Minimum region size (px)");

@@ -11,6 +11,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.view.Views;
@@ -26,7 +27,7 @@ public class ParallelResultDisplay {
 	final InteractiveSimpleEllipseFit parent;
 	final ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>> currentresultCurv;
 	public ImagePlus imp;
-	RandomAccessibleInterval<FloatType> probImg;
+	RandomAccessibleInterval<UnsignedByteType> probImg;
 	boolean show;
 	// Create a constructor
 
@@ -35,7 +36,7 @@ public class ParallelResultDisplay {
 
 		this.parent = parent;
 		this.currentresultCurv = currentresultCurv;
-		probImg = new ArrayImgFactory<FloatType>().create( parent.originalimgbefore, new FloatType() );
+		probImg = new ArrayImgFactory<UnsignedByteType>().create( parent.originalimgbefore, new UnsignedByteType() );
 	    this.show = show;
 		this.imp = ImageJFunctions.wrapFloat(probImg, "");
 		//SliceObserver sliceObserver = new SliceObserver( this.imp, new ImagePlusListener() );
@@ -90,7 +91,7 @@ public class ParallelResultDisplay {
 				
 				if(localtime == time) {
 					ArrayList<double[]> TimeCurveList = currentpair.getB().getB();
-					RandomAccessibleInterval<FloatType> CurrentViewprobImg = utility.Slicer.getCurrentView(probImg, time,
+					RandomAccessibleInterval<UnsignedByteType> CurrentViewprobImg = utility.Slicer.getCurrentView(probImg, time,
 							parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
 					new ProcessSliceDisplayCircleFit(CurrentViewprobImg, TimeCurveList, minCurvature, maxCurvature).run();
 					
@@ -98,7 +99,7 @@ public class ParallelResultDisplay {
 				}
 			}
 			
-			final Cursor<FloatType> cursor = Views.iterable(probImg).localizingCursor();
+			final Cursor<UnsignedByteType> cursor = Views.iterable(probImg).localizingCursor();
 
 			while (cursor.hasNext()) {
 
@@ -121,7 +122,7 @@ public class ParallelResultDisplay {
 		
 	}
 	
-	public RandomAccessibleInterval<FloatType> ResultDisplayCircleFit() {
+	public RandomAccessibleInterval<UnsignedByteType> ResultDisplayCircleFit() {
 
 		double minCurvature = Double.MAX_VALUE;
 		double maxCurvature = Double.MIN_VALUE;
@@ -147,12 +148,12 @@ public class ParallelResultDisplay {
 
 			ArrayList<double[]> TimeCurveList = currentpair.getB().getB();
 
-			RandomAccessibleInterval<FloatType> CurrentViewprobImg = utility.Slicer.getCurrentView(probImg, time,
+			RandomAccessibleInterval<UnsignedByteType> CurrentViewprobImg = utility.Slicer.getCurrentView(probImg, time,
 					parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
 			new ProcessSliceDisplayCircleFit(CurrentViewprobImg, TimeCurveList, minCurvature, maxCurvature).run();
 		}
 
-		final Cursor<FloatType> cursor = Views.iterable(probImg).localizingCursor();
+		final Cursor<UnsignedByteType> cursor = Views.iterable(probImg).localizingCursor();
 
 		while (cursor.hasNext()) {
 
@@ -164,7 +165,7 @@ public class ParallelResultDisplay {
 
 		}
 	    if(show)
-		AxisRendering.Reshape(probImg, "Curvature Color coded");
+		AxisRendering.ReshapeUnsigned(probImg, "Curvature Color coded");
 		IJ.run("Fire");
 		
 		return probImg;
