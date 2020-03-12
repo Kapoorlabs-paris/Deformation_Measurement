@@ -204,8 +204,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float outsideCutoff = insideCutoff;
 	public HashMap<String, ArrayList<Pair<Integer, Double>>> StripList = new HashMap<String, ArrayList<Pair<Integer, Double>>>();
 	public ImagePlus RMStrackImages;
-	// Number of segments
-	public int minNumInliers = 10;
+	// Distance between segments
+	public int minNumInliers = 60;
 	public int depth = 4;
 	public int maxsize = 100;
 	public int minsize = 10;
@@ -339,7 +339,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public float betaMax = 1;
 	public int increment = 0;
 	public int resolution = 1;
-	public int linescanradius = 3;
+	public int linescanradius = 0;
 	public int maxSearchradiusInit = (int) maxSearchradius;
 	public float maxSearchradiusMin = 1;
 	public float maxSearchradiusMax = maxSearchradius;
@@ -1875,8 +1875,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JCheckBox IlastikAuto = new JCheckBox("Show Watershed Image", showWater);
 
 	public TextField inputFieldT, inputtrackField, minperimeterField, maxperimeterField, gaussfield, numsegField,
-			cutoffField, minInlierField, SpecialminInlierField, degreeField, secdegreeField, resolutionField,
-			radiusField;
+			cutoffField, minInlierField, degreeField, secdegreeField;//, resolutionField;
+			//radiusField,  SpecialminInlierField;
 
 	public TextField inputFieldZ, startT, endT, maxSizeField, minSizeField;
 	public TextField inputFieldmaxtry, interiorfield, exteriorfield, regioninteriorfield;
@@ -1914,7 +1914,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public String insidestring = "Cutoff distance";
 	public String outsidestring = "Cutoff distance";
 	public String smoothsliderstring = "Ratio of functions ";
-	public String mininlierstring = "Number of Segments";
+	public String mininlierstring = "Box Size(um)";
 
 	public Label timeText = new Label("Current T = " + 1, Label.CENTER);
 	public Label zText = new Label("Current Z = " + 1, Label.CENTER);
@@ -1924,8 +1924,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Label insideText = new Label("Cutoff distance  = " + insideCutoff, Label.CENTER);
 	public Label degreeText = new Label("Choose degree of polynomial");
 	public Label resolutionText = new Label("Measurement Resolution (px)");
-	public Label radiusText = new Label("LineScan radius (px)");
-	public Label indistText = new Label("LineScan length (px)");
+	//public Label radiusText = new Label("LineScan radius (px)");
+	//public Label indistText = new Label("LineScan length (px)");
 	public Label regionText = new Label("Intensity region (px)");
 	public Label outdistText = new Label("Intensity Exterior region (px)");
 
@@ -1996,7 +1996,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	final Checkbox circlemode = new Checkbox("Track Segment Circle Fits", curvaturemode, circlefits);
 	public final Checkbox distancemode = new Checkbox("Use Distance Method", curvaturemode, distancemethod);
-	public final Checkbox IntegerSegment = new Checkbox("Different Box Sizes");
+	//public final Checkbox IntegerSegment = new Checkbox("Different Box Sizes");
 	
 	public final Checkbox Pixelcelltrackcirclemode = new Checkbox("Use Circle Fits", curvaturemode,
 			pixelcelltrackcirclefits);
@@ -2087,8 +2087,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		minInlierField = new TextField(textwidth);
 		minInlierField.setText(Integer.toString(minNumInliers));
 
-		SpecialminInlierField = new TextField(textwidth);
-		SpecialminInlierField.setText(Integer.toString(minNumInliers));
+		//SpecialminInlierField = new TextField(textwidth);
+		//SpecialminInlierField.setText(Integer.toString(minNumInliers));
 
 		inputtrackField = new TextField(textwidth);
 
@@ -2116,11 +2116,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		degreeField = new TextField(textwidth);
 		degreeField.setText(Integer.toString(degree));
 
-		resolutionField = new TextField(textwidth);
-		resolutionField.setText(Integer.toString(resolution));
+		//resolutionField = new TextField(textwidth);
+		//resolutionField.setText(Integer.toString(resolution));
 
-		radiusField = new TextField(textwidth);
-		radiusField.setText(Integer.toString(linescanradius));
+		//radiusField = new TextField(textwidth);
+		//radiusField.setText(Integer.toString(linescanradius));
 
 		interiorfield = new TextField(textwidth);
 		interiorfield.setText(Integer.toString(insidedistance));
@@ -2341,8 +2341,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				Angleselect.add(resolutionText, new GridBagConstraints(5, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				Angleselect.add(resolutionField, new GridBagConstraints(5, 3, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
-						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				//Angleselect.add(resolutionField, new GridBagConstraints(5, 3, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				//		GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 				SliderBoxGUI combocutoff = new SliderBoxGUI(insidestring, insideslider, cutoffField, insideText,
 						scrollbarSize, insideCutoff, insideCutoffmax);
@@ -2374,8 +2374,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				Angleselect.add(Pixelcelltrackcirclemode, new GridBagConstraints(2, 0, 2, 1, 0.0, 0.0,
 						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				Angleselect.add(IntegerSegment, new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0,
-						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				//Angleselect.add(IntegerSegment, new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0,
+				//		GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				
 				Angleselect.add(Combomode, new GridBagConstraints(2, 2, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
@@ -2383,37 +2383,37 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 3, 2, 1, 0.0, 0.0,
 						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				Angleselect.add(resolutionText, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				//Angleselect.add(resolutionText, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				//		GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+				//Angleselect.add(resolutionField, new GridBagConstraints(0, 5, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				//		GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+				//Angleselect.add(radiusText, new GridBagConstraints(3, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				//		GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+				//Angleselect.add(radiusField, new GridBagConstraints(3, 5, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				//		GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+				//Angleselect.add(indistText, new GridBagConstraints(0, 6, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				//		GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+				//Angleselect.add(interiorfield, new GridBagConstraints(0, 7, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				//		GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+				Angleselect.add(regionText, new GridBagConstraints(0, 4, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				Angleselect.add(resolutionField, new GridBagConstraints(0, 5, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
-						GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-				Angleselect.add(radiusText, new GridBagConstraints(3, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
-						GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-				Angleselect.add(radiusField, new GridBagConstraints(3, 5, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
-						GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-				Angleselect.add(indistText, new GridBagConstraints(0, 6, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
-						GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-				Angleselect.add(interiorfield, new GridBagConstraints(0, 7, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
-						GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-				Angleselect.add(regionText, new GridBagConstraints(3, 6, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
-						GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-				Angleselect.add(regioninteriorfield, new GridBagConstraints(3, 7, 2, 1, 0.0, 0.0,
+				Angleselect.add(regioninteriorfield, new GridBagConstraints(0, 5, 2, 1, 0.0, 0.0,
 						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				Angleselect.add(Curvaturebutton, new GridBagConstraints(0, 8, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				Angleselect.add(Curvaturebutton, new GridBagConstraints(2, 4, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				Angleselect.add(SpecialminInlierField, new GridBagConstraints(3, 3, 2, 1, 0.0, 0.0,
-						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			//	Angleselect.add(SpecialminInlierField, new GridBagConstraints(3, 3, 2, 1, 0.0, 0.0,
+			//			GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				Angleselect.add(Displaybutton, new GridBagConstraints(3, 8, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				Angleselect.add(Displaybutton, new GridBagConstraints(2, 5, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 				Angleselect.setBorder(circletools);
@@ -2634,9 +2634,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		ClearDisplay.addActionListener(new ClearDisplayListener(this));
 		SelectRim.addActionListener(new RimLineSelectionListener(this));
 		degreeField.addTextListener(new DegreeListener(this, false));
-		resolutionField.addTextListener(new ResolutionListener(this, false));
+		//resolutionField.addTextListener(new ResolutionListener(this, false));
 
-		radiusField.addTextListener(new LinescanradiusListener(this, false));
+		//radiusField.addTextListener(new LinescanradiusListener(this, false));
 		secdegreeField.addTextListener(new SecDegreeListener(this, false));
 		Smoothbutton.addActionListener(new DoSmoothingListener(this));
 		displayCircle.addItemListener(new DisplayListener(this));

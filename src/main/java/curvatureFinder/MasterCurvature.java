@@ -568,8 +568,82 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 		return new ValuePair<Intersectionobject, Intersectionobject>(sparsecurrentobject, densecurrentobject);
 	}
+	public void MakeSegments(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int boxSize,
+			int celllabel) {
 
-	public void MakeSegments(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int numSeg,
+		List<RealLocalizable> copytruths = new ArrayList<RealLocalizable>(truths);
+		
+		ArrayList<Integer> endIndexes = new ArrayList<Integer>();
+		
+		int start = 0;
+		RealLocalizable lastpoint = copytruths.get(copytruths.size() - 1);
+		boolean Added = false;
+		for(int i = 0; i < copytruths.size(); i++) {
+			
+			RealLocalizable testpoint = copytruths.get(start);
+			RealLocalizable point = copytruths.get(i);
+			
+			double lastpixeldistance = Distance.DistanceSqrt(lastpoint, point);
+			double pixeldistance = Distance.DistanceSqrt(testpoint, point);
+			double realdistance = pixeldistance * parent.calibration;
+			double reallastdistance = lastpixeldistance * parent.calibration;
+			
+			
+
+			if(reallastdistance < boxSize && Added) {
+				
+				endIndexes.add(i);
+				Added = true;
+				
+			}
+			
+			if(realdistance >= boxSize) {
+				
+				start = i;
+				endIndexes.add(i);
+				
+			}
+			
+			
+		}
+	
+			int biggestsize = 0;
+			int segmentLabel = 1;
+
+			int size = copytruths.size();
+
+			List<RealLocalizable> sublist = new ArrayList<RealLocalizable>();
+
+			int startindex = 0;
+			
+
+			for (int j = 0; j< endIndexes.size(); ++j) {
+				
+				int endindex = endIndexes.get(j);
+				
+				if (startindex >= size - 1)
+					break;
+
+				sublist = copytruths.subList(startindex, Math.min(endindex, size));
+				parent.Listmap.put(segmentLabel, sublist);
+				if (biggestsize >= endindex - startindex)
+					biggestsize = endindex - startindex;
+
+				parent.CellLabelsizemap.put(celllabel, biggestsize);
+				segmentLabel++;
+
+				startindex = endindex;
+				System.out.print("end indices"  + endindex);
+				
+
+			}
+
+	
+
+	}
+
+	
+	public void MakeSegmentsOld(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int numSeg,
 			int celllabel) {
 
 		List<RealLocalizable> copytruths = new ArrayList<RealLocalizable>(truths);

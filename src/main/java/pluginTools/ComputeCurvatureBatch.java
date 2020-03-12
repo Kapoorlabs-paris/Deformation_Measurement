@@ -121,7 +121,7 @@ public class ComputeCurvatureBatch {
         parent.inputFieldT.setEnabled(false);
         parent.distancemode.setEnabled(false);
         parent.Pixelcelltrackcirclemode.setEnabled(false);
-        parent.resolutionField.setEnabled(false);
+        //parent.resolutionField.setEnabled(false);
         parent.interiorfield.setEnabled(false);
         parent.Displaybutton.setEnabled(false);
         parent.minInlierslider.setEnabled(false);
@@ -716,7 +716,7 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
         parent.inputFieldT.setEnabled(true);
         parent.distancemode.setEnabled(true);
         parent.Pixelcelltrackcirclemode.setEnabled(true);
-        parent.resolutionField.setEnabled(true);
+        //parent.resolutionField.setEnabled(true);
         parent.interiorfield.setEnabled(true);
         parent.Displaybutton.setEnabled(true);
         parent.minInlierslider.setEnabled(true);
@@ -736,13 +736,10 @@ public static void MakeLineKymo(InteractiveSimpleEllipseFit parent, HashMap<Stri
 		parent.SegmentTracklist.clear();
 		parent.table.removeAll();
 
-		IJ.log("\n " + "Calculation is Complete or was interupted "  + "\n "
-		        + "IF RUNNING IN BATCH MODE, Results are automatically saved in Results folder"
+		IJ.log("\n " 
 		        + "IF IT WAS NOT A KEYBOARD INTERUPT: " + "\n "
 				+ "do a Shift + Left click near the Cell of your choice to display " + "\n "
-				+ "Kymographs for Curvature, Intensity " + " \n"
-				+ "RMS value which moves with the time slider to fit on the current view of the cell " + " \n"
-				+ "Curvature value display as lines connecting the center to the boundary of the cell over time");
+				+ "Kymographs for Curvature, Intensity ");
 
 		TrackingFunctions track = new TrackingFunctions(parent);
 		if (parent.ndims > 3) {

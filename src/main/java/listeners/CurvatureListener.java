@@ -49,7 +49,7 @@ public class CurvatureListener implements ActionListener {
 		parent.imp.getCanvas().removeMouseMotionListener(parent.ml);
 		parent.starttime = Integer.parseInt(parent.startT.getText());
 		parent.endtime = Integer.parseInt(parent.endT.getText());
-		parent.resolution = Integer.parseInt(parent.resolutionField.getText());
+		parent.resolution = 1; //Integer.parseInt(parent.resolutionField.getText());
 		parent.insidedistance =  Integer.parseInt(parent.interiorfield.getText());
 		parent.displayCircle.setState(false);
 		parent.displaySegments.setState(false);

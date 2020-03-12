@@ -29,7 +29,7 @@ public class RunCombomodeListener implements ItemListener {
 				parent.pixelcelltrackcirclefits = false;
 				parent.combomethod = true;
 				parent.distancemethod = false;
-				parent.resolution = Integer.parseInt(parent.resolutionField.getText());
+				parent.resolution = 1; // Integer.parseInt(parent.resolutionField.getText());
 			}
 
 		}

@@ -73,7 +73,7 @@ public class ComputeCurvatureCurrent extends SwingWorker<Void, Void> {
 		
 		if (parent.pixellist.size() <= 2) {
 			
-			parent.Angleselect.remove(parent.IntegerSegment);
+			//parent.Angleselect.remove(parent.IntegerSegment);
 			parent.panelFirst.repaint();
 			parent.panelFirst.validate();
 		}

@@ -126,12 +126,12 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		parent.inputFieldT.setEnabled(false);
 		parent.distancemode.setEnabled(false);
 		parent.Pixelcelltrackcirclemode.setEnabled(false);
-		parent.resolutionField.setEnabled(false);
+		//parent.resolutionField.setEnabled(false);
 		parent.interiorfield.setEnabled(false);
 		parent.Displaybutton.setEnabled(false);
 		parent.minInlierslider.setEnabled(false);
 		parent.minInlierField.setEnabled(false);
-		parent.radiusField.setEnabled(false);
+		//parent.radiusField.setEnabled(false);
 		EllipseTrack newtrack = new EllipseTrack(parent, jpb);
 		newtrack.ComputeCurvature();
 
@@ -910,13 +910,13 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 	protected void done() {
 
 		parent.CurrentCurvaturebutton.setEnabled(true);
-		parent.radiusField.setEnabled(true);
+		//parent.radiusField.setEnabled(true);
 		parent.Curvaturebutton.setEnabled(true);
 		parent.timeslider.setEnabled(true);
 		parent.inputFieldT.setEnabled(true);
 		parent.distancemode.setEnabled(true);
 		parent.Pixelcelltrackcirclemode.setEnabled(true);
-		parent.resolutionField.setEnabled(true);
+		//parent.resolutionField.setEnabled(true);
 		parent.interiorfield.setEnabled(true);
 		parent.Displaybutton.setEnabled(true);
 		parent.minInlierslider.setEnabled(true);
