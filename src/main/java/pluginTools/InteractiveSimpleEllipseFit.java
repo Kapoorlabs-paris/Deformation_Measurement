@@ -1867,7 +1867,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 	}
 
-	public JFrame Cardframe = new JFrame("Intersection angle or curvature measurment");
+	public JFrame Cardframe = new JFrame("Deformation Measurment Tool (DMT)");
 	public JPanel panelCont = new JPanel();
 	public JPanel panelFirst = new JPanel();
 	public JPanel panelSecond = new JPanel();

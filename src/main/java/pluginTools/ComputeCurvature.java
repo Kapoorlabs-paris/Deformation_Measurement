@@ -69,6 +69,7 @@ import net.imglib2.RealPoint;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.Scale2D;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -147,6 +148,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		RandomAccessibleInterval<FloatType> IntensityBKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
 
+		if(!parent.distancemethod)
 		parent.clockimp.updateAndDraw();
 
 		RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
@@ -231,13 +233,13 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		}
 	}
 
-	public static RandomAccessibleInterval<FloatType> MakeDistanceFan(InteractiveSimpleEllipseFit parent,
+	public static RandomAccessibleInterval<UnsignedByteType> MakeDistanceFan(InteractiveSimpleEllipseFit parent,
 			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, String TrackID, boolean show) {
 
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 
-		RandomAccessibleInterval<FloatType> Blank = new ArrayImgFactory<FloatType>().create(parent.originalimg,
-				new FloatType());
+		RandomAccessibleInterval<UnsignedByteType> Blank = new ArrayImgFactory<UnsignedByteType>().create(parent.originalimg,
+				new UnsignedByteType());
 
 		while (itZ.hasNext()) {
 
@@ -245,7 +247,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			int time = entry.getValue();
 			String timeID = entry.getKey();
 
-			RandomAccessibleInterval<FloatType> CurrentBlank = utility.Slicer.getCurrentView(Blank, time,
+			RandomAccessibleInterval<UnsignedByteType> CurrentBlank = utility.Slicer.getCurrentView(Blank, time,
 					parent.thirdDimensionSize, parent.fourthDimension, parent.fourthDimensionSize);
 
 			ArrayList<Intersectionobject> currentlist = sortedMappair.get(TrackID + timeID);
@@ -273,7 +275,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		}
 		if(show)
-		AxisRendering.Reshape(Blank, "Distance-Fan display");
+		AxisRendering.ReshapeUnsigned(Blank, "Distance-Fan display");
 
 		return Blank;
 
@@ -557,7 +559,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size, String TrackID) {
 
 		DisplayVisualListener display = new DisplayVisualListener(parent, false);
-		Pair<RandomAccessibleInterval<FloatType>, RandomAccessibleInterval<FloatType>> Blankprob = display.run();
+		Pair<RandomAccessibleInterval<UnsignedByteType>, RandomAccessibleInterval<FloatType>> Blankprob = display.run();
 
 		String Title = "Distance-Fan display";
 		ImagePlus DistFanimp = ImageJFunctions.wrapFloat(Blankprob.getA(), Title + TrackID);
@@ -936,13 +938,10 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		parent.SegmentTracklist.clear();
 		parent.table.removeAll();
 
-		IJ.log("\n " + "Calculation is Complete or was interupted " + "\n "
-				+ "IF RUNNING IN BATCH MODE, Results are automatically saved in Results folder"
-				+ "IF IT WAS NOT A KEYBOARD INTERUPT: " + "\n "
+		IJ.log("\n " 
 				+ "do a Shift + Left click near the Cell of your choice to display " + "\n "
-				+ "Kymographs for Curvature, Intensity " + " \n"
-				+ "RMS value which moves with the time slider to fit on the current view of the cell " + " \n"
-				+ "Curvature value display as lines connecting the center to the boundary of the cell over time");
+				+ "Kymographs for Curvature " + " \n"
+				+ "RMS value which moves with the time slider to fit on the current view of the cell ");
 
 		TrackingFunctions track = new TrackingFunctions(parent);
 		if (parent.ndims > 3) {
