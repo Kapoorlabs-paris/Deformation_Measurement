@@ -233,13 +233,13 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		}
 	}
 
-	public static RandomAccessibleInterval<UnsignedByteType> MakeDistanceFan(InteractiveSimpleEllipseFit parent,
+	public static RandomAccessibleInterval<FloatType> MakeDistanceFan(InteractiveSimpleEllipseFit parent,
 			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, String TrackID, boolean show) {
 
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 
-		RandomAccessibleInterval<UnsignedByteType> Blank = new ArrayImgFactory<UnsignedByteType>().create(parent.originalimg,
-				new UnsignedByteType());
+		RandomAccessibleInterval<FloatType> Blank = new ArrayImgFactory<FloatType>().create(parent.originalimg,
+				new FloatType());
 
 		while (itZ.hasNext()) {
 
@@ -247,7 +247,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			int time = entry.getValue();
 			String timeID = entry.getKey();
 
-			RandomAccessibleInterval<UnsignedByteType> CurrentBlank = utility.Slicer.getCurrentView(Blank, time,
+			RandomAccessibleInterval<FloatType> CurrentBlank = utility.Slicer.getCurrentView(Blank, time,
 					parent.thirdDimensionSize, parent.fourthDimension, parent.fourthDimensionSize);
 
 			ArrayList<Intersectionobject> currentlist = sortedMappair.get(TrackID + timeID);
@@ -274,8 +274,10 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			}
 
 		}
-		if(show)
-		AxisRendering.ReshapeUnsigned(Blank, "Distance-Fan display");
+		if(show) {
+			AxisRendering.Reshape(Blank, "Distance-Fan display");
+				
+		}
 
 		return Blank;
 
@@ -559,10 +561,10 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size, String TrackID) {
 
 		DisplayVisualListener display = new DisplayVisualListener(parent, false);
-		Pair<RandomAccessibleInterval<UnsignedByteType>, RandomAccessibleInterval<UnsignedByteType>> Blankprob = display.run();
+		RandomAccessibleInterval<FloatType> Blankprob = display.run();
 
 		String Title = "Distance-Fan display";
-		ImagePlus DistFanimp = ImageJFunctions.wrapFloat(Blankprob.getA(), Title + TrackID);
+		ImagePlus DistFanimp = ImageJFunctions.wrapFloat(Blankprob, Title + TrackID);
 
 		FileSaver DistfsF = new FileSaver(DistFanimp);
 
@@ -579,12 +581,8 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		}
 		
 		
-		ImagePlus ColorCodedCurv = ImageJFunctions.wrapFloat(Blankprob.getB(), Title + TrackID);
+		
 
-		FileSaver DistfsColor = new FileSaver(ColorCodedCurv);
-
-		DistfsColor.saveAsTiff(parent.saveFile + "//" + CurvTitle + parent.inputstring.replaceFirst("[.][^.]+$", "")
-				+ "TrackID" + Integer.parseInt(TrackID) + ".tif");
 
 		RandomAccessibleInterval<FloatType> CurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());

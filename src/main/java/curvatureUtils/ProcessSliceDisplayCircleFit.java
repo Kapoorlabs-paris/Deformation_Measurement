@@ -12,12 +12,12 @@ import net.imglib2.view.Views;
 public class ProcessSliceDisplayCircleFit implements Runnable {
 
 	
-	final RandomAccessibleInterval<UnsignedByteType> OutputSlice;
+	final RandomAccessibleInterval<FloatType> OutputSlice;
     final double minIntensity;
     final double maxIntensity;
     final ArrayList<double[]> TimeCurveList;
 	
-	public ProcessSliceDisplayCircleFit(final RandomAccessibleInterval<UnsignedByteType> currentViewprobImg,  ArrayList<double[]> TimeCurveList, double minIntensity, double maxIntensity  ) {
+	public ProcessSliceDisplayCircleFit(final RandomAccessibleInterval<FloatType> currentViewprobImg,  ArrayList<double[]> TimeCurveList, double minIntensity, double maxIntensity  ) {
 		
 		
 		this.OutputSlice = currentViewprobImg;
@@ -45,17 +45,17 @@ public class ProcessSliceDisplayCircleFit implements Runnable {
 			Curvature[index] = TimeCurveList.get(index)[2];
 			Intensity[index] = TimeCurveList.get(index)[3];
 			IntensitySec[index] = TimeCurveList.get(index)[4];
-			final Cursor<UnsignedByteType> cursor = Views.iterable(OutputSlice).localizingCursor();
+			final Cursor<FloatType> cursor = Views.iterable(OutputSlice).localizingCursor();
 			while (cursor.hasNext()) {
 
 				cursor.fwd();
 
 			
 
-					if ((Math.abs(cursor.getFloatPosition(0) - X[index])) <= 2
-							&& (Math.abs(cursor.getFloatPosition(1) - Y[index])) <= 2) {
+					if ((Math.abs(cursor.getFloatPosition(0) - X[index])) <= 1
+							&& (Math.abs(cursor.getFloatPosition(1) - Y[index])) <= 1) {
 
-						cursor.get().setReal((Curvature[index]));
+						cursor.get().set((float) (Curvature[index]));
 
 					}
 					

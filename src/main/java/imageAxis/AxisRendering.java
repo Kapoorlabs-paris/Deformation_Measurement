@@ -29,7 +29,6 @@ public class AxisRendering {
 			
 		}
 		
-		IJ.log(imp.getNSlices() + " " + channels + " " + frames);
 		imp.setDimensions(channels, imp.getNSlices(), frames);
 		imp.show();
 		
@@ -53,7 +52,6 @@ public static void ReshapeUnsigned(RandomAccessibleInterval<UnsignedByteType> im
 			
 		}
 		
-		IJ.log(imp.getNSlices() + " " + channels + " " + frames);
 		imp.setDimensions(channels, imp.getNSlices(), frames);
 		imp.show();
 		

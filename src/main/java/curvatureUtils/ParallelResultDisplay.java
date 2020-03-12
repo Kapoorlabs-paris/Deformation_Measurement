@@ -27,7 +27,7 @@ public class ParallelResultDisplay {
 	final InteractiveSimpleEllipseFit parent;
 	final ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>> currentresultCurv;
 	public ImagePlus imp;
-	RandomAccessibleInterval<UnsignedByteType> probImg;
+	RandomAccessibleInterval<FloatType> probImg;
 	boolean show;
 	// Create a constructor
 
@@ -36,93 +36,16 @@ public class ParallelResultDisplay {
 
 		this.parent = parent;
 		this.currentresultCurv = currentresultCurv;
-		probImg = new ArrayImgFactory<UnsignedByteType>().create( parent.originalimgbefore, new UnsignedByteType() );
+		probImg = new ArrayImgFactory<FloatType>().create( parent.originalimgbefore, new FloatType() );
 	    this.show = show;
 		this.imp = ImageJFunctions.wrapFloat(probImg, "");
 		//SliceObserver sliceObserver = new SliceObserver( this.imp, new ImagePlusListener() );
 	}
 	
 
-	public ImagePlus getImp() { return this.imp; } 
+
 	
-	
-	
-	protected  class ImagePlusListener implements SliceListener
-	{
-		@Override
-		public void sliceChanged(ImagePlus arg0)
-		{
-			
-			
-			imp.show();
-			Overlay o = imp.getOverlay();
-			
-			if( getImp().getOverlay() == null )
-			{
-				o = new Overlay();
-				getImp().setOverlay( o ); 
-			}
-
-			o.clear();
-			getImp().getOverlay().clear(); 
-			
-			int time = imp.getChannel();
-			
-			double minCurvature = Double.MAX_VALUE;
-			double maxCurvature = Double.MIN_VALUE;
-			
-			for (int index = 0; index < currentresultCurv.size(); ++index) {
-
-				Pair<String, Pair<Integer, ArrayList<double[]>>> currentpair = currentresultCurv.get(index);
-
-				double[] Curvature = new double[currentpair.getB().getB().size()];
-
-				for (int i = 0; i < currentpair.getB().getB().size(); ++i) {
-
-					Curvature[i] = currentpair.getB().getB().get(i)[2];
-
-					if (Curvature[i] <= minCurvature)
-						minCurvature = Curvature[i];
-					if (Curvature[i] >= maxCurvature)
-						maxCurvature = Curvature[i];
-				}
-
-				int localtime = currentpair.getB().getA();
-				
-				if(localtime == time) {
-					ArrayList<double[]> TimeCurveList = currentpair.getB().getB();
-					RandomAccessibleInterval<UnsignedByteType> CurrentViewprobImg = utility.Slicer.getCurrentView(probImg, time,
-							parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
-					new ProcessSliceDisplayCircleFit(CurrentViewprobImg, TimeCurveList, minCurvature, maxCurvature).run();
-					
-					
-				}
-			}
-			
-			final Cursor<UnsignedByteType> cursor = Views.iterable(probImg).localizingCursor();
-
-			while (cursor.hasNext()) {
-
-				cursor.fwd();
-
-				double lambda = (cursor.getFloatPosition(0) - probImg.min(0)) / (probImg.max(0) - probImg.min(0));
-				if (cursor.getDoublePosition(1) >= probImg.max(1) - probImg.min(1) - 5)
-					cursor.get().setReal(0 + lambda * (2 * maxCurvature - 0));
-
-			}
-			
-			 if(show) {
-			imp.updateAndDraw();
-			
-			IJ.run("Fire");
-			IJ.log(" Told you it would work! ");
-			 }
-		}
-		
-		
-	}
-	
-	public RandomAccessibleInterval<UnsignedByteType> ResultDisplayCircleFit() {
+	public RandomAccessibleInterval<FloatType> ResultDisplayCircleFit() {
 
 		double minCurvature = Double.MAX_VALUE;
 		double maxCurvature = Double.MIN_VALUE;
@@ -148,12 +71,12 @@ public class ParallelResultDisplay {
 
 			ArrayList<double[]> TimeCurveList = currentpair.getB().getB();
 
-			RandomAccessibleInterval<UnsignedByteType> CurrentViewprobImg = utility.Slicer.getCurrentView(probImg, time,
+			RandomAccessibleInterval<FloatType> CurrentViewprobImg = utility.Slicer.getCurrentView(probImg, time,
 					parent.thirdDimensionSize, 1, parent.fourthDimensionSize);
 			new ProcessSliceDisplayCircleFit(CurrentViewprobImg, TimeCurveList, minCurvature, maxCurvature).run();
 		}
 
-		final Cursor<UnsignedByteType> cursor = Views.iterable(probImg).localizingCursor();
+		final Cursor<FloatType> cursor = Views.iterable(probImg).localizingCursor();
 
 		while (cursor.hasNext()) {
 
@@ -161,11 +84,11 @@ public class ParallelResultDisplay {
 
 			double lambda = (cursor.getFloatPosition(0) - probImg.min(0)) / (probImg.max(0) - probImg.min(0));
 			if (cursor.getDoublePosition(1) >= probImg.max(1) - probImg.min(1) - 5)
-				cursor.get().setReal(0 + lambda * (2 * maxCurvature - 0));
+				cursor.get().set((float) (0 + lambda * (2 * maxCurvature - 0)));
 
 		}
 	    if(show)
-		AxisRendering.ReshapeUnsigned(probImg, "Curvature Color coded");
+		AxisRendering.Reshape(probImg, "Curvature Color coded");
 		IJ.run("Fire");
 		
 		return probImg;

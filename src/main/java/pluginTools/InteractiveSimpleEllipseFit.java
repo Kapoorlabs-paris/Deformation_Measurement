@@ -1915,7 +1915,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JButton ManualCompute = new JButton("Manual Computation");
 	public String timestring = "Current T";
 	public String zstring = "Current Z";
-	public String zgenstring = "Current Z / T";
+	public String zgenstring = "Current T";
 	public String rstring = "Radius";
 	public String insidestring = "Cutoff distance";
 	public String outsidestring = "Cutoff distance";
@@ -2026,7 +2026,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Label smoothText = new Label("Ratio of functions = " + smoothing, Label.CENTER);
 
 	public Border timeborder = new CompoundBorder(new TitledBorder("Select time"), new EmptyBorder(c.insets));
-	public Border zborder = new CompoundBorder(new TitledBorder("Select Z"), new EmptyBorder(c.insets));
+	public Border zborder = new CompoundBorder(new TitledBorder("Select T"), new EmptyBorder(c.insets));
 	public Border roitools = new CompoundBorder(new TitledBorder("Roi and ellipse finder tools"),
 			new EmptyBorder(c.insets));
 
@@ -2215,6 +2215,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 		Timeselect.add(inputFieldT, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		
+		Timeselect.add(CommentText, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		Timeselect.add(SecondCommentText, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		Timeselect.add(ThirdCommentText, new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		Timeselect.setBorder(timeborder);
 		// panelFirst.add(Timeselect, new GridBagConstraints(0, 0, 5, 1, 0.0, 0.0,
@@ -2232,6 +2239,12 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		Zselect.add(inputFieldZ, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		Zselect.add(CommentText, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		Zselect.add(SecondCommentText, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		Zselect.add(ThirdCommentText, new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 		Zselect.setBorder(zborder);
 		panelFirst.add(Zselect, new GridBagConstraints(0, 0, 5, 1, 0.0, 0.0, GridBagConstraints.WEST,

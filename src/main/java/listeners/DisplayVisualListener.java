@@ -39,14 +39,18 @@ public class DisplayVisualListener implements ActionListener {
 		
 	}
 	
-	public  Pair<RandomAccessibleInterval<UnsignedByteType>, RandomAccessibleInterval<UnsignedByteType>> run() {
+	public  RandomAccessibleInterval<FloatType> run() {
 		
 		Binobject densesortedMappair = ComputeCurvature.GetZTdenseTrackList(parent);
 		parent.sortedMappair = densesortedMappair.sortedmap;
-
-	
-		String ID = (String) parent.table.getValueAt(parent.row, 0);
-		RandomAccessibleInterval<UnsignedByteType> Blank = ComputeCurvature.MakeDistanceFan(parent, densesortedMappair.sortedmap, ID, show);
+		String ID;
+	   try {
+		   ID = (String) parent.table.getValueAt(parent.row, 0);
+	} catch (ArrayIndexOutOfBoundsException e) {
+		ID = (String) parent.table.getValueAt(0, 0);
+	}
+		
+		RandomAccessibleInterval<FloatType> Blank = ComputeCurvature.MakeDistanceFan(parent, densesortedMappair.sortedmap, ID, show);
 		ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>> currentresultCurv = new ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>>();
 
 		
@@ -59,10 +63,10 @@ public class DisplayVisualListener implements ActionListener {
 		}
 
 	}
-	ParallelResultDisplay display = new ParallelResultDisplay(parent, currentresultCurv, show);
-	RandomAccessibleInterval<UnsignedByteType> probImg = display.ResultDisplayCircleFit();
+	//ParallelResultDisplay display = new ParallelResultDisplay(parent, currentresultCurv, show);
+	//RandomAccessibleInterval<FloatType> probImg = display.ResultDisplayCircleFit();
 	
-	return new ValuePair<RandomAccessibleInterval<UnsignedByteType>, RandomAccessibleInterval<UnsignedByteType>>(Blank, probImg);
+	return Blank;
 	
 	
 	}
