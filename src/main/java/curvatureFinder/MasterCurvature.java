@@ -577,35 +577,57 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		
 		int start = 0;
 		RealLocalizable lastpoint = copytruths.get(copytruths.size() - 1);
-		boolean Added = false;
+		boolean Added = true;
+		System.out.println("Initial list" + copytruths.size());
+		for(int i = 0; i < truths.size(); i++) {
+			
+			
+			RealLocalizable point = truths.get(i);
+			
+			double lastpixeldistance = Distance.DistanceSqrt(lastpoint, point);
+			double reallastdistance = lastpixeldistance * parent.calibration;
+			
+			double newreallastdistance = reallastdistance;
+		if(reallastdistance < boxSize && i>truths.size()/2) {
+			
+			
+			int index = 0;
+			do {
+				
+				
+				copytruths.add(truths.get(index));
+				
+				index++;
+				RealLocalizable newlastpoint = copytruths.get(copytruths.size() - 1);
+				double newpixeldistance = Distance.DistanceSqrt(newlastpoint, point);
+				newreallastdistance = newpixeldistance * parent.calibration;
+				
+				
+				
+			}while(newreallastdistance <= boxSize);
+			
+		}
+	}
 		for(int i = 0; i < copytruths.size(); i++) {
 			
 			RealLocalizable testpoint = copytruths.get(start);
 			RealLocalizable point = copytruths.get(i);
 			
-			double lastpixeldistance = Distance.DistanceSqrt(lastpoint, point);
 			double pixeldistance = Distance.DistanceSqrt(testpoint, point);
 			double realdistance = pixeldistance * parent.calibration;
-			double reallastdistance = lastpixeldistance * parent.calibration;
 			
-			
-
-			if(reallastdistance < boxSize && Added) {
-				
-				endIndexes.add(i);
-				Added = true;
-				
-			}
 			
 			if(realdistance >= boxSize) {
 				
 				start = i;
+				if(i!=0)
 				endIndexes.add(i);
 				
 			}
 			
 			
 		}
+		System.out.println("Extended list" + copytruths.size());
 	
 			int biggestsize = 0;
 			int segmentLabel = 1;
@@ -620,10 +642,10 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			for (int j = 0; j< endIndexes.size(); ++j) {
 				
 				int endindex = endIndexes.get(j);
-				
-				if (startindex >= size - 1)
+				System.out.println(startindex + " " + endindex);
+				if (startindex >= size - 1 || Math.abs(endindex - startindex) < 3)
 					break;
-
+ 
 				sublist = copytruths.subList(startindex, Math.min(endindex, size));
 				parent.Listmap.put(segmentLabel, sublist);
 				if (biggestsize >= endindex - startindex)
@@ -633,7 +655,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 				segmentLabel++;
 
 				startindex = endindex;
-				System.out.print("end indices"  + endindex);
 				
 
 			}
