@@ -578,7 +578,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		int start = 0;
 		RealLocalizable lastpoint = copytruths.get(copytruths.size() - 1);
 		boolean Added = true;
-		System.out.println("Initial list" + copytruths.size());
+		/*
 		for(int i = 0; i < truths.size(); i++) {
 			
 			
@@ -608,6 +608,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			
 		}
 	}
+		*/
 		for(int i = 0; i < copytruths.size(); i++) {
 			
 			RealLocalizable testpoint = copytruths.get(start);
@@ -627,7 +628,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			
 			
 		}
-		System.out.println("Extended list" + copytruths.size());
 	
 			int biggestsize = 0;
 			int segmentLabel = 1;
@@ -642,7 +642,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			for (int j = 0; j< endIndexes.size(); ++j) {
 				
 				int endindex = endIndexes.get(j);
-				System.out.println(startindex + " " + endindex);
 				if (startindex >= size - 1 || Math.abs(endindex - startindex) < 3)
 					break;
  
