@@ -578,7 +578,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		int start = 0;
 		RealLocalizable lastpoint = copytruths.get(copytruths.size() - 1);
 		boolean Added = true;
-		System.out.println("Initial list" + copytruths.size());
+		if(!parent.distancemethod) {
 		for(int i = 0; i < truths.size(); i++) {
 			
 			
@@ -627,7 +627,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			
 			
 		}
-		System.out.println("Extended list" + copytruths.size());
 	
 			int biggestsize = 0;
 			int segmentLabel = 1;
@@ -642,7 +641,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			for (int j = 0; j< endIndexes.size(); ++j) {
 				
 				int endindex = endIndexes.get(j);
-				System.out.println(startindex + " " + endindex);
 				if (startindex >= size - 1 || Math.abs(endindex - startindex) < 3)
 					break;
  
@@ -658,72 +656,20 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 				
 
 			}
-
-	
-
-	}
-
-	
-	public void MakeSegmentsOld(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int numSeg,
-			int celllabel) {
-
-		List<RealLocalizable> copytruths = new ArrayList<RealLocalizable>(truths);
-		if (truths.size() < 3)
-			return;
+		}
 		else {
-			int size = truths.size();
-
-			int maxpoints = size / numSeg;
-			if (maxpoints <= 2)
-				maxpoints = 3;
-			int biggestsize = maxpoints;
-			int segmentLabel = 1;
-
-			int index = truths.size() - 1;
-			do {
-
-				if (index >= truths.size())
-					index = 0;
-
-				copytruths.add(truths.get(index));
-
-				index++;
-
-			} while (copytruths.size() % numSeg != 0);
-
-			size = copytruths.size();
-			maxpoints = size / numSeg;
-			if (maxpoints <= 2)
-				maxpoints = 3;
-
 			List<RealLocalizable> sublist = new ArrayList<RealLocalizable>();
-
-			int startindex = 0;
-			int endindex = startindex + maxpoints;
-
-			while (true) {
-
-				sublist = copytruths.subList(startindex, Math.min(endindex, size));
-				parent.Listmap.put(segmentLabel, sublist);
-
-				if (biggestsize >= endindex - startindex)
-					biggestsize = endindex - startindex;
-
-				parent.CellLabelsizemap.put(celllabel, biggestsize);
-				segmentLabel++;
-
-				startindex = endindex;
-				endindex = startindex + maxpoints;
-
-				if (startindex >= size - 1)
-					break;
-
-			}
-
+			sublist = copytruths.subList(0,  truths.size()- 1);
+			parent.Listmap.put(1, sublist);
+			parent.CellLabelsizemap.put(celllabel, truths.size()- 1);
 		}
 
+	
+
 	}
 
+	
+	
 	/**
 	 * Obtain intensity in the user defined
 	 * 
@@ -1047,12 +993,13 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		
 			
 			
-			
+			if(!parent.distancemethod) {
 			parent.clockoverlay.add(newellipse);
 			parent.clockoverlay.add(line);
 
 			parent.clockimp.setOverlay(parent.clockoverlay);
 			parent.clockimp.updateAndDraw();
+			}
 
 		}
 

@@ -82,9 +82,9 @@ public class SaverAllListener implements ActionListener {
 				BufferedWriter bw = new BufferedWriter(fw);
 				bw.write("\tTrackID: " + "\t"  + ID+ "\n");
 				if(parent.combomethod)
-					bw.write("\tArbritaryUnit\tTime\tDeformation\tIntensity\tIntensitySec\tDistance-Deformation\n");
+					bw.write(" ArbritaryUnit,Time,Deformation,Intensity,IntensitySec,Distance-Deformation \n");
 				else
-      				bw.write("\tArbritaryUnit\tTime\tDeformation\tIntensity\tIntensitySec\n");
+      				bw.write(" ArbritaryUnit,Time,Deformation,Intensity,IntensitySec \n");
 				
 				
 				KymoSaveobject Kymos = parent.KymoFileobject.get(ID);
@@ -141,11 +141,11 @@ public class SaverAllListener implements ActionListener {
 						Branac.setPosition(time - 1, 0);
 						if(Dranac!=null) { 
 							Dranac.setPosition(time - 1, 0);
-					bw.write("\t"+ pos +  "\t" + time
-					+ "\t" +
+					bw.write(pos + ","  + time
+					+ "," +
 					parent.nf.format(Cranac.get().get())
-	                  + "\t" +
-					parent.nf.format(Aranac.get().get()) + "\t" + parent.nf.format(Branac.get().get()) + "\t" + parent.nf.format(Dranac.get().get()) +
+	                  + "," +
+					parent.nf.format(Aranac.get().get()) + "," + parent.nf.format(Branac.get().get()) + "," + parent.nf.format(Dranac.get().get()) +
 					"\n");
 						}
 						else {

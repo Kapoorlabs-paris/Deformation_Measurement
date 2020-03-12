@@ -268,14 +268,31 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 			long[] centerloc = new long[] { (long) centerpoint.getDoublePosition(0),
 					(long) centerpoint.getDoublePosition(1) };
 			net.imglib2.Point centpos = new net.imglib2.Point(centerloc);
-			Pair<Double, Double> Intensity = getIntensity(parent, intpoint, centpos);
+			if(parent.regiondistance > 0) {
+			  Pair<Double, Double> Intensity = getIntensity(parent, intpoint, centpos);
+			
 			// Average the intensity.
-			meanIntensity += Intensity.getA();
-			meanSecIntensity += Intensity.getB();
+			  meanIntensity += Intensity.getA();
+			  meanSecIntensity += Intensity.getB();
+			  
+			  AllCurvaturepoints.add(new double[] { newpos[0], newpos[1], Math.max(0, Kappa), perimeter, Intensity.getA(),
+						Intensity.getB(), Math.max(0, Kappa) });
+			  
+			}
+			
+			else {
+				meanIntensity = 0;
+				meanSecIntensity = 0;	
+				
+				AllCurvaturepoints.add(new double[] { newpos[0], newpos[1], Math.max(0, Kappa), perimeter, 0,
+						0, Math.max(0, Kappa) });
+				
+			}
 
-			AllCurvaturepoints.add(new double[] { newpos[0], newpos[1], Math.max(0, Kappa), perimeter, Intensity.getA(),
-					Intensity.getB(), Math.max(0, Kappa) });
+			  
 
+			
+			  
 		}
 
 		meanIntensity /= size;

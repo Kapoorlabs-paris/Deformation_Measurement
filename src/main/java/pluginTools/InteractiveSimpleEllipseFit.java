@@ -223,8 +223,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public ImagePlus clockimp;
 	public boolean polynomialfits = false;
 	public boolean circlefits = false;
-	public boolean distancemethod = false;
-	public boolean combomethod = true;
+	public boolean distancemethod = true;
+	public boolean combomethod = false;
 	public boolean celltrackcirclefits = false;
 	public boolean pixelcelltrackcirclefits = false;
 
@@ -322,7 +322,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public double calibration;
 	public double timecal;
 	public int insidedistance = 20;
-	public int regiondistance = 10;
+	public int regiondistance = 0;
 	public int outsidedistance = 0;
 	public int[] boundarypoint;
 	public int[] midpoint;
@@ -978,6 +978,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		imp = ImageJFunctions.show(CurrentViewOrig, "Original Image");
 
 		// bdv = BdvFunctions.show( CurrentViewOrig, "Cell", Bdv.options().is2D() );
+		if(!distancemethod)
 		clockimp = ImageJFunctions.show(CurrentViewOrig);
 
 		imp.setTitle("Active Image" + " " + "time point : " + fourthDimension + " " + " Z: " + thirdDimension);
@@ -1265,14 +1266,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		TID = Integer.toString(fourthDimension);
 		tmpID = Float.toString(thirdDimension) + Float.toString(fourthDimension);
 		overlay = imp.getOverlay();
+		if(!distancemethod) {
 		clockoverlay = clockimp.getOverlay();
-		if (overlay == null) {
-
-			overlay = new Overlay();
-			imp.setOverlay(overlay);
-
-		}
-
 		if (clockoverlay != null)
 			clockoverlay.clear();
 		if (clockoverlay == null) {
@@ -1281,6 +1276,17 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			clockimp.setOverlay(clockoverlay);
 
 		}
+		
+		
+		}
+		if (overlay == null) {
+
+			overlay = new Overlay();
+			imp.setOverlay(overlay);
+
+		}
+
+		
 		if (change == ValueChange.INSIDE || change == ValueChange.OUTSIDE) {
 
 			if (automode) {
@@ -1896,7 +1902,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JButton Roibutton = new JButton("Confirm current roi selection");
 	public JButton DisplayRoibutton = new JButton("Display roi selection");
 	public JButton Anglebutton = new JButton("Fit Ellipses and track angles");
-	public JButton Curvaturebutton = new JButton("Measure Local Curvature");
+	public JButton Curvaturebutton = new JButton("Measure and Track Deformations");
 	public JButton Displaybutton = new JButton("Display Visuals (time)");
 	public JButton CurrentCurvaturebutton = new JButton("Measure Current Curvature");
 	public JButton Savebutton = new JButton("Save Track");
@@ -2023,7 +2029,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Border probborder = new CompoundBorder(new TitledBorder("Automation block"), new EmptyBorder(c.insets));
 	public Border ellipsetools = new CompoundBorder(new TitledBorder("Ransac and Angle computer"),
 			new EmptyBorder(c.insets));
-	public Border circletools = new CompoundBorder(new TitledBorder("Curvature computer"), new EmptyBorder(c.insets));
+	public Border circletools = new CompoundBorder(new TitledBorder("Deformation computer"), new EmptyBorder(c.insets));
 
 	public Border Kalmanborder = new CompoundBorder(new TitledBorder("Kalman Filter Search for angle tracking"),
 			new EmptyBorder(c.insets));
@@ -2369,19 +2375,19 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				SliderBoxGUI combominInlier = new SliderBoxGUI(mininlierstring, minInlierslider, minInlierField,
 						minInlierText, scrollbarSize, minNumInliers, minNumInliersmax);
 
-				Angleselect.add(distancemode, new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
-						GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				Angleselect.add(Pixelcelltrackcirclemode, new GridBagConstraints(2, 0, 2, 1, 0.0, 0.0,
-						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			//	Angleselect.add(distancemode, new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			//			GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			//	Angleselect.add(Pixelcelltrackcirclemode, new GridBagConstraints(2, 0, 2, 1, 0.0, 0.0,
+			//			GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 				//Angleselect.add(IntegerSegment, new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0,
 				//		GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				
-				Angleselect.add(Combomode, new GridBagConstraints(2, 2, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
-						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			//	Angleselect.add(Combomode, new GridBagConstraints(2, 2, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			//			GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 3, 2, 1, 0.0, 0.0,
-						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			//	Angleselect.add(combominInlier.BuildDisplay(), new GridBagConstraints(0, 3, 2, 1, 0.0, 0.0,
+			//			GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 				//Angleselect.add(resolutionText, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				//		GridBagConstraints.HORIZONTAL, insets, 0, 0));
@@ -2401,11 +2407,11 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				//Angleselect.add(interiorfield, new GridBagConstraints(0, 7, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				//		GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				Angleselect.add(regionText, new GridBagConstraints(0, 4, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
-						GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			//	Angleselect.add(regionText, new GridBagConstraints(0, 4, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			//			GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-				Angleselect.add(regioninteriorfield, new GridBagConstraints(0, 5, 2, 1, 0.0, 0.0,
-						GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+			//	Angleselect.add(regioninteriorfield, new GridBagConstraints(0, 5, 2, 1, 0.0, 0.0,
+			//			GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 				Angleselect.add(Curvaturebutton, new GridBagConstraints(2, 4, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 						GridBagConstraints.HORIZONTAL, insets, 0, 0));

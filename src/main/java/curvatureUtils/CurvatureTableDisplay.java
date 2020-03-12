@@ -104,7 +104,7 @@ public class CurvatureTableDisplay {
 			
 			
 			ComputeCurvature.SaveInterKymo(parent, densesortedMappair.sortedmap, size, ID);
-
+            if(!parent.distancemethod)
 			ComputeCurvature.SaveLineScanKymo(parent, densesortedMappair.sortedmap, linesize, ID);
 
 	}
