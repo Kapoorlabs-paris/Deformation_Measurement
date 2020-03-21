@@ -51,6 +51,7 @@ import listeners.SupermodeListener;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
+import pluginTools.simplifiedio.SimplifiedIO;
 
 public class IlastikEllipseFileChooser extends JPanel {
 
@@ -627,15 +628,15 @@ public class IlastikEllipseFileChooser extends JPanel {
 			
 		
 			//RandomAccessibleInterval<FloatType> image = new ImgOpener().openImgs(impA.getOriginalFileInfo().directory + impA.getOriginalFileInfo().fileName , new FloatType()).iterator().next();
-			RandomAccessibleInterval<FloatType> imagebefore = new ImgOpener().openImgs(impOrig.getOriginalFileInfo().directory + impOrig.getOriginalFileInfo().fileName, new FloatType()).get(0);
-		
+			RandomAccessibleInterval<FloatType> imagebefore = SimplifiedIO.openImage(impOrig.getOriginalFileInfo().directory + impOrig.getOriginalFileInfo().fileName, new FloatType());
+			
 			String name = impOrig.getOriginalFileInfo().fileName;
 			
 			WindowManager.closeAllWindows();
 			
 			if(superpixel && !twochannel) {
-			
-				RandomAccessibleInterval<IntType> imagesuper = new ImgOpener().openImgs(impsuper.getOriginalFileInfo().directory + impsuper.getOriginalFileInfo().fileName, new IntType()).get(0);
+				
+				RandomAccessibleInterval<IntType> imagesuper = SimplifiedIO.openImage(impsuper.getOriginalFileInfo().directory + impsuper.getOriginalFileInfo().fileName, new IntType());
 				new InteractiveSimpleEllipseFit(imagebefore, imagebefore, imagesuper, calibration, Wavesize, simple, superpixel, impsuper.getOriginalFileInfo().directory, twochannel, name).run(null);
 			
 			}
@@ -650,7 +651,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 			if(curvesuper && !twochannel) {
 				// Activate curvature measurment super
 			
-				RandomAccessibleInterval<IntType> imagesuper = new ImgOpener().openImgs(impsuper.getOriginalFileInfo().directory + impsuper.getOriginalFileInfo().fileName, new IntType()).get(0);
+				RandomAccessibleInterval<IntType> imagesuper = SimplifiedIO.openImage(impsuper.getOriginalFileInfo().directory + impsuper.getOriginalFileInfo().fileName, new IntType());
 				new InteractiveSimpleEllipseFit(imagebefore, imagebefore, imagesuper,calibration, Wavesize, simple, superpixel, curvesimple, curvesuper, impOrig.getOriginalFileInfo().directory, twochannel, name).run(null);
 			}
 			
@@ -658,8 +659,8 @@ public class IlastikEllipseFileChooser extends JPanel {
 			if(curvesuper && twochannel) {
 				// Activate curvature measurment super
 			
-				RandomAccessibleInterval<IntType> imagesuper = new ImgOpener().openImgs(impsuper.getOriginalFileInfo().directory + impsuper.getOriginalFileInfo().fileName, new IntType()).get(0);
-				RandomAccessibleInterval<FloatType> secimage = new ImgOpener().openImgs(impSec.getOriginalFileInfo().directory + impSec.getOriginalFileInfo().fileName, new FloatType()).get(0);
+				RandomAccessibleInterval<IntType> imagesuper = SimplifiedIO.openImage(impsuper.getOriginalFileInfo().directory + impsuper.getOriginalFileInfo().fileName, new IntType());
+				RandomAccessibleInterval<FloatType> secimage = SimplifiedIO.openImage(impSec.getOriginalFileInfo().directory + impSec.getOriginalFileInfo().fileName, new FloatType());
 				new InteractiveSimpleEllipseFit(imagebefore, secimage, imagebefore, imagesuper,calibration, Wavesize, simple, superpixel, curvesimple, curvesuper, impOrig.getOriginalFileInfo().directory, twochannel, name).run(null);
 			}
 			
