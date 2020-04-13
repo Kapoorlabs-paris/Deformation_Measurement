@@ -139,12 +139,14 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			Cordlist.add(new double[] { sublist.get(i).getDoublePosition(xindex),
 					sublist.get(i).getDoublePosition(yindex) });
 		}
-
+        
 		Pair<RegressionLineProfile, ClockDisplayer> resultcurvature = getCircleLocalcurvature(Cordlist, centerpoint, strideindex, name);
 
 		// Draw the function
 
 		return resultcurvature;
+		
+      
 
 	}
 
@@ -573,10 +575,10 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 		List<RealLocalizable> copytruths = new ArrayList<RealLocalizable>(truths);
 		
-		ArrayList<Integer> endIndexes = new ArrayList<Integer>();
+		
 		
 		int start = 0;
-		RealLocalizable lastpoint = copytruths.get(copytruths.size() - 1);
+		
 		boolean Added = true;
 		/*
 		for(int i = 0; i < truths.size(); i++) {
@@ -609,6 +611,11 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		}
 	}
 		*/
+		
+		RealLocalizable lastpoint = copytruths.get(copytruths.size() - 1);
+		ArrayList<Integer> endIndexes = new ArrayList<Integer>();
+		
+		int oldsize = copytruths.size();
 		for(int i = 0; i < copytruths.size(); i++) {
 			
 			RealLocalizable testpoint = copytruths.get(start);
@@ -628,11 +635,70 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			
 			
 		}
+		
+		
+		int lastindex = endIndexes.get(endIndexes.size() - 1);
+		RealLocalizable lastsegmentpoint = copytruths.get(lastindex);
+		
+		
+			
+			double lastpixeldistance = Distance.DistanceSqrt(lastpoint, lastsegmentpoint);
+			double reallastdistance = lastpixeldistance * parent.calibration;
+			double newreallastdistance = reallastdistance;
+	/*		
+			if(reallastdistance < boxSize ) {
+				
+				
+				int index = 0;
+				do {
+					
+					
+					copytruths.add(truths.get(index));
+					
+					index++;
+					RealLocalizable newlastpoint = copytruths.get(copytruths.size() - 1);
+					double newpixeldistance = Distance.DistanceSqrt(newlastpoint, lastsegmentpoint);
+					newreallastdistance = newpixeldistance * parent.calibration;
+					
+					
+					
+				}while(newreallastdistance <= boxSize);
+				
+			}
+		
+			endIndexes = new ArrayList<Integer>();
+			for(int i = 0; i < copytruths.size(); i++) {
+				
+				RealLocalizable testpoint = copytruths.get(start);
+				RealLocalizable point = copytruths.get(i);
+				
+				double pixeldistance = Distance.DistanceSqrt(testpoint, point);
+				double realdistance = pixeldistance * parent.calibration;
+				
+				
+				if(realdistance >= boxSize) {
+					
+					start = i;
+					if(i!=0)
+					endIndexes.add(i);
+					
+				}
+				
+				
+			}
+		
+		*/
 	
+		
 			int biggestsize = 0;
 			int segmentLabel = 1;
 
 			int size = copytruths.size();
+			
+			
+				endIndexes.add(size - 2);
+				
+			
 
 			List<RealLocalizable> sublist = new ArrayList<RealLocalizable>();
 
@@ -642,9 +708,9 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 			for (int j = 0; j< endIndexes.size(); ++j) {
 				
 				int endindex = endIndexes.get(j);
-				if (startindex >= size - 1 || Math.abs(endindex - startindex) < 3)
+				
+				if (startindex >= size - 1 || Math.abs(endindex - startindex) <= 3 )
 					break;
- 
 				sublist = copytruths.subList(startindex, Math.min(endindex, size));
 				parent.Listmap.put(segmentLabel, sublist);
 				if (biggestsize >= endindex - startindex)
@@ -654,6 +720,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 				segmentLabel++;
 
 				startindex = endindex;
+				
 				
 
 			}

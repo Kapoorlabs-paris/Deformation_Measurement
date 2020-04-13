@@ -337,7 +337,7 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 				
 			} catch (InterruptedException | ExecutionException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				continue;
 			}
 		}
 		

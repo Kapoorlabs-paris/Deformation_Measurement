@@ -59,7 +59,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	  public JFrame Cardframe = new JFrame("SuperPixel based Ellipsoid detector");
+	  public JFrame Cardframe = new JFrame("Curvature and Deformation measuring tool");
 	  public JPanel panelCont = new JPanel();
 	  public ImagePlus impOrig, impsuper, impSec;
 	  public File impAfile, impOrigfile, impsuperfile, impsecfile;
@@ -99,7 +99,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 	  public Checkbox Godouble = new Checkbox("Load a second channel", twochannel);
 	  
 	  public Checkbox GodoubleBatch = new Checkbox("Load second channel directory", twochannel);
-	  public Checkbox Gocurvesuper = new Checkbox("Curvature Measurement with Superpixel segmentation", curvesuper, runmode);
+	  public Checkbox Gocurvesuper = new Checkbox("Serial Mode for Curvature Measurement", curvesuper, runmode);
 	  public Checkbox Gocurvesimple = new Checkbox("Curvature Measurement with Pixel only", curvesimple, runmode);
 	  
 	  
@@ -107,7 +107,7 @@ public class IlastikEllipseFileChooser extends JPanel {
 	  
 	  public Border choosefile = new CompoundBorder(new TitledBorder("Probability Map chooser"),
 				new EmptyBorder(c.insets));
-	  public Border choosesuperfile = new CompoundBorder(new TitledBorder("Superpixel SegMap chooser"),
+	  public Border choosesuperfile = new CompoundBorder(new TitledBorder("Choose Segmentation Image"),
 				new EmptyBorder(c.insets));
 	  public Border chooseoriginalfile = new CompoundBorder(new TitledBorder("Choose original Image"),
 				new EmptyBorder(c.insets));
