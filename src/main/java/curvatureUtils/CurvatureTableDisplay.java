@@ -55,7 +55,6 @@ public class CurvatureTableDisplay {
 			long[] linesize = new long[] {TimedimensionKymo, (long) Math.ceil(parent.minNumInliers * (parent.insidedistance * 2 + extradimension)) };
 			ComputeCurvature.MakeInterKymo(parent, densesortedMappair.sortedmap, size, ID);
 
-			ComputeCurvature.MakeLineKymo(parent, densesortedMappair.sortedmap, linesize, ID);
 
 	}
 
@@ -104,8 +103,6 @@ public class CurvatureTableDisplay {
 			
 			
 			ComputeCurvature.SaveInterKymo(parent, densesortedMappair.sortedmap, size, ID);
-            if(!parent.distancemethod)
-			ComputeCurvature.SaveLineScanKymo(parent, densesortedMappair.sortedmap, linesize, ID);
 
 	}
 	

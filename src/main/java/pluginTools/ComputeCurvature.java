@@ -304,17 +304,11 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		RandomAccessibleInterval<FloatType> CurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
-		RandomAccessibleInterval<FloatType> IntensityAKymo = new ArrayImgFactory<FloatType>().create(size,
-				new FloatType());
-		RandomAccessibleInterval<FloatType> IntensityBKymo = new ArrayImgFactory<FloatType>().create(size,
-				new FloatType());
+
 
 		RandomAccessibleInterval<FloatType> DistCurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
 
-		RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
-
-		RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
 		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 
 		RandomAccess<FloatType> ranac = CurvatureKymo.randomAccess();
@@ -332,8 +326,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			ranac.setPosition(time - 1, 0);
 			Distranac.setPosition(time - 1, 0);
-			ranacimageA.setPosition(time - 1, 0);
-			ranacimageB.setPosition(time - 1, 0);
 			if (currentlist != null) {
 				for (Intersectionobject currentobject : currentlist) {
 
@@ -349,11 +341,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 						Distranac.setPosition(count, 1);
 						Distranac.get().set((float) sortedlinelist.get(i)[6]);
 
-						ranacimageA.setPosition(count, 1);
-						ranacimageA.get().setReal(sortedlinelist.get(i)[3]);
-
-						ranacimageB.setPosition(count, 1);
-						ranacimageB.get().setReal(sortedlinelist.get(i)[4]);
 
 						count++;
 
@@ -389,22 +376,13 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		Curveimp.setTitle(CurvatureTitle + TrackID);
 		Curveimp.setCalibration(cal);
 
-		ImagePlus IntensityAimp = ImageJFunctions.show(IntensityAKymo);
-		IntensityAimp.setTitle("Intensity ChA Kymo for TrackID: " + TrackID);
-		IntensityAimp.setCalibration(cal);
 
-		if (parent.twochannel) {
-			ImagePlus IntensityBimp = ImageJFunctions.show(IntensityBKymo);
-			IntensityBimp.setTitle("Intensity ChB for TrackID: " + TrackID);
-			IntensityBimp.setCalibration(cal);
-			IntensityBimp.updateAndRepaintWindow();
-		}
+
 		Curveimp.updateAndRepaintWindow();
-		IntensityAimp.updateAndRepaintWindow();
 
-		KymoSaveobject Kymos = new KymoSaveobject(CurvatureKymo, IntensityAKymo, IntensityBKymo);
+		KymoSaveobject Kymos = new KymoSaveobject(CurvatureKymo, null, null);
 		if (parent.combomethod)
-			Kymos = new KymoSaveobject(CurvatureKymo, DistCurvatureKymo, IntensityAKymo, IntensityBKymo);
+			Kymos = new KymoSaveobject(CurvatureKymo, DistCurvatureKymo, null, null);
 		parent.KymoFileobject.put(TrackID, Kymos);
 
 		int hyperslicedimension = 1;
@@ -438,124 +416,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		parent.updatePreview(ValueChange.THIRDDIMmouse);
 	}
 
-	public static void SaveLineScanKymo(InteractiveSimpleEllipseFit parent,
-			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size, String TrackID) {
-
-		RandomAccessibleInterval<FloatType> IntensityAKymo = new ArrayImgFactory<FloatType>().create(size,
-				new FloatType());
-		RandomAccessibleInterval<FloatType> IntensityBKymo = new ArrayImgFactory<FloatType>().create(size,
-				new FloatType());
-		if (parent.insidedistance > 0) {
-			if (parent.KymoLineobject.get(TrackID) != null) {
-
-				IntensityAKymo = parent.KymoLineobject.get(TrackID).LineScanAKymo;
-
-				IntensityBKymo = parent.KymoLineobject.get(TrackID).LineScanBKymo;
-
-			}
-
-			else {
-
-				RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
-
-				RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
-				Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
-
-				while (itZ.hasNext()) {
-
-					Map.Entry<String, Integer> entry = itZ.next();
-
-					int time = entry.getValue();
-					String timeID = entry.getKey();
-
-					ArrayList<Intersectionobject> currentlist = sortedMappair.get(TrackID + timeID);
-
-					ranacimageA.setPosition(time - 1, 0);
-					ranacimageB.setPosition(time - 1, 0);
-					if (currentlist != null) {
-						for (Intersectionobject currentobject : currentlist) {
-
-							int count = 0;
-
-							// System.out.println(currentobject.LineScanIntensity.size() + " Final size" +
-							// time);
-							ConcurrentHashMap<Integer, ArrayList<LineProfileCircle>> currentprofile = currentobject.LineScanIntensity;
-
-							for (Map.Entry<Integer, ArrayList<LineProfileCircle>> currentsegmentprofile : currentprofile
-									.entrySet()) {
-
-								int key = currentsegmentprofile.getKey();
-
-								ArrayList<LineProfileCircle> lineprofile = currentsegmentprofile.getValue();
-
-								for (int i = 0; i < lineprofile.size() + extradimension; ++i) {
-
-									if (count >= size[1])
-										break;
-
-									ranacimageA.setPosition(count, 1);
-									ranacimageB.setPosition(count, 1);
-
-									if (i < lineprofile.size()) {
-										ranacimageA.get().set((float) lineprofile.get(i).intensity);
-										ranacimageB.get().set((float) lineprofile.get(i).secintensity);
-
-									}
-
-									else {
-										ranacimageA.get()
-												.set((float) lineprofile.get(lineprofile.size() - 1).intensity);
-										ranacimageB.get()
-												.set((float) lineprofile.get(lineprofile.size() - 1).secintensity);
-
-									}
-
-									count++;
-								}
-
-							}
-
-						}
-
-					}
-
-				}
-			}
-
-			double[] calibration = new double[] { parent.timecal, parent.calibration };
-			Calibration cal = new Calibration();
-			cal.setFunction(Calibration.STRAIGHT_LINE, calibration, " ");
-
-			KymoSaveobject Kymos = new KymoSaveobject(IntensityAKymo, IntensityBKymo);
-			parent.KymoLineobject.put(TrackID, Kymos);
-
-			ImagePlus IntensityAimp = ImageJFunctions.wrapFloat(IntensityAKymo,
-					"LineScanCHA Kymo for TrackID: " + TrackID);
-
-			FileSaver fsB = new FileSaver(IntensityAimp);
-			if (parent.clockimp.isVisible()) {
-				FileSaver fsLine = new FileSaver(parent.clockimp);
-				fsLine.saveAsTiff(
-						parent.saveFile + "//" + "ClockLineScan_" + parent.inputstring.replaceFirst("[.][^.]+$", "")
-								+ "TrackID" + Integer.parseInt(TrackID) + ".tif");
-			}
-			fsB.saveAsTiff(parent.saveFile + "//" + "Ch1LineScan_" + parent.inputstring.replaceFirst("[.][^.]+$", "")
-					+ "TrackID" + Integer.parseInt(TrackID) + ".tif");
-
-			if (parent.twochannel) {
-				ImagePlus IntensityBimp = ImageJFunctions.wrapFloat(IntensityBKymo,
-						"Intensity ChB Kymo for TrackID: " + TrackID);
-
-				FileSaver fsBB = new FileSaver(IntensityBimp);
-
-				fsBB.saveAsTiff(
-						parent.saveFile + "//" + "Ch2LineScan_" + parent.inputstring.replaceFirst("[.][^.]+$", "")
-								+ "TrackID" + Integer.parseInt(TrackID) + ".tif");
-
-			}
-		}
-
-	}
+	
 
 	public static void SaveInterKymo(InteractiveSimpleEllipseFit parent,
 			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size, String TrackID) {
@@ -586,10 +447,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 		RandomAccessibleInterval<FloatType> CurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
-		RandomAccessibleInterval<FloatType> IntensityAKymo = new ArrayImgFactory<FloatType>().create(size,
-				new FloatType());
-		RandomAccessibleInterval<FloatType> IntensityBKymo = new ArrayImgFactory<FloatType>().create(size,
-				new FloatType());
+
 		RandomAccessibleInterval<FloatType> DistCurvatureKymo = new ArrayImgFactory<FloatType>().create(size,
 				new FloatType());
 
@@ -597,17 +455,11 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 			CurvatureKymo = parent.KymoFileobject.get(TrackID).CurvatureKymo;
 
-			IntensityAKymo = parent.KymoFileobject.get(TrackID).IntensityAKymo;
-
-			IntensityBKymo = parent.KymoFileobject.get(TrackID).IntensityBKymo;
 
 			DistCurvatureKymo = parent.KymoFileobject.get(TrackID).DistCurvatureKymo;
 
 		} else {
 
-			RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
-
-			RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
 			Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 
 			RandomAccess<FloatType> ranac = CurvatureKymo.randomAccess();
@@ -625,8 +477,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 				ranac.setPosition(time - 1, 0);
 				Distranac.setPosition(time - 1, 0);
-				ranacimageA.setPosition(time - 1, 0);
-				ranacimageB.setPosition(time - 1, 0);
 				if (currentlist != null) {
 					for (Intersectionobject currentobject : currentlist) {
 
@@ -642,11 +492,6 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 							Distranac.setPosition(count, 1);
 							Distranac.get().set((float) sortedlinelist.get(i)[6]);
 
-							ranacimageA.setPosition(count, 1);
-							ranacimageA.get().setReal(sortedlinelist.get(i)[3]);
-
-							ranacimageB.setPosition(count, 1);
-							ranacimageB.get().setReal(sortedlinelist.get(i)[4]);
 
 							count++;
 
@@ -696,28 +541,12 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		fsC.saveAsTiff(parent.saveFile + "//" + SaveTitle + parent.inputstring.replaceFirst("[.][^.]+$", "") + "TrackID"
 				+ Integer.parseInt(TrackID) + ".tif");
 
-		ImagePlus IntensityAimp = ImageJFunctions.wrapFloat(IntensityAKymo,
-				"Intensity ChA Kymo for TrackID: " + TrackID);
+	
 
-		FileSaver fsB = new FileSaver(IntensityAimp);
-
-		fsB.saveAsTiff(parent.saveFile + "//" + "Ch1Intensity_" + parent.inputstring.replaceFirst("[.][^.]+$", "")
-				+ "TrackID" + Integer.parseInt(TrackID) + ".tif");
-
-		if (parent.twochannel) {
-			ImagePlus IntensityBimp = ImageJFunctions.wrapFloat(IntensityBKymo,
-					"Intensity ChB Kymo for TrackID: " + TrackID);
-
-			FileSaver fsBB = new FileSaver(IntensityBimp);
-
-			fsBB.saveAsTiff(parent.saveFile + "//" + "Ch2Intensity_" + parent.inputstring.replaceFirst("[.][^.]+$", "")
-					+ "TrackID" + Integer.parseInt(TrackID) + ".tif");
-
-		}
-		if (parent.KymoFileobject.get(TrackID) == null) {
-			KymoSaveobject Kymos = new KymoSaveobject(CurvatureKymo, IntensityAKymo, IntensityBKymo);
+				if (parent.KymoFileobject.get(TrackID) == null) {
+			KymoSaveobject Kymos = new KymoSaveobject(CurvatureKymo, null, null);
 			if (parent.combomethod)
-				Kymos = new KymoSaveobject(CurvatureKymo, DistCurvatureKymo, IntensityAKymo, IntensityBKymo);
+				Kymos = new KymoSaveobject(CurvatureKymo, DistCurvatureKymo, null, null);
 
 			parent.KymoFileobject.put(TrackID, Kymos);
 
