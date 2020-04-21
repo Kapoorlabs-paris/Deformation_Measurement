@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import curvatureUtils.ParallelResultDisplay;
+import ellipsoidDetector.Intersectionobject;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
@@ -46,19 +47,23 @@ public class DisplayVisualListener implements ActionListener {
 	
 		String ID = (String) parent.table.getValueAt(parent.row, 0);
 		RandomAccessibleInterval<FloatType> Blank = ComputeCurvature.MakeDistanceFan(parent, densesortedMappair.sortedmap, ID, show);
-		ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>> currentresultCurv = new ArrayList<Pair<String, Pair<Integer, ArrayList<double[]>>>>();
 
-		
-	for (Pair<String, Pair<Integer, ArrayList<double[]>>> currentCurvature : parent.resultCurvature) {
+		HashMap<Integer, ArrayList<double[]>> currenthashCurv = new HashMap<Integer, ArrayList<double[]>>();
+		for(Pair<String, Intersectionobject> currentCurvature : parent.denseTracklist) {
+			
 
-		if (ID.equals(currentCurvature.getA())) {
-
-			currentresultCurv.add(currentCurvature);
-
+			if (ID.equals(currentCurvature.getA())) {
+				
+				int time = currentCurvature.getB().z;
+				
+				ArrayList<double[]> curvature = currentCurvature.getB().linelist;
+				
+				currenthashCurv.put(time, curvature);
+			}
+			
 		}
 
-	}
-	ParallelResultDisplay display = new ParallelResultDisplay(parent, currentresultCurv, show);
+	ParallelResultDisplay display = new ParallelResultDisplay(parent, currenthashCurv, show);
 	RandomAccessibleInterval<FloatType> probImg = display.ResultDisplayCircleFit();
 	
 	return new ValuePair<RandomAccessibleInterval<FloatType>, RandomAccessibleInterval<FloatType>>(Blank, probImg);

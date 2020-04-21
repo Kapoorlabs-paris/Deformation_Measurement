@@ -570,7 +570,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 		return new ValuePair<Intersectionobject, Intersectionobject>(sparsecurrentobject, densecurrentobject);
 	}
-	public void MakeSegments(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int boxSize,
+	public void MakeSegmentsNew(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int boxSize,
 			int celllabel) {
 
 		List<RealLocalizable> copytruths = new ArrayList<RealLocalizable>(truths);
@@ -730,7 +730,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 	}
 
 	
-	public void MakeSegmentsOld(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int numSeg,
+	public void MakeSegments(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int boxSize,
 			int celllabel) {
 
 		List<RealLocalizable> copytruths = new ArrayList<RealLocalizable>(truths);
@@ -739,7 +739,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		else {
 			int size = truths.size();
 
-			int maxpoints = size / numSeg;
+			int maxpoints = (int) (boxSize/parent.calibration);
 			if (maxpoints <= 2)
 				maxpoints = 3;
 			int biggestsize = maxpoints;
@@ -755,12 +755,10 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 				index++;
 
-			} while (copytruths.size() % numSeg != 0);
+			} while (copytruths.size() % maxpoints != 0);
 
 			size = copytruths.size();
-			maxpoints = size / numSeg;
-			if (maxpoints <= 2)
-				maxpoints = 3;
+		
 
 			List<RealLocalizable> sublist = new ArrayList<RealLocalizable>();
 

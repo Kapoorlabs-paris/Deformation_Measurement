@@ -12,17 +12,15 @@ public class ProcessSliceDisplayCircleFit implements Runnable {
 
 	
 	final RandomAccessibleInterval<FloatType> OutputSlice;
-    final double minIntensity;
-    final double maxIntensity;
+
     final ArrayList<double[]> TimeCurveList;
 	
-	public ProcessSliceDisplayCircleFit(final RandomAccessibleInterval<FloatType> OutputSlice,  ArrayList<double[]> TimeCurveList, double minIntensity, double maxIntensity  ) {
+	public ProcessSliceDisplayCircleFit(final RandomAccessibleInterval<FloatType> OutputSlice,  ArrayList<double[]> TimeCurveList ) {
 		
 		
 		this.OutputSlice = OutputSlice;
 		this.TimeCurveList = TimeCurveList;
-		this.minIntensity = minIntensity;
-		this.maxIntensity = maxIntensity;
+
 		
 	}
 	
@@ -51,8 +49,8 @@ public class ProcessSliceDisplayCircleFit implements Runnable {
 
 			
 
-					if ((Math.abs(cursor.getFloatPosition(0) - X[index])) <= 2
-							&& (Math.abs(cursor.getFloatPosition(1) - Y[index])) <= 2) {
+					if ((Math.abs(cursor.getFloatPosition(0) - X[index])) <= 1
+							&& (Math.abs(cursor.getFloatPosition(1) - Y[index])) <= 1) {
 
 						cursor.get().setReal((Curvature[index]));
 

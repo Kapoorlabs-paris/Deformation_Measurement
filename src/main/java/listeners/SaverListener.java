@@ -79,7 +79,7 @@ public class SaverListener implements ActionListener {
 	
 	public void NewSave() {
 		
-	
+		parent.saveFile.mkdir();
 		
 		String ID = parent.selectedID;
 		if (!parent.curveautomode && !parent.curvesupermode) {
@@ -164,7 +164,7 @@ public class SaverListener implements ActionListener {
 	public void KymoSave() {
 		
 		String ID = parent.selectedID;
-		
+		parent.saveFile.mkdir();
 		try {
 			File fichier = new File(
 					parent.saveFile + "//" + parent.addToName+ parent.inputstring.replaceFirst("[.][^.]+$", "") + "TrackID" +ID + ".txt");
@@ -274,7 +274,7 @@ public class SaverListener implements ActionListener {
 	public void DenseSave() {
 		
 		String ID = parent.selectedID;
-		
+		parent.saveFile.mkdir();
 		try {
 			File fichier = new File(
 					parent.saveFile + "//" +"Co-ordinates" + parent.addToName +  parent.inputstring.replaceFirst("[.][^.]+$", "") + "TrackID" +ID + ".txt");
@@ -337,7 +337,7 @@ public class SaverListener implements ActionListener {
 		
 		
 		String ID = parent.selectedID;
-		
+		parent.saveFile.mkdir();
 		if (!parent.curveautomode && !parent.curvesupermode) {
 		try {
 			File fichier = new File(

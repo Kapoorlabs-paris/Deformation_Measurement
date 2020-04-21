@@ -69,12 +69,13 @@ public class SaverAllListener implements ActionListener {
 	
 	public void KymoSave() {
 		
-		
+		parent.saveFile.mkdir();
 	for(int tablepos = 0; tablepos< parent.table.getRowCount(); ++tablepos) {
 			
 			String ID = (String) parent.table.getValueAt(tablepos, 0);
 			
 			try {
+				
 				File fichier = new File(
 						parent.saveFile + "//" + parent.addToName + parent.inputstring.replaceFirst("[.][^.]+$", "") + "TrackID" + Integer.parseInt(ID) + ".txt");
 				
@@ -188,7 +189,7 @@ public class SaverAllListener implements ActionListener {
 	
 	public void DenseSave() {
 		
-		
+		parent.saveFile.mkdir();
 		for(int tablepos = 0; tablepos< parent.table.getRowCount(); ++tablepos) {
 			
 			String ID = (String) parent.table.getValueAt(tablepos, 0);
@@ -252,7 +253,7 @@ public class SaverAllListener implements ActionListener {
 	}
 	public void OldSave() {
 		
-		
+		parent.saveFile.mkdir();
 		for(int tablepos = 0; tablepos< parent.table.getRowCount(); ++tablepos) {
 			
 			String ID = (String) parent.table.getValueAt(tablepos, 0);
@@ -371,7 +372,7 @@ public class SaverAllListener implements ActionListener {
 	
 	public void NewSave() {
 		
-		
+		parent.saveFile.mkdir();
    for(int tablepos = 0; tablepos< parent.table.getRowCount(); ++tablepos) {
 			
 			String ID = (String) parent.table.getValueAt(tablepos, 0);

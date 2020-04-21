@@ -38,6 +38,8 @@ public class SaveDirectory implements ActionListener {
 		//
 		
 		//
+		
+		parent.chooserA.getCurrentDirectory().mkdir();
 		if (parent.chooserA.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
 			System.out.println("getCurrentDirectory(): " + parent.chooserA.getCurrentDirectory());
 			System.out.println("getSelectedFile() : " + parent.chooserA.getSelectedFile());
