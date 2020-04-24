@@ -237,13 +237,10 @@ public class CurvatureFinderDistance<T extends RealType<T> & NativeType<T>> exte
 		long[] longnewpos = new long[ndims];
 		
 		
-		for (int i = 0; i < pointlist.size() - 1; ++i) {
 			
-		perimeter += Distance.DistanceSqrt(pointlist.get(i), pointlist.get(i + 1));
+		perimeter = pointlist.size();
 			
-		}
 		
-		perimeter = perimeter * parent.calibration;
 		int size = pointlist.size();
 		final double[] pointB = new double[ndims];
 

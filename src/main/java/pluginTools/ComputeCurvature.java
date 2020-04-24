@@ -1337,9 +1337,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	public static Binobject GetZTdenseTrackList(final InteractiveSimpleEllipseFit parent) {
 
-		int maxCurveDim = 0;
-
-		double binwidth = 0;
+	
 
 		HashMap<String, Integer> maxidcurve = new HashMap<String, Integer>();
 
@@ -1358,7 +1356,9 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		while (iter.hasNext()) {
 
 			String TrackID = iter.next();
+			int maxCurveDim = 0;
 
+			double binwidth = 0;
 			Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
 			while (itZ.hasNext()) {
 
@@ -1377,14 +1377,18 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 						currentframeobject.add(currentangle.getB());
 
 					}
-
+					int size = 0;
 					for (int i = 0; i < currentframeobject.size(); ++i) {
 
-						int size = currentframeobject.get(i).linelist.size();
-						binwidth = size;
-						if (size > maxCurveDim)
-							maxCurveDim = size;
+						 size += currentframeobject.get(i).linelist.size();
+						
 
+					}
+					size /=  Math.max(currentframeobject.size(), 1);
+					
+					if(size > maxCurveDim) {
+					maxCurveDim = size;
+					binwidth = size;
 					}
 
 				}

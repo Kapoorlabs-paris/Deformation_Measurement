@@ -25,7 +25,6 @@ import pluginTools.InteractiveSimpleEllipseFit;
 import utility.Curvatureobject;
 
 public class CurvatureTable {
-	static int extradimension = 50;
 	public static void CreateTableTrackView(final InteractiveSimpleEllipseFit parent) {
 
 		parent.resultAngle = new ArrayList<Pair<String, double[]>>();
@@ -202,7 +201,6 @@ public class CurvatureTable {
 
 				long[] imsize = new long[] { TimedimensionKymo, Xkymodimension + 1 };
 				
-				long[] linesize = new long[] {TimedimensionKymo, (long) Math.ceil(parent.minNumInliers * (parent.insidedistance * 2 + extradimension))};
 				ComputeCurvature.CreateInterKymo( parent,densesortedMappair.sortedmap, imsize, StringID);
 			parent.tablesize = parent.row;
 		}

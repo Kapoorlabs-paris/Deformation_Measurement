@@ -264,7 +264,6 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 		ArrayList<RegressionFunction> totalfunctions = new ArrayList<RegressionFunction>();
 
-		ArrayList<LineProfileCircle> totalscan = new ArrayList<LineProfileCircle>();
 
 		ConcurrentHashMap<Integer, ArrayList<LineProfileCircle>> Hashtotalscan = new ConcurrentHashMap<Integer, ArrayList<LineProfileCircle>>();
 
@@ -570,164 +569,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 		return new ValuePair<Intersectionobject, Intersectionobject>(sparsecurrentobject, densecurrentobject);
 	}
-	public void MakeSegmentsNew(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int boxSize,
-			int celllabel) {
-
-		List<RealLocalizable> copytruths = new ArrayList<RealLocalizable>(truths);
-		
-		
-		
-		int start = 0;
-		
-		boolean Added = true;
-		/*
-		for(int i = 0; i < truths.size(); i++) {
-			
-			
-			RealLocalizable point = truths.get(i);
-			
-			double lastpixeldistance = Distance.DistanceSqrt(lastpoint, point);
-			double reallastdistance = lastpixeldistance * parent.calibration;
-			
-			double newreallastdistance = reallastdistance;
-		if(reallastdistance < boxSize && i>truths.size()/2) {
-			
-			
-			int index = 0;
-			do {
-				
-				
-				copytruths.add(truths.get(index));
-				
-				index++;
-				RealLocalizable newlastpoint = copytruths.get(copytruths.size() - 1);
-				double newpixeldistance = Distance.DistanceSqrt(newlastpoint, point);
-				newreallastdistance = newpixeldistance * parent.calibration;
-				
-				
-				
-			}while(newreallastdistance <= boxSize);
-			
-		}
-	}
-		*/
-		
-		RealLocalizable lastpoint = copytruths.get(copytruths.size() - 1);
-		ArrayList<Integer> endIndexes = new ArrayList<Integer>();
-		
-		int oldsize = copytruths.size();
-		for(int i = 0; i < copytruths.size(); i++) {
-			
-			RealLocalizable testpoint = copytruths.get(start);
-			RealLocalizable point = copytruths.get(i);
-			
-			double pixeldistance = Distance.DistanceSqrt(testpoint, point);
-			double realdistance = pixeldistance * parent.calibration;
-			
-			
-			if(realdistance >= boxSize) {
-				
-				start = i;
-				if(i!=0)
-				endIndexes.add(i);
-				
-			}
-			
-			
-		}
-		
-		
-		int lastindex = endIndexes.get(endIndexes.size() - 1);
-		RealLocalizable lastsegmentpoint = copytruths.get(lastindex);
-		
-		
-			
-			double lastpixeldistance = Distance.DistanceSqrt(lastpoint, lastsegmentpoint);
-			double reallastdistance = lastpixeldistance * parent.calibration;
-			double newreallastdistance = reallastdistance;
-	/*		
-			if(reallastdistance < boxSize ) {
-				
-				
-				int index = 0;
-				do {
-					
-					
-					copytruths.add(truths.get(index));
-					
-					index++;
-					RealLocalizable newlastpoint = copytruths.get(copytruths.size() - 1);
-					double newpixeldistance = Distance.DistanceSqrt(newlastpoint, lastsegmentpoint);
-					newreallastdistance = newpixeldistance * parent.calibration;
-					
-					
-					
-				}while(newreallastdistance <= boxSize);
-				
-			}
-		
-			endIndexes = new ArrayList<Integer>();
-			for(int i = 0; i < copytruths.size(); i++) {
-				
-				RealLocalizable testpoint = copytruths.get(start);
-				RealLocalizable point = copytruths.get(i);
-				
-				double pixeldistance = Distance.DistanceSqrt(testpoint, point);
-				double realdistance = pixeldistance * parent.calibration;
-				
-				
-				if(realdistance >= boxSize) {
-					
-					start = i;
-					if(i!=0)
-					endIndexes.add(i);
-					
-				}
-				
-				
-			}
-		
-		*/
 	
-		
-			int biggestsize = 0;
-			int segmentLabel = 1;
-
-			int size = copytruths.size();
-			
-			
-				endIndexes.add(size - 2);
-				
-			
-
-			List<RealLocalizable> sublist = new ArrayList<RealLocalizable>();
-
-			int startindex = 0;
-			
-
-			for (int j = 0; j< endIndexes.size(); ++j) {
-				
-				int endindex = endIndexes.get(j);
-				
-				if (startindex >= size - 1 || Math.abs(endindex - startindex) <= 3 )
-					break;
-				sublist = copytruths.subList(startindex, Math.min(endindex, size));
-				parent.Listmap.put(segmentLabel, sublist);
-				if (biggestsize >= endindex - startindex)
-					biggestsize = endindex - startindex;
-
-				parent.CellLabelsizemap.put(celllabel, biggestsize);
-				segmentLabel++;
-
-				startindex = endindex;
-				
-				
-
-			}
-
-	
-
-	}
 
 	
 	public void MakeSegments(InteractiveSimpleEllipseFit parent, final List<RealLocalizable> truths, int boxSize,
@@ -779,7 +621,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 				startindex = endindex;
 				endindex = startindex + maxpoints;
 
-				if (startindex >= size - 1)
+				if (endindex >= size + 1)
 					break;
 
 			}
@@ -866,13 +708,9 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		double radii = ellipsesegment.function.getRadii();
 		double[] newpos = new double[ndims];
 		long[] longnewpos = new long[ndims];
-		for (int i = 0; i < pointlist.size() - 1; ++i) {
 
-			perimeter += Distance.DistanceSqrt(pointlist.get(i), pointlist.get(i + 1));
-
-		}
-
-		perimeter = perimeter * parent.calibration;
+			perimeter = pointlist.size();
+		
 		int size = pointlist.size();
 		final double[] pointA = new double[ndims];
 		final double[] pointB = new double[ndims];
@@ -910,7 +748,7 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 
 			Pair<Double, Double> Intensity = new ValuePair<Double, Double>(0.0, 0.0);
 
-				Intensity = getIntensity(parent, intpoint, centpos);
+			Intensity = getIntensity(parent, intpoint, centpos);
 
 			// Average the intensity.
 			meanIntensity += Intensity.getA();
@@ -973,13 +811,13 @@ public abstract class MasterCurvature<T extends RealType<T> & NativeType<T>> imp
 		double radii = ellipsesegment.function.getRadii();
 		double[] newpos = new double[ndims];
 		long[] longnewpos = new long[ndims];
-		for (int i = 0; i < pointlist.size() - 1; ++i) {
+	
 
-			perimeter += Distance.DistanceSqrt(pointlist.get(i), pointlist.get(i + 1));
+			perimeter = pointlist.size();
 
-		}
+		
 
-		perimeter = perimeter * parent.calibration;
+		
 		int size = pointlist.size();
 		final double[] pointA = new double[ndims];
 		final double[] pointB = new double[ndims];
