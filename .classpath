@@ -12,7 +12,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
@@ -23,10 +23,10 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="src" path="/Preprocessing"/>
-	<classpathentry exported="true" kind="src" path="/scifio"/>
 	<classpathentry exported="true" kind="src" path="/PolynomialRansac"/>
 	<classpathentry exported="true" kind="src" path="/MasterPanels"/>
 	<classpathentry exported="true" kind="src" path="/imglib2-roi"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/varun-imglib2-algorithm"/>
 	<classpathentry kind="lib" path="/Users/aimachine/.m2/repository/loci/loci_plugins/4.4.9/loci_plugins-4.4.9.jar">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
@@ -36,7 +36,7 @@
 			<attribute name="maven.scope" value="compile"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/aimachine/.m2/repository/net/imglib2/imglib2/5.8.0/imglib2-5.8.0.jar" sourcepath="/Users/aimachine/.m2/repository/net/imglib2/imglib2/5.8.0/imglib2-5.8.0-sources.jar">
+	<classpathentry kind="lib" path="/Users/aimachine/.m2/repository/net/imglib2/imglib2/5.8.0/imglib2-5.8.0.jar">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 			<attribute name="maven.groupId" value="net.imglib2"/>
