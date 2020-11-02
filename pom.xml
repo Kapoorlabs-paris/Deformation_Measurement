@@ -114,6 +114,7 @@
 		<dependency>
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2</artifactId>
+			<version>5.8.0</version>
 		</dependency>
 
 		<dependency>
@@ -156,7 +157,15 @@
 			<artifactId>commons-io</artifactId>
 			<version>${commons-io.version}</version>
 		</dependency>
+<dependency>
+    <groupId>net.imglib2</groupId>
+    <artifactId>imglib2-algorithm</artifactId>
+</dependency>
 
+<dependency>
+    <groupId>net.imglib2</groupId>
+    <artifactId>imglib2-algorithm-gpl</artifactId>
+</dependency>
 		
 	
 	

@@ -9,6 +9,7 @@ import ellipsoidDetector.Distance;
 import ellipsoidDetector.Intersectionobject;
 import ij.IJ;
 import kalmanForSegments.Segmentobject;
+import kalmanTracker.NNFlagsearchKDtree;
 import mpicbg.models.Point;
 import net.imglib2.KDTree;
 import net.imglib2.RealLocalizable;
