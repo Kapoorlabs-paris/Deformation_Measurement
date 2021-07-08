@@ -88,7 +88,6 @@ import listeners.ClearforManual;
 import listeners.ColorListener;
 import listeners.CurrentCurvatureListener;
 import listeners.CurvatureListener;
-import listeners.DegreeListener;
 import listeners.DeltasepListener;
 import listeners.DisplayBoxListener;
 import listeners.DisplayListener;
@@ -2166,7 +2165,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		c.gridy = 1;
 		c.gridx = 0;
 		lblCitation.setFont(SMALL_FONT);
-
+		panelFirst.add(lblCitation, new GridBagConstraints(0, 0, 5, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 		final GridBagConstraints gbcLblCitation = new GridBagConstraints();
 		gbcLblCitation.fill = GridBagConstraints.BOTH;
 		gbcLblCitation.insets = new Insets(5, 5, 5, 5);
@@ -2202,7 +2202,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		Zselect.add(inputFieldZ, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 		Zselect.setBorder(zborder);
-		panelFirst.add(Zselect, new GridBagConstraints(0, 0, 5, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		panelFirst.add(Zselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		if (ndims < 4) {
@@ -2611,7 +2611,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		Batchbutton.addActionListener(new SaveBatchListener(this));
 		ClearDisplay.addActionListener(new ClearDisplayListener(this));
 		SelectRim.addActionListener(new RimLineSelectionListener(this));
-		degreeField.addTextListener(new DegreeListener(this, false));
 		//resolutionField.addTextListener(new ResolutionListener(this, false));
 
 		//radiusField.addTextListener(new LinescanradiusListener(this, false));

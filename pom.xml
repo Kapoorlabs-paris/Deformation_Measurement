@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>net.kapoor</groupId>
 	<artifactId>E_Track</artifactId>
-	<version>3.0.0</version>
+	<version>4.0.0</version>
 
 	<name>Ellipsoid Detector</name>
 	<description>Ellipsoid detector and angle measurement.</description>
