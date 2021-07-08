@@ -1870,8 +1870,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public JButton Clearmanual = new JButton("Clear Current View");
 	public JButton ManualCompute = new JButton("Manual Computation");
 	public String timestring = "Current T";
-	public String zstring = "Current Z";
-	public String zgenstring = "Current Z / T";
+	public String zstring = "Current T";
+	public String zgenstring = "Current T";
 	public String rstring = "Radius";
 	public String insidestring = "Cutoff distance";
 	public String outsidestring = "Cutoff distance";
@@ -1879,15 +1879,15 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public String mininlierstring = "Box Size(um)";
 
 	public JLabel lblCitation = new JLabel("<html>" + "Wizard of Oz is a plugin to compute "
-			+ "local deformation by fitting circles and measuring distance of the boundary .\n" + "<p>"
-			+ "points from the center of the cell. \n"
-			+ "<p>" + "Made for OOzge Ozguc and Heon Leon Maitre by Varun Kapoor, "
+			+ "local deformation by fitting circles  .\n" + "<p>"
+			+ "and measuring distance of the boundary points from the center of the cell. \n"
+			+ "<p>" + "Made for Oozge Ozguc and Jeon Leon Maitre by Varun Kapoor, "
 			 + "</html>");
 	
 	
 	public Label timeText = new Label("Current T = " + 1, Label.CENTER);
-	public Label zText = new Label("Current Z = " + 1, Label.CENTER);
-	public Label zgenText = new Label("Current Z / T = " + 1, Label.CENTER);
+	public Label zText = new Label("Current T = " + 1, Label.CENTER);
+	public Label zgenText = new Label("Current T = " + 1, Label.CENTER);
 	public Label rText = new Label("Alt+Left Click selects a Roi");
 	public Label contText = new Label("After making all roi selections");
 	public Label insideText = new Label("Cutoff distance  = " + insideCutoff, Label.CENTER);
@@ -1985,7 +1985,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public Label smoothText = new Label("Ratio of functions = " + smoothing, Label.CENTER);
 
 	public Border timeborder = new CompoundBorder(new TitledBorder("Select time"), new EmptyBorder(c.insets));
-	public Border zborder = new CompoundBorder(new TitledBorder("Select Z"), new EmptyBorder(c.insets));
+	public Border zborder = new CompoundBorder(new TitledBorder("Select time"), new EmptyBorder(c.insets));
 	public Border roitools = new CompoundBorder(new TitledBorder("Roi and ellipse finder tools"),
 			new EmptyBorder(c.insets));
 
@@ -2165,14 +2165,9 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		c.gridy = 1;
 		c.gridx = 0;
 		lblCitation.setFont(SMALL_FONT);
-		panelFirst.add(lblCitation, new GridBagConstraints(0, 0, 5, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		panelFirst.add(lblCitation, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
-		final GridBagConstraints gbcLblCitation = new GridBagConstraints();
-		gbcLblCitation.fill = GridBagConstraints.BOTH;
-		gbcLblCitation.insets = new Insets(5, 5, 5, 5);
-		gbcLblCitation.gridwidth = 4;
-		gbcLblCitation.gridx = 0;
-		gbcLblCitation.gridy = 0;
+		
 		// Put time slider
 
 		Timeselect.add(timeText, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
