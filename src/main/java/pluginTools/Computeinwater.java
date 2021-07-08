@@ -46,10 +46,7 @@ import net.imglib2.view.Views;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
 import utility.DisplayAuto;
 import utility.LabelCurvature;
-import utility.LabelRansac;
-import utility.NormalIntersection;
 import utility.Roiobject;
-import utility.SuperIntersection;
 import utility.Watershedobject;
 import varun_algorithm_ransac_Ransac.Ellipsoid;
 
@@ -88,84 +85,7 @@ public class Computeinwater {
 		this.percent = percent;
 	}
 
-	public void ParallelRansac() {
-
-		int nThreads = Runtime.getRuntime().availableProcessors();
-		// set up executor service
-		final ExecutorService taskExecutor = Executors.newFixedThreadPool(nThreads);
-		List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
-
-		ArrayList<EllipseRoi> resultroi = new ArrayList<EllipseRoi>();
-		ArrayList<OvalRoi> resultovalroi = new ArrayList<OvalRoi>();
-		ArrayList<Line> resultlineroi = new ArrayList<Line>();
-		// Obtain the points of intersections
-
-		ArrayList<Tangentobject> AllPointsofIntersect = new ArrayList<Tangentobject>();
-		ArrayList<Intersectionobject> Allintersection = new ArrayList<Intersectionobject>();
-
-		ArrayList<Pair<Ellipsoid, Ellipsoid>> fitmapspecial = new ArrayList<Pair<Ellipsoid, Ellipsoid>>();
-
-		Iterator<Integer> setiter = parent.pixellist.iterator();
-
-		parent.superReducedSamples = new ArrayList<Pair<Ellipsoid, List<Pair<RealLocalizable, FloatType>>>>();
-		while (setiter.hasNext()) {
-			percent++;
-
-			int label = setiter.next();
-
-			Watershedobject current;
-
-			if (parent.supermode || parent.automode) {
-				current = utility.Watershedobject.CurrentLabelBinaryImage(CurrentViewInt, label);
-				
-			System.out.println("Should open in only super or auto mode");	
-			}
-			else {
-				current = utility.Watershedobject.CurrentLabelImage(CurrentViewInt, label);
-		
-			System.out.println("Should open in manual mode");
-			}
-		
-			// Neglect the small watershed regions by choosing only those regions which have
-			// more than 9 candidate points for ellipse fitting
-			List<Pair<RealLocalizable, FloatType>> truths = new ArrayList<Pair<RealLocalizable, FloatType>>();
-			
-		      
-				
-			if (current.Size > parent.minperimeter / 3 * parent.minperimeter / 3
-					&& current.Size < parent.maxperimeter / 3 * parent.maxperimeter / 3
-					&& current.meanIntensity > parent.minellipsepoints) {
-				tasks.add(Executors.callable(new LabelRansac(parent, current.source, truths, t, z, resultroi,
-						resultovalroi, resultlineroi, AllPointsofIntersect, Allintersection, fitmapspecial, parent.jpb,
-						percent, parent.supermode)));
-			
-
-			}
-		}
-
-		try {
-			
-			System.out.println("Executing tasks");
-			taskExecutor.invokeAll(tasks);
-
-			
-			// Get superintersection
-
-			
-			SuperIntersection newintersect = new SuperIntersection(parent);
-			AllPointsofIntersect = new ArrayList<Tangentobject>();
-			Allintersection = new ArrayList<Intersectionobject>();
-			newintersect.Getsuperintersection(resultroi, resultovalroi, resultlineroi, AllPointsofIntersect,
-					Allintersection, t, z);
-
-		} catch (InterruptedException e1) {
-
-			System.out.println(e1 + " Task not executed");
-			
-		}
-
-	}
-
+	
 	public void ParallelRansacCurve() throws Exception {
 
 

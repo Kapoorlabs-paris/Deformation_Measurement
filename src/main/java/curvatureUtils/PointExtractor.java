@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.poi.poifs.property.Parent;
 
 import curvatureFinder.LineProfileCircle;
 import ellipsoidDetector.Distance;

@@ -5,13 +5,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.itextpdf.awt.geom.Rectangle;
 
 import fiji.tool.SliceListener;
 import fiji.tool.SliceObserver;
 import ij.ImagePlus;
 import ij.gui.Overlay;
-import landmarks.RegistrationResult;
 import net.imglib2.Cursor;
 import net.imglib2.FinalInterval;
 import net.imglib2.Localizable;

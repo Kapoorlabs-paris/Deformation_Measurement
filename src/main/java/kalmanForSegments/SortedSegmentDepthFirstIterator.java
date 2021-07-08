@@ -16,7 +16,6 @@ import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.event.ConnectedComponentTraversalEvent;
-import org.jgrapht.event.EdgeTraversalEvent;
 import org.jgrapht.event.VertexTraversalEvent;
 import org.jgrapht.traverse.AbstractGraphIterator;
 import org.jgrapht.traverse.CrossComponentIterator;

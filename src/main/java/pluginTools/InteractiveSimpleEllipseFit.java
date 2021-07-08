@@ -1,11 +1,13 @@
 package pluginTools;
 
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Checkbox;
 import java.awt.CheckboxGroup;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -77,7 +79,6 @@ import ij.plugin.frame.RoiManager;
 import ij.process.ColorProcessor;
 import kalmanForSegments.Segmentobject;
 import kalmanTracker.TrackModel;
-import listeners.AngleListener;
 import listeners.AutoEndListener;
 import listeners.AutoStartListener;
 import listeners.BackGroundListener;
@@ -106,7 +107,6 @@ import listeners.InteriorDistListener;
 import listeners.LinescanradiusListener;
 import listeners.LostFrameListener;
 import listeners.LowProbListener;
-import listeners.ManualInterventionListener;
 import listeners.MaxTryListener;
 import listeners.MaxperimeterListener;
 import listeners.MaxsizeListener;
@@ -117,7 +117,6 @@ import listeners.MinperimeterListener;
 import listeners.MinsizeListener;
 import listeners.OutsideCutoffListener;
 import listeners.RListener;
-import listeners.RedoListener;
 import listeners.RegionInteriorListener;
 import listeners.ResolutionListener;
 import listeners.RimLineSelectionListener;
@@ -1281,17 +1280,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			clockimp.setOverlay(clockoverlay);
 
 		}
-		if (change == ValueChange.INSIDE || change == ValueChange.OUTSIDE) {
-
-			if (automode) {
-
-				empty = CreateBinaryBit(originalimg, lowprob, highprob);
-
-			}
-
-			StartComputing();
-
-		}
+		
 
 		if (change == ValueChange.SEG) {
 
@@ -1480,13 +1469,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 
 		if (change == ValueChange.THIRDDIMmouse || change == ValueChange.FOURTHDIMmouse) {
-			if (Tracklist.size() > 0 && (automode || supermode)) {
-
-				ComputeAngles current = new ComputeAngles(this, null);
-
-				current.Lineage();
-
-			}
+			
 			if (Tracklist.size() > 0 && (curveautomode || curvesupermode)) {
 
 				ComputeCurvature.CurvedLineage(this);
@@ -1607,21 +1590,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	}
 
-	public void StartComputing() {
 
-		ComputeAngles compute = new ComputeAngles(this, jpb);
-
-		compute.execute();
-
-	}
-
-	public void StartManualIntervention() {
-
-		ComputeManual compute = new ComputeManual(this, jpb);
-
-		compute.execute();
-
-	}
 
 	public void StartCurvatureComputing(File savefile) {
 		if (!batchmode) {
@@ -1676,13 +1645,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 
 	}
 
-	public void StartComputingCurrent() {
 
-		redoing = true;
-		ComputeAnglesCurrent compute = new ComputeAnglesCurrent(this, jpb);
-
-		compute.execute();
-	}
 
 	public void StartCurvatureComputingCurrent() {
 
@@ -1861,7 +1824,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		}
 	}
 
-	public JFrame Cardframe = new JFrame("Intersection angle or curvature measurment");
+	public JFrame Cardframe = new JFrame("Deformation measurment");
 	public JPanel panelCont = new JPanel();
 	public JPanel panelFirst = new JPanel();
 	public JPanel panelSecond = new JPanel();
@@ -1916,6 +1879,13 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 	public String smoothsliderstring = "Ratio of functions ";
 	public String mininlierstring = "Box Size(um)";
 
+	public JLabel lblCitation = new JLabel("<html>" + "Wizard of Oz is a plugin to compute "
+			+ "local deformation by fitting circles and measuring distance of the boundary .\n" + "<p>"
+			+ "points from the center of the cell. \n"
+			+ "<p>" + "Made for OOzge Ozguc and Heon Leon Maitre by Varun Kapoor, "
+			 + "</html>");
+	
+	
 	public Label timeText = new Label("Current T = " + 1, Label.CENTER);
 	public Label zText = new Label("Current Z = " + 1, Label.CENTER);
 	public Label zgenText = new Label("Current Z / T = " + 1, Label.CENTER);
@@ -2032,7 +2002,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 			new EmptyBorder(c.insets));
 
 	int textwidth = 5;
-
+	public static final Font FONT = new Font( "Arial", Font.PLAIN, 10 );
+	public static final Font SMALL_FONT = FONT.deriveFont( 8 );
 	public void Card(boolean hide) {
 
 		minInlierText = new Label(mininlierstring + " = " + minNumInliers, Label.CENTER);
@@ -2194,7 +2165,14 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		c.gridheight = 10;
 		c.gridy = 1;
 		c.gridx = 0;
+		lblCitation.setFont(SMALL_FONT);
 
+		final GridBagConstraints gbcLblCitation = new GridBagConstraints();
+		gbcLblCitation.fill = GridBagConstraints.BOTH;
+		gbcLblCitation.insets = new Insets(5, 5, 5, 5);
+		gbcLblCitation.gridwidth = 4;
+		gbcLblCitation.gridx = 0;
+		gbcLblCitation.gridy = 0;
 		// Put time slider
 
 		Timeselect.add(timeText, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
@@ -2644,10 +2622,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		CurrentCurvaturebutton.addActionListener(new CurrentCurvatureListener(this));
 		Curvaturebutton.addActionListener(new CurvatureListener(this));
 		Displaybutton.addActionListener(new DisplayVisualListener(this, true));
-		Anglebutton.addActionListener(new AngleListener(this));
 		startT.addTextListener(new AutoStartListener(this));
 		endT.addTextListener(new AutoEndListener(this));
-		Redobutton.addActionListener(new RedoListener(this));
 		Roibutton.addActionListener(new RoiListener(this));
 		inputFieldZ.addTextListener(new ZlocListener(this, false));
 		cutoffField.addTextListener(new InsideLocListener(this, false));
@@ -2676,7 +2652,6 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 				highprobmax, scrollbarSize, highprobslider));
 
 		Clearmanual.addActionListener(new ClearforManual(this));
-		ManualCompute.addActionListener(new ManualInterventionListener(this));
 		maxSearchS.addAdjustmentListener(new ETrackMaxSearchListener(this, maxSearchText, maxSearchstring,
 				maxSearchradiusMin, maxSearchradiusMax, scrollbarSize, maxSearchS));
 

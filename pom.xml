@@ -5,10 +5,9 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>25.0.0</version>
+		<version>29.2.1</version>
 		<relativePath />
 	</parent>
-
 	<groupId>net.kapoor</groupId>
 	<artifactId>E_Track</artifactId>
 	<version>3.0.0</version>
@@ -51,7 +50,22 @@
 			<url>http://imagej.net/User:MTrack</url>
 			<properties><id>vkapoor</id></properties>
 		</contributor>
+		
+				<contributor>
+			<name>Oozge Ozguc</name>
+			<url>http://imagej.net/User:MTrack</url>
+			<properties><id>oozge</id></properties>
+
+<roles>
+                                <role>founder</role>
+                                <role>debugger</role>
+                                <role>reviewer</role>
+                                <role>support</role>
+                                
+                        </roles>
+		</contributor>
 	</contributors>
+
 
 	<mailingLists>
 		<mailingList>
@@ -168,7 +182,37 @@
 </dependency>
 		
 	
-	
+	<!-- ImgLib2 dependencies -->
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-algorithm</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-algorithm-gpl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-ij</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-roi</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>math.geom2d</groupId>
+			<artifactId>javaGeom</artifactId>
+			<version>0.11.1</version>
+		</dependency>
+		<dependency>
+			<groupId>sc.fiji</groupId>
+	<artifactId>bigdataviewer-vistools</artifactId>
+	</dependency>
 		
 		
 	</dependencies>

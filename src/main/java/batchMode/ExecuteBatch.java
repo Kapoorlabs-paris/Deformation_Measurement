@@ -44,7 +44,6 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
-import pluginTools.ComputeAngles;
 import pluginTools.ComputeCurvature;
 import pluginTools.InteractiveSimpleEllipseFit;
 import pluginTools.InteractiveSimpleEllipseFit.ValueChange;
