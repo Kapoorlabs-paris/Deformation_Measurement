@@ -2165,8 +2165,8 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		c.gridy = 1;
 		c.gridx = 0;
 		lblCitation.setFont(SMALL_FONT);
-		panelFirst.add(lblCitation, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		//panelFirst.add(lblCitation, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH,
+		//		GridBagConstraints.HORIZONTAL, insets, 0, 0));
 		
 		// Put time slider
 
@@ -2176,7 +2176,7 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		Timeselect.add(timeslider, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-		Timeselect.add(inputFieldT, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		Timeselect.add(inputFieldT, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		Timeselect.setBorder(timeborder);
@@ -2185,19 +2185,32 @@ public class InteractiveSimpleEllipseFit extends JPanel implements PlugIn {
 		// GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		// Put z slider
+		
+		Zselect.add(lblCitation, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		
+		
 		if (ndims > 3)
-			Zselect.add(zText, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			
+			Zselect.add(zText, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		
+			
 		else
-			Zselect.add(zgenText, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+			Zselect.add(zgenText, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
-		Zselect.add(zslider, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		
+		
+		
+		
+		Zselect.add(zslider, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-		Zselect.add(inputFieldZ, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		Zselect.add(inputFieldZ, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 		Zselect.setBorder(zborder);
-		panelFirst.add(Zselect, new GridBagConstraints(0, 1, 5, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		
+		panelFirst.add(Zselect, new GridBagConstraints(0, 0, 6, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		if (ndims < 4) {
