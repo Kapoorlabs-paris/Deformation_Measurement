@@ -1,22 +1,19 @@
 package pluginTools.simplifiedio;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.StringJoiner;
 
 import org.scijava.util.FileUtils;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.Macro;
 import ij.io.Opener;
-import ij.plugin.ImagesToStack;
 import io.scif.SCIFIO;
-import loci.formats.FormatException;
-import net.imagej.Dataset;
 import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
 import net.imagej.axis.DefaultLinearAxis;
+import net.imglib2.Cursor;
+import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.converter.Converters;
 import net.imglib2.converter.RealTypeConverters;
@@ -24,13 +21,14 @@ import net.imglib2.img.ImagePlusAdapter;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.img.display.imagej.ImgPlusViews;
 import net.imglib2.img.display.imagej.ImgToVirtualStack;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
+import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Util;
+import net.imglib2.view.Views;
 
 public class SimplifiedIO {
 
@@ -54,25 +52,7 @@ public class SimplifiedIO {
 		return ImagePlusAdapter.wrapImgPlus( image );
 	}
 
-	/**
-	 *
-	 * Loads an image using SCIFIO
-	 *
-	 * @return ImgPlus object
-	 * @see net.imagej.ImgPlus
-	 * @see org.scijava.Context
-	 */
-	@SuppressWarnings( "rawtypes" )
-	static ImgPlus openImageWithSCIFIO( final String path ) {
-		// package private to allow testing
-		try {
-			SCIFIO scifio = getScifio();
-			Dataset dataset = scifio.datasetIO().open( path );
-			return dataset.getImgPlus();
-		} catch ( IOException e ) {
-			throw new SimplifiedIOException( e );
-		}
-	}
+
 
 	/**
 	 * Loads an image using BioFormats
@@ -97,32 +77,72 @@ public class SimplifiedIO {
 			messages.add( "ImageJ1 Exception: " + e.getMessage() );
 		}
 
-		try {
-			return SimplifiedIO.openImageWithSCIFIO( path );
-		} catch ( Exception e ) {
-			messages.add( "SCIFIO Exception: " + e.getMessage() );
-		}
-
-
 		if ( !new File( path ).exists() )
 			throw new SimplifiedIOException( "Image file doesn't exist: " + path );
 
 		throw new SimplifiedIOException( "Couldn't open image file: \"" + path + "\"\n" + "Exceptions:\n" + messages );
 	}
 
-	public static < T extends NativeType< T > > ImgPlus< T > openImage( String path, T type ) {
+	public static < T extends NativeType< T > > RandomAccessibleInterval< T > openImage( String path, T type ) {
 		return convert( openImage( path ), type );
 	}
 
 	@SuppressWarnings( { "rawtypes", "unchecked" } )
-	public static < T extends NativeType< T > > ImgPlus< T > convert( ImgPlus image, T type ) {
+	public static < T extends NativeType< T > > RandomAccessibleInterval< T > convert( ImgPlus image, T type ) {
 		Object imageType = Util.getTypeFromInterval( image );
 		if ( imageType.getClass().equals( type.getClass() ) ) {
 			return image;
 		} else if ( imageType instanceof RealType && type instanceof RealType ) {
 			return convertBetweenRealType( image, ( RealType ) type );
+		} else if ( imageType instanceof UnsignedByteType && type instanceof ARGBType ) {
+			return UNconvertToRGB( image );
 		} else if ( imageType instanceof ARGBType && type instanceof RealType ) { return convertARGBTypeToRealType( image, ( RealType ) type ); }
-		throw new IllegalStateException( "Cannot convert between given pixel types: " + imageType.getClass().getSimpleName() + ", " + type.getClass().getSimpleName() );
+		
+		else if (imageType instanceof FloatType)
+			
+			return  convertToRGB(image);
+		
+			throw new IllegalStateException( "Cannot convert between given pixel types: " + imageType.getClass().getSimpleName() + ", " + type.getClass().getSimpleName() );
+	}
+	public static  RandomAccessibleInterval<ARGBType> UNconvertToRGB(RandomAccessibleInterval<UnsignedByteType> image) {
+		RandomAccessibleInterval< ARGBType > convertedRAI = new ArrayImgFactory().create(image, new ARGBType());
+		Cursor<UnsignedByteType> cur = Views.iterable(image).localizingCursor();
+		RandomAccess<ARGBType> ran = convertedRAI.randomAccess();
+		
+		while(cur.hasNext()) {
+			
+			
+			cur.fwd();
+			int value =  cur.get().get();
+			ran.setPosition(cur);
+			ran.get().set(ARGBType.rgba( value, value, value, 255 ));
+			
+			
+		}
+		
+		return convertedRAI;
+		
+	}
+
+	
+	public static  RandomAccessibleInterval<ARGBType> convertToRGB(RandomAccessibleInterval<FloatType> image) {
+		RandomAccessibleInterval< ARGBType > convertedRAI = new ArrayImgFactory().create(image, new ARGBType());
+		Cursor<FloatType> cur = Views.iterable(image).localizingCursor();
+		RandomAccess<ARGBType> ran = convertedRAI.randomAccess();
+		
+		while(cur.hasNext()) {
+			
+			
+			cur.fwd();
+			int value = (int) cur.get().get();
+			ran.setPosition(cur);
+			ran.get().set(ARGBType.rgba( value, value, value, 255 ));
+			
+			
+		}
+		
+		return convertedRAI;
+		
 	}
 
 	/**
@@ -153,6 +173,8 @@ public class SimplifiedIO {
 		}
 		return path;
 	}
+
+
 
 	@SuppressWarnings( { "unchecked", "rawtypes" } )
 	private static < T extends NativeType< T > > ImgPlus< T >

@@ -139,97 +139,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 
 	}
 
-	public static void MakeLineKymo(InteractiveSimpleEllipseFit parent,
-			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, long[] size, String TrackID) {
 
-		RandomAccessibleInterval<FloatType> IntensityAKymo = new ArrayImgFactory<FloatType>().create(size,
-				new FloatType());
-		RandomAccessibleInterval<FloatType> IntensityBKymo = new ArrayImgFactory<FloatType>().create(size,
-				new FloatType());
-
-		parent.clockimp.updateAndDraw();
-
-		RandomAccess<FloatType> ranacimageA = IntensityAKymo.randomAccess();
-
-		RandomAccess<FloatType> ranacimageB = IntensityBKymo.randomAccess();
-		Iterator<Map.Entry<String, Integer>> itZ = parent.AccountedZ.entrySet().iterator();
-
-		while (itZ.hasNext()) {
-
-			Map.Entry<String, Integer> entry = itZ.next();
-
-			int time = entry.getValue();
-			String timeID = entry.getKey();
-
-			ArrayList<Intersectionobject> currentlist = sortedMappair.get(TrackID + timeID);
-
-			ranacimageA.setPosition(time - 1, 0);
-			ranacimageB.setPosition(time - 1, 0);
-			if (currentlist != null) {
-				for (Intersectionobject currentobject : currentlist) {
-
-					int count = 0;
-
-					ConcurrentHashMap<Integer, ArrayList<LineProfileCircle>> currentprofile = currentobject.LineScanIntensity;
-
-					for (Map.Entry<Integer, ArrayList<LineProfileCircle>> currentsegmentprofile : currentprofile
-							.entrySet()) {
-
-						int key = currentsegmentprofile.getKey();
-
-						ArrayList<LineProfileCircle> lineprofile = currentsegmentprofile.getValue();
-
-						for (int i = 0; i < lineprofile.size() + extradimension; ++i) {
-
-							if (count >= size[1])
-								break;
-
-							ranacimageA.setPosition(count, 1);
-							ranacimageB.setPosition(count, 1);
-
-							if (i < lineprofile.size()) {
-								ranacimageA.get().set((float) lineprofile.get(i).intensity);
-								ranacimageB.get().set((float) lineprofile.get(i).secintensity);
-
-							}
-
-							else {
-								ranacimageA.get().set((float) lineprofile.get(lineprofile.size() - 1).intensity);
-								ranacimageB.get().set((float) lineprofile.get(lineprofile.size() - 1).secintensity);
-
-							}
-
-							count++;
-						}
-
-					}
-
-				}
-
-			}
-
-		}
-
-		double[] calibration = new double[] { parent.timecal, parent.calibration };
-		Calibration cal = new Calibration();
-		cal.setFunction(Calibration.STRAIGHT_LINE, calibration, " ");
-
-		if (parent.insidedistance > 0) {
-			ImagePlus IntensityAimp = ImageJFunctions.show(IntensityAKymo);
-			IntensityAimp.setTitle("Intensity ChA Kymo for TrackID: " + TrackID);
-			IntensityAimp.setCalibration(cal);
-
-			if (parent.twochannel) {
-				ImagePlus IntensityBimp = ImageJFunctions.show(IntensityBKymo);
-				IntensityBimp.setTitle("Intensity ChB for TrackID: " + TrackID);
-				IntensityBimp.setCalibration(cal);
-				IntensityBimp.updateAndRepaintWindow();
-			}
-			IntensityAimp.updateAndRepaintWindow();
-			KymoSaveobject Kymos = new KymoSaveobject(IntensityAKymo, IntensityBKymo);
-			parent.KymoLineobject.put(TrackID, Kymos);
-		}
-	}
 
 	public static RandomAccessibleInterval<FloatType> MakeDistanceFan(InteractiveSimpleEllipseFit parent,
 			HashMap<String, ArrayList<Intersectionobject>> sortedMappair, String TrackID, boolean show) {
@@ -936,13 +846,7 @@ public class ComputeCurvature extends SwingWorker<Void, Void> {
 		parent.SegmentTracklist.clear();
 		parent.table.removeAll();
 
-		IJ.log("\n " + "Calculation is Complete or was interupted " + "\n "
-				+ "IF RUNNING IN BATCH MODE, Results are automatically saved in Results folder"
-				+ "IF IT WAS NOT A KEYBOARD INTERUPT: " + "\n "
-				+ "do a Shift + Left click near the Cell of your choice to display " + "\n "
-				+ "Kymographs for Curvature, Intensity " + " \n"
-				+ "RMS value which moves with the time slider to fit on the current view of the cell " + " \n"
-				+ "Curvature value display as lines connecting the center to the boundary of the cell over time");
+		
 
 		TrackingFunctions track = new TrackingFunctions(parent);
 		if (parent.ndims > 3) {
